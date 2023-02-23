@@ -1,3 +1,4 @@
+//Test
 const getWindowFocused = state => state.views.Main;
 const getPlayerRunning = state => state.player.running;
 
