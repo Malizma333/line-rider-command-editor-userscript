@@ -1,4 +1,4 @@
-const getWindowFocused = state => state.views.Main;
+/*const getWindowFocused = state => state.views.Main;
 const getPlayerRunning = state => state.player.running;
 
 function main() {
@@ -196,4 +196,4 @@ if(window.store) {
   main();
 } else {
   window.onAppReady = main;
-}
+}*/
