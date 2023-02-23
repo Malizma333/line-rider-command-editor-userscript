@@ -116,19 +116,20 @@ function main() {
                         e('text', {style: textStyle.S}, tabName)
                     )
                 ),
-                e('div', {style: smoothTabStyle},
-                    e('text', {style: textStyle.S}, "Smoothing"),
-                    e('input', {
-                        style: {...textInputStyle, marginLeft: '5px'},
-                        type: 'number',
-                        min: 0,
-                        max: 20,
-                        placeholder: 10,
-                        onChange: e => this.changeSmooth(e.target.value)
-                    })
-                ),
-                e('div', {style: triggerWindowStyle},
-                
+                e('div', this.currentTab != tabName && {style: {display: 'none'}},
+                    e('div', {style: smoothTabStyle},
+                        e('text', {style: textStyle.S}, "Smoothing"),
+                        e('input', {
+                            style: {...textInputStyle, marginLeft: '5px'},
+                            type: 'number',
+                            min: 0,
+                            max: 20,
+                            placeholder: 10,
+                            onChange: e => this.changeSmooth(e.target.value)
+                        })
+                    ),
+                    e('div', {style: triggerWindowStyle},
+                    )
                 )
             )
         }
