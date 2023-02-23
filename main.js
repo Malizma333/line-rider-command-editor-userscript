@@ -1,4 +1,4 @@
-/*const getWindowFocused = state => state.views.Main;
+const getWindowFocused = state => state.views.Main;
 const getPlayerRunning = state => state.player.running;
 
 function main() {
@@ -18,7 +18,8 @@ function main() {
         playerRunning = getPlayerRunning(store.getState());
         windowFocused = getWindowFocused(store.getState());
 
-        let shouldBeVisible = !playerRunning && windowFocused;
+        let shouldBeVisible = true; //!playerRunning && windowFocused;
+        console.log("A");
 
         commandEditorParent.style.opacity = shouldBeVisible ? 1 : 0;
         commandEditorParent.style.pointerEvents = shouldBeVisible ? null : 'none';
@@ -29,7 +30,7 @@ function main() {
             super();
 
             this.state = {
-                active: false,
+                active: true,
                 currentTab: "Zoom",
                 errorMessage: "...",
                 hasError: false,
@@ -114,10 +115,6 @@ function main() {
             Object.assign(commandEditorParent.style, parentStyle);
         }
 
-        render() {
-            return null;
-        }
-
         createTab(tabName) {
             this.tabNameList.push(tabName);
 
@@ -180,6 +177,11 @@ function main() {
         onCommit() {
             console.log("Commit");
         }
+
+        render() {
+            console.log("B");
+            return this.mainComponent;
+        }
     }
 
     const commandEditorParent = document.createElement('div');
@@ -196,4 +198,4 @@ if(window.store) {
   main();
 } else {
   window.onAppReady = main;
-}*/
+}
