@@ -117,7 +117,7 @@ function main() {
 
         componentDidMount() {
             console.log("Registered Command Editor");
-            Object.assign(commandEditorParent.style, parentStyle);
+            Object.assign(commandEditorParent.style, null)//parentStyle);
         }
         /*
 
