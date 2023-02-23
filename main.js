@@ -110,6 +110,7 @@ function main() {
                 e('div', !this.state.active && {style: {display: 'none'}},
                     this.commandTabs,
                     this.smoothTab,
+                    this.triggerWindow,
                     this.readWriteComponents
                 )
             )
