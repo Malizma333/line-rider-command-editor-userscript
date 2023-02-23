@@ -39,6 +39,8 @@ function main() {
             store.subscribeImmediate(() => {
                 this.switchTab(this.state.currentTab);
             })
+
+            this.tabNameList = []
             
             this.readWriteComponents =
             e('div', null,
@@ -63,8 +65,6 @@ function main() {
                     }, this.state.errorMessage)
                 )
             )
-            
-            this.tabNameList = []
 
             this.commandTabs =
             e('div', {style: tabHeaderStyle},
