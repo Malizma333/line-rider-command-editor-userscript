@@ -1,6 +1,6 @@
 
-const getWindowFocused = state => state.views.Main;
-const getPlayerRunning = state => state.player.running;
+//const getWindowFocused = state => state.views.Main;
+//const getPlayerRunning = state => state.player.running;
 
 function main() {
     window.V2 = window.V2 || window.store.getState().simulator.engine.engine.state.startPoint.constructor;
@@ -12,6 +12,8 @@ function main() {
     } = window;
 
     const e = React.createElement;
+
+    /*
     var playerRunning = getPlayerRunning(store.getState());
     var windowFocused = getWindowFocused(store.getState());
 
@@ -24,11 +26,13 @@ function main() {
         commandEditorParent.style.opacity = shouldBeVisible ? 1 : 0;
         commandEditorParent.style.pointerEvents = shouldBeVisible ? null : 'none';
     })
+    */
 
     class CommandEditorContainer extends React.Component {
         constructor () {
             super();
 
+            /*
             this.state = {
                 active: true,
                 currentTab: "Zoom",
@@ -108,13 +112,14 @@ function main() {
             this.triggerWindow =
             e('div', {style: triggerWindowStyle},
                 
-            )
+            )*/
         }
 
         componentDidMount() {
             console.log("Registered Command Editor");
             Object.assign(commandEditorParent.style, parentStyle);
         }
+        /*
 
         createTab(tabName) {
             this.tabNameList.push(tabName);
@@ -178,10 +183,11 @@ function main() {
         onCommit() {
             console.log("Commit");
         }
+        */
 
         render() {
             console.log("Rendering");
-            return this.mainComponent;
+            return e('div', null, "Hello World"); //this.mainComponent;
         }
     }
 
@@ -193,8 +199,6 @@ function main() {
         e(CommandEditorContainer),
         commandEditorParent
     )
-
-    console.log("Test");
 }
 
 if(window.store) {
