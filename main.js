@@ -115,7 +115,7 @@ function main() {
         }
 
         render() {
-            return this.mainComponent;
+            return null;
         }
 
         createTab(tabName) {
