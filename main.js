@@ -40,7 +40,10 @@ function main() {
                 this.switchTab(this.state.currentTab);
             })
 
-            mainComponent = e('div', this.state.active && {style: expandedWindow},
+            this.tabNameList = []
+
+            this.mainComponent =
+            e('div', this.state.active && {style: expandedWindow},
                 e('button', {
                         style: expandCollapseButtonStyle,
                         onClick: this.onActivate.bind(this)
@@ -56,7 +59,8 @@ function main() {
                 )
             )
             
-            readWriteComponents = e('div', null,
+            this.readWriteComponents =
+            e('div', null,
                 e('button', {
                     style: {...readWriteButtonStyle, left: '3%'},
                     onClick: this.onRead.bind(this)
@@ -78,17 +82,17 @@ function main() {
                     }, this.state.errorMessage)
                 )
             )
-            
-            this.tabNameList = []
 
-            this.commandTabs = e('div', {style: tabHeaderStyle},
+            this.commandTabs =
+            e('div', {style: tabHeaderStyle},
                 this.createTab("Zoom"),
                 this.createTab("Camera Pan"),
                 this.createTab("Camera Focus"),
                 this.createTab("Time Remap")
             )
 
-            this.smoothTab = e('div', {style: smoothTabStyle},
+            this.smoothTab =
+            e('div', {style: smoothTabStyle},
                 e('text', {style: textStyle.S}, "Smoothing"),
                 e('input', {
                     style: {...textInputStyle, marginLeft: '5px'},
@@ -100,7 +104,8 @@ function main() {
                 })
             )
 
-            this.triggerWindow = e('div', {style: triggerWindowStyle},
+            this.triggerWindow =
+            e('div', {style: triggerWindowStyle},
                 
             )
         }
