@@ -18,7 +18,7 @@ function main() {
         playerRunning = getPlayerRunning(store.getState());
         windowFocused = getWindowFocused(store.getState());
 
-        let shouldBeVisible = !playerRunning && windowFocused;
+        let shouldBeVisible = true;//!playerRunning && windowFocused;
 
         commandEditorParent.style.opacity = shouldBeVisible ? 1 : 0;
         commandEditorParent.style.pointerEvents = shouldBeVisible ? null : 'none';
@@ -29,7 +29,7 @@ function main() {
             super();
 
             this.state = {
-                active: false,
+                active: true,
                 currentTab: "Zoom",
                 errorMessage: "...",
                 hasError: false,
