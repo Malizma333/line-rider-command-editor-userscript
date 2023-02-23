@@ -53,36 +53,36 @@ function main() {
                         this.state.active ? "-" : "+"
                     )
                 ),
-                e('div', !this.state.active && {style: {display: 'none'}},
-                    // this.commandTabs,
-                    // this.smoothTab,
-                    this.readWriteComponents
-                )
+                // e('div', !this.state.active && {style: {display: 'none'}},
+                //     this.commandTabs,
+                //     this.smoothTab,
+                //     this.readWriteComponents
+                // )
             )
             
-            this.readWriteComponents =
-            e('div', null,
-                e('button', {
-                    style: {...readWriteButtonStyle, left: '3%'},
-                    onClick: this.onRead.bind(this)
-                },
-                e('text', {style: textStyle.M}, "Read"),
-                ),
-                e('button', {
-                    style: {...readWriteButtonStyle, right: '3%'},
-                    onClick: this.onCommit.bind(this)
-                },
-                e('text', {style: textStyle.M}, "Commit")
-                ),
-                e('div', {style: errorContainerStyle},
-                    e('text', {
-                        style: {
-                            ...textStyle.M,
-                            color: this.state.hasError ? "Red" : "Black"
-                        }
-                    }, this.state.errorMessage)
-                )
-            )
+            // this.readWriteComponents =
+            // e('div', null,
+            //     e('button', {
+            //         style: {...readWriteButtonStyle, left: '3%'},
+            //         onClick: this.onRead.bind(this)
+            //     },
+            //     e('text', {style: textStyle.M}, "Read"),
+            //     ),
+            //     e('button', {
+            //         style: {...readWriteButtonStyle, right: '3%'},
+            //         onClick: this.onCommit.bind(this)
+            //     },
+            //     e('text', {style: textStyle.M}, "Commit")
+            //     ),
+            //     e('div', {style: errorContainerStyle},
+            //         e('text', {
+            //             style: {
+            //                 ...textStyle.M,
+            //                 color: this.state.hasError ? "Red" : "Black"
+            //             }
+            //         }, this.state.errorMessage)
+            //     )
+            // )
 
             // this.commandTabs =
             // e('div', {style: tabHeaderStyle},
