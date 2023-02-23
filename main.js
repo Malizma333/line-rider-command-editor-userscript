@@ -117,7 +117,17 @@ function main() {
 
         componentDidMount() {
             console.log("Registered Command Editor");
-            Object.assign(commandEditorParent.style, null)//parentStyle);
+            Object.assign(commandEditorParent.style, {
+                backgroundColor: colorTheme.lightgray3,
+                border: '1px solid black',
+                left: '55px',
+                opacity: 0,
+                overflowX: 'hidden',
+                overflowY: 'hidden',
+                pointerEvents: 'none',
+                position: 'fixed',
+                top: '20px'
+            });
         }
         /*
 
@@ -186,7 +196,6 @@ function main() {
         */
 
         render() {
-            console.log("Rendering");
             return e('div', null, "Hello World"); //this.mainComponent;
         }
     }
