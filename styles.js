@@ -13,6 +13,21 @@ const colorTheme = {
     white: '#ffffff'
 }
 
+const textStyle = {
+    S: {
+        fontSize: '14px',
+        fontWeight: 'bold'
+    },
+    M: {
+        fontSize: '24px',
+        fontWeight: 'bold'
+    },
+    L: {
+        fontSize: '32px',
+        fontWeight: 'bold'
+    }
+}
+
 const parentStyle = {
     backgroundColor: colorTheme.lightgray3,
     border: '1px solid black',
@@ -96,21 +111,6 @@ const errorContainerStyle = {
     left: '30%',
     position: 'absolute',
     width: '40%'
-}
-
-const textStyle = {
-    S: {
-        fontSize: '14px',
-        fontWeight: 'bold'
-    },
-    M: {
-        fontSize: '24px',
-        fontWeight: 'bold'
-    },
-    L: {
-        fontSize: '32px',
-        fontWeight: 'bold'
-    }
 }
 
 const textInputStyle = {
