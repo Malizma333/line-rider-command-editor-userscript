@@ -48,30 +48,7 @@ function main() {
 
             this.tabNameList = []
             
-            this.readWriteComponents =
-            e('div', null,
-                e('button', {
-                    style: {...readWriteButtonStyle, left: '3%'},
-                    onClick: this.onRead.bind(this)
-                },
-                e('text', {style: textStyle.M}, "Read"),
-                ),
-                e('button', {
-                    style: {...readWriteButtonStyle, right: '3%'},
-                    onClick: this.onCommit.bind(this)
-                },
-                e('text', {style: textStyle.M}, "Commit")
-                ),
-                e('div', {style: errorContainerStyle},
-                    e('text', {
-                        style: {
-                            ...textStyle.M,
-                            color: this.state.hasError ? "Red" : "Black"
-                        }
-                    }, this.state.errorMessage)
-                )
-            )
-
+            this.readWriteComponents = this.getReadWriteComponents()
             this.zoomCommandWindow = this.createTab("Zoom")
         }
 
@@ -94,6 +71,39 @@ function main() {
                     this.readWriteComponents
                 )
             )
+        }
+
+        getReadWriteComponents() {
+            return e('div', null,
+                e('button', {
+                    style: {...readWriteButtonStyle, left: '3%'},
+                    onClick: this.onRead.bind(this)
+                },
+                e('text', {style: textStyle.M}, "Read"),
+                ),
+                e('button', {
+                    style: {...readWriteButtonStyle, right: '3%'},
+                    onClick: this.onCommit.bind(this)
+                },
+                e('text', {style: textStyle.M}, "Commit")
+                ),
+                e('div', {style: errorContainerStyle},
+                    e('text', {
+                        style: {
+                            ...textStyle.M,
+                            color: this.state.hasError ? "Red" : "Black"
+                        }
+                    }, this.state.errorMessage)
+                )
+            )
+        }
+
+        onRead() {
+            console.log("Read");
+        }
+        
+        onCommit() {
+            console.log("Commit");
         }
 
         createTab(tabName) {
@@ -168,14 +178,6 @@ function main() {
             } else {
                 this.setState({active: true});
             }
-        }
-
-        onRead() {
-            console.log("Read");
-        }
-        
-        onCommit() {
-            console.log("Commit");
         }
     }
 
