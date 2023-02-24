@@ -113,6 +113,8 @@ function main() {
             smoothingValues[tabName] = 10;
             this.setState({smoothingValues});
 
+            console.info(this.currentTab, tabName)
+
             return e('div', null, 
                 e('div', {style: tabHeaderStyle},
                     e('button', {
@@ -126,7 +128,7 @@ function main() {
                         e('text', {style: textStyle.S}, tabName)
                     )
                 ),
-                e('div', null,
+                e('div', (this.currentTab != tabName) && {style: {display: 'none'}},
                     e('div', {style: smoothTabStyle},
                         e('text', {style: textStyle.S}, "Smoothing"),
                         e('input', {
