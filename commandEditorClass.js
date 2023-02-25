@@ -1,5 +1,5 @@
 class CommandEditor {
-    commandEditor(key, template, uiComp) {
+    CommandEditor(key, template, uiComp) {
         this.keyName = key;
         this.triggerTemplate = template;
         this.uiComponent = uiComp;

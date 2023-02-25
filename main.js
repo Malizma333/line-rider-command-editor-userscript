@@ -37,19 +37,19 @@ function main() {
             }
 
             store.subscribeImmediate(() => {
-                /*let zoomCommandEditor = new commandEditor(
-                    "Zoom",
-                    [[0,0,0], 2],
-                    e('div', null)
-                )*/
-
-                this.switchTab(this.state.currentTab);
+                //this.switchTab(this.state.currentTab);
             })
 
             this.tabNameList = []
-            
+
+            this.zoomCommandEditor = new CommandEditor(
+                "Zoom",
+                [[0,0,0], 2],
+                this.createTab("Zoom")
+            )
+
             this.readWriteComponents = this.getReadWriteComponents()
-            this.zoomCommandWindow = this.createTab("Zoom")
+            //this.zoomCommandWindow = this.createTab("Zoom")
         }
 
         componentDidMount() {
@@ -67,7 +67,7 @@ function main() {
                     )
                 ),
                 e('div', !this.state.active && {style: {display: 'none'}},
-                    this.zoomCommandWindow,
+                    this.zoomCommandEditor.getUIComponent(),
                     this.readWriteComponents
                 )
             )
