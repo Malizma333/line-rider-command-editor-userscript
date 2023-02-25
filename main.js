@@ -37,19 +37,20 @@ function main() {
             }
 
             store.subscribeImmediate(() => {
-                //this.switchTab(this.state.currentTab);
+                this.switchTab(this.state.currentTab);
             })
 
-            this.tabNameList = []
+            this.commandList = ["Zoom", "Camera Pan", "Camera Focus", "Time Remap"]
+            this.commandEditors = []
 
-            this.zoomCommandEditor = new CommandEditor(
-                "Zoom",
-                [[0,0,0], 2],
-                this.createTab("Zoom")
-            )
-
-            this.readWriteComponents = this.getReadWriteComponents()
-            //this.zoomCommandWindow = this.createTab("Zoom")
+            this.commandList.forEach(command => {
+                let commandEditor = new CommandEditor(
+                    command,
+                    [[0,0,0], 2],
+                    this.createTab(command)
+                )
+                this.commandEditors.push(commandEditor)
+            });
         }
 
         componentDidMount() {
@@ -67,13 +68,21 @@ function main() {
                     )
                 ),
                 e('div', !this.state.active && {style: {display: 'none'}},
-                    this.zoomCommandEditor.getUIComponent(),
+                    e('div', {style: tabHeaderStyle},
+                        this.commandEditors.map((command) => (
+                            command.tabComponent
+                        ))
+                    ),
+                    /*this.commandEditors.map((command) => (
+                        command.windowComponent
+                    )),*/
+                    this.commandEditors[0].windowComponent,
                     this.readWriteComponents
                 )
             )
         }
 
-        getReadWriteComponents() {
+        get readWriteComponents() {
             return e('div', null,
                 e('button', {
                     style: {...readWriteButtonStyle, left: '3%'},
@@ -107,51 +116,50 @@ function main() {
         }
 
         createTab(tabName) {
-            this.tabNameList.push(tabName);
-
             let {smoothingValues} = this.state;
             smoothingValues[tabName] = 10;
             this.setState({smoothingValues});
 
-            return e('div', null, 
-                e('div', {style: tabHeaderStyle},
-                    e('button', {
-                        style: {
-                            ...tabButtonStyle,
-                            backgroundColor: colorTheme.darkgray1
-                        },
-                        id: tabName,
-                        onClick: () => {this.switchTab(tabName)}
-                        },
-                        e('text', {style: textStyle.S}, tabName)
-                    )
+            return {
+                tab: e('button', {
+                    style: {
+                        ...tabButtonStyle,
+                        backgroundColor: colorTheme.darkgray1
+                    },
+                    id: tabName,
+                    onClick: () => {this.switchTab(tabName)}
+                    },
+                    e('text', {style: textStyle.S}, tabName)
                 ),
-                e('div', (this.state.currentTab != tabName) && {style: {display: 'none'}},
+                window: e('div', {
+                        style: {display: 'none'},
+                        id: (tabName + "W")
+                    },
                     e('div', {style: smoothTabStyle},
                         e('text', {style: textStyle.S}, "Smoothing"),
                         e('input', {
                             style: {...textInputStyle, marginLeft: '5px'},
                             type: 'number',
-                            min: 0,
-                            max: 20,
-                            placeholder: 10,
-                            onChange: e => this.changeSmooth(e.target.value)
+                            min: smooth.min,
+                            max: smooth.max,
+                            placeholder: smooth.default,
+                            onChange: e => this.changeSmooth.bind(this)
                         })
                     ),
-                    e('div', {style: triggerWindowStyle},
-                    )
+                    e('div', {style: triggerWindowStyle})
                 )
-            )
+            }
         }
 
         switchTab(tabName) {
             this.setState({currentTab: tabName});
-
-            this.tabNameList.forEach(tab => {
+            this.commandList.forEach(tab => {
                 document.getElementById(tab).style.backgroundColor = colorTheme.darkgray1
+                console.log(document.getElementById(tab + "W"))
             });
 
             document.getElementById(tabName).style.backgroundColor = colorTheme.lightgray1
+            //document.getElementById(tabName + "Window").style.display = 'inline'
         }
 
         changeSmooth(value) {
@@ -159,12 +167,12 @@ function main() {
             let targetValue = parseInt(value);
 
             if(isNaN(targetValue)) {
-                smoothingValues[this.state.currentTab] = 10;
+                smoothingValues[this.state.currentTab] = smooth.default;
                 this.setState({smoothingValues});
                 return;
             }
 
-            if(targetValue < 0 || targetValue > 20) {
+            if(targetValue < smooth.min || targetValue > smooth.max) {
                 return;
             }
             

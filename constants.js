@@ -1,3 +1,11 @@
+/* Misc Constants */
+
+const smooth = {
+    min: 0,
+    max: 20,
+    default: 10
+}
+
 /* React Style Constants */
 
 const colorTheme = {
