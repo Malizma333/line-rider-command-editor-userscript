@@ -1,9 +1,28 @@
-/* Numerical Constants */
+/* Window Constants */
+
+const commitTrackChanges = () => ({
+    type: 'COMMIT_TRACK_CHANGES'
+})
+
+const revertTrackChanges = () => ({
+    type: 'REVERT_TRACK_CHANGES'
+})
+
+const getSimulatorCommittedTrack = state => state.simulator.committedEngine
+
+/* Value Constants */
 
 const smooth = {
     min: 0,
     max: 20,
     default: 10
+}
+
+const commandDataTypes = {
+    "Zoom": [[0,0,0], 2], 
+    "Camera Pan": [[0,0,0], {w: 0.4, h: 0.4, x: 0, y: 0}], 
+    "Camera Focus": [[0,0,0], [1]], 
+    "Time Remap": [[0,0,0], 1]
 }
 
 /* Style Constants */

@@ -32,20 +32,27 @@ function main() {
             this.state = {
                 active: true, //false
                 errorMessage: "...",
-                hasError: false
+                hasError: false,
+                activeTab: null,
+                smoothValues: {}
             }
 
-            this.commandEditor = new CommandEditor({
-                "Zoom": [[0,0,0], 2], 
-                "Camera Pan": [[0,0,0], {w: 0.4, h: 0.4, x: 0, y: 0}], 
-                "Camera Focus": [[0,0,0], [1]], 
-                "Time Remap": [[0,0,0], 1]
-            });
+            this.commandEditor = new CommandEditor(store, this.state)
 
             store.subscribeImmediate(() => {
-                /*this.commandEditor.switchEditor(
-                    this.commandEditorManager.getActiveEditorName
-                );*/
+                const commands = Object.keys(commandDataTypes);
+
+                if(commands.length == 0) {
+                    return;
+                }
+
+                this.onSwitchTab(commands[0]);
+
+                commands.forEach(command => {
+                    const smoothing = {...this.state.smoothValues};
+                    smoothing[command] = smooth.default;
+                    this.setState({smoothValues: smoothing});
+                });
             })
         }
 
@@ -53,25 +60,111 @@ function main() {
             Object.assign(commandEditorParent.style, parentStyle);
         }
 
-        render() {
-            return e('div', this.state.active && {style: expandedWindow},
-                e('button', {
-                        style: expandCollapseButtonStyle,
-                        onClick: this.onActivate.bind(this)
-                    },
-                    e('text', {style: textStyle.L},
-                        this.state.active ? "-" : "+"
-                    )
-                ),
-                e('div', !this.state.active && {style: {display: 'none'}},
-                    //this.commandEditorManager.getTabs,
-                    //this.commandEditorManager.getActiveWindow,
-                    this.readWriteComponents
-                )
+        componentWillUpdate (nextProps, nextState) {
+            this.commandEditor.onUpdate(nextState)
+        }
+
+        onRead() {
+            console.log("Read");
+        }
+        
+        onCommit() {
+            console.log("Commit");
+        }
+
+        onActivate() {
+            if(this.state.active) {
+                this.setState({active: false});
+            } else {
+                this.setState({active: true});
+            }
+        }
+
+        onSwitchTab(tabName) {
+            this.setState({activeTab: tabName});
+        }
+        
+        onChangeSmooth(value) {
+            let targetValue = parseInt(value);
+    
+            if(isNaN(targetValue)) {
+                const smoothing = {...this.state.smoothValues};
+                smoothing[this.state.activeTab] = smooth.default;
+                this.setState({smoothValues: smoothing});
+                return;
+            }
+    
+            if(targetValue < smooth.min || targetValue > smooth.max) {
+                return;
+            }
+    
+            const smoothing = {...this.state.smoothValues};
+            smoothing[this.state.activeTab] = targetValue;
+            this.setState({smoothValues: smoothing});
+        }
+
+        renderTab(tabName) {
+            return e('button', {
+                style: {
+                    ...tabButtonStyle,
+                    backgroundColor:
+                        this.state.activeTab === tabName ? 
+                        colorTheme.lightgray1 :
+                        colorTheme.darkgray1
+                },
+                onClick: () => {
+                    this.onSwitchTab(tabName)
+                }
+                },
+                e('text', {style: textStyle.S}, tabName)
             )
         }
 
-        get readWriteComponents() {
+        renderWindow(tabName) {
+            return e('div', {
+                style: {
+                    /*display:
+                        this.state.activeTab === tabName ?
+                        'none' :
+                        'inline'
+                        */
+                    },
+                },
+                e('div', {style: smoothTabStyle},
+                    e('text', {style: textStyle.S}, "Smoothing"),
+                    e('input', {
+                        style: {...textInputStyle, marginLeft: '5px'},
+                        type: 'number',
+                        min: smooth.min,
+                        max: smooth.max,
+                        placeholder: smooth.default,
+                        value: this.state.smoothValues[this.state.activeTab],
+                        onChange: e => {
+                            this.onChangeSmooth(e.target.value)
+                        }
+                    })
+                ),
+                e('div', {style: triggerWindowStyle})
+            )
+        }
+
+        renderTabComponents() {
+            return e('div', {style: tabHeaderStyle},
+                Object.keys(
+                    commandDataTypes
+                ).map(commandName => {
+                    return e('div', null,
+                        this.renderTab(commandName)
+                    )
+                })
+            );
+        }
+
+        renderWindowComponents() {
+            return this.renderWindow(this.state.activeTab);
+        }
+
+        renderReadWriteComponents() {
             return e('div', null,
                 e('button', {
                     style: {...readWriteButtonStyle, left: '3%'},
@@ -96,20 +189,22 @@ function main() {
             )
         }
 
-        onRead() {
-            console.log("Read");
-        }
-        
-        onCommit() {
-            console.log("Commit");
-        }
-
-        onActivate() {
-            if(this.state.active) {
-                this.setState({active: false});
-            } else {
-                this.setState({active: true});
-            }
+        render() {
+            return e('div', this.state.active && {style: expandedWindow},
+                e('button', {
+                        style: expandCollapseButtonStyle,
+                        onClick: this.onActivate.bind(this)
+                    },
+                    e('text', {style: textStyle.L},
+                        this.state.active ? "-" : "+"
+                    )
+                ),
+                e('div', !this.state.active && {style: {display: 'none'}},
+                    this.renderTabComponents(),
+                    this.renderWindowComponents(),
+                    this.renderReadWriteComponents()
+                )
+            )
         }
     }
 
