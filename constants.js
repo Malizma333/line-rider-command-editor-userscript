@@ -1,12 +1,4 @@
-/* Misc Constants */
-
-const {
-    React,
-    ReactDOM,
-    store
-} = window;
-
-const e = React.createElement;
+/* Numerical Constants */
 
 const smooth = {
     min: 0,
@@ -14,7 +6,7 @@ const smooth = {
     default: 10
 }
 
-/* React Style Constants */
+/* Style Constants */
 
 const colorTheme = {
     black: '#000000',

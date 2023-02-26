@@ -4,6 +4,14 @@ const getPlayerRunning = state => state.player.running;
 function main() {
     window.V2 = window.V2 || window.store.getState().simulator.engine.engine.state.startPoint.constructor;
     
+    const {
+        React,
+        ReactDOM,
+        store
+    } = window;
+    
+    const e = React.createElement;
+
     var playerRunning = getPlayerRunning(store.getState());
     var windowFocused = getWindowFocused(store.getState());
 
@@ -17,17 +25,17 @@ function main() {
         commandEditorParent.style.pointerEvents = shouldBeVisible ? null : 'none';
     })
 
-    class CommandEditorContainer extends React.Component {
+    class CommandEditorComponent extends React.Component {
         constructor () {
             super();
 
             this.state = {
-                active: true,
+                active: true, //false
                 errorMessage: "...",
                 hasError: false
             }
 
-            this.commandEditorManager = new CommandEditorManager({
+            this.commandEditor = new CommandEditor({
                 "Zoom": [[0,0,0], 2], 
                 "Camera Pan": [[0,0,0], {w: 0.4, h: 0.4, x: 0, y: 0}], 
                 "Camera Focus": [[0,0,0], [1]], 
@@ -35,9 +43,9 @@ function main() {
             });
 
             store.subscribeImmediate(() => {
-                this.commandEditorManager.switchEditor(
+                /*this.commandEditor.switchEditor(
                     this.commandEditorManager.getActiveEditorName
-                );
+                );*/
             })
         }
 
@@ -56,8 +64,8 @@ function main() {
                     )
                 ),
                 e('div', !this.state.active && {style: {display: 'none'}},
-                    this.commandEditorManager.getTabs,
-                    this.commandEditorManager.getActiveWindow,
+                    //this.commandEditorManager.getTabs,
+                    //this.commandEditorManager.getActiveWindow,
                     this.readWriteComponents
                 )
             )
@@ -110,7 +118,7 @@ function main() {
     document.getElementById('content').appendChild(commandEditorParent);
 
     ReactDOM.render(
-        e(CommandEditorContainer),
+        e(CommandEditorComponent),
         commandEditorParent
     )
 }

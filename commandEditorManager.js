@@ -1,3 +1,4 @@
+/*
 class CommandEditorManager {
     constructor(commandData) {
         this.commandData = commandData;
@@ -48,13 +49,13 @@ class CommandEditorManager {
     switchEditor(editorName) {
         this.activeEditorName = editorName;
         this.commandEditorComponents["Zoom"].setActive(true);
-        /*Object.keys(
+        Object.keys(
             this.commandEditorComponents
         ).forEach(commandEditorName => {
             this.commandEditorComponents[commandEditorName].setActive(
                 commandEditorName === this.activeEditorName
             )
-        })*/
+        })
     }
 
     changeSmoothing(value) {
@@ -72,3 +73,4 @@ class CommandEditorManager {
         commandEditors[this.activeEditorName].setSmoothing = targetValue;
     }
 }
+*/

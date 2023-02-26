@@ -1,3 +1,4 @@
+/*
 class CommandEditorComponent {
     constructor(key, templateData, manager) {
         this.name = key;
@@ -15,8 +16,6 @@ class CommandEditorComponent {
         this.setActive(value);
         console.log(this.isActive);
     }
-    
-    /*
 
     get tabComponent() {
         return e('button', {
@@ -58,6 +57,5 @@ class CommandEditorComponent {
             e('div', {style: triggerWindowStyle})
         )
     }
-
-    */
 }
+*/
