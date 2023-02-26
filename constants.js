@@ -1,5 +1,13 @@
 /* Misc Constants */
 
+const {
+    React,
+    ReactDOM,
+    store
+} = window;
+
+const e = React.createElement;
+
 const smooth = {
     min: 0,
     max: 20,
@@ -71,6 +79,7 @@ const readWriteButtonStyle = {
 }
 
 const tabHeaderStyle = {
+    display: 'flex',
     left: '5%',
     position: 'absolute',
     top: '25px'

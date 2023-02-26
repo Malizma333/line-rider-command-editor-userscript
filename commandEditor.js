@@ -1,14 +1,15 @@
 class CommandEditor {
-    constructor(key, template, uiComponent) {
-        this.keyName = key;
-        this.triggerTemplate = template;
+    constructor(key, templateData, manager) {
+        this.name = key;
+        this.triggerTemplate = templateData;
+        this.manager = manager;
+
         this.smoothingValue = 10;
-        this.uiComponent = uiComponent;
         this.triggerObjectStorage = [this.template];
     }
 
     get key() {
-        return this.keyName;
+        return this.name;
     }
 
     get smoothing() {
@@ -17,14 +18,6 @@ class CommandEditor {
 
     set setSmoothing(value) {
         this.smoothingValue = value;
-    }
-
-    get tabComponent() {
-        return this.uiComponent.tab;
-    }
-
-    get windowComponent() {
-        return this.uiComponent.window;
     }
 
     createTrigger() {

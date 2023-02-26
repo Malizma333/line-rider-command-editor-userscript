@@ -4,13 +4,6 @@ const getPlayerRunning = state => state.player.running;
 function main() {
     window.V2 = window.V2 || window.store.getState().simulator.engine.engine.state.startPoint.constructor;
     
-    const {
-        React,
-        ReactDOM,
-        store
-    } = window;
-
-    const e = React.createElement;
     var playerRunning = getPlayerRunning(store.getState());
     var windowFocused = getWindowFocused(store.getState());
 
@@ -30,27 +23,22 @@ function main() {
 
             this.state = {
                 active: true,
-                currentTab: "Zoom",
                 errorMessage: "...",
-                hasError: false,
-                smoothingValues: {}
+                hasError: false
             }
 
-            store.subscribeImmediate(() => {
-                this.switchTab(this.state.currentTab);
-            })
-
-            this.commandList = ["Zoom", "Camera Pan", "Camera Focus", "Time Remap"]
-            this.commandEditors = []
-
-            this.commandList.forEach(command => {
-                let commandEditor = new CommandEditor(
-                    command,
-                    [[0,0,0], 2],
-                    this.createTab(command)
-                )
-                this.commandEditors.push(commandEditor)
+            this.commandEditorManager = new CommandEditorManager({
+                "Zoom": [[0,0,0], 2], 
+                "Camera Pan": [[0,0,0], {w: 0.4, h: 0.4, x: 0, y: 0}], 
+                "Camera Focus": [[0,0,0], [1]], 
+                "Time Remap": [[0,0,0], 1]
             });
+
+            store.subscribeImmediate(() => {
+                this.commandEditorManager.switchEditor(
+                    this.commandEditorManager.getActiveEditorName
+                );
+            })
         }
 
         componentDidMount() {
@@ -68,15 +56,8 @@ function main() {
                     )
                 ),
                 e('div', !this.state.active && {style: {display: 'none'}},
-                    e('div', {style: tabHeaderStyle},
-                        this.commandEditors.map((command) => (
-                            command.tabComponent
-                        ))
-                    ),
-                    /*this.commandEditors.map((command) => (
-                        command.windowComponent
-                    )),*/
-                    this.commandEditors[0].windowComponent,
+                    this.commandEditorManager.getTabs,
+                    this.commandEditorManager.getActiveWindow,
                     this.readWriteComponents
                 )
             )
@@ -113,71 +94,6 @@ function main() {
         
         onCommit() {
             console.log("Commit");
-        }
-
-        createTab(tabName) {
-            let {smoothingValues} = this.state;
-            smoothingValues[tabName] = 10;
-            this.setState({smoothingValues});
-
-            return {
-                tab: e('button', {
-                    style: {
-                        ...tabButtonStyle,
-                        backgroundColor: colorTheme.darkgray1
-                    },
-                    id: tabName,
-                    onClick: () => {this.switchTab(tabName)}
-                    },
-                    e('text', {style: textStyle.S}, tabName)
-                ),
-                window: e('div', {
-                        style: {display: 'none'},
-                        id: (tabName + "W")
-                    },
-                    e('div', {style: smoothTabStyle},
-                        e('text', {style: textStyle.S}, "Smoothing"),
-                        e('input', {
-                            style: {...textInputStyle, marginLeft: '5px'},
-                            type: 'number',
-                            min: smooth.min,
-                            max: smooth.max,
-                            placeholder: smooth.default,
-                            onChange: e => this.changeSmooth.bind(this)
-                        })
-                    ),
-                    e('div', {style: triggerWindowStyle})
-                )
-            }
-        }
-
-        switchTab(tabName) {
-            this.setState({currentTab: tabName});
-            this.commandList.forEach(tab => {
-                document.getElementById(tab).style.backgroundColor = colorTheme.darkgray1
-                console.log(document.getElementById(tab + "W"))
-            });
-
-            document.getElementById(tabName).style.backgroundColor = colorTheme.lightgray1
-            //document.getElementById(tabName + "Window").style.display = 'inline'
-        }
-
-        changeSmooth(value) {
-            let {smoothingValues} = this.state;
-            let targetValue = parseInt(value);
-
-            if(isNaN(targetValue)) {
-                smoothingValues[this.state.currentTab] = smooth.default;
-                this.setState({smoothingValues});
-                return;
-            }
-
-            if(targetValue < smooth.min || targetValue > smooth.max) {
-                return;
-            }
-            
-            smoothingValues[this.state.currentTab] = targetValue;
-            this.setState({smoothingValues});
         }
 
         onActivate() {
