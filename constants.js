@@ -121,6 +121,7 @@ const tabHeaderStyle = {
 
 const tabButtonStyle = {
     border: '2px solid black',
+    borderBottom: '0px solid black',
     borderTopLeftRadius: '8px',
     borderTopRightRadius: '8px',
     height: '30px'
@@ -130,6 +131,7 @@ const smoothTabStyle = {
     alignItems: 'center',
     backgroundColor: colorTheme.lightgray1,
     border: '2px solid black',
+    borderBottom: '0px solid black',
     display: 'flex',
     height: '30px',
     justifyContent: 'center',
@@ -142,7 +144,6 @@ const smoothTabStyle = {
 const triggerWindowStyle = {
     backgroundColor: colorTheme.white,
     border: '2px solid black',
-    borderTop: null,
     direction: 'rtl',
     height: '60%',
     left: '5%',

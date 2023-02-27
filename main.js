@@ -28,29 +28,40 @@ function main() {
 
             this.state = {
                 active: true, //false
+                activeTab: null,
                 errorMessage: "...",
                 hasError: false,
-                activeTab: null,
-                smoothValues: {}
+                initialized: false,
+                triggerData: {}
             }
 
             this.commandEditor = new CommandEditor(store, this.state)
 
             store.subscribeImmediate(() => {
-                const commands = Object.keys(commandDataTypes);
+                // setState is asynchronous, wait for all the initial states to finish for safety
 
-                if(commands.length == 0) {
-                    return;
-                }
-
-                this.onSwitchTab(commands[0]);
-
-                commands.forEach(command => {
-                    const smoothing = {...this.state.smoothValues};
-                    smoothing[command] = smooth.default;
-                    this.setState({smoothValues: smoothing});
-                });
+                this.initializeState().then(() => {
+                    this.setState({initialized: true})
+                })
             })
+        }
+
+        async initializeState() {
+            const commands = Object.keys(commandDataTypes);
+
+            if(commands.length == 0) {
+                return;
+            }
+
+            this.onSwitchTab(commands[0]);
+
+            commands.forEach(command => {
+                const data = {...this.state.triggerData};
+                data[command] = {};
+                data[command].smoothing = smooth.default;
+                data[command].triggers = [];
+                this.setState({triggerData: data});
+            });
         }
 
         componentDidMount() {
@@ -88,9 +99,9 @@ function main() {
             let targetValue = parseInt(value);
     
             if(isNaN(targetValue)) {
-                const smoothing = {...this.state.smoothValues};
-                smoothing[this.state.activeTab] = smooth.default;
-                this.setState({smoothValues: smoothing});
+                const smoothing = {...this.state.triggerData};
+                smoothing[this.state.activeTab].smoothing = smooth.default;
+                this.setState({triggerData: smoothing});
                 return;
             }
     
@@ -98,25 +109,25 @@ function main() {
                 return;
             }
     
-            const smoothing = {...this.state.smoothValues};
-            smoothing[this.state.activeTab] = targetValue;
-            this.setState({smoothValues: smoothing});
+            const smoothing = {...this.state.triggerData};
+            smoothing[this.state.activeTab].smoothing = targetValue;
+            this.setState({triggerData: smoothing});
         }
 
-        renderTrigger(index, data) {
+        /*renderZoomTrigger(index, data) {
             return e('div', {style: triggerStyle},
                 e('text', {style: textStyle.L}, index),
                 Object.keys(data).map(dataInput => {
                     return e('text', {
                         style: {
-                            ...textStyle.M,
+                            ...textStyle.S,
                             padding: '5px'
                         }}, 
                         dataInput.toUpperCase()
                     )
                 })
             )
-        }
+        }*/
 
         renderTab(tab) {
             return e('button', {
@@ -145,17 +156,14 @@ function main() {
                         min: smooth.min,
                         max: smooth.max,
                         placeholder: smooth.default,
-                        value: this.state.smoothValues[this.state.activeTab],
+                        value: this.state.triggerData[this.state.activeTab].smoothing,
                         onChange: e => {
                             this.onChangeSmooth(e.target.value)
                         }
                     })
                 ),
                 e('div', {style: triggerWindowStyle}, 
-                    this.renderTrigger(1, {
-                        "Time": "{}:{}.{}",
-                        "Zoom To": "{}"
-                    })
+                    //this.renderZoomTrigger()
                 )
             )
         }
@@ -202,7 +210,8 @@ function main() {
         }
 
         render() {
-            return e('div', this.state.active && {style: expandedWindow},
+            return this.state.initialized && 
+            e('div', this.state.active && {style: expandedWindow},
                 e('button', {
                         style: expandCollapseButtonStyle,
                         onClick: this.onActivate.bind(this)
