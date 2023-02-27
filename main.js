@@ -103,9 +103,18 @@ function main() {
             this.setState({smoothValues: smoothing});
         }
 
-        renderTrigger() {
+        renderTrigger(index, data) {
             return e('div', {style: triggerStyle},
-                e('text', {style: textStyle.L}, "1")
+                e('text', {style: textStyle.L}, index),
+                Object.keys(data).map(dataInput => {
+                    return e('text', {
+                        style: {
+                            ...textStyle.M,
+                            padding: '5px'
+                        }}, 
+                        dataInput.toUpperCase()
+                    )
+                })
             )
         }
 
@@ -143,7 +152,10 @@ function main() {
                     })
                 ),
                 e('div', {style: triggerWindowStyle}, 
-                    this.renderTrigger()
+                    this.renderTrigger(1, {
+                        "Time": "{}:{}.{}",
+                        "Zoom To": "{}"
+                    })
                 )
             )
         }
