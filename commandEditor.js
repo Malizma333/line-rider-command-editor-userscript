@@ -5,8 +5,7 @@ class CommandEditor {
 
         this.changed = false
 
-        this.smoothingValue = 10;
-        this.triggerObjectStorage = [this.template];
+        this.script = this.store.getState().trackData.script;
 
         store.subscribeImmediate(() => {
             this.onUpdate()
@@ -52,44 +51,27 @@ class CommandEditor {
             shouldUpdate = true
         }
   
-        const track = getSimulatorCommittedTrack(this.store.getState())
+        const script = getCurrentScript(this.store.getState())
   
-        if (this.track !== track) {
-            this.track = track
+        if (this.script !== script) {
+            this.script = script
             shouldUpdate = true
         }
   
-        if (shouldUpdate) {
-            if (this.changed) {
-                this.store.dispatch(revertTrackChanges())
-                this.changed = false
-            }
-  
-            if(this.state.active) {
-
-                console.log("Update");
-
-                // Read from script window
-                // Write to script window
-
-                /*
-                let myLines = [];
-                for (let { p1, p2 } of genLines(this.state)) {
-                    myLines.push({
-                        x1: p1.x,
-                        y1: p1.y,
-                        x2: p2.x,
-                        y2: p2.y,
-                        type: 2
-                    })
-                }
-  
-                if (myLines.length > 0) {
-                    this.store.dispatch(addLines(myLines))
-                    this.changed = true
-                }
-                */
-            }
+        if (!shouldUpdate) {
+            return;
         }
+        
+        if (this.changed) {
+            this.store.dispatch(revertTrackChanges())
+            this.changed = false
+        }
+
+        if(!this.state.active) {
+            return;
+        }
+
+        //this.store.dispatch(setTrackScript("TEST"));
+        //this.changed = true;
     }
 }

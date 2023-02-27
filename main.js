@@ -1,6 +1,3 @@
-const getWindowFocused = state => state.views.Main;
-const getPlayerRunning = state => state.player.running;
-
 function main() {
     window.V2 = window.V2 || window.store.getState().simulator.engine.engine.state.startPoint.constructor;
     
@@ -69,7 +66,10 @@ function main() {
         }
         
         onCommit() {
-            console.log("Commit");
+            const committed = this.commandEditor.commit();
+            if (committed) {
+                this.setState({active: false})
+            }
         }
 
         onActivate() {
@@ -103,33 +103,31 @@ function main() {
             this.setState({smoothValues: smoothing});
         }
 
-        renderTab(tabName) {
+        renderTrigger() {
+            return e('div', {style: triggerStyle},
+                e('text', {style: textStyle.L}, "1")
+            )
+        }
+
+        renderTab(tab) {
             return e('button', {
                 style: {
                     ...tabButtonStyle,
                     backgroundColor:
-                        this.state.activeTab === tabName ? 
+                        this.state.activeTab === tab ? 
                         colorTheme.lightgray1 :
                         colorTheme.darkgray1
                 },
                 onClick: () => {
-                    this.onSwitchTab(tabName)
+                    this.onSwitchTab(tab)
                 }
                 },
-                e('text', {style: textStyle.S}, tabName)
+                e('text', {style: textStyle.S}, commandDataTypes[tab].name)
             )
         }
 
         renderWindow(tabName) {
-            return e('div', {
-                style: {
-                    /*display:
-                        this.state.activeTab === tabName ?
-                        'none' :
-                        'inline'
-                        */
-                    },
-                },
+            return e('div', null,
                 e('div', {style: smoothTabStyle},
                     e('text', {style: textStyle.S}, "Smoothing"),
                     e('input', {
@@ -144,7 +142,9 @@ function main() {
                         }
                     })
                 ),
-                e('div', {style: triggerWindowStyle})
+                e('div', {style: triggerWindowStyle}, 
+                    this.renderTrigger()
+                )
             )
         }
 
@@ -152,9 +152,9 @@ function main() {
             return e('div', {style: tabHeaderStyle},
                 Object.keys(
                     commandDataTypes
-                ).map(commandName => {
+                ).map(command => {
                     return e('div', null,
-                        this.renderTab(commandName)
+                        this.renderTab(command)
                     )
                 })
             );

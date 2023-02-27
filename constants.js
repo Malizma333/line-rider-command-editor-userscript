@@ -8,7 +8,14 @@ const revertTrackChanges = () => ({
     type: 'REVERT_TRACK_CHANGES'
 })
 
-const getSimulatorCommittedTrack = state => state.simulator.committedEngine
+const setTrackScript = (script) => ({
+    type: 'SET_TRACK_SCRIPT',
+    payload: script
+})
+
+const getCurrentScript = state => state.trackData.script;
+const getWindowFocused = state => state.views.Main;
+const getPlayerRunning = state => state.player.running;
 
 /* Value Constants */
 
@@ -19,10 +26,26 @@ const smooth = {
 }
 
 const commandDataTypes = {
-    "Zoom": [[0,0,0], 2], 
-    "Camera Pan": [[0,0,0], {w: 0.4, h: 0.4, x: 0, y: 0}], 
-    "Camera Focus": [[0,0,0], [1]], 
-    "Time Remap": [[0,0,0], 1]
+    Zoom: {
+        name: "Zoom",
+        template: [[0,0,0], 2],
+        header: "getAutoZoom=createZoomer([{}],{})"
+    },
+    CameraPan: {
+        name: "Camera Pan",
+        template: [[0,0,0], {w: 0.4, h: 0.4, x: 0, y: 0}],
+        header: "getCamBounds=createBoundsPanner([{}],{})"
+    },
+    CameraFocus: {
+        name: "Camera Focus",
+        template: [[0,0,0], [1]],
+        header: "getCamFocus=createFocuser([{}],{})"
+    },
+    TimeRemap: {
+        name: "Time Remap",
+        template: [[0,0,0], 1],
+        header: "timeRemapper=createTimeRemapper([{}],{})"
+    }
 }
 
 /* Style Constants */
@@ -119,6 +142,7 @@ const smoothTabStyle = {
 const triggerWindowStyle = {
     backgroundColor: colorTheme.white,
     border: '2px solid black',
+    borderTop: null,
     direction: 'rtl',
     height: '60%',
     left: '5%',
@@ -149,4 +173,14 @@ const textInputStyle = {
     overflow: 'hidden',
     textAlign: 'center',
     width: '40px'
+}
+
+const triggerStyle = {
+    alignItems: 'center',
+    backgroundColor: colorTheme.gray,
+    border: '2px solid black',
+    direction: 'ltr',
+    display: 'flex',
+    padding: '10px',
+    width: '100%'
 }
