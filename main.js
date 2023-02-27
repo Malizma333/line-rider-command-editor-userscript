@@ -40,13 +40,21 @@ function main() {
             store.subscribeImmediate(() => {
                 // setState is asynchronous, wait for all the initial states to finish for safety
 
-                this.initializeState().then(() => {
+                this.onInitializeState().then(() => {
                     this.setState({initialized: true})
                 })
             })
         }
 
-        async initializeState() {
+        componentDidMount() {
+            Object.assign(commandEditorParent.style, parentStyle);
+        }
+
+        componentWillUpdate (nextProps, nextState) {
+            this.commandEditor.onUpdate(nextState)
+        }
+
+        async onInitializeState() {
             const commands = Object.keys(commandDataTypes);
 
             if(commands.length == 0) {
@@ -62,14 +70,6 @@ function main() {
                 data[command].triggers = [];
                 this.setState({triggerData: data});
             });
-        }
-
-        componentDidMount() {
-            Object.assign(commandEditorParent.style, parentStyle);
-        }
-
-        componentWillUpdate (nextProps, nextState) {
-            this.commandEditor.onUpdate(nextState)
         }
 
         onRead() {
@@ -114,9 +114,9 @@ function main() {
             this.setState({triggerData: smoothing});
         }
 
-        /*renderZoomTrigger(index, data) {
+        renderZoomTrigger(index, data) {
             return e('div', {style: triggerStyle},
-                e('text', {style: textStyle.L}, index),
+                e('text', {style: textStyle.L}, (index + 1)),
                 Object.keys(data).map(dataInput => {
                     return e('text', {
                         style: {
@@ -127,7 +127,7 @@ function main() {
                     )
                 })
             )
-        }*/
+        }
 
         renderTab(tab) {
             return e('button', {
@@ -163,7 +163,7 @@ function main() {
                     })
                 ),
                 e('div', {style: triggerWindowStyle}, 
-                    //this.renderZoomTrigger()
+                    tabName == "Zoom" && this.renderZoomTrigger(0, {})
                 )
             )
         }
