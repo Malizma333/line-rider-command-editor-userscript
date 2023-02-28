@@ -119,7 +119,51 @@ function main() {
             this.setState({triggerData: smoothing});
         }
 
-        /* TODO: Reformat into general purpose trigger view */
+        renderZoomLayout(data) {
+            return e('div', null,
+               e('text', {
+                    style: {...textStyle.M,
+                        padding: '5px'
+                    }},
+                    "ZOOM TO"
+                ),
+                e('input', {
+                    style: triggerText,
+                    min: -50,
+                    max: 50,
+                    value: data[1],
+                    onChange: (e) => console.log(e.target.value)
+                })
+            )
+        }
+
+        renderCameraPanLayout(data) {
+            return e('div', {style:{
+                border: '1px solid red',
+                display: 'flex',
+                position: 'absolute'
+            }},
+                Object.keys(data[1]).map((prop, i) => {
+                    return e('div', {style:{
+                        border: '1px solid blue'
+                    }}, 
+                        e('text', {
+                            style: {...textStyle.M,
+                                padding: '5px'
+                            }},
+                            prop.toUpperCase()
+                        ),
+                        e('input', {
+                            style: triggerText,
+                            min: [0, 0, -50, -50][i],
+                            max: [1, 1, 50, 50][i],
+                            value: data[1][prop],
+                            onChange: (e) => console.log(e.target.value)
+                        })
+                    )
+                })
+            )
+        }
 
         renderTrigger(type, index, data) {
             return e('div', {
@@ -148,19 +192,8 @@ function main() {
                         })
                     )
                 }),
-                /*e('text', {
-                    style: {...textStyle.M,
-                        padding: '5px'
-                    }},
-                    "ZOOM TO"
-                ),
-                e('input', {
-                    style: triggerInput,
-                    min: -50,
-                    max: 50,
-                    value: data[1],
-                    onChange: (e) => console.log(e.target.value)
-                }),*/
+                type == "Zoom" && this.renderZoomLayout(data),
+                type == "CameraPan" && this.renderCameraPanLayout(data),
                 e('button', {
                     style: {...squareButtonStyle,
                         position: 'absolute',
