@@ -69,7 +69,7 @@ const textStyle = {
         fontWeight: 'bold'
     },
     M: {
-        fontSize: '24px',
+        fontSize: '22px',
         fontWeight: 'bold'
     },
     L: {

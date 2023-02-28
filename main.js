@@ -41,6 +41,7 @@ function main() {
                 // setState is asynchronous, wait for all the initial states to finish for safety
 
                 this.onInitializeState().then(() => {
+                    //console.log(this.state);
                     this.setState({initialized: true})
                 })
             })
@@ -67,7 +68,7 @@ function main() {
                 const data = {...this.state.triggerData};
                 data[command] = {};
                 data[command].smoothing = smooth.default;
-                data[command].triggers = [];
+                data[command].triggers = [commandDataTypes[command].template];
                 this.setState({triggerData: data});
             });
         }
@@ -116,16 +117,37 @@ function main() {
 
         renderZoomTrigger(index, data) {
             return e('div', {style: triggerStyle},
-                e('text', {style: textStyle.L}, (index + 1)),
-                Object.keys(data).map(dataInput => {
-                    return e('text', {
-                        style: {
-                            ...textStyle.S,
-                            padding: '5px'
-                        }}, 
-                        dataInput.toUpperCase()
+                e('text', {
+                    style: {
+                        ...textStyle.L,
+                        paddingRight: '5px'
+                    }},
+                    (index + 1)),
+                data[0].map((val, i) => {
+                    return e('div', null,
+                        e('text', {
+                            style: {
+                                ...textStyle.M,
+                                padding: '3px'
+                            }},
+                            ["TIME", ":", "."][i]
+                        ),
+                        e('input', {
+                            style: {
+                                ...textStyle.M,
+                                height: '2ch',
+                                padding: '3px',
+                                textAlign: 'right',
+                                width: '3ch'
+                            },
+                            min: 1,
+                            max: 99,
+                            value: val,
+                            onChange: (e) => console.log(e.target.value)
+                        })
                     )
-                })
+                }),
+                
             )
         }
 
@@ -146,7 +168,7 @@ function main() {
             )
         }
 
-        renderWindow(tabName) {
+        renderWindow(triggerData) {
             return e('div', null,
                 e('div', {style: smoothTabStyle},
                     e('text', {style: textStyle.S}, "Smoothing"),
@@ -156,14 +178,16 @@ function main() {
                         min: smooth.min,
                         max: smooth.max,
                         placeholder: smooth.default,
-                        value: this.state.triggerData[this.state.activeTab].smoothing,
+                        value: triggerData.smoothing,
                         onChange: e => {
                             this.onChangeSmooth(e.target.value)
                         }
                     })
                 ),
-                e('div', {style: triggerWindowStyle}, 
-                    tabName == "Zoom" && this.renderZoomTrigger(0, {})
+                e('div', {style: triggerWindowStyle},
+                    Object.keys(triggerData.triggers).map(i => {
+                        return this.renderZoomTrigger(0, triggerData.triggers[i])
+                    })
                 )
             )
         }
@@ -181,7 +205,7 @@ function main() {
         }
 
         renderWindowComponents() {
-            return this.renderWindow(this.state.activeTab);
+            return this.renderWindow(this.state.triggerData[this.state.activeTab]);
         }
 
         renderReadWriteComponents() {
