@@ -95,7 +95,7 @@ const expandedWindow = {
     width: '575px'
 }
 
-const expandCollapseButtonStyle = {
+const squareButtonStyle = {
     backgroundColor: '#ffffff00',
     border: 'none',
     height: '35px',
@@ -178,14 +178,15 @@ const textInputStyle = {
 
 const triggerStyle = {
     alignItems: 'center',
-    border: '2px solid black',
+    borderBottom: '2px solid black',
+    borderLeft: '2px solid black',
     direction: 'ltr',
     display: 'flex',
     padding: '10px',
     width: '100%'
 }
 
-const triggerInput = {
+const triggerText = {
     fontSize: '22px',
     fontWeight: 'bold',
     height: '2ch',

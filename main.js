@@ -129,29 +129,26 @@ function main() {
                 e('text', {
                     style: {...textStyle.L,
                         paddingRight: '10px'
-                    }},
-                    (parseInt(index) + 1)),
-                data[0].map((val, i) => {
+                    }
+                }, parseInt(index) + 1),
+                data[0].map((timeValue, timeIndex) => {
                     return e('div', null,
-                        e('text', {
-                            style: {...textStyle.M,
-                                padding: '5px'
-                            }},
-                            ["TIME", ":", "."][i]
+                        e('text', {style: triggerText},
+                            ["TIME", ":", ":"][timeIndex]
                         ),
                         e('input', {
-                            style: {...triggerInput,
+                            style: {...triggerText,
                                 backgroundColor: index == 0 ? colorTheme.darkgray2 : colorTheme.white
                             },
                             disabled: index == 0,
                             min: 1,
                             max: 99,
-                            value: val,
+                            value: timeValue,
                             onChange: (e) => console.log(e.target.value)
                         })
                     )
                 }),
-                e('text', {
+                /*e('text', {
                     style: {...textStyle.M,
                         padding: '5px'
                     }},
@@ -163,9 +160,9 @@ function main() {
                     max: 50,
                     value: data[1],
                     onChange: (e) => console.log(e.target.value)
-                }),
+                }),*/
                 e('button', {
-                    style: {...expandCollapseButtonStyle,
+                    style: {...squareButtonStyle,
                         position: 'absolute',
                         right: '5px'
                     },
@@ -273,7 +270,7 @@ function main() {
             return this.state.initialized && 
             e('div', this.state.active && {style: expandedWindow},
                 e('button', {
-                        style: expandCollapseButtonStyle,
+                        style: squareButtonStyle,
                         onClick: this.onActivate.bind(this)
                     },
                     e('text', {style: textStyle.L},
