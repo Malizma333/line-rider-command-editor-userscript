@@ -165,6 +165,24 @@ function main() {
             )
         }
 
+        renderTimeRemapLayout(data) {
+            return e('div', null,
+               e('text', {
+                    style: {...textStyle.M,
+                        padding: '5px'
+                    }},
+                    "TIME SCALE"
+                ),
+                e('input', {
+                    style: triggerText,
+                    min: 0.01,
+                    max: 50,
+                    value: data[1],
+                    onChange: (e) => console.log(e.target.value)
+                })
+            )
+        }
+
         renderTrigger(type, index, data) {
             return e('div', {
                 style: {...triggerStyle,
@@ -194,6 +212,7 @@ function main() {
                 }),
                 type == "Zoom" && this.renderZoomLayout(data),
                 type == "CameraPan" && this.renderCameraPanLayout(data),
+                type == "TimeRemap" && this.renderTimeRemapLayout(data),
                 e('button', {
                     style: {...squareButtonStyle,
                         position: 'absolute',
