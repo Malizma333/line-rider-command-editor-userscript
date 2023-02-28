@@ -67,8 +67,12 @@ function main() {
             commands.forEach(command => {
                 const data = {...this.state.triggerData};
                 data[command] = {};
+                data[command].id = command;
                 data[command].smoothing = smooth.default;
-                data[command].triggers = [commandDataTypes[command].template];
+                data[command].triggers = [
+                    commandDataTypes[command].template, 
+                    commandDataTypes[command].template
+                ];
                 this.setState({triggerData: data});
             });
         }
@@ -115,31 +119,35 @@ function main() {
             this.setState({triggerData: smoothing});
         }
 
+        /* TODO: Reformat into general purpose trigger view */
+
         renderZoomTrigger(index, data) {
-            return e('div', {style: triggerStyle},
+            return e('div', {
+                style: {...triggerStyle,
+                    backgroundColor: index == 0 ? colorTheme.gray : colorTheme.white
+                }},
                 e('text', {
-                    style: {
-                        ...textStyle.L,
-                        paddingRight: '5px'
+                    style: {...textStyle.L,
+                        paddingRight: '10px'
                     }},
-                    (index + 1)),
+                    (parseInt(index) + 1)),
                 data[0].map((val, i) => {
                     return e('div', null,
                         e('text', {
-                            style: {
-                                ...textStyle.M,
-                                padding: '3px'
+                            style: {...textStyle.M,
+                                padding: '5px'
                             }},
                             ["TIME", ":", "."][i]
                         ),
                         e('input', {
-                            style: {
-                                ...textStyle.M,
+                            style: {...textStyle.M,
+                                backgroundColor: index == 0 ? colorTheme.darkgray2 : colorTheme.white,
                                 height: '2ch',
-                                padding: '3px',
+                                padding: '5px',
                                 textAlign: 'right',
                                 width: '3ch'
                             },
+                            disabled: index == 0,
                             min: 1,
                             max: 99,
                             value: val,
@@ -147,14 +155,44 @@ function main() {
                         })
                     )
                 }),
-                
+                e('text', {
+                    style: {...textStyle.M,
+                        padding: '5px'
+                    }},
+                    "ZOOM TO"
+                ),
+                e('input', {
+                    style: {...textStyle.M,
+                        height: '2ch',
+                        padding: '5px',
+                        textAlign: 'right',
+                        width: '3ch'
+                    },
+                    min: -50,
+                    max: 50,
+                    value: data[1],
+                    onChange: (e) => console.log(e.target.value)
+                }),
+                e('button', {
+                    style: {...expandCollapseButtonStyle,
+                        position: 'absolute',
+                        right: '5px'
+                    },
+                    disabled: index == 0,
+                    onClick: () => console.log("Delete " + index)
+                },
+                e('text', {
+                    style: {...textStyle.M,
+                        color: index == 0 ? colorTheme.darkgray2 : colorTheme.black,
+                        fontWeight: 900
+                    }}, "X")
+                )
             )
         }
 
         renderTab(tab) {
             return e('button', {
-                style: {
-                    ...tabButtonStyle,
+                style: {...tabButtonStyle,
                     backgroundColor:
                         this.state.activeTab === tab ? 
                         colorTheme.lightgray1 :
@@ -173,7 +211,9 @@ function main() {
                 e('div', {style: smoothTabStyle},
                     e('text', {style: textStyle.S}, "Smoothing"),
                     e('input', {
-                        style: {...textInputStyle, marginLeft: '5px'},
+                        style: {...textInputStyle,
+                            marginLeft: '5px'
+                        },
                         type: 'number',
                         min: smooth.min,
                         max: smooth.max,
@@ -186,7 +226,8 @@ function main() {
                 ),
                 e('div', {style: triggerWindowStyle},
                     Object.keys(triggerData.triggers).map(i => {
-                        return this.renderZoomTrigger(0, triggerData.triggers[i])
+                        console.log(triggerData.id);
+                        return this.renderZoomTrigger(i, triggerData.triggers[i])
                     })
                 )
             )
@@ -211,21 +252,24 @@ function main() {
         renderReadWriteComponents() {
             return e('div', null,
                 e('button', {
-                    style: {...readWriteButtonStyle, left: '3%'},
+                    style: {...readWriteButtonStyle,
+                        left: '3%'
+                    },
                     onClick: this.onRead.bind(this)
                 },
                 e('text', {style: textStyle.M}, "Read"),
                 ),
                 e('button', {
-                    style: {...readWriteButtonStyle, right: '3%'},
+                    style: {...readWriteButtonStyle,
+                        right: '3%'
+                    },
                     onClick: this.onCommit.bind(this)
                 },
                 e('text', {style: textStyle.M}, "Commit")
                 ),
                 e('div', {style: errorContainerStyle},
                     e('text', {
-                        style: {
-                            ...textStyle.M,
+                        style: {...textStyle.M,
                             color: this.state.hasError ? "Red" : "Black"
                         }
                     }, this.state.errorMessage)

@@ -178,7 +178,6 @@ const textInputStyle = {
 
 const triggerStyle = {
     alignItems: 'center',
-    backgroundColor: colorTheme.gray,
     border: '2px solid black',
     direction: 'ltr',
     display: 'flex',
