@@ -184,3 +184,12 @@ const triggerStyle = {
     padding: '10px',
     width: '100%'
 }
+
+const triggerInput = {
+    fontSize: '22px',
+    fontWeight: 'bold',
+    height: '2ch',
+    padding: '5px',
+    textAlign: 'right',
+    width: '3ch'
+}

@@ -121,7 +121,7 @@ function main() {
 
         /* TODO: Reformat into general purpose trigger view */
 
-        renderZoomTrigger(index, data) {
+        renderTrigger(type, index, data) {
             return e('div', {
                 style: {...triggerStyle,
                     backgroundColor: index == 0 ? colorTheme.gray : colorTheme.white
@@ -140,12 +140,8 @@ function main() {
                             ["TIME", ":", "."][i]
                         ),
                         e('input', {
-                            style: {...textStyle.M,
-                                backgroundColor: index == 0 ? colorTheme.darkgray2 : colorTheme.white,
-                                height: '2ch',
-                                padding: '5px',
-                                textAlign: 'right',
-                                width: '3ch'
+                            style: {...triggerInput,
+                                backgroundColor: index == 0 ? colorTheme.darkgray2 : colorTheme.white
                             },
                             disabled: index == 0,
                             min: 1,
@@ -162,12 +158,7 @@ function main() {
                     "ZOOM TO"
                 ),
                 e('input', {
-                    style: {...textStyle.M,
-                        height: '2ch',
-                        padding: '5px',
-                        textAlign: 'right',
-                        width: '3ch'
-                    },
+                    style: triggerInput,
                     min: -50,
                     max: 50,
                     value: data[1],
@@ -226,8 +217,7 @@ function main() {
                 ),
                 e('div', {style: triggerWindowStyle},
                     Object.keys(triggerData.triggers).map(i => {
-                        console.log(triggerData.id);
-                        return this.renderZoomTrigger(i, triggerData.triggers[i])
+                        return this.renderTrigger(triggerData.id, i, triggerData.triggers[i])
                     })
                 )
             )
@@ -246,7 +236,9 @@ function main() {
         }
 
         renderWindowComponents() {
-            return this.renderWindow(this.state.triggerData[this.state.activeTab]);
+            return this.renderWindow(
+                this.state.triggerData[this.state.activeTab]
+            );
         }
 
         renderReadWriteComponents() {
