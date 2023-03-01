@@ -71,6 +71,7 @@ function main() {
                 data[command].smoothing = smooth.default;
                 data[command].triggers = [
                     commandDataTypes[command].template, 
+                    commandDataTypes[command].template,
                     commandDataTypes[command].template
                 ];
                 this.setState({triggerData: data});
@@ -170,6 +171,36 @@ function main() {
             )
         }
 
+        renderCameraFocusLayout(data) {
+            return e('div', null,
+                e('select', {
+                    style: {...triggerText,
+                        width: '120px',
+                        height: '3ch'
+                    },
+                    maxMenuHeight : 100,
+                    value: 0,
+                    onChange: e => console.log(e.target.value)
+                },
+                Object.keys(data[1]).map(riderIndex => {
+                    return e('option', {
+                        style: {...triggerText,
+                            textAlign: 'center'
+                        },
+                        value: parseInt(riderIndex)
+                    }, e('text', null, `Rider ${1 + parseInt(riderIndex)}`))
+                })),
+                e('text', {style: triggerText}, "WEIGHT"),
+                e('input', {
+                    style: triggerText,
+                    min: 0,
+                    max: 1,
+                    value: data[1][0],
+                    onChange: (e) => console.log(e.target.value)
+                })
+            )
+        }
+
         renderTrigger(type, index, data) {
             return e('div', {
                 style: {...triggerStyle,
@@ -219,6 +250,7 @@ function main() {
                 ),
                 type == "Zoom" && this.renderZoomLayout(data),
                 type == "CameraPan" && this.renderCameraPanLayout(data),
+                type == "CameraFocus" && this.renderCameraFocusLayout(data),
                 type == "TimeRemap" && this.renderTimeRemapLayout(data),
             )
         }
