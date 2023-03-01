@@ -177,11 +177,9 @@ const textInputStyle = {
 }
 
 const triggerStyle = {
-    alignItems: 'center',
     borderBottom: '2px solid black',
     borderLeft: '2px solid black',
     direction: 'ltr',
-    display: 'flex',
     padding: '10px',
     width: '100%'
 }

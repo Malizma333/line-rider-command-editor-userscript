@@ -113,7 +113,7 @@ function main() {
             if(targetValue < smooth.min || targetValue > smooth.max) {
                 return;
             }
-    
+
             const smoothing = {...this.state.triggerData};
             smoothing[this.state.activeTab].smoothing = targetValue;
             this.setState({triggerData: smoothing});
@@ -141,7 +141,7 @@ function main() {
             return e('div', {style:{
                 border: '1px solid red',
                 display: 'flex',
-                position: 'absolute'
+                overflow: 'auto'
             }},
                 Object.keys(data[1]).map((prop, i) => {
                     return e('div', {style:{
@@ -151,7 +151,7 @@ function main() {
                             style: {...textStyle.M,
                                 padding: '5px'
                             }},
-                            prop.toUpperCase()
+                            ["WIDTH", "HEIGHT", "X OFFSET", "Y OFFSET"][i]
                         ),
                         e('input', {
                             style: triggerText,
@@ -188,45 +188,51 @@ function main() {
                 style: {...triggerStyle,
                     backgroundColor: index == 0 ? colorTheme.gray : colorTheme.white
                 }},
-                e('text', {
-                    style: {...textStyle.L,
-                        paddingRight: '10px'
-                    }
-                }, parseInt(index) + 1),
-                data[0].map((timeValue, timeIndex) => {
-                    return e('div', null,
-                        e('text', {style: triggerText},
-                            ["TIME", ":", ":"][timeIndex]
-                        ),
-                        e('input', {
-                            style: {...triggerText,
-                                backgroundColor: index == 0 ? colorTheme.darkgray2 : colorTheme.white
-                            },
-                            disabled: index == 0,
-                            min: 1,
-                            max: 99,
-                            value: timeValue,
-                            onChange: (e) => console.log(e.target.value)
-                        })
+                e('div', {
+                    style: {
+                        alignItems: 'center',
+                        display: 'flex'
+                    }},
+                    e('text', {
+                        style: {...textStyle.L,
+                            paddingRight: '10px'
+                        }
+                    }, parseInt(index) + 1),
+                    data[0].map((timeValue, timeIndex) => {
+                        return e('div', null,
+                            e('text', {style: triggerText},
+                                ["TIME", ":", ":"][timeIndex]
+                            ),
+                            e('input', {
+                                style: {...triggerText,
+                                    backgroundColor: index == 0 ? colorTheme.darkgray2 : colorTheme.white
+                                },
+                                disabled: index == 0,
+                                min: 1,
+                                max: 99,
+                                value: timeValue,
+                                onChange: (e) => console.log(e.target.value)
+                            })
+                        )
+                    }),
+                    e('button', {
+                        style: {...squareButtonStyle,
+                            position: 'absolute',
+                            right: '10px'
+                        },
+                        disabled: index == 0,
+                        onClick: () => console.log("Delete " + index)
+                    },
+                    e('text', {
+                        style: {...textStyle.M,
+                            color: index == 0 ? colorTheme.darkgray2 : colorTheme.black,
+                            fontWeight: 900
+                        }}, "X")
                     )
-                }),
+                ),
                 type == "Zoom" && this.renderZoomLayout(data),
                 type == "CameraPan" && this.renderCameraPanLayout(data),
                 type == "TimeRemap" && this.renderTimeRemapLayout(data),
-                e('button', {
-                    style: {...squareButtonStyle,
-                        position: 'absolute',
-                        right: '5px'
-                    },
-                    disabled: index == 0,
-                    onClick: () => console.log("Delete " + index)
-                },
-                e('text', {
-                    style: {...textStyle.M,
-                        color: index == 0 ? colorTheme.darkgray2 : colorTheme.black,
-                        fontWeight: 900
-                    }}, "X")
-                )
             )
         }
 
