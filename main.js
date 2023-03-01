@@ -121,12 +121,7 @@ function main() {
 
         renderZoomLayout(data) {
             return e('div', null,
-               e('text', {
-                    style: {...textStyle.M,
-                        padding: '5px'
-                    }},
-                    "ZOOM TO"
-                ),
+                e('text', {style: triggerText}, "ZOOM TO"),
                 e('input', {
                     style: triggerText,
                     min: -50,
@@ -137,19 +132,29 @@ function main() {
             )
         }
 
+        renderTimeRemapLayout(data) {
+            return e('div', null,
+                e('text', {style: triggerText}, "TIME SCALE"),
+                e('input', {
+                    style: triggerText,
+                    min: 0.01,
+                    max: 50,
+                    value: data[1],
+                    onChange: (e) => console.log(e.target.value)
+                })
+            )
+        }
+
         renderCameraPanLayout(data) {
-            return e('div', {style:{
-                border: '1px solid red',
-                display: 'flex',
-                overflow: 'auto'
-            }},
+            return e('div', null,
                 Object.keys(data[1]).map((prop, i) => {
-                    return e('div', {style:{
-                        border: '1px solid blue'
+                    return e('div', {style: {
+                        alignItems: 'center',
+                        display: 'inline'
                     }}, 
                         e('text', {
-                            style: {...textStyle.M,
-                                padding: '5px'
+                            style: {...triggerText,
+                                padding: '8px'
                             }},
                             ["WIDTH", "HEIGHT", "X OFFSET", "Y OFFSET"][i]
                         ),
@@ -161,24 +166,6 @@ function main() {
                             onChange: (e) => console.log(e.target.value)
                         })
                     )
-                })
-            )
-        }
-
-        renderTimeRemapLayout(data) {
-            return e('div', null,
-               e('text', {
-                    style: {...textStyle.M,
-                        padding: '5px'
-                    }},
-                    "TIME SCALE"
-                ),
-                e('input', {
-                    style: triggerText,
-                    min: 0.01,
-                    max: 50,
-                    value: data[1],
-                    onChange: (e) => console.log(e.target.value)
                 })
             )
         }
@@ -300,7 +287,7 @@ function main() {
             return e('div', null,
                 e('button', {
                     style: {...readWriteButtonStyle,
-                        left: '3%'
+                        left: '18px'
                     },
                     onClick: this.onRead.bind(this)
                 },
@@ -308,7 +295,7 @@ function main() {
                 ),
                 e('button', {
                     style: {...readWriteButtonStyle,
-                        right: '3%'
+                        right: '18px'
                     },
                     onClick: this.onCommit.bind(this)
                 },

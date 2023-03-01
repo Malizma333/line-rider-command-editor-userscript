@@ -190,5 +190,5 @@ const triggerText = {
     height: '2ch',
     padding: '5px',
     textAlign: 'right',
-    width: '3ch'
+    width: '4ch'
 }
