@@ -185,7 +185,7 @@ const triggerStyle = {
 }
 
 const triggerText = {
-    fontSize: '22px',
+    fontSize: '24px',
     fontWeight: 'bold',
     height: '2ch',
     padding: '5px',

@@ -133,29 +133,16 @@ function main() {
             )
         }
 
-        renderTimeRemapLayout(data) {
-            return e('div', null,
-                e('text', {style: triggerText}, "TIME SCALE"),
-                e('input', {
-                    style: triggerText,
-                    min: 0.01,
-                    max: 50,
-                    value: data[1],
-                    onChange: (e) => console.log(e.target.value)
-                })
-            )
-        }
-
         renderCameraPanLayout(data) {
             return e('div', null,
                 Object.keys(data[1]).map((prop, i) => {
                     return e('div', {style: {
                         alignItems: 'center',
-                        display: 'inline'
+                        display: 'inline-block'
                     }}, 
                         e('text', {
                             style: {...triggerText,
-                                padding: '8px'
+                                //padding: '8px'
                             }},
                             ["WIDTH", "HEIGHT", "X OFFSET", "Y OFFSET"][i]
                         ),
@@ -196,6 +183,19 @@ function main() {
                     min: 0,
                     max: 1,
                     value: data[1][0],
+                    onChange: (e) => console.log(e.target.value)
+                })
+            )
+        }
+
+        renderTimeRemapLayout(data) {
+            return e('div', null,
+                e('text', {style: triggerText}, "TIME SCALE"),
+                e('input', {
+                    style: triggerText,
+                    min: 0.01,
+                    max: 50,
+                    value: data[1],
                     onChange: (e) => console.log(e.target.value)
                 })
             )
