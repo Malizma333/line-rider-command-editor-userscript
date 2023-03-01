@@ -226,7 +226,7 @@ function main() {
                                     backgroundColor: index == 0 ? colorTheme.darkgray2 : colorTheme.white
                                 },
                                 disabled: index == 0,
-                                min: 1,
+                                min: 0,
                                 max: 99,
                                 value: timeValue,
                                 onChange: (e) => console.log(e.target.value)
@@ -265,8 +265,7 @@ function main() {
                 },
                 onClick: () => {
                     this.onSwitchTab(tab)
-                }
-                },
+                }},
                 e('text', {style: textStyle.S}, commandDataTypes[tab].name)
             )
         }
@@ -292,7 +291,19 @@ function main() {
                 e('div', {style: triggerWindowStyle},
                     Object.keys(triggerData.triggers).map(i => {
                         return this.renderTrigger(triggerData.id, i, triggerData.triggers[i])
-                    })
+                    }),
+                    e('button', {
+                        style: {...squareButtonStyle,
+                            position: 'absolute',
+                            right: '10px'
+                        },
+                        onClick: () => console.log("Add " + triggerData.triggers.length)
+                    },
+                    e('text', {
+                        style: {...textStyle.L,
+                            fontWeight: 900
+                        }}, "+")
+                    )
                 )
             )
         }
