@@ -69,8 +69,8 @@ function main() {
                     id: command,
                     smoothing: smooth.default,
                     triggers: [
-                        commandDataTypes[command].template,
-                        commandDataTypes[command].template,
+                        //commandDataTypes[command].template,
+                        //commandDataTypes[command].template,
                         commandDataTypes[command].template
                     ]
                 };
@@ -140,10 +140,7 @@ function main() {
                         alignItems: 'center',
                         display: 'inline-block'
                     }}, 
-                        e('text', {
-                            style: {...triggerText,
-                                //padding: '8px'
-                            }},
+                        e('text', {style: triggerText},
                             ["WIDTH", "HEIGHT", "X OFFSET", "Y OFFSET"][i]
                         ),
                         e('input', {
@@ -292,17 +289,26 @@ function main() {
                     Object.keys(triggerData.triggers).map(i => {
                         return this.renderTrigger(triggerData.id, i, triggerData.triggers[i])
                     }),
-                    e('button', {
-                        style: {...squareButtonStyle,
-                            position: 'absolute',
-                            right: '10px'
+                    e('div', {
+                        style: {
+                            borderLeft: '2px solid black',
+                            minHeight: '1px',
+                            overflow: 'hidden',
+                            width: '100%'
+                        }},
+                        e('button', {
+                            style: {...squareButtonStyle,
+                                position: 'relative',
+                                right: '10px',
+                                bottom: '4.5px'
+                            },
+                            onClick: () => console.log("Add " + triggerData.triggers.length)
                         },
-                        onClick: () => console.log("Add " + triggerData.triggers.length)
-                    },
-                    e('text', {
-                        style: {...textStyle.L,
-                            fontWeight: 900
-                        }}, "+")
+                        e('text', {
+                            style: {...textStyle.L,
+                                fontWeight: 900
+                            }}, "+")
+                        )
                     )
                 )
             )
