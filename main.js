@@ -69,8 +69,8 @@ function main() {
                     id: command,
                     smoothing: smooth.default,
                     triggers: [
-                        //commandDataTypes[command].template,
-                        //commandDataTypes[command].template,
+                        commandDataTypes[command].template,
+                        commandDataTypes[command].template,
                         commandDataTypes[command].template
                     ]
                 };
@@ -289,26 +289,18 @@ function main() {
                     Object.keys(triggerData.triggers).map(i => {
                         return this.renderTrigger(triggerData.id, i, triggerData.triggers[i])
                     }),
-                    e('div', {
-                        style: {
-                            borderLeft: '2px solid black',
-                            minHeight: '1px',
-                            overflow: 'hidden',
-                            width: '100%'
-                        }},
-                        e('button', {
-                            style: {...squareButtonStyle,
-                                position: 'relative',
-                                right: '10px',
-                                bottom: '4.5px'
-                            },
-                            onClick: () => console.log("Add " + triggerData.triggers.length)
+                    e('button', {
+                        style: {...squareButtonStyle,
+                            position: 'relative',
+                            right: '10px',
+                            bottom: '4.5px'
                         },
-                        e('text', {
-                            style: {...textStyle.L,
-                                fontWeight: 900
-                            }}, "+")
-                        )
+                        onClick: () => console.log("Add " + triggerData.triggers.length)
+                    },
+                    e('text', {
+                        style: {...textStyle.L,
+                            fontWeight: 900
+                        }}, "+")
                     )
                 )
             )
