@@ -41,7 +41,6 @@ function main() {
                 // setState is asynchronous, wait for all the initial states to finish for safety
 
                 this.onInitializeState().then(() => {
-                    //console.log(this.state);
                     this.setState({initialized: true})
                 })
             })
@@ -66,14 +65,15 @@ function main() {
 
             commands.forEach(command => {
                 const data = {...this.state.triggerData};
-                data[command] = {};
-                data[command].id = command;
-                data[command].smoothing = smooth.default;
-                data[command].triggers = [
-                    commandDataTypes[command].template, 
-                    commandDataTypes[command].template,
-                    commandDataTypes[command].template
-                ];
+                data[command] = {
+                    id: command,
+                    smoothing: smooth.default,
+                    triggers: [
+                        commandDataTypes[command].template,
+                        commandDataTypes[command].template,
+                        commandDataTypes[command].template
+                    ]
+                };
                 this.setState({triggerData: data});
             });
         }
@@ -84,7 +84,7 @@ function main() {
         
         onCommit() {
             const committed = this.commandEditor.commit();
-            if (committed) {
+            if(committed) {
                 this.setState({active: false})
             }
         }
