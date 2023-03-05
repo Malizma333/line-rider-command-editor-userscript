@@ -192,6 +192,7 @@ const checkboxStyle = {
 const checkedCheckboxStyle = {
     backgroundColor: '#000',
     height: '12px',
+    pointerEvents: 'none',
     position: 'absolute',
     right: '18px',
     top: '6px',
