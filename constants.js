@@ -9,13 +9,14 @@ const revertTrackChanges = () => ({
 })
 
 const setTrackScript = (script) => ({
-    type: 'SET_TRACK_SCRIPT',
+    type: 'trackData/SET_TRACK_SCRIPT',
     payload: script
 })
 
-const getCurrentScript = state => state.trackData.script;
 const getWindowFocused = state => state.views.Main;
 const getPlayerRunning = state => state.player.running;
+
+const getCurrentScript = state => state.trackData.script;
 
 /* Value Constants */
 

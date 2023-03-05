@@ -12,7 +12,7 @@ class CommandEditor {
         })
     }
 
-    commit() {
+    commitScript() {
         if(this.changed) {
             this.store.dispatch(commitTrackChanges());
             this.store.dispatch(revertTrackChanges());
@@ -21,36 +21,33 @@ class CommandEditor {
         }
     }
 
-    onUpdate(nextState = this.state) {
+    onUpdate (nextState = this.state) {
         let shouldUpdate = false
-  
+
         if (this.state !== nextState) {
-            this.state = nextState;
-            //shouldUpdate = true;
-        }
-  
-        const script = getCurrentScript(this.store.getState())
-  
-        if (this.script !== script) {
-            this.script = script;
-            shouldUpdate = true;
-        }
-  
-        if (!shouldUpdate) {
-            return;
-        }
-        
-        if (this.changed) {
-            this.store.dispatch(revertTrackChanges())
-            this.changed = false
+            this.state = nextState
+            shouldUpdate = true
         }
 
-        if(!this.state.active) {
-            return;
+        if (this.state.active) {
+            const script = getCurrentScript(this.store.getState())
+  
+            if (this.script !== script) {
+                this.script = script
+                shouldUpdate = true
+            }
         }
 
-        console.log(this.script);
-        this.store.dispatch(setTrackScript("TEST"));
-        this.changed = true;
+        if (shouldUpdate) {
+            if (this.changed) {
+                this.store.dispatch(revertTrackChanges())
+                this.changed = false
+            }
+
+            if (this.state.active) {
+                //this.store.dispatch(setTrackScript("TEST"))
+                //this.changed = true
+            }
+        }
     }
 }

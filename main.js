@@ -84,7 +84,7 @@ function main() {
         }
         
         onCommit() {
-            const committed = this.commandEditor.commit();
+            const committed = this.commandEditor.commitScript();
             if(committed) {
                 this.setState({active: false})
             }
