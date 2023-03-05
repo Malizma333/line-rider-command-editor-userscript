@@ -275,35 +275,41 @@ function main() {
             )
         }
 
-        renderWindow(triggerData) {
-            return e('div', null,
-                e('div', {style: smoothTabStyle},
-                    e('text', {style: textStyle.S}, "Smoothing"),
-                    triggerData.id !== "TimeRemap" && e('input', {
-                        style: {...textInputStyle,
-                            marginLeft: '5px'
-                        },
-                        type: 'number',
-                        min: smooth.min,
-                        max: smooth.max,
-                        placeholder: smooth.default,
-                        value: triggerData.smoothing,
-                        onChange: e => {
-                            this.onChangeSmooth(e.target.value)
-                        }
-                    }),
-                    triggerData.id === "TimeRemap" && e('input', {
+        renderSmoothTab(data) {
+            return e('div', {style: smoothTabStyle},
+                e('text', {style: textStyle.S}, "Smoothing"),
+                data.id !== "TimeRemap" && e('input', {
+                    style: {...textInputStyle,
+                        marginLeft: '5px'
+                    },
+                    type: 'number',
+                    min: smooth.min,
+                    max: smooth.max,
+                    placeholder: smooth.default,
+                    value: data.smoothing,
+                    onChange: e => {
+                        this.onChangeSmooth(e.target.value)
+                    }
+                }),
+                data.id === "TimeRemap" && e('div', null,
+                    e('input', {
                         style: checkboxStyle,
                         type: 'checkbox',
-                        checked: triggerData.interpolate,
                         onChange: e => {
                             this.onChangeInterpolate()
                         }
-                    })
-                ),
+                    }),
+                    data.interpolate && e('square', {style: checkedCheckboxStyle})
+                )
+            )
+        }
+
+        renderWindow(data) {
+            return e('div', null,
+                this.renderSmoothTab(data),
                 e('div', {style: triggerWindowStyle},
-                    Object.keys(triggerData.triggers).map(i => {
-                        return this.renderTrigger(triggerData.id, i, triggerData.triggers[i])
+                    Object.keys(data.triggers).map(i => {
+                        return this.renderTrigger(data.id, i, data.triggers[i])
                     }),
                     e('button', {
                         style: {...squareButtonStyle,
@@ -311,7 +317,7 @@ function main() {
                             right: '10px',
                             bottom: '4.5px'
                         },
-                        onClick: () => console.log("Add " + triggerData.triggers.length)
+                        onClick: () => console.log("Add " + data.triggers.length)
                     },
                     e('text', {
                         style: {...textStyle.L,

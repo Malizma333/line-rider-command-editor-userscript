@@ -181,12 +181,21 @@ const textInputStyle = {
 }
 
 const checkboxStyle = {
-    /*appearance: 'none',
+    appearance: 'none',
     background: '#FFF',
     border: '2px solid black',
     height: '20px',
     marginLeft: '5px',
-    width: '20px'*/
+    width: '20px'
+}
+
+const checkedCheckboxStyle = {
+    backgroundColor: '#000',
+    height: '12px',
+    position: 'absolute',
+    right: '18px',
+    top: '6px',
+    width: '12px'
 }
 
 const triggerStyle = {
