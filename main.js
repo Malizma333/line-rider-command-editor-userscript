@@ -67,7 +67,8 @@ function main() {
                 const data = {...this.state.triggerData};
                 data[command] = {
                     id: command,
-                    smoothing: smooth.default,
+                    smoothing: command !== "TimeRemap" && smooth.default,
+                    interpolate: command === "TimeRemap" && interpolate.default,
                     triggers: [
                         commandDataTypes[command].template,
                         commandDataTypes[command].template,
@@ -118,6 +119,13 @@ function main() {
             const smoothing = {...this.state.triggerData};
             smoothing[this.state.activeTab].smoothing = targetValue;
             this.setState({triggerData: smoothing});
+        }
+
+        onChangeInterpolate() {
+            const interpolateState = {...this.state.triggerData};
+            interpolateState[this.state.activeTab].interpolate =
+                !interpolateState[this.state.activeTab].interpolate;
+            this.setState({triggerData: interpolateState});
         }
 
         renderZoomLayout(data) {
@@ -271,7 +279,7 @@ function main() {
             return e('div', null,
                 e('div', {style: smoothTabStyle},
                     e('text', {style: textStyle.S}, "Smoothing"),
-                    e('input', {
+                    triggerData.id !== "TimeRemap" && e('input', {
                         style: {...textInputStyle,
                             marginLeft: '5px'
                         },
@@ -282,6 +290,14 @@ function main() {
                         value: triggerData.smoothing,
                         onChange: e => {
                             this.onChangeSmooth(e.target.value)
+                        }
+                    }),
+                    triggerData.id === "TimeRemap" && e('input', {
+                        style: checkboxStyle,
+                        type: 'checkbox',
+                        checked: triggerData.interpolate,
+                        onChange: e => {
+                            this.onChangeInterpolate()
                         }
                     })
                 ),

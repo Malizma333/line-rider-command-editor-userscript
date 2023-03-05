@@ -25,6 +25,10 @@ const smooth = {
     default: 10
 }
 
+const interpolate = {
+    default: true
+}
+
 const commandDataTypes = {
     Zoom: {
         name: "Zoom",
@@ -174,6 +178,15 @@ const textInputStyle = {
     overflow: 'hidden',
     textAlign: 'center',
     width: '40px'
+}
+
+const checkboxStyle = {
+    /*appearance: 'none',
+    background: '#FFF',
+    border: '2px solid black',
+    height: '20px',
+    marginLeft: '5px',
+    width: '20px'*/
 }
 
 const triggerStyle = {
