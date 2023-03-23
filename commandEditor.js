@@ -60,7 +60,7 @@ class CommandEditor {
             let currentHeader = commandDataTypes[command].header
 
             currentHeader = currentHeader.replace(
-                "{1}", JSON.stringify(currentData.triggers[0])
+                "{1}", JSON.stringify(currentData.triggers)
             );
 
             if(command === "TimeRemap") {
