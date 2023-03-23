@@ -12,42 +12,25 @@ class CommandEditor {
         })
     }
 
-    commit() {
-        if(this.changed) {
-            console.log("Commit");
-            this.store.dispatch(commitTrackChanges());
-            this.store.dispatch(revertTrackChanges());
-            this.changed = false;
-            return true;
-        }
+    read() {
+        // Parse script into data
+        console.log(this.script);
     }
 
-    onUpdate(nextState = this.state) {        
-        let shouldUpdate = false
+    commit() {
+        this.store.dispatch(setTrackScript(this.generateScript()));
+    }
 
+    onUpdate(nextState = this.state) {
         if (this.state !== nextState) {
             this.state = nextState
-            shouldUpdate = true
         }
 
         const script = getCurrentScript(this.store.getState())
   
         if (this.script !== script) {
             this.script = script
-            shouldUpdate = true
         }
-
-        if(!shouldUpdate) return;
-
-        if (this.changed) {
-            this.store.dispatch(revertTrackChanges())
-            this.changed = false
-        }
-
-        if(!this.state.active) return;
-
-        this.store.dispatch(setTrackScript(this.generateScript()));
-        this.changed = true;
     }
 
     generateScript() {
@@ -75,8 +58,6 @@ class CommandEditor {
 
             scriptResult += currentHeader;
         });
-
-        console.log(scriptResult);
 
         return scriptResult;
     }

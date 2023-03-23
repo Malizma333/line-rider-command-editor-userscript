@@ -79,15 +79,11 @@ function main() {
         }
 
         onRead() {
-            // Transfer what's in the script data?
-            console.log("Read");
+            this.commandEditor.read();
         }
         
         onCommit() {
-            const committed = this.commandEditor.commit();
-            if(committed) {
-                this.setState({active: false})
-            }
+            this.commandEditor.commit();
         }
 
         onActivate() {
