@@ -27,7 +27,7 @@ function main() {
             super();
 
             this.state = {
-                active: true, //false
+                active: true,
                 activeTab: null,
                 errorMessage: "...",
                 hasError: false,
@@ -36,21 +36,16 @@ function main() {
             }
 
             this.commandEditor = new CommandEditor(store, this.state)
-
-            store.subscribeImmediate(() => {
-                // setState is asynchronous, wait for all the initial states to finish for safety
-
-                this.onInitializeState().then(() => {
-                    this.setState({initialized: true})
-                })
-            })
         }
 
         componentDidMount() {
             Object.assign(commandEditorParent.style, parentStyle);
+            this.onInitializeState().then(() => {
+                this.setState({initialized: true});
+            })
         }
 
-        componentWillUpdate (nextProps, nextState) {
+        componentWillUpdate(nextProps, nextState) {
             this.commandEditor.onUpdate(nextState)
         }
 
@@ -63,28 +58,33 @@ function main() {
 
             this.onSwitchTab(commands[0]);
 
+            const data = {};
+
             commands.forEach(command => {
-                const data = {...this.state.triggerData};
                 data[command] = {
                     id: command,
-                    smoothing: command !== "TimeRemap" && smooth.default,
-                    interpolate: command === "TimeRemap" && interpolate.default,
                     triggers: [
-                        commandDataTypes[command].template,
-                        commandDataTypes[command].template,
                         commandDataTypes[command].template
                     ]
                 };
-                this.setState({triggerData: data});
+
+                if(command === "TimeRemap") {
+                    data[command].interpolate = interpolate.default;
+                } else {
+                    data[command].smoothing = smooth.default;
+                }
             });
+
+            this.setState({triggerData: data});
         }
 
         onRead() {
+            // Transfer what's in the script data?
             console.log("Read");
         }
         
         onCommit() {
-            const committed = this.commandEditor.commitScript();
+            const committed = this.commandEditor.commit();
             if(committed) {
                 this.setState({active: false})
             }
@@ -360,7 +360,7 @@ function main() {
                     style: {...readWriteButtonStyle,
                         right: '18px'
                     },
-                    onClick: this.onCommit.bind(this)
+                    onClick: () => this.onCommit()
                 },
                 e('text', {style: textStyle.M}, "Commit")
                 ),

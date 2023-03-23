@@ -12,8 +12,9 @@ class CommandEditor {
         })
     }
 
-    commitScript() {
+    commit() {
         if(this.changed) {
+            console.log("Commit");
             this.store.dispatch(commitTrackChanges());
             this.store.dispatch(revertTrackChanges());
             this.changed = false;
@@ -21,7 +22,7 @@ class CommandEditor {
         }
     }
 
-    onUpdate (nextState = this.state) {
+    onUpdate(nextState = this.state) {        
         let shouldUpdate = false
 
         if (this.state !== nextState) {
@@ -29,25 +30,54 @@ class CommandEditor {
             shouldUpdate = true
         }
 
-        if (this.state.active) {
-            const script = getCurrentScript(this.store.getState())
+        const script = getCurrentScript(this.store.getState())
   
-            if (this.script !== script) {
-                this.script = script
-                shouldUpdate = true
-            }
+        if (this.script !== script) {
+            this.script = script
+            shouldUpdate = true
         }
 
-        if (shouldUpdate) {
-            if (this.changed) {
-                this.store.dispatch(revertTrackChanges())
-                this.changed = false
+        if(!shouldUpdate) return;
+
+        if (this.changed) {
+            this.store.dispatch(revertTrackChanges())
+            this.changed = false
+        }
+
+        if(!this.state.active) return;
+
+        this.store.dispatch(setTrackScript(this.generateScript()));
+        this.changed = true;
+    }
+
+    generateScript() {
+        let scriptResult = "";
+
+        const commands = Object.keys(commandDataTypes);
+
+        commands.forEach(command => {
+            let currentData = this.state.triggerData[command]
+            let currentHeader = commandDataTypes[command].header
+
+            currentHeader = currentHeader.replace(
+                "{1}", JSON.stringify(currentData.triggers[0])
+            );
+
+            if(command === "TimeRemap") {
+                currentHeader = currentHeader.replace(
+                    "{2}", currentData.interpolate
+                );
+            } else {
+                currentHeader = currentHeader.replace(
+                    "{2}", currentData.smoothing
+                );
             }
 
-            if (this.state.active) {
-                //this.store.dispatch(setTrackScript("TEST"))
-                //this.changed = true
-            }
-        }
+            scriptResult += currentHeader;
+        });
+
+        console.log(scriptResult);
+
+        return scriptResult;
     }
 }
