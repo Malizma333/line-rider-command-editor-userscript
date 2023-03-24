@@ -45,7 +45,9 @@ function main() {
 
             data[this.state.activeTab].triggers = [
                 ...data[this.state.activeTab].triggers,
-                commandDataTypes[this.state.activeTab].template
+                JSON.parse(JSON.stringify(
+                    commandDataTypes[this.state.activeTab].template
+                ))
             ];
 
             this.setState({triggerData: data})
@@ -57,8 +59,15 @@ function main() {
 
         updateTrigger(index, prop, propPath) {
             const data = {...this.state.triggerData}
-            console.log(data[this.state.activeTab].triggers[index]);
-            console.info(propPath, prop);
+            let pointer = data[this.state.activeTab].triggers[index]
+            
+            for(let i = 0; i < propPath.length - 1; i++) {
+                pointer = pointer[propPath[i]]
+            }
+
+            pointer[propPath[propPath.length - 1]] = isNaN(parseInt(prop)) ? prop : parseInt(prop);
+
+            this.setState({triggerData: data});
         }
 
         deleteTrigger(index) {
@@ -88,7 +97,9 @@ function main() {
                 data[command] = {
                     id: command,
                     triggers: [
-                        commandDataTypes[command].template
+                        JSON.parse(JSON.stringify(
+                            commandDataTypes[command].template
+                        ))
                     ]
                 };
 
@@ -184,7 +195,7 @@ function main() {
                     max: 50,
                     value: data[1],
                     onChange: (e) => this.updateTrigger(
-                        index, e.target.value, `1`
+                        index, e.target.value, [1]
                     )
                 })
             )
@@ -206,7 +217,7 @@ function main() {
                             max: [1, 1, 50, 50][i],
                             value: data[1][prop],
                             onChange: (e) => this.updateTrigger(
-                                index, e.target.value, `1.${prop}`
+                                index, e.target.value, [1, prop]
                             )
                         })
                     )
@@ -253,7 +264,7 @@ function main() {
                     max: 50,
                     value: data[1],
                     onChange: (e) => this.updateTrigger(
-                        index, e.target.value, `1`
+                        index, e.target.value, [1]
                     )
                 })
             )
@@ -288,7 +299,7 @@ function main() {
                                 max: 99,
                                 value: timeValue,
                                 onChange: (e) => this.updateTrigger(
-                                    index, e.target.value, `0.${timeIndex}`
+                                    index, e.target.value, [0, timeIndex]
                                 )
                             })
                         )
