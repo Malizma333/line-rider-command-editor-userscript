@@ -22,7 +22,7 @@ class CommandEditor {
         try {
             this.store.dispatch(setTrackScript(this.generateScript()));
             return true;
-        } catch (error) {
+        } catch(error) {
             return false;
         }
     }
@@ -41,7 +41,6 @@ class CommandEditor {
 
     generateScript() {
         let scriptResult = "";
-
         const commands = Object.keys(commandDataTypes);
 
         commands.forEach(command => {
@@ -49,16 +48,16 @@ class CommandEditor {
             let currentHeader = commandDataTypes[command].header
 
             currentHeader = currentHeader.replace(
-                "{1}", JSON.stringify(currentData.triggers)
+                "{0}", JSON.stringify(currentData.triggers)
             );
 
             if(command === "TimeRemap") {
                 currentHeader = currentHeader.replace(
-                    "{2}", currentData.interpolate
+                    "{1}", currentData.interpolate
                 );
             } else {
                 currentHeader = currentHeader.replace(
-                    "{2}", currentData.smoothing
+                    "{1}", currentData.smoothing
                 );
             }
 

@@ -34,22 +34,22 @@ const commandDataTypes = {
     Zoom: {
         name: "Zoom",
         template: [[0,0,0], 2],
-        header: "getAutoZoom=createZoomer({1},{2});"
+        header: "getAutoZoom=createZoomer({0},{1});"
     },
     CameraPan: {
         name: "Camera Pan",
         template: [[0,0,0], {w: 0.4, h: 0.4, x: 0, y: 0}],
-        header: "getCamBounds=createBoundsPanner({1},{2});"
+        header: "getCamBounds=createBoundsPanner({0},{1});"
     },
     CameraFocus: {
         name: "Camera Focus",
         template: [[0,0,0], [1]],
-        header: "getCamFocus=createFocuser({1},{2});"
+        header: "getCamFocus=createFocuser({0},{1});"
     },
     TimeRemap: {
         name: "Time Remap",
         template: [[0,0,0], 1],
-        header: "timeRemapper=createTimeRemapper({1},{2});"
+        header: "timeRemapper=createTimeRemapper({0},{1});"
     }
 }
 
@@ -70,16 +70,19 @@ const colorTheme = {
 
 const textStyle = {
     S: {
+        fontFamily: 'Helvetica',
         fontSize: '14px',
         fontWeight: 'bold'
     },
     M: {
+        fontFamily: 'Helvetica',
         fontSize: '22px',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     L: {
+        fontFamily: 'Helvetica',
         fontSize: '32px',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     }
 }
 
@@ -173,8 +176,7 @@ const errorContainerStyle = {
 
 const textInputStyle = {
     backgroundColor: colorTheme.white,
-    fontSize: '14px',
-    fontWeight: 'bold',
+    ...textStyle.S,
     height: '20px',
     overflow: 'hidden',
     textAlign: 'center',
@@ -209,8 +211,7 @@ const triggerStyle = {
 }
 
 const triggerText = {
-    fontSize: '24px',
-    fontWeight: 'bold',
+    ...textStyle.M,
     height: '2ch',
     padding: '5px',
     textAlign: 'right',
