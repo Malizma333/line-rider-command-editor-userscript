@@ -51,6 +51,16 @@ function main() {
             this.setState({triggerData: data})
         }
 
+        readTrigger(index) {
+            console.log(this.state.triggerData[this.state.activeTab].triggers[index]);
+        }
+
+        updateTrigger(index, prop, propPath) {
+            const data = {...this.state.triggerData}
+            console.log(data[this.state.activeTab].triggers[index]);
+            console.info(propPath, prop);
+        }
+
         deleteTrigger(index) {
             const data = {...this.state.triggerData}
 
@@ -165,7 +175,7 @@ function main() {
             this.commandEditor.onUpdate(nextState)
         }
 
-        renderZoomLayout(data) {
+        renderZoomLayout(data, index) {
             return e('div', null,
                 e('text', {style: triggerText}, "ZOOM TO"),
                 e('input', {
@@ -173,12 +183,14 @@ function main() {
                     min: -50,
                     max: 50,
                     value: data[1],
-                    onChange: (e) => console.log(e.target.value)
+                    onChange: (e) => this.updateTrigger(
+                        index, e.target.value, `1`
+                    )
                 })
             )
         }
 
-        renderCameraPanLayout(data) {
+        renderCameraPanLayout(data, index) {
             return e('div', null,
                 Object.keys(data[1]).map((prop, i) => {
                     return e('div', {style: {
@@ -193,14 +205,16 @@ function main() {
                             min: [0, 0, -50, -50][i],
                             max: [1, 1, 50, 50][i],
                             value: data[1][prop],
-                            onChange: (e) => console.log(e.target.value)
+                            onChange: (e) => this.updateTrigger(
+                                index, e.target.value, `1.${prop}`
+                            )
                         })
                     )
                 })
             )
         }
 
-        renderCameraFocusLayout(data) {
+        renderCameraFocusLayout(data, index) {
             return e('div', null,
                 e('select', {
                     style: {...triggerText,
@@ -230,7 +244,7 @@ function main() {
             )
         }
 
-        renderTimeRemapLayout(data) {
+        renderTimeRemapLayout(data, index) {
             return e('div', null,
                 e('text', {style: triggerText}, "TIME SCALE"),
                 e('input', {
@@ -238,7 +252,9 @@ function main() {
                     min: 0.01,
                     max: 50,
                     value: data[1],
-                    onChange: (e) => console.log(e.target.value)
+                    onChange: (e) => this.updateTrigger(
+                        index, e.target.value, `1`
+                    )
                 })
             )
         }
@@ -271,7 +287,9 @@ function main() {
                                 min: 0,
                                 max: 99,
                                 value: timeValue,
-                                onChange: (e) => console.log(e.target.value)
+                                onChange: (e) => this.updateTrigger(
+                                    index, e.target.value, `0.${timeIndex}`
+                                )
                             })
                         )
                     }),
@@ -290,10 +308,10 @@ function main() {
                         }}, "X")
                     )
                 ),
-                type == "Zoom" && this.renderZoomLayout(data),
-                type == "CameraPan" && this.renderCameraPanLayout(data),
-                type == "CameraFocus" && this.renderCameraFocusLayout(data),
-                type == "TimeRemap" && this.renderTimeRemapLayout(data),
+                type == "Zoom" && this.renderZoomLayout(data, index),
+                type == "CameraPan" && this.renderCameraPanLayout(data, index),
+                type == "CameraFocus" && this.renderCameraFocusLayout(data, index),
+                type == "TimeRemap" && this.renderTimeRemapLayout(data, index),
             )
         }
 
