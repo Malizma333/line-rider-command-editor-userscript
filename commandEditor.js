@@ -15,10 +15,16 @@ class CommandEditor {
     read() {
         // Parse script into data
         console.log(this.script);
+        return true;
     }
 
     commit() {
-        this.store.dispatch(setTrackScript(this.generateScript()));
+        try {
+            this.store.dispatch(setTrackScript(this.generateScript()));
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     onUpdate(nextState = this.state) {

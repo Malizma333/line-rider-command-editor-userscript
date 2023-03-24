@@ -38,16 +38,30 @@ function main() {
             this.commandEditor = new CommandEditor(store, this.state)
         }
 
-        componentDidMount() {
-            Object.assign(commandEditorParent.style, parentStyle);
-            this.onInitializeState().then(() => {
-                this.setState({initialized: true});
-            })
+        /* Triggers */
+
+        createTrigger() {
+            const data = {...this.state.triggerData}
+
+            data[this.state.activeTab].triggers = [
+                ...data[this.state.activeTab].triggers,
+                commandDataTypes[this.state.activeTab].template
+            ];
+
+            this.setState({triggerData: data})
         }
 
-        componentWillUpdate(nextProps, nextState) {
-            this.commandEditor.onUpdate(nextState)
+        deleteTrigger(index) {
+            const data = {...this.state.triggerData}
+
+            data[this.state.activeTab].triggers = data[this.state.activeTab].triggers.filter(
+                (e, i) => {return index != i}
+            );
+
+            this.setState({triggerData: data})
         }
+
+        /* Events */
 
         async onInitializeState() {
             const commands = Object.keys(commandDataTypes);
@@ -79,11 +93,25 @@ function main() {
         }
 
         onRead() {
-            this.commandEditor.read();
+            let read = this.commandEditor.read();
+            if(read) {
+                this.setState({errorMessage: "Success"});
+                this.setState({hasError: false});
+            } else {
+                this.setState({errorMessage: "Error"});
+                this.setState({hasError: true});
+            }
         }
         
         onCommit() {
-            this.commandEditor.commit();
+            let committed = this.commandEditor.commit();
+            if(committed) {
+                this.setState({errorMessage: "Success"});
+                this.setState({hasError: false});
+            } else {
+                this.setState({errorMessage: "Error"});
+                this.setState({hasError: true});
+            }
         }
 
         onActivate() {
@@ -122,6 +150,19 @@ function main() {
             interpolateState[this.state.activeTab].interpolate =
                 !interpolateState[this.state.activeTab].interpolate;
             this.setState({triggerData: interpolateState});
+        }
+
+        /* Renders */
+
+        componentDidMount() {
+            Object.assign(commandEditorParent.style, parentStyle);
+            this.onInitializeState().then(() => {
+                this.setState({initialized: true});
+            })
+        }
+
+        componentWillUpdate(nextProps, nextState) {
+            this.commandEditor.onUpdate(nextState)
         }
 
         renderZoomLayout(data) {
@@ -240,7 +281,7 @@ function main() {
                             right: '10px'
                         },
                         disabled: index == 0,
-                        onClick: () => console.log("Delete " + index)
+                        onClick: () => this.deleteTrigger(index)
                     },
                     e('text', {
                         style: {...textStyle.M,
@@ -313,7 +354,7 @@ function main() {
                             right: '10px',
                             bottom: '4.5px'
                         },
-                        onClick: () => console.log("Add " + data.triggers.length)
+                        onClick: () => this.createTrigger()
                     },
                     e('text', {
                         style: {...textStyle.L,
