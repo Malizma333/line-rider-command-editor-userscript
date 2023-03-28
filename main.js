@@ -405,15 +405,15 @@ function main() {
                         this.onChangeSmooth(e.target.value)
                     }
                 }),
-                data.id === Triggers.TimeRemap && e('div', null,
+                data.id === Triggers.TimeRemap && e('div', {style: checkboxDivStyle},
                     e('input', {
                         style: checkboxStyle,
                         type: 'checkbox',
-                        onChange: e => {
+                        onChange: () => {
                             this.onChangeInterpolate()
                         }
                     }),
-                    data.interpolate && e('square', {style: checkedCheckboxStyle})
+                    data.interpolate && e('square', {style: checkboxFillStyle})
                 )
             )
         }

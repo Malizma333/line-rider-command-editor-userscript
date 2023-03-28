@@ -192,22 +192,29 @@ const textInputStyle = {
     width: '40px'
 }
 
-const checkboxStyle = {
-    appearance: 'none',
-    background: '#FFF',
-    border: '2px solid black',
+const checkboxDivStyle = {
+    alignItems: 'center',
+    display: 'flex',
     height: '20px',
+    justifyContent: 'center',
     marginLeft: '5px',
     width: '20px'
 }
 
-const checkedCheckboxStyle = {
+const checkboxStyle = {
+    appearance: 'none',
+    background: '#FFF',
+    border: '2px solid black',
+    height: '100%',
+    position: 'relative',
+    width: '100%'
+}
+
+const checkboxFillStyle = {
     backgroundColor: '#000',
     height: '12px',
     pointerEvents: 'none',
     position: 'absolute',
-    right: '18px',
-    top: '6px',
     width: '12px'
 }
 
