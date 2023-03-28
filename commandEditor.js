@@ -44,8 +44,6 @@ class CommandEditor {
         if(this.riderCount !== riderCount) {
             this.riderCount = riderCount;
         }
-
-        console.log(this.riderCount);
     }
 
     generateScript() {

@@ -32,13 +32,14 @@ function main() {
                 errorMessage: "...",
                 hasError: false,
                 initialized: false,
-                triggerData: {}
+                triggerData: {},
+                focuserDropdowns: []
             }
 
             this.commandEditor = new CommandEditor(store, this.state)
         }
 
-        /* Triggers */
+        /* Trigger Management */
 
         createTrigger() {
             const data = {...this.state.triggerData}
@@ -51,6 +52,10 @@ function main() {
             ];
 
             this.setState({triggerData: data})
+
+            if(this.state.activeTab == Triggers.CameraFocus) {
+                
+            }
         }
 
         readTrigger(index) {
@@ -103,7 +108,7 @@ function main() {
                     ]
                 };
 
-                if(command === "TimeRemap") {
+                if(command === Triggers.TimeRemap) {
                     data[command].interpolate = interpolate.default;
                 } else {
                     data[command].smoothing = smooth.default;
@@ -111,6 +116,8 @@ function main() {
             });
 
             this.setState({triggerData: data});
+
+            this.setState({focuserDropdowns: [0]});
         }
 
         onRead() {
@@ -324,10 +331,10 @@ function main() {
                         }}, "X")
                     )
                 ),
-                type == "Zoom" && this.renderZoomLayout(data, index),
-                type == "CameraPan" && this.renderCameraPanLayout(data, index),
-                type == "CameraFocus" && this.renderCameraFocusLayout(data, index),
-                type == "TimeRemap" && this.renderTimeRemapLayout(data, index),
+                type == Triggers.Zoom && this.renderZoomLayout(data, index),
+                type == Triggers.CameraPan && this.renderCameraPanLayout(data, index),
+                type == Triggers.CameraFocus && this.renderCameraFocusLayout(data, index),
+                type == Triggers.TimeRemap && this.renderTimeRemapLayout(data, index),
             )
         }
 
@@ -349,7 +356,7 @@ function main() {
         renderSmoothTab(data) {
             return e('div', {style: smoothTabStyle},
                 e('text', {style: textStyle.S}, "Smoothing"),
-                data.id !== "TimeRemap" && e('input', {
+                data.id !== Triggers.TimeRemap && e('input', {
                     style: {...textInputStyle,
                         marginLeft: '5px'
                     },
@@ -362,7 +369,7 @@ function main() {
                         this.onChangeSmooth(e.target.value)
                     }
                 }),
-                data.id === "TimeRemap" && e('div', null,
+                data.id === Triggers.TimeRemap && e('div', null,
                     e('input', {
                         style: checkboxStyle,
                         type: 'checkbox',

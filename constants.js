@@ -22,6 +22,13 @@ const getNumRiders = state => getRiders(state).length;
 
 /* Value Constants */
 
+const Triggers = {
+	Zoom: "Zoom",
+	CameraPan: "CameraPan",
+	CameraFocus: "CameraFocus",
+	TimeRemap: "TimeRemap"
+}
+
 const smooth = {
     min: 0,
     max: 20,
