@@ -6,6 +6,7 @@ class CommandEditor {
         this.changed = false
 
         this.script = getCurrentScript(this.store.getState())
+        this.riderCount = getNumRiders(this.store.getState())
 
         store.subscribeImmediate(() => {
             this.onUpdate()
@@ -37,6 +38,14 @@ class CommandEditor {
         if (this.script !== script) {
             this.script = script
         }
+
+        const riderCount = getNumRiders(this.store.getState());
+
+        if(this.riderCount !== riderCount) {
+            this.riderCount = riderCount;
+        }
+
+        console.log(this.riderCount);
     }
 
     generateScript() {

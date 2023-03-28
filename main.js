@@ -226,6 +226,7 @@ function main() {
         }
 
         renderCameraFocusLayout(data, index) {
+            let n = 0; //Index of rider selected
             return e('div', null,
                 e('select', {
                     style: {...triggerText,
@@ -233,8 +234,10 @@ function main() {
                         height: '3ch'
                     },
                     maxMenuHeight : 100,
-                    value: 0,
-                    onChange: e => console.log(e.target.value)
+                    value: n,
+                    onChange: e => null/*updateTrigger(
+                        index, e.target.value, null
+                    )*/
                 },
                 Object.keys(data[1]).map(riderIndex => {
                     return e('option', {
@@ -249,8 +252,10 @@ function main() {
                     style: triggerText,
                     min: 0,
                     max: 1,
-                    value: data[1][0],
-                    onChange: (e) => console.log(e.target.value)
+                    value: data[1][n],
+                    onChange: (e) => this.updateTrigger(
+                        index, e.target.value, [1, n]
+                    )
                 })
             )
         }
