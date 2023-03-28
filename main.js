@@ -37,6 +37,12 @@ function main() {
             }
 
             this.commandEditor = new CommandEditor(store, this.state)
+
+            store.subscribeImmediate(() => {
+                if(this.state.initialized) {
+                    this.onAdjustDropdown();
+                }
+            })
         }
 
         /* Trigger Management */
@@ -54,12 +60,16 @@ function main() {
             this.setState({triggerData: data})
 
             if(this.state.activeTab == Triggers.CameraFocus) {
-                
+                this.setState({
+                    focuserDropdowns: [...this.state.focuserDropdowns, 0]
+                })
+
+                this.onAdjustDropdown();
             }
         }
 
         readTrigger(index) {
-            console.log(this.state.triggerData[this.state.activeTab].triggers[index]);
+            return {...this.state.triggerData[this.state.activeTab].triggers[index]};
         }
 
         updateTrigger(index, prop, propPath) {
@@ -94,7 +104,7 @@ function main() {
                 return;
             }
 
-            this.onSwitchTab(commands[0]);
+            this.onChangeTab(commands[0]);
 
             const data = {};
 
@@ -150,8 +160,34 @@ function main() {
             }
         }
 
-        onSwitchTab(tabName) {
+        onChangeTab(tabName) {
             this.setState({activeTab: tabName});
+        }
+
+        onChangeDropdown(index, value) {
+            const dropdownData = [...this.state.focuserDropdowns]
+
+            dropdownData[index] = value
+
+            this.setState({focuserDropdowns: dropdownData})
+        }
+
+        onAdjustDropdown() {
+            const data = {...this.state.triggerData}
+            const focusTriggers = data[Triggers.CameraFocus].triggers;
+
+            focusTriggers.forEach((e, i) => {
+                for(let j = focusTriggers[i][1].length; j < this.commandEditor.RiderCount; j++) {
+                    focusTriggers[i][1] = [...focusTriggers[i][1], 0]
+                }
+
+                for(let j = focusTriggers[i][1].length; j > this.commandEditor.RiderCount; j--) {
+                    focusTriggers[i][1] = focusTriggers[i][1].slice(0, -1)
+                }
+            });
+
+            data[Triggers.CameraFocus].triggers = focusTriggers;
+            this.setState({triggerData: data});
         }
         
         onChangeSmooth(value) {
@@ -190,7 +226,7 @@ function main() {
         }
 
         componentWillUpdate(nextProps, nextState) {
-            this.commandEditor.onUpdate(nextState)
+            this.commandEditor.onUpdate(nextState);
         }
 
         renderZoomLayout(data, index) {
@@ -233,7 +269,7 @@ function main() {
         }
 
         renderCameraFocusLayout(data, index) {
-            let n = 0; //Index of rider selected
+            let dropdownIndex = this.state.focuserDropdowns[index];
             return e('div', null,
                 e('select', {
                     style: {...triggerText,
@@ -241,10 +277,10 @@ function main() {
                         height: '3ch'
                     },
                     maxMenuHeight : 100,
-                    value: n,
-                    onChange: e => null/*updateTrigger(
-                        index, e.target.value, null
-                    )*/
+                    value: dropdownIndex,
+                    onChange: e => this.onChangeDropdown(
+                        index, e.target.value
+                    )
                 },
                 Object.keys(data[1]).map(riderIndex => {
                     return e('option', {
@@ -259,9 +295,9 @@ function main() {
                     style: triggerText,
                     min: 0,
                     max: 1,
-                    value: data[1][n],
+                    value: data[1][dropdownIndex],
                     onChange: (e) => this.updateTrigger(
-                        index, e.target.value, [1, n]
+                        index, e.target.value, [1, dropdownIndex]
                     )
                 })
             )
@@ -347,7 +383,7 @@ function main() {
                         colorTheme.darkgray1
                 },
                 onClick: () => {
-                    this.onSwitchTab(tab)
+                    this.onChangeTab(tab)
                 }},
                 e('text', {style: textStyle.S}, commandDataTypes[tab].name)
             )
