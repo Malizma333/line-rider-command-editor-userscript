@@ -2,16 +2,16 @@
 
 const commitTrackChanges = () => ({
     type: 'COMMIT_TRACK_CHANGES'
-})
+});
 
 const revertTrackChanges = () => ({
     type: 'REVERT_TRACK_CHANGES'
-})
+});
 
 const setTrackScript = (script) => ({
     type: 'trackData/SET_TRACK_SCRIPT',
     payload: script
-})
+});
 
 const getWindowFocused = state => state.views.Main;
 const getPlayerRunning = state => state.player.running;
@@ -27,17 +27,17 @@ const Triggers = {
 	CameraPan: "CameraPan",
 	CameraFocus: "CameraFocus",
 	TimeRemap: "TimeRemap"
-}
+};
 
 const smooth = {
     min: 0,
     max: 20,
     default: 10
-}
+};
 
 const interpolate = {
     default: true
-}
+};
 
 const constraintProps = {
     frameProps: {default: 0, min: 0, max: 39, type: "Integer"},
@@ -50,7 +50,7 @@ const constraintProps = {
     hProps: {default: 0.4, min: 0, max: 2, type: "Float"},
     focusProps: {default: 0, min: 0, max: 1, type: "Float"},
     timeProps: {default: 1, min: 0.01, max: 10, type: "Float"}
-}
+};
 
 const commandDataTypes = {
     Zoom: {
@@ -73,7 +73,7 @@ const commandDataTypes = {
         template: [[0,0,0], 1],
         header: "timeRemapper=createTimeRemapper({0},{1});"
     }
-}
+};
 
 /* Style Constants */
 
@@ -88,7 +88,7 @@ const colorTheme = {
     lightgray2: '#efefef',
     lightgray3: '#f3f3f3',
     white: '#ffffff'
-}
+};
 
 const textStyle = {
     S: {
@@ -106,7 +106,7 @@ const textStyle = {
         fontSize: '32px',
         fontWeight: 'bold',
     }
-}
+};
 
 const parentStyle = {
     backgroundColor: colorTheme.lightgray3,
@@ -118,19 +118,19 @@ const parentStyle = {
     pointerEvents: 'none',
     position: 'fixed',
     top: '20px'
-}
+};
 
 const expandedWindow = {
     height: '400px',
     width: '575px'
-}
+};
 
 const squareButtonStyle = {
     backgroundColor: '#ffffff00',
     border: 'none',
     height: '35px',
     width: '35px'
-}
+};
 
 const readWriteButtonStyle = {
     backgroundColor: colorTheme.lightgray1,
@@ -140,14 +140,14 @@ const readWriteButtonStyle = {
     height: '50px',
     position: 'absolute',
     width: '24%'
-}
+};
 
 const tabHeaderStyle = {
     display: 'flex',
     left: '5%',
     position: 'absolute',
     top: '25px'
-}
+};
 
 const tabButtonStyle = {
     border: '2px solid black',
@@ -155,7 +155,7 @@ const tabButtonStyle = {
     borderTopLeftRadius: '8px',
     borderTopRightRadius: '8px',
     height: '30px'
-}
+};
 
 const smoothTabStyle = {
     alignItems: 'center',
@@ -169,7 +169,7 @@ const smoothTabStyle = {
     position: 'absolute',
     top: '25px',
     width: '130px'
-}
+};
 
 const triggerWindowStyle = {
     backgroundColor: colorTheme.white,
@@ -181,7 +181,7 @@ const triggerWindowStyle = {
     position: 'absolute',
     top: '55px',
     width: '90%'
-}
+};
 
 const errorContainerStyle = {
     alignItems: 'center',
@@ -194,16 +194,16 @@ const errorContainerStyle = {
     left: '30%',
     position: 'absolute',
     width: '40%'
-}
+};
 
 const textInputStyle = {
     backgroundColor: colorTheme.white,
-    ...textStyle.S,
     height: '20px',
     overflow: 'hidden',
     textAlign: 'center',
+    ...textStyle.S,
     width: '40px'
-}
+};
 
 const checkboxDivStyle = {
     alignItems: 'center',
@@ -212,7 +212,7 @@ const checkboxDivStyle = {
     justifyContent: 'center',
     marginLeft: '5px',
     width: '20px'
-}
+};
 
 const checkboxStyle = {
     appearance: 'none',
@@ -221,7 +221,7 @@ const checkboxStyle = {
     height: '100%',
     position: 'relative',
     width: '100%'
-}
+};
 
 const checkboxFillStyle = {
     backgroundColor: '#000',
@@ -229,7 +229,7 @@ const checkboxFillStyle = {
     pointerEvents: 'none',
     position: 'absolute',
     width: '12px'
-}
+};
 
 const triggerStyle = {
     borderBottom: '2px solid black',
@@ -237,12 +237,12 @@ const triggerStyle = {
     direction: 'ltr',
     padding: '10px',
     width: '100%'
-}
+};
 
 const triggerText = {
-    ...textStyle.M,
     height: '2ch',
     padding: '5px',
     textAlign: 'right',
+    ...textStyle.M,
     width: '4ch'
-}
+};

@@ -1,14 +1,14 @@
 class CommandEditor {
     constructor(store, initState) {
-        this.store = store
-        this.state = initState
+        this.store = store;
+        this.state = initState;
 
-        this.script = getCurrentScript(this.store.getState())
-        this.riderCount = getNumRiders(this.store.getState())
+        this.script = getCurrentScript(this.store.getState());
+        this.riderCount = getNumRiders(this.store.getState());
 
         store.subscribeImmediate(() => {
             this.onUpdate();
-        })
+        });
     }
     
     get RiderCount() {
@@ -17,7 +17,7 @@ class CommandEditor {
 
     read() {
         // Parse script into data
-        console.log(this.script);
+        // console.log(this.script);
         return true;
     }
 
@@ -39,7 +39,7 @@ class CommandEditor {
             shouldUpdate = true;
         }
 
-        const script = getCurrentScript(this.store.getState())
+        const script = getCurrentScript(this.store.getState());
   
         if (this.script !== script) {
             this.script = script;
@@ -63,8 +63,8 @@ class CommandEditor {
         const commands = Object.keys(commandDataTypes);
 
         commands.forEach(command => {
-            let currentData = this.state.triggerData[command]
-            let currentHeader = commandDataTypes[command].header
+            let currentData = this.state.triggerData[command];
+            let currentHeader = commandDataTypes[command].header;
 
             currentHeader = currentHeader.replace(
                 "{0}", JSON.stringify(currentData.triggers)

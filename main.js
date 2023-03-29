@@ -16,7 +16,7 @@ function main() {
         playerRunning = getPlayerRunning(store.getState());
         windowFocused = getWindowFocused(store.getState());
 
-        let shouldBeVisible = true;//!playerRunning && windowFocused;
+        let shouldBeVisible = true; //!playerRunning && windowFocused;
 
         commandEditorParent.style.opacity = shouldBeVisible ? 1 : 0;
         commandEditorParent.style.pointerEvents = shouldBeVisible ? null : 'none';
@@ -34,21 +34,21 @@ function main() {
                 initialized: false,
                 triggerData: {},
                 focuserDropdowns: []
-            }
+            };
 
-            this.commandEditor = new CommandEditor(store, this.state)
+            this.commandEditor = new CommandEditor(store, this.state);
 
             store.subscribeImmediate(() => {
                 if(this.state.initialized) {
                     this.onAdjustDropdown();
                 }
-            })
+            });
         }
 
         /* Trigger Management */
 
         createTrigger() {
-            const data = {...this.state.triggerData}
+            const data = {...this.state.triggerData};
 
             data[this.state.activeTab].triggers = [
                 ...data[this.state.activeTab].triggers,
@@ -57,12 +57,12 @@ function main() {
                 ))
             ];
 
-            this.setState({triggerData: data})
+            this.setState({triggerData: data});
 
             if(this.state.activeTab == Triggers.CameraFocus) {
                 this.setState({
                     focuserDropdowns: [...this.state.focuserDropdowns, 0]
-                })
+                });
 
                 this.onAdjustDropdown();
             }
@@ -73,11 +73,11 @@ function main() {
         }
 
         updateTrigger(index, prop, propPath) {
-            const data = {...this.state.triggerData}
-            let pointer = data[this.state.activeTab].triggers[index]
+            const data = {...this.state.triggerData};
+            let pointer = data[this.state.activeTab].triggers[index];
             
             for(let i = 0; i < propPath.length - 1; i++) {
-                pointer = pointer[propPath[i]]
+                pointer = pointer[propPath[i]];
             }
 
             pointer[propPath[propPath.length - 1]] = isNaN(parseInt(prop)) ? prop : parseInt(prop);
@@ -86,13 +86,13 @@ function main() {
         }
 
         deleteTrigger(index) {
-            const data = {...this.state.triggerData}
+            const data = {...this.state.triggerData};
 
             data[this.state.activeTab].triggers = data[this.state.activeTab].triggers.filter(
                 (e, i) => {return index != i}
             );
 
-            this.setState({triggerData: data})
+            this.setState({triggerData: data});
         }
 
         /* Events */
@@ -165,24 +165,24 @@ function main() {
         }
 
         onChangeDropdown(index, value) {
-            const dropdownData = [...this.state.focuserDropdowns]
+            const dropdownData = [...this.state.focuserDropdowns];
 
-            dropdownData[index] = value
+            dropdownData[index] = value;
 
-            this.setState({focuserDropdowns: dropdownData})
+            this.setState({focuserDropdowns: dropdownData});
         }
 
         onAdjustDropdown() {
-            const data = {...this.state.triggerData}
+            const data = {...this.state.triggerData};
             const focusTriggers = data[Triggers.CameraFocus].triggers;
 
             focusTriggers.forEach((e, i) => {
                 for(let j = focusTriggers[i][1].length; j < this.commandEditor.RiderCount; j++) {
-                    focusTriggers[i][1] = [...focusTriggers[i][1], 0]
+                    focusTriggers[i][1] = [...focusTriggers[i][1], 0];
                 }
 
                 for(let j = focusTriggers[i][1].length; j > this.commandEditor.RiderCount; j--) {
-                    focusTriggers[i][1] = focusTriggers[i][1].slice(0, -1)
+                    focusTriggers[i][1] = focusTriggers[i][1].slice(0, -1);
                 }
             });
 
@@ -241,7 +241,7 @@ function main() {
                         index, e.target.value, [1]
                     )
                 })
-            )
+            );
         }
 
         renderCameraPanLayout(data, index) {
@@ -265,7 +265,7 @@ function main() {
                         })
                     )
                 })
-            )
+            );
         }
 
         renderCameraFocusLayout(data, index) {
@@ -300,7 +300,7 @@ function main() {
                         index, e.target.value, [1, dropdownIndex]
                     )
                 })
-            )
+            );
         }
 
         renderTimeRemapLayout(data, index) {
@@ -315,7 +315,7 @@ function main() {
                         index, e.target.value, [1]
                     )
                 })
-            )
+            );
         }
 
         renderTrigger(type, index, data) {
@@ -371,7 +371,7 @@ function main() {
                 type == Triggers.CameraPan && this.renderCameraPanLayout(data, index),
                 type == Triggers.CameraFocus && this.renderCameraFocusLayout(data, index),
                 type == Triggers.TimeRemap && this.renderTimeRemapLayout(data, index),
-            )
+            );
         }
 
         renderTab(tab) {
@@ -386,7 +386,7 @@ function main() {
                     this.onChangeTab(tab)
                 }},
                 e('text', {style: textStyle.S}, commandDataTypes[tab].displayName)
-            )
+            );
         }
 
         renderSmoothTab(data) {
@@ -415,7 +415,7 @@ function main() {
                     }),
                     data.interpolate && e('square', {style: checkboxFillStyle})
                 )
-            )
+            );
         }
 
         renderWindow(data) {
@@ -439,7 +439,7 @@ function main() {
                         }}, "+")
                     )
                 )
-            )
+            );
         }
 
         renderTabComponents() {
@@ -485,7 +485,7 @@ function main() {
                         }
                     }, this.state.errorMessage)
                 )
-            )
+            );
         }
 
         render() {
@@ -504,7 +504,7 @@ function main() {
                     this.renderWindowComponents(),
                     this.renderReadWriteComponents()
                 )
-            )
+            );
         }
     }
 
@@ -515,7 +515,7 @@ function main() {
     ReactDOM.render(
         e(CommandEditorComponent),
         commandEditorParent
-    )
+    );
 }
 
 if(window.store) {
