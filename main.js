@@ -16,7 +16,7 @@ function main () {
         playerRunning = getPlayerRunning(store.getState())
         windowFocused = getWindowFocused(store.getState())
 
-        const shouldBeVisible = !playerRunning && windowFocused
+        const shouldBeVisible = DEBUG || (!playerRunning && windowFocused)
 
         commandEditorParent.style.opacity = shouldBeVisible ? 1 : 0
         commandEditorParent.style.pointerEvents = shouldBeVisible ? null : 'none'
@@ -27,7 +27,7 @@ function main () {
             super()
 
             this.state = {
-                active: true,
+                active: DEBUG,
                 activeTab: null,
                 errorMessage: '...',
                 hasError: false,
