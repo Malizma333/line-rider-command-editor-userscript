@@ -54,22 +54,22 @@ const constraintProps = {
 
 const commandDataTypes = {
     Zoom: {
-        name: "Zoom",
+        displayName: "Zoom",
         template: [[0,0,0], 2],
         header: "getAutoZoom=createZoomer({0},{1});"
     },
     CameraPan: {
-        name: "Camera Pan",
+        displayName: "Camera Pan",
         template: [[0,0,0], {w: 0.4, h: 0.4, x: 0, y: 0}],
         header: "getCamBounds=createBoundsPanner({0},{1});"
     },
     CameraFocus: {
-        name: "Camera Focus",
+        displayName: "Camera Focus",
         template: [[0,0,0], [1]],
         header: "getCamFocus=createFocuser({0},{1});"
     },
     TimeRemap: {
-        name: "Time Remap",
+        displayName: "Time Remap",
         template: [[0,0,0], 1],
         header: "timeRemapper=createTimeRemapper({0},{1});"
     }

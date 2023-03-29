@@ -385,7 +385,7 @@ function main() {
                 onClick: () => {
                     this.onChangeTab(tab)
                 }},
-                e('text', {style: textStyle.S}, commandDataTypes[tab].name)
+                e('text', {style: textStyle.S}, commandDataTypes[tab].displayName)
             )
         }
 
