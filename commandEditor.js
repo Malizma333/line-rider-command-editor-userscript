@@ -1,88 +1,88 @@
 class CommandEditor {
-    constructor(store, initState) {
-        this.store = store;
-        this.state = initState;
+    constructor (store, initState) {
+        this.store = store
+        this.state = initState
 
-        this.script = getCurrentScript(this.store.getState());
-        this.riderCount = getNumRiders(this.store.getState());
+        this.script = getCurrentScript(this.store.getState())
+        this.riderCount = getNumRiders(this.store.getState())
 
         store.subscribeImmediate(() => {
-            this.onUpdate();
-        });
-    }
-    
-    get RiderCount() {
-        return this.riderCount;
+            this.onUpdate()
+        })
     }
 
-    read() {
+    get RiderCount () {
+        return this.riderCount
+    }
+
+    read () {
         // Parse script into data
-        // console.log(this.script);
-        return true;
+        // console.log(this.script)
+        return true
     }
 
-    commit() {
+    commit () {
         try {
-            this.store.dispatch(setTrackScript(this.generateScript()));
-            return true;
-        } catch(error) {
-            console.info("Commit Error:\n", error);
-            return false;
+            this.store.dispatch(setTrackScript(this.generateScript()))
+            return true
+        } catch (error) {
+            console.info('Commit Error:\n', error)
+            return false
         }
     }
 
-    onUpdate(nextState = this.state) {
-        let shouldUpdate = false;
+    onUpdate (nextState = this.state) {
+        let shouldUpdate = false
 
         if (this.state !== nextState) {
-            this.state = nextState;
-            shouldUpdate = true;
+            this.state = nextState
+            shouldUpdate = true
         }
 
-        const script = getCurrentScript(this.store.getState());
-  
+        const script = getCurrentScript(this.store.getState())
+
         if (this.script !== script) {
-            this.script = script;
-            shouldUpdate = true;
+            this.script = script
+            shouldUpdate = true
         }
 
-        const riderCount = getNumRiders(this.store.getState());
+        const riderCount = getNumRiders(this.store.getState())
 
-        if(this.riderCount !== riderCount) {
-            this.riderCount = riderCount;
-            shouldUpdate = true;
+        if (this.riderCount !== riderCount) {
+            this.riderCount = riderCount
+            shouldUpdate = true
         }
 
-        if(!shouldUpdate || !this.state.active) return;
+        if (!shouldUpdate || !this.state.active) return
 
-        this.changed = true;
+        this.changed = true
     }
 
-    generateScript() {
-        let scriptResult = "";
-        const commands = Object.keys(commandDataTypes);
+    generateScript () {
+        let scriptResult = ''
+        const commands = Object.keys(commandDataTypes)
 
         commands.forEach(command => {
-            let currentData = this.state.triggerData[command];
-            let currentHeader = commandDataTypes[command].header;
+            const currentData = this.state.triggerData[command]
+            let currentHeader = commandDataTypes[command].header
 
             currentHeader = currentHeader.replace(
-                "{0}", JSON.stringify(currentData.triggers)
-            );
+                '{0}', JSON.stringify(currentData.triggers)
+            )
 
-            if(command === "TimeRemap") {
+            if (command === Triggers.TimeRemap) {
                 currentHeader = currentHeader.replace(
-                    "{1}", currentData.interpolate
-                );
+                    '{1}', currentData.interpolate
+                )
             } else {
                 currentHeader = currentHeader.replace(
-                    "{1}", currentData.smoothing
-                );
+                    '{1}', currentData.smoothing
+                )
             }
 
-            scriptResult += currentHeader;
-        });
+            scriptResult += currentHeader
+        })
 
-        return scriptResult;
+        return scriptResult
     }
 }
