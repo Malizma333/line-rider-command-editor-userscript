@@ -1,6 +1,6 @@
 /* Window Constants */
 
-const DEBUG = true
+const DEBUG = false
 
 const commitTrackChanges = () => ({
     type: 'COMMIT_TRACK_CHANGES'
