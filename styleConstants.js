@@ -1,84 +1,3 @@
-/* Window Constants */
-
-const DEBUG = false
-
-const commitTrackChanges = () => ({
-    type: 'COMMIT_TRACK_CHANGES'
-})
-
-const revertTrackChanges = () => ({
-    type: 'REVERT_TRACK_CHANGES'
-})
-
-const setTrackScript = (script) => ({
-    type: 'trackData/SET_TRACK_SCRIPT',
-    payload: script
-})
-
-const getWindowFocused = state => state.views.Main
-const getPlayerRunning = state => state.player.running
-
-const getCurrentScript = state => state.trackData.script
-const getRiders = state => state.simulator.engine.engine.state.riders
-const getNumRiders = state => getRiders(state).length
-
-/* Value Constants */
-
-const Triggers = {
-    Zoom: 'Zoom',
-    CameraPan: 'CameraPan',
-    CameraFocus: 'CameraFocus',
-    TimeRemap: 'TimeRemap'
-}
-
-const smooth = {
-    min: 0,
-    max: 20,
-    default: 10
-}
-
-const interpolate = {
-    default: true
-}
-
-const constraintProps = {
-    frameProps: { default: 0, min: 0, max: 39, type: 'Integer' },
-    secondProps: { default: 0, min: 0, max: 59, type: 'Integer' },
-    minuteProps: { default: 0, min: 0, max: 99, type: 'Integer' },
-    zoomProps: { default: 2, min: -50, max: 50, type: 'Float' },
-    xProps: { default: 0, min: -100, max: 100, type: 'Float' },
-    yProps: { default: 0, min: -100, max: 100, type: 'Float' },
-    wProps: { default: 0.4, min: 0, max: 2, type: 'Float' },
-    hProps: { default: 0.4, min: 0, max: 2, type: 'Float' },
-    focusProps: { default: 0, min: 0, max: 1, type: 'Float' },
-    timeProps: { default: 1, min: 0.01, max: 10, type: 'Float' }
-}
-
-const commandDataTypes = {
-    Zoom: {
-        displayName: 'Zoom',
-        template: [[0, 0, 0], 2],
-        header: 'getAutoZoom=createZoomer({0},{1})'
-    },
-    CameraPan: {
-        displayName: 'Camera Pan',
-        template: [[0, 0, 0], { w: 0.4, h: 0.4, x: 0, y: 0 }],
-        header: 'getCamBounds=createBoundsPanner({0},{1})'
-    },
-    CameraFocus: {
-        displayName: 'Camera Focus',
-        template: [[0, 0, 0], [1]],
-        header: 'getCamFocus=createFocuser({0},{1})'
-    },
-    TimeRemap: {
-        displayName: 'Time Remap',
-        template: [[0, 0, 0], 1],
-        header: 'timeRemapper=createTimeRemapper({0},{1})'
-    }
-}
-
-/* Style Constants */
-
 const colorTheme = {
     black: '#000000',
     darkgray1: '#b7b7b7',
@@ -198,7 +117,7 @@ const errorContainerStyle = {
     width: '40%'
 }
 
-const textInputStyle = {
+const smoothTextInputStyle = {
     backgroundColor: colorTheme.white,
     height: '20px',
     overflow: 'hidden',
@@ -233,6 +152,11 @@ const checkboxFillStyle = {
     width: '12px'
 }
 
+const triggerDivStyle = {
+    alignItems: 'center',
+    display: 'flex'
+}
+
 const triggerStyle = {
     borderBottom: '2px solid black',
     borderLeft: '2px solid black',
@@ -241,10 +165,21 @@ const triggerStyle = {
     width: '100%'
 }
 
-const triggerText = {
+const triggerTextStyle = {
     height: '2ch',
     padding: '5px',
     textAlign: 'right',
     ...textStyle.M,
     width: '4ch'
+}
+
+const dropdownHeaderStyle = {
+    ...triggerTextStyle,
+    width: '120px',
+    height: '3ch'
+}
+
+const dropdownOptionStyle = {
+    ...triggerTextStyle,
+    textAlign: 'center'
 }

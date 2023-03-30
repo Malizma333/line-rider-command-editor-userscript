@@ -72,7 +72,8 @@ function main () {
             return { ...this.state.triggerData[this.state.activeTab].triggers[index] }
         }
 
-        updateTrigger (index, prop, propPath) {
+        updateTrigger (index, prop, propPath, constraints) {
+            console.log(constraints)
             const data = { ...this.state.triggerData }
             let pointer = data[this.state.activeTab].triggers[index]
 
@@ -80,7 +81,7 @@ function main () {
                 pointer = pointer[propPath[i]]
             }
 
-            pointer[propPath[propPath.length - 1]] = isNaN(parseInt(prop)) ? prop : parseInt(prop)
+            pointer[propPath[propPath.length - 1]] = prop
 
             this.setState({ triggerData: data })
         }
@@ -230,39 +231,38 @@ function main () {
         }
 
         renderZoomLayout (data, index) {
+            const label = 'ZOOM TO'
+
             return e('div', null,
-                e('text', { style: triggerText }, 'ZOOM TO'),
+                e('text', { style: triggerTextStyle }, label),
                 e('input', {
-                    style: triggerText,
-                    min: -50,
-                    max: 50,
+                    style: triggerTextStyle,
                     value: data[1],
                     onChange: (e) => this.updateTrigger(
-                        index, e.target.value, [1]
+                        index, e.target.value, [1], constraintProps.zoomProps
                     )
                 })
             )
         }
 
         renderCameraPanLayout (data, index) {
+            const cProps = [constraintProps.wProps, constraintProps.hProps, constraintProps.xProps, constraintProps.yProps]
+            const labels = ['WIDTH', 'HEIGHT', 'X OFFSET', 'Y OFFSET']
+
             return e('div', null,
-                Object.keys(data[1]).map((prop, i) => {
+                Object.keys(data[1]).map((prop, propIndex) => {
                     return e('div', {
                         style: {
                             alignItems: 'center',
                             display: 'inline-block'
                         }
                     },
-                    e('text', { style: triggerText },
-                        ['WIDTH', 'HEIGHT', 'X OFFSET', 'Y OFFSET'][i]
-                    ),
+                    e('text', { style: triggerTextStyle }, labels[propIndex]),
                     e('input', {
-                        style: triggerText,
-                        min: [0, 0, -50, -50][i],
-                        max: [1, 1, 50, 50][i],
+                        style: triggerTextStyle,
                         value: data[1][prop],
                         onChange: (e) => this.updateTrigger(
-                            index, e.target.value, [1, prop]
+                            index, e.target.value, [1, prop], cProps[propIndex]
                         )
                     })
                     )
@@ -272,111 +272,99 @@ function main () {
 
         renderCameraFocusLayout (data, index) {
             const dropdownIndex = this.state.focuserDropdowns[index]
+
             return e('div', null,
                 e('select', {
-                    style: {
-                        ...triggerText,
-                        width: '120px',
-                        height: '3ch'
-                    },
-                    maxMenuHeight: 100,
+                    style: dropdownHeaderStyle,
                     value: dropdownIndex,
                     onChange: e => this.onChangeDropdown(
                         index, e.target.value
                     )
                 },
                 Object.keys(data[1]).map(riderIndex => {
+                    const riderNum = 1 + parseInt(riderIndex)
+
                     return e('option', {
-                        style: {
-                            ...triggerText,
-                            textAlign: 'center'
-                        },
+                        style: dropdownOptionStyle,
                         value: parseInt(riderIndex)
-                    }, e('text', null, `Rider ${1 + parseInt(riderIndex)}`))
+                    }, e('text', null, `Rider ${riderNum}`))
                 })),
-                e('text', { style: triggerText }, 'WEIGHT'),
+                e('text', { style: triggerTextStyle }, 'WEIGHT'),
                 e('input', {
-                    style: triggerText,
-                    min: 0,
-                    max: 1,
+                    style: triggerTextStyle,
                     value: data[1][dropdownIndex],
                     onChange: (e) => this.updateTrigger(
-                        index, e.target.value, [1, dropdownIndex]
+                        index, e.target.value, [1, dropdownIndex], constraintProps.fWeightProps
                     )
                 })
             )
         }
 
         renderTimeRemapLayout (data, index) {
+            const label = 'TIME SCALE'
+
             return e('div', null,
-                e('text', { style: triggerText }, 'TIME SCALE'),
+                e('text', { style: triggerTextStyle }, label),
                 e('input', {
-                    style: triggerText,
-                    min: 0.01,
-                    max: 50,
+                    style: triggerTextStyle,
                     value: data[1],
                     onChange: (e) => this.updateTrigger(
-                        index, e.target.value, [1]
+                        index, e.target.value, [1], constraintProps.timeProps
                     )
                 })
             )
         }
 
         renderTrigger (type, index, data) {
+            const tProps = [constraintProps.minuteProps, constraintProps.secondProps, constraintProps.frameProps]
             return e('div', {
                 style: {
                     ...triggerStyle,
                     backgroundColor: index === 0 ? colorTheme.gray : colorTheme.white
                 }
             },
-            e('div', {
-                style: {
-                    alignItems: 'center',
-                    display: 'flex'
-                }
-            },
-            e('text', {
-                style: {
-                    ...textStyle.L,
-                    paddingRight: '10px'
-                }
-            }, parseInt(index) + 1),
-            data[0].map((timeValue, timeIndex) => {
-                return e('div', null,
-                    e('text', { style: triggerText },
-                        ['TIME', ':', ':'][timeIndex]
-                    ),
-                    e('input', {
-                        style: {
-                            ...triggerText,
-                            backgroundColor: index === 0 ? colorTheme.darkgray2 : colorTheme.white
-                        },
-                        disabled: index === 0,
-                        min: 0,
-                        max: 99,
-                        value: timeValue,
-                        onChange: (e) => this.updateTrigger(
-                            index, e.target.value, [0, timeIndex]
-                        )
-                    })
-                )
-            }),
-            e('button', {
-                style: {
-                    ...squareButtonStyle,
-                    position: 'absolute',
-                    right: '10px'
+            e('div', { style: triggerDivStyle },
+                e('text', {
+                    style: {
+                        ...textStyle.L,
+                        paddingRight: '10px'
+                    }
+                }, parseInt(index) + 1),
+                data[0].map((timeValue, timeIndex) => {
+                    return e('div', null,
+                        e('text', { style: triggerTextStyle },
+                            ['TIME', ':', ':'][timeIndex]
+                        ),
+                        e('input', {
+                            style: {
+                                ...triggerTextStyle,
+                                backgroundColor: index === 0 ? colorTheme.darkgray2 : colorTheme.white
+                            },
+                            disabled: index === 0,
+                            value: timeValue,
+                            onChange: (e) => this.updateTrigger(
+                                index, e.target.value, [0, timeIndex], tProps[timeIndex]
+                            )
+                        })
+                    )
+                }),
+                e('button', {
+                    style: {
+                        ...squareButtonStyle,
+                        position: 'absolute',
+                        right: '10px'
+                    },
+                    disabled: index === 0,
+                    onClick: () => this.deleteTrigger(index)
                 },
-                disabled: index === 0,
-                onClick: () => this.deleteTrigger(index)
-            },
-            e('text', {
-                style: {
-                    ...textStyle.M,
-                    color: index === 0 ? colorTheme.darkgray2 : colorTheme.black,
-                    fontWeight: 900
-                }
-            }, 'X'))),
+                e('text', {
+                    style: {
+                        ...textStyle.M,
+                        color: index === 0 ? colorTheme.darkgray2 : colorTheme.black,
+                        fontWeight: 900
+                    }
+                }, 'X'))
+            ),
             type === Triggers.Zoom && this.renderZoomLayout(data, index),
             type === Triggers.CameraPan && this.renderCameraPanLayout(data, index),
             type === Triggers.CameraFocus && this.renderCameraFocusLayout(data, index),
@@ -406,7 +394,7 @@ function main () {
                 e('text', { style: textStyle.S }, 'Smoothing'),
                 data.id !== Triggers.TimeRemap && e('input', {
                     style: {
-                        ...textInputStyle,
+                        ...smoothTextInputStyle,
                         marginLeft: '5px'
                     },
                     type: 'number',
@@ -436,7 +424,7 @@ function main () {
                 this.renderSmoothTab(data),
                 e('div', { style: triggerWindowStyle },
                     Object.keys(data.triggers).map(i => {
-                        return this.renderTrigger(data.id, i, data.triggers[i])
+                        return this.renderTrigger(data.id, parseInt(i), data.triggers[i])
                     }),
                     e('button', {
                         style: {
