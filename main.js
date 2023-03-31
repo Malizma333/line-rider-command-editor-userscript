@@ -43,7 +43,7 @@ function main () {
             })
         }
 
-        /* Trigger Management */
+        /* Trigger Events */
 
         createTrigger () {
             const data = { ...this.state.triggerData }
@@ -95,7 +95,7 @@ function main () {
             this.setState({ triggerData: data })
         }
 
-        /* Events */
+        /* Interaction Events */
 
         async onInitializeState () {
             const commands = Object.keys(commandDataTypes)
@@ -190,7 +190,7 @@ function main () {
             this.setState({ triggerData: data })
         }
 
-        /* Renders */
+        /* Render Events */
 
         componentDidMount () {
             Object.assign(commandEditorParent.style, parentStyle)
