@@ -83,17 +83,21 @@ function renderSmoothTab (data, e, component) {
                 marginLeft: '5px'
             },
             value: data.smoothing,
-            onChange: (event) => {
-                component.onChangeSmooth(event.target.value)
-            }
+            onChange: (event) => component.updateTrigger(
+                event.target.value,
+                ['smoothing'],
+                constraintProps.smoothProps
+            )
         }),
         data.id === Triggers.TimeRemap && e('div', { style: checkboxDivStyle },
             e('input', {
                 style: checkboxStyle,
                 type: 'checkbox',
-                onChange: () => {
-                    component.onChangeInterpolate()
-                }
+                onChange: () => component.updateTrigger(
+                    !component.state.data[component.state.activeTab].interpolate,
+                    ['interpolate'],
+                    constraintProps.interpolateProps
+                )
             }),
             data.interpolate && e('square', { style: checkboxFillStyle })
         )
@@ -101,7 +105,12 @@ function renderSmoothTab (data, e, component) {
 }
 
 function renderTrigger (type, index, data, e, component) {
-    const tProps = [constraintProps.minuteProps, constraintProps.secondProps, constraintProps.frameProps]
+    const tProps = [
+        constraintProps.minuteProps,
+        constraintProps.secondProps,
+        constraintProps.frameProps
+    ]
+
     return e('div', {
         style: {
             ...triggerStyle,
@@ -123,12 +132,17 @@ function renderTrigger (type, index, data, e, component) {
                 e('input', {
                     style: {
                         ...triggerTextStyle,
-                        backgroundColor: index === 0 ? colorTheme.darkgray2 : colorTheme.white
+                        backgroundColor:
+                            index === 0
+                                ? colorTheme.darkgray2
+                                : colorTheme.white
                     },
                     disabled: index === 0,
                     value: timeValue,
                     onChange: (event) => component.updateTrigger(
-                        event.target.value, [index, 0, timeIndex], tProps[timeIndex]
+                        event.target.value,
+                        ['triggers', index, 0, timeIndex],
+                        tProps[timeIndex]
                     )
                 })
             )
@@ -166,14 +180,21 @@ function renderZoomLayout (data, index, e, component) {
             style: triggerTextStyle,
             value: data[1],
             onChange: (event) => component.updateTrigger(
-                event.target.value, [index, 1], constraintProps.zoomProps
+                event.target.value,
+                ['triggers', index, 1],
+                constraintProps.zoomProps
             )
         })
     )
 }
 
 function renderCameraPanLayout (data, index, e, component) {
-    const cProps = [constraintProps.wProps, constraintProps.hProps, constraintProps.xProps, constraintProps.yProps]
+    const cProps = [
+        constraintProps.wProps,
+        constraintProps.hProps,
+        constraintProps.xProps,
+        constraintProps.yProps
+    ]
     const labels = ['WIDTH', 'HEIGHT', 'X OFFSET', 'Y OFFSET']
 
     return e('div', null,
@@ -189,7 +210,9 @@ function renderCameraPanLayout (data, index, e, component) {
                 style: triggerTextStyle,
                 value: data[1][prop],
                 onChange: (event) => component.updateTrigger(
-                    event.target.value, [index, 1, prop], cProps[propIndex]
+                    event.target.value,
+                    ['triggers', index, 1, prop],
+                    cProps[propIndex]
                 )
             })
             )
@@ -221,7 +244,9 @@ function renderCameraFocusLayout (data, index, e, component) {
             style: triggerTextStyle,
             value: data[1][dropdownIndex],
             onChange: (event) => component.updateTrigger(
-                event.target.value, [index, 1, dropdownIndex], constraintProps.fWeightProps
+                event.target.value,
+                ['triggers', index, 1, dropdownIndex],
+                constraintProps.fWeightProps
             )
         })
     )
@@ -236,7 +261,9 @@ function renderTimeRemapLayout (data, index, e, component) {
             style: triggerTextStyle,
             value: data[1],
             onChange: (event) => component.updateTrigger(
-                event.target.value, [index, 1], constraintProps.timeProps
+                event.target.value,
+                ['triggers', index, 1],
+                constraintProps.timeProps
             )
         })
     )

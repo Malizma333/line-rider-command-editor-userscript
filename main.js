@@ -70,17 +70,17 @@ function main () {
             return { ...this.state.triggerData[this.state.activeTab].triggers[index] }
         }
 
-        updateTrigger (prop, propPath, constraints) {
-            console.log(constraints)
+        updateTrigger (propValue, propPath, constraints) {
+            console.info(propValue, propPath, constraints)
 
             const data = { ...this.state.triggerData }
-            let pointer = data[this.state.activeTab].triggers
+            let pointer = data[this.state.activeTab]
 
             for (let i = 0; i < propPath.length - 1; i++) {
                 pointer = pointer[propPath[i]]
             }
 
-            pointer[propPath[propPath.length - 1]] = prop
+            pointer[propPath[propPath.length - 1]] = propValue
 
             this.setState({ triggerData: data })
         }
@@ -188,39 +188,6 @@ function main () {
 
             data[Triggers.CameraFocus].triggers = focusTriggers
             this.setState({ triggerData: data })
-        }
-
-        onChangeSmooth (value) {
-            if (value === '') {
-                const smoothing = { ...this.state.triggerData }
-                smoothing[this.state.activeTab].smoothing = 0
-                this.setState({ triggerData: smoothing })
-                return
-            }
-
-            const targetValue = parseInt(value)
-
-            if (isNaN(targetValue)) {
-                const smoothing = { ...this.state.triggerData }
-                smoothing[this.state.activeTab].smoothing = constraintProps.smoothProps.default
-                this.setState({ triggerData: smoothing })
-                return
-            }
-
-            if (targetValue < constraintProps.smoothProps.min || targetValue > constraintProps.smoothProps.max) {
-                return
-            }
-
-            const smoothing = { ...this.state.triggerData }
-            smoothing[this.state.activeTab].smoothing = targetValue
-            this.setState({ triggerData: smoothing })
-        }
-
-        onChangeInterpolate () {
-            const interpolateState = { ...this.state.triggerData }
-            interpolateState[this.state.activeTab].interpolate =
-                !interpolateState[this.state.activeTab].interpolate
-            this.setState({ triggerData: interpolateState })
         }
 
         /* Renders */
