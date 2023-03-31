@@ -7,8 +7,6 @@ function main () {
         store
     } = window
 
-    const e = React.createElement
-
     let playerRunning = getPlayerRunning(store.getState())
     let windowFocused = getWindowFocused(store.getState())
 
@@ -72,10 +70,11 @@ function main () {
             return { ...this.state.triggerData[this.state.activeTab].triggers[index] }
         }
 
-        updateTrigger (index, prop, propPath, constraints) {
+        updateTrigger (prop, propPath, constraints) {
             console.log(constraints)
+
             const data = { ...this.state.triggerData }
-            let pointer = data[this.state.activeTab].triggers[index]
+            let pointer = data[this.state.activeTab].triggers
 
             for (let i = 0; i < propPath.length - 1; i++) {
                 pointer = pointer[propPath[i]]
@@ -90,7 +89,7 @@ function main () {
             const data = { ...this.state.triggerData }
 
             data[this.state.activeTab].triggers = data[this.state.activeTab].triggers.filter(
-                (e, i) => { return index !== i }
+                (el, i) => { return index !== i }
             )
 
             this.setState({ triggerData: data })
@@ -120,9 +119,9 @@ function main () {
                 }
 
                 if (command === Triggers.TimeRemap) {
-                    data[command].interpolate = interpolate.default
+                    data[command].interpolate = constraintProps.interpolateProps.default
                 } else {
-                    data[command].smoothing = smooth.default
+                    data[command].smoothing = constraintProps.smoothProps.default
                 }
             })
 
@@ -192,16 +191,23 @@ function main () {
         }
 
         onChangeSmooth (value) {
-            const targetValue = parseInt(value)
-
-            if (isNaN(targetValue)) {
+            if (value === '') {
                 const smoothing = { ...this.state.triggerData }
-                smoothing[this.state.activeTab].smoothing = smooth.default
+                smoothing[this.state.activeTab].smoothing = 0
                 this.setState({ triggerData: smoothing })
                 return
             }
 
-            if (targetValue < smooth.min || targetValue > smooth.max) {
+            const targetValue = parseInt(value)
+
+            if (isNaN(targetValue)) {
+                const smoothing = { ...this.state.triggerData }
+                smoothing[this.state.activeTab].smoothing = constraintProps.smoothProps.default
+                this.setState({ triggerData: smoothing })
+                return
+            }
+
+            if (targetValue < constraintProps.smoothProps.min || targetValue > constraintProps.smoothProps.max) {
                 return
             }
 
@@ -230,288 +236,8 @@ function main () {
             this.commandEditor.onUpdate(nextState)
         }
 
-        renderZoomLayout (data, index) {
-            const label = 'ZOOM TO'
-
-            return e('div', null,
-                e('text', { style: triggerTextStyle }, label),
-                e('input', {
-                    style: triggerTextStyle,
-                    value: data[1],
-                    onChange: (e) => this.updateTrigger(
-                        index, e.target.value, [1], constraintProps.zoomProps
-                    )
-                })
-            )
-        }
-
-        renderCameraPanLayout (data, index) {
-            const cProps = [constraintProps.wProps, constraintProps.hProps, constraintProps.xProps, constraintProps.yProps]
-            const labels = ['WIDTH', 'HEIGHT', 'X OFFSET', 'Y OFFSET']
-
-            return e('div', null,
-                Object.keys(data[1]).map((prop, propIndex) => {
-                    return e('div', {
-                        style: {
-                            alignItems: 'center',
-                            display: 'inline-block'
-                        }
-                    },
-                    e('text', { style: triggerTextStyle }, labels[propIndex]),
-                    e('input', {
-                        style: triggerTextStyle,
-                        value: data[1][prop],
-                        onChange: (e) => this.updateTrigger(
-                            index, e.target.value, [1, prop], cProps[propIndex]
-                        )
-                    })
-                    )
-                })
-            )
-        }
-
-        renderCameraFocusLayout (data, index) {
-            const dropdownIndex = this.state.focuserDropdowns[index]
-
-            return e('div', null,
-                e('select', {
-                    style: dropdownHeaderStyle,
-                    value: dropdownIndex,
-                    onChange: e => this.onChangeDropdown(
-                        index, e.target.value
-                    )
-                },
-                Object.keys(data[1]).map(riderIndex => {
-                    const riderNum = 1 + parseInt(riderIndex)
-
-                    return e('option', {
-                        style: dropdownOptionStyle,
-                        value: parseInt(riderIndex)
-                    }, e('text', null, `Rider ${riderNum}`))
-                })),
-                e('text', { style: triggerTextStyle }, 'WEIGHT'),
-                e('input', {
-                    style: triggerTextStyle,
-                    value: data[1][dropdownIndex],
-                    onChange: (e) => this.updateTrigger(
-                        index, e.target.value, [1, dropdownIndex], constraintProps.fWeightProps
-                    )
-                })
-            )
-        }
-
-        renderTimeRemapLayout (data, index) {
-            const label = 'TIME SCALE'
-
-            return e('div', null,
-                e('text', { style: triggerTextStyle }, label),
-                e('input', {
-                    style: triggerTextStyle,
-                    value: data[1],
-                    onChange: (e) => this.updateTrigger(
-                        index, e.target.value, [1], constraintProps.timeProps
-                    )
-                })
-            )
-        }
-
-        renderTrigger (type, index, data) {
-            const tProps = [constraintProps.minuteProps, constraintProps.secondProps, constraintProps.frameProps]
-            return e('div', {
-                style: {
-                    ...triggerStyle,
-                    backgroundColor: index === 0 ? colorTheme.gray : colorTheme.white
-                }
-            },
-            e('div', { style: triggerDivStyle },
-                e('text', {
-                    style: {
-                        ...textStyle.L,
-                        paddingRight: '10px'
-                    }
-                }, parseInt(index) + 1),
-                data[0].map((timeValue, timeIndex) => {
-                    return e('div', null,
-                        e('text', { style: triggerTextStyle },
-                            ['TIME', ':', ':'][timeIndex]
-                        ),
-                        e('input', {
-                            style: {
-                                ...triggerTextStyle,
-                                backgroundColor: index === 0 ? colorTheme.darkgray2 : colorTheme.white
-                            },
-                            disabled: index === 0,
-                            value: timeValue,
-                            onChange: (e) => this.updateTrigger(
-                                index, e.target.value, [0, timeIndex], tProps[timeIndex]
-                            )
-                        })
-                    )
-                }),
-                e('button', {
-                    style: {
-                        ...squareButtonStyle,
-                        position: 'absolute',
-                        right: '10px'
-                    },
-                    disabled: index === 0,
-                    onClick: () => this.deleteTrigger(index)
-                },
-                e('text', {
-                    style: {
-                        ...textStyle.M,
-                        color: index === 0 ? colorTheme.darkgray2 : colorTheme.black,
-                        fontWeight: 900
-                    }
-                }, 'X'))
-            ),
-            type === Triggers.Zoom && this.renderZoomLayout(data, index),
-            type === Triggers.CameraPan && this.renderCameraPanLayout(data, index),
-            type === Triggers.CameraFocus && this.renderCameraFocusLayout(data, index),
-            type === Triggers.TimeRemap && this.renderTimeRemapLayout(data, index)
-            )
-        }
-
-        renderTab (tab) {
-            return e('button', {
-                style: {
-                    ...tabButtonStyle,
-                    backgroundColor:
-                        this.state.activeTab === tab
-                            ? colorTheme.lightgray1
-                            : colorTheme.darkgray1
-                },
-                onClick: () => {
-                    this.onChangeTab(tab)
-                }
-            },
-            e('text', { style: textStyle.S }, commandDataTypes[tab].displayName)
-            )
-        }
-
-        renderSmoothTab (data) {
-            return e('div', { style: smoothTabStyle },
-                e('text', { style: textStyle.S }, 'Smoothing'),
-                data.id !== Triggers.TimeRemap && e('input', {
-                    style: {
-                        ...smoothTextInputStyle,
-                        marginLeft: '5px'
-                    },
-                    type: 'number',
-                    min: smooth.min,
-                    max: smooth.max,
-                    placeholder: smooth.default,
-                    value: data.smoothing,
-                    onChange: e => {
-                        this.onChangeSmooth(e.target.value)
-                    }
-                }),
-                data.id === Triggers.TimeRemap && e('div', { style: checkboxDivStyle },
-                    e('input', {
-                        style: checkboxStyle,
-                        type: 'checkbox',
-                        onChange: () => {
-                            this.onChangeInterpolate()
-                        }
-                    }),
-                    data.interpolate && e('square', { style: checkboxFillStyle })
-                )
-            )
-        }
-
-        renderWindow (data) {
-            return e('div', null,
-                this.renderSmoothTab(data),
-                e('div', { style: triggerWindowStyle },
-                    Object.keys(data.triggers).map(i => {
-                        return this.renderTrigger(data.id, parseInt(i), data.triggers[i])
-                    }),
-                    e('button', {
-                        style: {
-                            ...squareButtonStyle,
-                            position: 'relative',
-                            right: '10px',
-                            bottom: '4.5px'
-                        },
-                        onClick: () => this.createTrigger()
-                    },
-                    e('text', {
-                        style: {
-                            ...textStyle.L,
-                            fontWeight: 900
-                        }
-                    }, '+')
-                    )
-                )
-            )
-        }
-
-        renderTabComponents () {
-            return e('div', { style: tabHeaderStyle },
-                Object.keys(
-                    commandDataTypes
-                ).map(command => {
-                    return e('div', null,
-                        this.renderTab(command)
-                    )
-                })
-            )
-        }
-
-        renderWindowComponents () {
-            return this.renderWindow(
-                this.state.triggerData[this.state.activeTab]
-            )
-        }
-
-        renderReadWriteComponents () {
-            return e('div', null,
-                e('button', {
-                    style: {
-                        ...readWriteButtonStyle,
-                        left: '18px'
-                    },
-                    onClick: this.onRead.bind(this)
-                },
-                e('text', { style: textStyle.M }, 'Read')
-                ),
-                e('button', {
-                    style: {
-                        ...readWriteButtonStyle,
-                        right: '18px'
-                    },
-                    onClick: () => this.onCommit()
-                },
-                e('text', { style: textStyle.M }, 'Commit')
-                ),
-                e('div', { style: errorContainerStyle },
-                    e('text', {
-                        style: {
-                            ...textStyle.M,
-                            color: this.state.hasError ? 'Red' : 'Black'
-                        }
-                    }, this.state.errorMessage)
-                )
-            )
-        }
-
         render () {
-            return this.state.initialized &&
-            e('div', this.state.active && { style: expandedWindow },
-                e('button', {
-                    style: squareButtonStyle,
-                    onClick: this.onActivate.bind(this)
-                },
-                e('text', { style: textStyle.L },
-                    this.state.active ? '-' : '+'
-                )
-                ),
-                e('div', !this.state.active && { style: { display: 'none' } },
-                    this.renderTabComponents(),
-                    this.renderWindowComponents(),
-                    this.renderReadWriteComponents()
-                )
-            )
+            return this.state.initialized && mainComponent(React.createElement, this)
         }
     }
 
@@ -520,7 +246,7 @@ function main () {
     document.getElementById('content').appendChild(commandEditorParent)
 
     ReactDOM.render(
-        e(CommandEditorComponent),
+        React.createElement(CommandEditorComponent),
         commandEditorParent
     )
 }

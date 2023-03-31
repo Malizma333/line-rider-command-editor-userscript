@@ -17,7 +17,7 @@ class CommandEditor {
 
     read () {
         // Parse script into data
-        // console.log(this.script)
+        if (DEBUG) console.log(this.script)
         return true
     }
 
