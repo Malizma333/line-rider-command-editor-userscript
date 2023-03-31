@@ -94,7 +94,7 @@ function renderSmoothTab (data, e, component) {
                 style: checkboxStyle,
                 type: 'checkbox',
                 onChange: () => component.updateTrigger(
-                    !component.state.data[component.state.activeTab].interpolate,
+                    !component.state.triggerData[component.state.activeTab].interpolate,
                     ['interpolate'],
                     constraintProps.interpolateProps
                 )
@@ -123,7 +123,7 @@ function renderTrigger (type, index, data, e, component) {
                 ...textStyle.L,
                 paddingRight: '10px'
             }
-        }, parseInt(index) + 1),
+        }, index + 1),
         data[0].map((timeValue, timeIndex) => {
             return e('div', null,
                 e('text', { style: triggerTextStyle },
