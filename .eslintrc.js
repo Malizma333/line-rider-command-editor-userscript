@@ -16,7 +16,7 @@ module.exports = {
         'react'
     ],
     rules: {
-        indent: ['error', 4],
+        indent: ['error', 4, { SwitchCase: 1 }],
         'no-undef': 0,
         'react/no-deprecated': 0,
         'no-unused-vars': 0

@@ -66,21 +66,17 @@ function main () {
             }
         }
 
-        readTrigger (index) {
-            return { ...this.state.triggerData[this.state.activeTab].triggers[index] }
-        }
-
-        updateTrigger (propValue, propPath, constraints) {
-            console.info(propValue, propPath, constraints)
-
+        updateTrigger (prevValue, newValue, path, constraints) {
             const data = { ...this.state.triggerData }
-            let pointer = data[this.state.activeTab]
+            let pathPointer = data[this.state.activeTab]
 
-            for (let i = 0; i < propPath.length - 1; i++) {
-                pointer = pointer[propPath[i]]
+            for (let i = 0; i < path.length - 1; i++) {
+                pathPointer = pathPointer[path[i]]
             }
 
-            pointer[propPath[propPath.length - 1]] = validate(propValue, constraints)
+            pathPointer[path[path.length - 1]] = this.validateData(
+                prevValue, newValue, constraints
+            )
 
             this.setState({ triggerData: data })
         }
@@ -93,6 +89,56 @@ function main () {
             )
 
             this.setState({ triggerData: data })
+        }
+
+        validateData (prevValue, newValue, constraints) {
+            switch (constraints.type) {
+                case constraintTypes.bool: {
+                    return newValue
+                }
+
+                case constraintTypes.int: {
+                    if (newValue.trim() === '') {
+                        return 0
+                    }
+
+                    const parsedValue = parseInt(newValue)
+
+                    if (isNaN(parsedValue)) {
+                        return prevValue
+                    }
+
+                    if (newValue.includes('.')) {
+                        return prevValue
+                    }
+
+                    if (parsedValue < constraints.min || parsedValue > constraints.max) {
+                        return prevValue
+                    }
+
+                    return parsedValue
+                }
+
+                case constraintTypes.float: {
+                    if (newValue.trim() === '') {
+                        return 0.0
+                    }
+
+                    const parsedValue = parseFloat(newValue)
+
+                    if (isNaN(parsedValue)) {
+                        return prevValue
+                    }
+
+                    if (parsedValue < constraints.min || parsedValue > constraints.max) {
+                        return prevValue
+                    }
+
+                    return parsedValue
+                }
+
+                default: return prevValue
+            }
         }
 
         /* Interaction Events */

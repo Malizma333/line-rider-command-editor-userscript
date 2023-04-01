@@ -22,6 +22,12 @@ const constraintProps = {
     timeProps: { default: 1, min: 0.01, max: 10, type: 'Float' }
 }
 
+const constraintTypes = {
+    bool: 'Boolean',
+    int: 'Integer',
+    float: 'Float'
+}
+
 const commandDataTypes = {
     Zoom: {
         displayName: 'Zoom',

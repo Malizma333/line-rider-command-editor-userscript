@@ -84,6 +84,7 @@ function smoothTabComp (create, root, data) {
             },
             value: data.smoothing,
             onChange: (event) => root.updateTrigger(
+                data.smoothing,
                 event.target.value,
                 ['smoothing'],
                 constraintProps.smoothProps
@@ -94,6 +95,7 @@ function smoothTabComp (create, root, data) {
                 style: checkboxStyle,
                 type: 'checkbox',
                 onChange: () => root.updateTrigger(
+                    root.state.triggerData[root.state.activeTab].interpolate,
                     !root.state.triggerData[root.state.activeTab].interpolate,
                     ['interpolate'],
                     constraintProps.interpolateProps
@@ -172,6 +174,7 @@ function timeStampComp (create, root, data, index) {
                 disabled: index === 0,
                 value: timeValue,
                 onChange: (event) => root.updateTrigger(
+                    timeValue,
                     event.target.value,
                     ['triggers', index, 0, timeIndex],
                     tProps[timeIndex]
@@ -190,6 +193,7 @@ function zoomTriggerComp (create, root, data, index) {
             style: triggerTextStyle,
             value: data[1],
             onChange: (event) => root.updateTrigger(
+                data[1],
                 event.target.value,
                 ['triggers', index, 1],
                 constraintProps.zoomProps
@@ -220,6 +224,7 @@ function camPanTriggerComp (create, root, data, index) {
                 style: triggerTextStyle,
                 value: data[1][prop],
                 onChange: (event) => root.updateTrigger(
+                    data[1][prop],
                     event.target.value,
                     ['triggers', index, 1, prop],
                     cProps[propIndex]
@@ -254,6 +259,7 @@ function camFocusTriggerComp (create, root, data, index) {
             style: triggerTextStyle,
             value: data[1][dropdownIndex],
             onChange: (event) => root.updateTrigger(
+                data[1][dropdownIndex],
                 event.target.value,
                 ['triggers', index, 1, dropdownIndex],
                 constraintProps.fWeightProps
@@ -271,6 +277,7 @@ function timeRemapTriggerComp (create, root, data, index) {
             style: triggerTextStyle,
             value: data[1],
             onChange: (event) => root.updateTrigger(
+                data[1],
                 event.target.value,
                 ['triggers', index, 1],
                 constraintProps.timeProps
