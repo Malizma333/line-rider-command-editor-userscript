@@ -11,6 +11,8 @@ const setTrackScript = (script) => ({
     payload: script
 })
 
+const getWindowStart = state => state.simulator.engine.engine.state.startPoint.constructor
+
 const getWindowFocused = state => state.views.Main
 const getPlayerRunning = state => state.player.running
 

@@ -1,5 +1,5 @@
 function main () {
-    window.V2 = window.V2 || window.store.getState().simulator.engine.engine.state.startPoint.constructor
+    window.V2 = window.V2 || getWindowStart(window.store.getState())
 
     const {
         React,

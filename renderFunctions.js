@@ -1,69 +1,69 @@
-function mainComponent (e, component) {
-    return e('div', component.state.active && { style: expandedWindow },
-        e('button', {
+function mainComp (create, root) {
+    return create('div', root.state.active && { style: expandedWindow },
+        create('button', {
             style: squareButtonStyle,
-            onClick: () => component.onActivate()
+            onClick: () => root.onActivate()
         },
-        e('text', { style: textStyle.L },
-            component.state.active ? '-' : '+'
+        create('text', { style: textStyle.L },
+            root.state.active ? '-' : '+'
         )
         ),
-        e('div', !component.state.active && { style: { display: 'none' } },
-            renderTabComponents(e, component),
-            renderWindowComponents(e, component),
-            readWriteComponents(e, component)
+        create('div', !root.state.active && { style: { display: 'none' } },
+            tabComps(create, root),
+            windowComps(create, root),
+            readWriteComps(create, root)
         )
     )
 }
 
-function renderTabComponents (e, component) {
-    return e('div', { style: tabHeaderStyle },
+function tabComps (create, root) {
+    return create('div', { style: tabHeaderStyle },
         Object.keys(
             commandDataTypes
         ).map(command => {
-            return e('div', null,
-                renderTab(command, e, component)
+            return create('div', null,
+                tabComp(create, root, command)
             )
         })
     )
 }
 
-function renderTab (tab, e, component) {
-    return e('button', {
+function tabComp (create, root, tab) {
+    return create('button', {
         style: {
             ...tabButtonStyle,
             backgroundColor:
-                component.state.activeTab === tab
+                root.state.activeTab === tab
                     ? colorTheme.lightgray1
                     : colorTheme.darkgray1
         },
-        onClick: () => component.onChangeTab(tab)
-    }, e('text', { style: textStyle.S }, commandDataTypes[tab].displayName))
+        onClick: () => root.onChangeTab(tab)
+    }, create('text', { style: textStyle.S }, commandDataTypes[tab].displayName))
 }
 
-function renderWindowComponents (e, component) {
-    return renderWindow(
-        component.state.triggerData[component.state.activeTab], e, component
+function windowComps (create, root) {
+    return windowComp(
+        create, root, root.state.triggerData[root.state.activeTab]
     )
 }
 
-function renderWindow (data, e, component) {
-    return e('div', null,
-        renderSmoothTab(data, e, component),
-        e('div', { style: triggerWindowStyle },
+function windowComp (create, root, data) {
+    return create('div', null,
+        smoothTabComp(create, root, data),
+        create('div', { style: triggerWindowStyle },
             Object.keys(data.triggers).map(i => {
-                return renderTrigger(data.id, parseInt(i), data.triggers[i], e, component)
+                return triggerComp(create, root, data, parseInt(i))
             }),
-            e('button', {
+            create('button', {
                 style: {
                     ...squareButtonStyle,
                     position: 'relative',
                     right: '10px',
                     bottom: '4.5px'
                 },
-                onClick: () => component.createTrigger()
+                onClick: () => root.createTrigger()
             },
-            e('text', {
+            create('text', {
                 style: {
                     ...textStyle.L,
                     fontWeight: 900
@@ -74,112 +74,122 @@ function renderWindow (data, e, component) {
     )
 }
 
-function renderSmoothTab (data, e, component) {
-    return e('div', { style: smoothTabStyle },
-        e('text', { style: textStyle.S }, 'Smoothing'),
-        data.id !== Triggers.TimeRemap && e('input', {
+function smoothTabComp (create, root, data) {
+    return create('div', { style: smoothTabStyle },
+        create('text', { style: textStyle.S }, 'Smoothing'),
+        data.id !== Triggers.TimeRemap && create('input', {
             style: {
                 ...smoothTextInputStyle,
                 marginLeft: '5px'
             },
             value: data.smoothing,
-            onChange: (event) => component.updateTrigger(
+            onChange: (event) => root.updateTrigger(
                 event.target.value,
                 ['smoothing'],
                 constraintProps.smoothProps
             )
         }),
-        data.id === Triggers.TimeRemap && e('div', { style: checkboxDivStyle },
-            e('input', {
+        data.id === Triggers.TimeRemap && create('div', { style: checkboxDivStyle },
+            create('input', {
                 style: checkboxStyle,
                 type: 'checkbox',
-                onChange: () => component.updateTrigger(
-                    !component.state.triggerData[component.state.activeTab].interpolate,
+                onChange: () => root.updateTrigger(
+                    !root.state.triggerData[root.state.activeTab].interpolate,
                     ['interpolate'],
                     constraintProps.interpolateProps
                 )
             }),
-            data.interpolate && e('square', { style: checkboxFillStyle })
+            data.interpolate && create('square', { style: checkboxFillStyle })
         )
     )
 }
 
-function renderTrigger (type, index, data, e, component) {
-    const tProps = [
-        constraintProps.minuteProps,
-        constraintProps.secondProps,
-        constraintProps.frameProps
-    ]
+function triggerComp (create, root, data, index) {
+    const triggerData = data.triggers[index]
 
-    return e('div', {
+    return create('div', {
         style: {
             ...triggerStyle,
             backgroundColor: index === 0 ? colorTheme.gray : colorTheme.white
         }
     },
-    e('div', { style: triggerDivStyle },
-        e('text', {
+    triggerHeaderComp(create, root, triggerData, index),
+    data.id === Triggers.Zoom && zoomTriggerComp(create, root, triggerData, index),
+    data.id === Triggers.CameraPan && camPanTriggerComp(create, root, triggerData, index),
+    data.id === Triggers.CameraFocus && camFocusTriggerComp(create, root, triggerData, index),
+    data.id === Triggers.TimeRemap && timeRemapTriggerComp(create, root, triggerData, index)
+    )
+}
+
+function triggerHeaderComp (create, root, data, index) {
+    return create('div', { style: triggerDivStyle },
+        create('text', {
             style: {
                 ...textStyle.L,
                 paddingRight: '10px'
             }
         }, index + 1),
-        data[0].map((timeValue, timeIndex) => {
-            return e('div', null,
-                e('text', { style: triggerTextStyle },
-                    ['TIME', ':', ':'][timeIndex]
-                ),
-                e('input', {
-                    style: {
-                        ...triggerTextStyle,
-                        backgroundColor:
-                            index === 0
-                                ? colorTheme.darkgray2
-                                : colorTheme.white
-                    },
-                    disabled: index === 0,
-                    value: timeValue,
-                    onChange: (event) => component.updateTrigger(
-                        event.target.value,
-                        ['triggers', index, 0, timeIndex],
-                        tProps[timeIndex]
-                    )
-                })
-            )
-        }),
-        e('button', {
+        timeStampComp(create, root, data[0], index),
+        create('button', {
             style: {
                 ...squareButtonStyle,
                 position: 'absolute',
                 right: '10px'
             },
             disabled: index === 0,
-            onClick: () => component.deleteTrigger(index)
+            onClick: () => root.deleteTrigger(index)
         },
-        e('text', {
+        create('text', {
             style: {
                 ...textStyle.M,
                 color: index === 0 ? colorTheme.darkgray2 : colorTheme.black,
                 fontWeight: 900
             }
         }, 'X'))
-    ),
-    type === Triggers.Zoom && renderZoomLayout(data, index, e, component),
-    type === Triggers.CameraPan && renderCameraPanLayout(data, index, e, component),
-    type === Triggers.CameraFocus && renderCameraFocusLayout(data, index, e, component),
-    type === Triggers.TimeRemap && renderTimeRemapLayout(data, index, e, component)
     )
 }
 
-function renderZoomLayout (data, index, e, component) {
+function timeStampComp (create, root, data, index) {
+    const tProps = [
+        constraintProps.minuteProps,
+        constraintProps.secondProps,
+        constraintProps.frameProps
+    ]
+
+    return data.map((timeValue, timeIndex) => {
+        return create('div', null,
+            create('text', { style: triggerTextStyle },
+                ['TIME', ':', ':'][timeIndex]
+            ),
+            create('input', {
+                style: {
+                    ...triggerTextStyle,
+                    backgroundColor:
+                        index === 0
+                            ? colorTheme.darkgray2
+                            : colorTheme.white
+                },
+                disabled: index === 0,
+                value: timeValue,
+                onChange: (event) => root.updateTrigger(
+                    event.target.value,
+                    ['triggers', index, 0, timeIndex],
+                    tProps[timeIndex]
+                )
+            })
+        )
+    })
+}
+
+function zoomTriggerComp (create, root, data, index) {
     const label = 'ZOOM TO'
 
-    return e('div', null,
-        e('text', { style: triggerTextStyle }, label),
-        e('input', {
+    return create('div', null,
+        create('text', { style: triggerTextStyle }, label),
+        create('input', {
             style: triggerTextStyle,
             value: data[1],
-            onChange: (event) => component.updateTrigger(
+            onChange: (event) => root.updateTrigger(
                 event.target.value,
                 ['triggers', index, 1],
                 constraintProps.zoomProps
@@ -188,7 +198,7 @@ function renderZoomLayout (data, index, e, component) {
     )
 }
 
-function renderCameraPanLayout (data, index, e, component) {
+function camPanTriggerComp (create, root, data, index) {
     const cProps = [
         constraintProps.wProps,
         constraintProps.hProps,
@@ -197,19 +207,19 @@ function renderCameraPanLayout (data, index, e, component) {
     ]
     const labels = ['WIDTH', 'HEIGHT', 'X OFFSET', 'Y OFFSET']
 
-    return e('div', null,
+    return create('div', null,
         Object.keys(data[1]).map((prop, propIndex) => {
-            return e('div', {
+            return create('div', {
                 style: {
                     alignItems: 'center',
                     display: 'inline-block'
                 }
             },
-            e('text', { style: triggerTextStyle }, labels[propIndex]),
-            e('input', {
+            create('text', { style: triggerTextStyle }, labels[propIndex]),
+            create('input', {
                 style: triggerTextStyle,
                 value: data[1][prop],
-                onChange: (event) => component.updateTrigger(
+                onChange: (event) => root.updateTrigger(
                     event.target.value,
                     ['triggers', index, 1, prop],
                     cProps[propIndex]
@@ -220,30 +230,30 @@ function renderCameraPanLayout (data, index, e, component) {
     )
 }
 
-function renderCameraFocusLayout (data, index, e, component) {
-    const dropdownIndex = component.state.focuserDropdowns[index]
+function camFocusTriggerComp (create, root, data, index) {
+    const dropdownIndex = root.state.focuserDropdowns[index]
 
-    return e('div', null,
-        e('select', {
+    return create('div', null,
+        create('select', {
             style: dropdownHeaderStyle,
             value: dropdownIndex,
-            onChange: (event) => component.onChangeDropdown(
+            onChange: (event) => root.onChangeDropdown(
                 index, event.target.value
             )
         },
         Object.keys(data[1]).map(riderIndex => {
             const riderNum = 1 + parseInt(riderIndex)
 
-            return e('option', {
+            return create('option', {
                 style: dropdownOptionStyle,
                 value: parseInt(riderIndex)
-            }, e('text', null, `Rider ${riderNum}`))
+            }, create('text', null, `Rider ${riderNum}`))
         })),
-        e('text', { style: triggerTextStyle }, 'WEIGHT'),
-        e('input', {
+        create('text', { style: triggerTextStyle }, 'WEIGHT'),
+        create('input', {
             style: triggerTextStyle,
             value: data[1][dropdownIndex],
-            onChange: (event) => component.updateTrigger(
+            onChange: (event) => root.updateTrigger(
                 event.target.value,
                 ['triggers', index, 1, dropdownIndex],
                 constraintProps.fWeightProps
@@ -252,15 +262,15 @@ function renderCameraFocusLayout (data, index, e, component) {
     )
 }
 
-function renderTimeRemapLayout (data, index, e, component) {
+function timeRemapTriggerComp (create, root, data, index) {
     const label = 'TIME SCALE'
 
-    return e('div', null,
-        e('text', { style: triggerTextStyle }, label),
-        e('input', {
+    return create('div', null,
+        create('text', { style: triggerTextStyle }, label),
+        create('input', {
             style: triggerTextStyle,
             value: data[1],
-            onChange: (event) => component.updateTrigger(
+            onChange: (event) => root.updateTrigger(
                 event.target.value,
                 ['triggers', index, 1],
                 constraintProps.timeProps
@@ -269,33 +279,33 @@ function renderTimeRemapLayout (data, index, e, component) {
     )
 }
 
-function readWriteComponents (e, component) {
-    return e('div', null,
-        e('button', {
+function readWriteComps (create, root) {
+    return create('div', null,
+        create('button', {
             style: {
                 ...readWriteButtonStyle,
                 left: '18px'
             },
-            onClick: () => component.onRead()
+            onClick: () => root.onRead()
         },
-        e('text', { style: textStyle.M }, 'Read')
+        create('text', { style: textStyle.M }, 'Read')
         ),
-        e('button', {
+        create('button', {
             style: {
                 ...readWriteButtonStyle,
                 right: '18px'
             },
-            onClick: () => component.onCommit()
+            onClick: () => root.onCommit()
         },
-        e('text', { style: textStyle.M }, 'Commit')
+        create('text', { style: textStyle.M }, 'Commit')
         ),
-        e('div', { style: errorContainerStyle },
-            e('text', {
+        create('div', { style: errorContainerStyle },
+            create('text', {
                 style: {
                     ...textStyle.M,
-                    color: component.state.hasError ? 'Red' : 'Black'
+                    color: root.state.hasError ? 'Red' : 'Black'
                 }
-            }, component.state.errorMessage)
+            }, root.state.errorMessage)
         )
     )
 }
