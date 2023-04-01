@@ -204,7 +204,7 @@ function main () {
         }
 
         render () {
-            return this.state.initialized && mainComponent(React.createElement, this)
+            return this.state.initialized && mainComp(React.createElement, this)
         }
     }
 
