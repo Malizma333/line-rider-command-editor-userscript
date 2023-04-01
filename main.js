@@ -80,7 +80,7 @@ function main () {
                 pointer = pointer[propPath[i]]
             }
 
-            pointer[propPath[propPath.length - 1]] = propValue
+            pointer[propPath[propPath.length - 1]] = validate(propValue, constraints)
 
             this.setState({ triggerData: data })
         }
@@ -175,13 +175,14 @@ function main () {
         onAdjustDropdown () {
             const data = { ...this.state.triggerData }
             const focusTriggers = data[Triggers.CameraFocus].triggers
+            const clamp = this.commandEditor.RiderCount
 
             focusTriggers.forEach((e, i) => {
-                for (let j = focusTriggers[i][1].length; j < this.commandEditor.RiderCount; j++) {
+                for (let j = focusTriggers[i][1].length; j < clamp; j++) {
                     focusTriggers[i][1] = [...focusTriggers[i][1], 0]
                 }
 
-                for (let j = focusTriggers[i][1].length; j > this.commandEditor.RiderCount; j--) {
+                for (let j = focusTriggers[i][1].length; j > clamp; j--) {
                     focusTriggers[i][1] = focusTriggers[i][1].slice(0, -1)
                 }
             })
