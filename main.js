@@ -66,7 +66,7 @@ function main () {
             }
         }
 
-        updateTrigger (prevValue, newValue, path, constraints) {
+        updateTrigger (valueChange, path, constraints) {
             const data = { ...this.state.triggerData }
             let pathPointer = data[this.state.activeTab]
 
@@ -75,7 +75,7 @@ function main () {
             }
 
             pathPointer[path[path.length - 1]] = this.validateData(
-                prevValue, newValue, constraints
+                valueChange, constraints
             )
 
             this.setState({ triggerData: data })
@@ -91,7 +91,10 @@ function main () {
             this.setState({ triggerData: data })
         }
 
-        validateData (prevValue, newValue, constraints) {
+        validateData (valueChange, constraints) {
+            const prevValue = valueChange.prev
+            const newValue = valueChange.new
+
             switch (constraints.type) {
                 case constraintTypes.bool: {
                     return newValue
