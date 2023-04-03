@@ -63,6 +63,12 @@ const readWriteButtonStyle = {
     width: '24%'
 }
 
+const errorTextStyle = {
+    textAlign: 'center',
+    ...textStyle.M,
+    width: '90%'
+}
+
 const tabHeaderStyle = {
     display: 'flex',
     left: '5%',
@@ -174,12 +180,12 @@ const triggerTextStyle = {
 }
 
 const dropdownHeaderStyle = {
+    height: '3ch',
     ...triggerTextStyle,
-    width: '120px',
-    height: '3ch'
+    width: '120px'
 }
 
 const dropdownOptionStyle = {
-    ...triggerTextStyle,
-    textAlign: 'center'
+    textAlign: 'center',
+    ...triggerTextStyle
 }

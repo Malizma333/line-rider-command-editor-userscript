@@ -377,7 +377,7 @@ function readWriteComps (create, root) {
         create('div', { style: errorContainerStyle },
             create('text', {
                 style: {
-                    ...textStyle.M,
+                    ...errorTextStyle,
                     color: root.state.hasError ? 'Red' : 'Black'
                 }
             }, root.state.errorMessage)
