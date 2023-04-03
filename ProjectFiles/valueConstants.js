@@ -32,21 +32,21 @@ const commandDataTypes = {
     Zoom: {
         displayName: 'Zoom',
         template: [[0, 0, 0], 2],
-        header: 'getAutoZoom=createZoomer({0},{1})'
+        header: 'getAutoZoom=createZoomer({0},{1});'
     },
     CameraPan: {
         displayName: 'Camera Pan',
         template: [[0, 0, 0], { w: 0.4, h: 0.4, x: 0, y: 0 }],
-        header: 'getCamBounds=createBoundsPanner({0},{1})'
+        header: 'getCamBounds=createBoundsPanner({0},{1});'
     },
     CameraFocus: {
         displayName: 'Camera Focus',
         template: [[0, 0, 0], [1]],
-        header: 'getCamFocus=createFocuser({0},{1})'
+        header: 'getCamFocus=createFocuser({0},{1});'
     },
     TimeRemap: {
         displayName: 'Time Remap',
         template: [[0, 0, 0], 1],
-        header: 'timeRemapper=createTimeRemapper({0},{1})'
+        header: 'timeRemapper=createTimeRemapper({0},{1});'
     }
 }
