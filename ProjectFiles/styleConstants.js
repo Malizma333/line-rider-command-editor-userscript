@@ -180,12 +180,12 @@ const triggerTextStyle = {
 }
 
 const dropdownHeaderStyle = {
-    height: '3ch',
     ...triggerTextStyle,
+    height: '3ch',
     width: '120px'
 }
 
 const dropdownOptionStyle = {
-    textAlign: 'center',
-    ...triggerTextStyle
+    ...triggerTextStyle,
+    textAlign: 'center'
 }
