@@ -47,13 +47,15 @@ function main () {
 
         createTrigger () {
             const data = { ...this.state.triggerData }
+            const commandData = data[this.state.activeTab]
 
-            data[this.state.activeTab].triggers = [
-                ...data[this.state.activeTab].triggers,
-                JSON.parse(JSON.stringify(
-                    commandDataTypes[this.state.activeTab].template
-                ))
-            ]
+            const newTrigger = JSON.parse(JSON.stringify(
+                commandDataTypes[this.state.activeTab].template
+            ))
+
+            commandData.triggers = [...commandData.triggers, newTrigger]
+
+            this.validateTimeStamps()
 
             this.setState({ triggerData: data })
 
@@ -78,6 +80,8 @@ function main () {
                 valueChange, constraints, bounded
             )
 
+            this.validateTimeStamps()
+
             this.setState({ triggerData: data })
         }
 
@@ -92,76 +96,91 @@ function main () {
         }
 
         validateData (valueChange, constraints, bounded) {
-            const prevValue = valueChange.prev
-            const newValue = valueChange.new
-
             switch (constraints.type) {
                 case constraintTypes.bool: {
-                    return newValue
+                    return valueChange.new
                 }
 
                 case constraintTypes.int: {
-                    if (newValue.trim() === '') {
-                        return 0
-                    }
-
-                    const parsedValue = Math.floor(Number(newValue))
-
-                    if (isNaN(parsedValue)) {
-                        return prevValue
-                    }
-
-                    if (newValue.includes('.')) {
-                        return prevValue
-                    }
-
-                    if (!bounded) {
-                        return parsedValue
-                    }
-
-                    if (parsedValue < constraints.min) {
-                        return constraints.min
-                    }
-
-                    if (parsedValue > constraints.max) {
-                        return constraints.max
-                    }
-
-                    return parsedValue
+                    return this.validateInteger(valueChange, constraints, bounded)
                 }
 
                 case constraintTypes.float: {
-                    if (newValue.trim() === '') {
-                        return 0.0
-                    }
-
-                    const parsedValue = Number(newValue)
-
-                    if (isNaN(parsedValue)) {
-                        return prevValue
-                    }
-
-                    if (!bounded) {
-                        if (newValue.includes('.')) {
-                            return newValue
-                        }
-
-                        return parsedValue
-                    }
-
-                    if (parsedValue < constraints.min) {
-                        return constraints.min
-                    }
-
-                    if (parsedValue > constraints.max) {
-                        return constraints.max
-                    }
-
-                    return parsedValue
+                    return this.validateFloat(valueChange, constraints, bounded)
                 }
 
-                default: return prevValue
+                default: return valueChange.prev
             }
+        }
+
+        validateInteger (valueChange, constraints, bounded) {
+            const prevValue = valueChange.prev
+            const newValue = valueChange.new
+
+            if (newValue.trim() === '') {
+                return 0
+            }
+
+            const parsedValue = Math.floor(Number(newValue))
+
+            if (isNaN(parsedValue)) {
+                return prevValue
+            }
+
+            if (newValue.includes('.')) {
+                return prevValue
+            }
+
+            if (!bounded) {
+                return parsedValue
+            }
+
+            if (parsedValue < constraints.min) {
+                return constraints.min
+            }
+
+            if (parsedValue > constraints.max) {
+                return constraints.max
+            }
+
+            return parsedValue
+        }
+
+        validateFloat (valueChange, constraints, bounded) {
+            const prevValue = valueChange.prev
+            const newValue = valueChange.new
+
+            if (newValue.trim() === '') {
+                return 0.0
+            }
+
+            const parsedValue = Number(newValue)
+
+            if (isNaN(parsedValue)) {
+                return prevValue
+            }
+
+            if (!bounded) {
+                if (newValue.includes('.')) {
+                    return newValue
+                }
+
+                return parsedValue
+            }
+
+            if (parsedValue < constraints.min) {
+                return constraints.min
+            }
+
+            if (parsedValue > constraints.max) {
+                return constraints.max
+            }
+
+            return parsedValue
+        }
+
+        validateTimeStamps () {
+            return null
         }
 
         /* Interaction Events */
