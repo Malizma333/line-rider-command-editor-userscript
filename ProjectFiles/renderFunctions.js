@@ -83,16 +83,23 @@ function smoothTabComp (create, root, data) {
                 marginLeft: '5px'
             },
             value: data.smoothing,
-            onChange: (event) => {
-                root.updateTrigger(
-                    {
-                        prev: data.smoothing,
-                        new: event.target.value
-                    },
-                    ['smoothing'],
-                    constraintProps.smoothProps
-                )
-            }
+            onChange: (event) => root.updateTrigger(
+                {
+                    prev: data.smoothing,
+                    new: event.target.value
+                },
+                ['smoothing'],
+                constraintProps.smoothProps
+            ),
+            onBlur: (event) => root.updateTrigger(
+                {
+                    prev: data.smoothing,
+                    new: event.target.value
+                },
+                ['smoothing'],
+                constraintProps.smoothProps,
+                true
+            )
         }),
         data.id === Triggers.TimeRemap && create('div', { style: checkboxDivStyle },
             create('input', {
@@ -186,6 +193,15 @@ function timeStampComp (create, root, data, index) {
                     },
                     ['triggers', index, 0, timeIndex],
                     tProps[timeIndex]
+                ),
+                onBlur: (event) => root.updateTrigger(
+                    {
+                        prev: timeValue,
+                        new: event.target.value
+                    },
+                    ['triggers', index, 0, timeIndex],
+                    tProps[timeIndex],
+                    true
                 )
             })
         )
@@ -207,6 +223,15 @@ function zoomTriggerComp (create, root, data, index) {
                 },
                 ['triggers', index, 1],
                 constraintProps.zoomProps
+            ),
+            onBlur: (event) => root.updateTrigger(
+                {
+                    prev: data[1],
+                    new: event.target.value
+                },
+                ['triggers', index, 1],
+                constraintProps.zoomProps,
+                true
             )
         })
     )
@@ -240,6 +265,15 @@ function camPanTriggerComp (create, root, data, index) {
                     },
                     ['triggers', index, 1, prop],
                     cProps[propIndex]
+                ),
+                onBlur: (event) => root.updateTrigger(
+                    {
+                        prev: data[1][prop],
+                        new: event.target.value
+                    },
+                    ['triggers', index, 1, prop],
+                    cProps[propIndex],
+                    true
                 )
             })
             )
@@ -277,6 +311,15 @@ function camFocusTriggerComp (create, root, data, index) {
                 },
                 ['triggers', index, 1, dropdownIndex],
                 constraintProps.fWeightProps
+            ),
+            onBlur: (event) => root.updateTrigger(
+                {
+                    prev: data[1][dropdownIndex],
+                    new: event.target.value
+                },
+                ['triggers', index, 1, dropdownIndex],
+                constraintProps.fWeightProps,
+                true
             )
         })
     )
@@ -297,6 +340,15 @@ function timeRemapTriggerComp (create, root, data, index) {
                 },
                 ['triggers', index, 1],
                 constraintProps.timeProps
+            ),
+            onBlur: (event) => root.updateTrigger(
+                {
+                    prev: data[1],
+                    new: event.target.value
+                },
+                ['triggers', index, 1],
+                constraintProps.timeProps,
+                true
             )
         })
     )
@@ -325,7 +377,7 @@ function readWriteComps (create, root) {
         create('div', { style: errorContainerStyle },
             create('text', {
                 style: {
-                    ...textStyle.M,
+                    ...errorTextStyle,
                     color: root.state.hasError ? 'Red' : 'Black'
                 }
             }, root.state.errorMessage)

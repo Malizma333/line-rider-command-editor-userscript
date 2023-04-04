@@ -66,7 +66,7 @@ function main () {
             }
         }
 
-        updateTrigger (valueChange, path, constraints) {
+        updateTrigger (valueChange, path, constraints, bounded = false) {
             const data = { ...this.state.triggerData }
             let pathPointer = data[this.state.activeTab]
 
@@ -75,7 +75,7 @@ function main () {
             }
 
             pathPointer[path[path.length - 1]] = this.validateData(
-                valueChange, constraints
+                valueChange, constraints, bounded
             )
 
             this.setState({ triggerData: data })
@@ -91,7 +91,7 @@ function main () {
             this.setState({ triggerData: data })
         }
 
-        validateData (valueChange, constraints) {
+        validateData (valueChange, constraints, bounded) {
             const prevValue = valueChange.prev
             const newValue = valueChange.new
 
@@ -105,7 +105,7 @@ function main () {
                         return 0
                     }
 
-                    const parsedValue = parseInt(newValue)
+                    const parsedValue = Math.floor(Number(newValue))
 
                     if (isNaN(parsedValue)) {
                         return prevValue
@@ -115,8 +115,16 @@ function main () {
                         return prevValue
                     }
 
-                    if (parsedValue < constraints.min || parsedValue > constraints.max) {
-                        return prevValue
+                    if (!bounded) {
+                        return parsedValue
+                    }
+
+                    if (parsedValue < constraints.min) {
+                        return constraints.min
+                    }
+
+                    if (parsedValue > constraints.max) {
+                        return constraints.max
                     }
 
                     return parsedValue
@@ -127,14 +135,26 @@ function main () {
                         return 0.0
                     }
 
-                    const parsedValue = parseFloat(newValue)
+                    const parsedValue = Number(newValue)
 
                     if (isNaN(parsedValue)) {
                         return prevValue
                     }
 
-                    if (parsedValue < constraints.min || parsedValue > constraints.max) {
-                        return prevValue
+                    if (!bounded) {
+                        if (newValue.includes('.')) {
+                            return newValue
+                        }
+
+                        return parsedValue
+                    }
+
+                    if (parsedValue < constraints.min) {
+                        return constraints.min
+                    }
+
+                    if (parsedValue > constraints.max) {
+                        return constraints.max
                     }
 
                     return parsedValue
@@ -180,12 +200,13 @@ function main () {
         }
 
         onRead () {
-            const read = this.commandEditor.read()
+            const [read, data] = this.commandEditor.read()
             if (read) {
-                this.setState({ errorMessage: 'Success' })
+                this.setState({ triggerData: data })
+                this.setState({ errorMessage: 'Success Reading' })
                 this.setState({ hasError: false })
             } else {
-                this.setState({ errorMessage: 'Error' })
+                this.setState({ errorMessage: 'Error Reading' })
                 this.setState({ hasError: true })
             }
         }
@@ -193,10 +214,10 @@ function main () {
         onCommit () {
             const committed = this.commandEditor.commit()
             if (committed) {
-                this.setState({ errorMessage: 'Success' })
+                this.setState({ errorMessage: 'Success Committing' })
                 this.setState({ hasError: false })
             } else {
-                this.setState({ errorMessage: 'Error' })
+                this.setState({ errorMessage: 'Error Committing' })
                 this.setState({ hasError: true })
             }
         }
