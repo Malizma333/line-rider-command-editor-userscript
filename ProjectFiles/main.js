@@ -53,9 +53,9 @@ function main () {
         commandDataTypes[this.state.activeTab].template
       ))
 
-      newTrigger[0] = validateTimeStamps(newTrigger[0])
-
       commandData.triggers = [...commandData.triggers, newTrigger]
+
+      validateTimeStamps(data)
 
       this.setState({ triggerData: data })
 
@@ -80,7 +80,9 @@ function main () {
         valueChange, constraints, bounded
       )
 
-      // validateTimeStamps()
+      if (bounded) {
+        validateTimeStamps(data)
+      }
 
       this.setState({ triggerData: data })
     }

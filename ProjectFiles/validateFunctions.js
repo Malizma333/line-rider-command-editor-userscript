@@ -82,6 +82,37 @@ function validateFloat (valueChange, constraints, bounded) {
   return parsedValue
 }
 
-function validateTimeStamps (timeStamp) {
-  return [0, 0, 0]
+function validateTimeStamps (triggerData) {
+  const commands = Object.keys(triggerData)
+
+  commands.forEach(command => {
+    const triggers = triggerData[command].triggers
+
+    for (let i = 0; i < triggers.length - 1; i++) {
+      const time1 = triggers[i][0]
+      const time2 = triggers[i + 1][0]
+
+      const minI = 0
+      const secI = 0
+      const frameI = 0
+
+      if ((time1[0] * secondsInMinute + time1[1]) * fps + time1[2] < (time2[0] * secondsInMinute + time2[1]) * fps + time2[2]) {
+        continue
+      }
+
+      time2[0] = time1[0]
+      time2[1] = time1[1]
+      time2[2] = time1[2] + 1
+
+      if (time2[2] === fps) {
+        time2[2] = 0
+        time2[1] += 1
+      }
+
+      if (time2[1] === secondsInMinute) {
+        time2[1] = 0
+        time2[0] += 1
+      }
+    }
+  })
 }

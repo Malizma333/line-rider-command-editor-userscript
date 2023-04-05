@@ -1,5 +1,8 @@
 const DEBUG = false
 
+const fps = 40
+const secondsInMinute = 60
+
 const Triggers = {
   Zoom: 'Zoom',
   CameraPan: 'CameraPan',
