@@ -23,6 +23,7 @@ Clicking on it will expand the window. Clicking on it again will collapse the wi
 - The `Camera Pan` tab has triggers that offset the camera from bosh and expand the collision boxes of the camera
 - The `Camera Focus` tab has triggers that specify (in the case of multiple riders) which riders the camera should focus on
 - The `Time Remap` tab has triggers that slow down or speed up the timeline for a certain period of time
+- The `Smooth` tab has the value of smoothing for the currently focused command tab (interpolation toggle for time remap)
 
 ### Triggers
 - Triggers can be deleted with the `X` button located at the top right of the trigger
