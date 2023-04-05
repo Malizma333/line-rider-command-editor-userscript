@@ -26,4 +26,12 @@ Clicking on it will expand the window. Clicking on it again will collapse the wi
 
 ### Triggers
 - Each trigger has a time stamp associated with that specific trigger. This timestamp coresponds with the timeline located at the bottom of the screen.
-  - Timestamp values range from 00:00:00 to 99:59:39, where the time represents [minutes]:[seconds]:[frames]
+  - Timestamp values range from **00:00:00** to **99:59:39**, where the time represents [minutes]:[seconds]:[frames]
+  - Each successive trigger will start after the previous trigger finishes
+- Zoom triggers have a zoom level that affects the camera's view dimensions
+  - Larger numbers zoom further in, while smaller numbers zoom further out
+  - Zoom ranged from **-50** to **50**
+- Camera Pan triggers have a width and height that affect the bounding box, and an x and y offset from the central position
+  - Advanced camera info can be viewed by going to settings -> playback camera and entering the appropriate resolution
+  - Width and height of the bounding box range from **0** to **2**
+  - X and y offsets range from **-100** to **100**
