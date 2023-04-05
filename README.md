@@ -25,6 +25,8 @@ Clicking on it will expand the window. Clicking on it again will collapse the wi
 - The `Time Remap` tab has triggers that slow down or speed up the timeline for a certain period of time
 
 ### Triggers
+- Triggers can be deleted with the `X` button located at the top right of the trigger
+- New triggers can be created with the `+` button located below the last trigger
 - Each trigger has a time stamp associated with that specific trigger. This timestamp coresponds with the timeline located at the bottom of the screen.
   - Timestamp values range from **00:00:00** to **99:59:39**, where the time represents [minutes]:[seconds]:[frames]
   - Each successive trigger will start after the previous trigger finishes
@@ -35,3 +37,8 @@ Clicking on it will expand the window. Clicking on it again will collapse the wi
   - Advanced camera info can be viewed by going to settings -> playback camera and entering the appropriate resolution
   - Width and height of the bounding box range from **0** to **2**
   - X and y offsets range from **-100** to **100**
+- Camera Focus triggers have a weight property for each rider that relates to how much the camera focuses on that rider
+  - The weight ranges from **0** to **1**
+  - The dropdown includes as many riders as there are in the loaded track file
+- Time Remap triggers have a time scale property that the render engine runs at
+  - The time scale ranges from **0.01** to **10**
