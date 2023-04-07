@@ -92,10 +92,6 @@ function validateTimeStamps (triggerData) {
       const time1 = triggers[i][0]
       const time2 = triggers[i + 1][0]
 
-      const minI = 0
-      const secI = 0
-      const frameI = 0
-
       if ((time1[0] * secondsInMinute + time1[1]) * fps + time1[2] < (time2[0] * secondsInMinute + time2[1]) * fps + time2[2]) {
         continue
       }
