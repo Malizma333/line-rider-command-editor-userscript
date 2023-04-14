@@ -55,7 +55,7 @@ function main () {
 
       commandData.triggers = [...commandData.triggers, newTrigger]
 
-      this.validateTimeStamps()
+      validateTimeStamps(data)
 
       this.setState({ triggerData: data })
 
@@ -76,11 +76,13 @@ function main () {
         pathPointer = pathPointer[path[i]]
       }
 
-      pathPointer[path[path.length - 1]] = this.validateData(
+      pathPointer[path[path.length - 1]] = validateData(
         valueChange, constraints, bounded
       )
 
-      this.validateTimeStamps()
+      if (bounded) {
+        validateTimeStamps(data)
+      }
 
       this.setState({ triggerData: data })
     }
@@ -93,94 +95,6 @@ function main () {
       )
 
       this.setState({ triggerData: data })
-    }
-
-    validateData (valueChange, constraints, bounded) {
-      switch (constraints.type) {
-        case constraintTypes.bool: {
-          return valueChange.new
-        }
-
-        case constraintTypes.int: {
-          return this.validateInteger(valueChange, constraints, bounded)
-        }
-
-        case constraintTypes.float: {
-          return this.validateFloat(valueChange, constraints, bounded)
-        }
-
-        default: return valueChange.prev
-      }
-    }
-
-    validateInteger (valueChange, constraints, bounded) {
-      const prevValue = valueChange.prev
-      const newValue = valueChange.new
-
-      if (newValue.trim() === '') {
-        return 0
-      }
-
-      const parsedValue = Math.floor(Number(newValue))
-
-      if (isNaN(parsedValue)) {
-        return prevValue
-      }
-
-      if (newValue.includes('.')) {
-        return prevValue
-      }
-
-      if (!bounded) {
-        return parsedValue
-      }
-
-      if (parsedValue < constraints.min) {
-        return constraints.min
-      }
-
-      if (parsedValue > constraints.max) {
-        return constraints.max
-      }
-
-      return parsedValue
-    }
-
-    validateFloat (valueChange, constraints, bounded) {
-      const prevValue = valueChange.prev
-      const newValue = valueChange.new
-
-      if (newValue.trim() === '') {
-        return 0.0
-      }
-
-      const parsedValue = Number(newValue)
-
-      if (isNaN(parsedValue)) {
-        return prevValue
-      }
-
-      if (!bounded) {
-        if (newValue.includes('.')) {
-          return newValue
-        }
-
-        return parsedValue
-      }
-
-      if (parsedValue < constraints.min) {
-        return constraints.min
-      }
-
-      if (parsedValue > constraints.max) {
-        return constraints.max
-      }
-
-      return parsedValue
-    }
-
-    validateTimeStamps () {
-      return null
     }
 
     /* Interaction Events */
