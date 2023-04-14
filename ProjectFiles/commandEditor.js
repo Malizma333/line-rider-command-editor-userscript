@@ -25,13 +25,24 @@ class CommandEditor {
   }
 
   commit () {
+    const script = this.generateScript()
+
     try {
-      this.store.dispatch(setTrackScript(this.generateScript()))
-      return true
+      this.store.dispatch(setTrackScript(script))
     } catch (error) {
       console.info('Commit Error:\n', error)
       return false
     }
+
+    try {
+      // eslint-disable-next-line no-eval
+      eval.call(window, script)
+    } catch (error) {
+      console.info('Run Error:\n', error)
+      return false
+    }
+
+    return true
   }
 
   onUpdate (nextState = this.state) {
