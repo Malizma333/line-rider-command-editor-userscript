@@ -6,6 +6,8 @@ This is a userscript for linerider.com meant to add user-interface functionality
 
 This is the repository that actually hosts all of the code, not the place to download it. For the proper download, please go [here](https://github.com/Malizma333/linerider-userscript-mods) and follow the userscript install instructions.
 
+For feature updates, new feature requests, or bug reports, please use this [google form](https://forms.gle/LPD7cEau69WpGEcB9).
+
 ## User Guide
 
 To start out, there should a plus sign that appears in the top left of the screen.
