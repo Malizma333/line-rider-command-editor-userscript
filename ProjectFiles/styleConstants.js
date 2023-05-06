@@ -101,6 +101,7 @@ const smoothTabStyle = {
 const triggerWindowStyle = {
   backgroundColor: colorTheme.white,
   border: '2px solid black',
+  borderBottom: '2px solid black',
   direction: 'rtl',
   height: '60%',
   left: '5%',

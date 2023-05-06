@@ -38,7 +38,8 @@ function tabComp (create, root, tab) {
           : colorTheme.darkgray1
     },
     onClick: () => root.onChangeTab(tab)
-  }, create('text', { style: textStyle.S }, commandDataTypes[tab].displayName))
+  }, root.state.activeTab === tab &&
+    create('text', { style: textStyle.S }, commandDataTypes[tab].displayName))
 }
 
 function windowComps (create, root) {
@@ -48,6 +49,10 @@ function windowComps (create, root) {
 }
 
 function windowComp (create, root, data) {
+  if (data.id === Triggers.CustomSkin) {
+    return skinEditorComp(create, root, data)
+  }
+
   return create('div', null,
     smoothTabComp(create, root, data),
     create('div', { style: triggerWindowStyle },
@@ -132,7 +137,8 @@ function triggerComp (create, root, data, index) {
   data.id === Triggers.Zoom && zoomTriggerComp(create, root, triggerData, index),
   data.id === Triggers.CameraPan && camPanTriggerComp(create, root, triggerData, index),
   data.id === Triggers.CameraFocus && camFocusTriggerComp(create, root, triggerData, index),
-  data.id === Triggers.TimeRemap && timeRemapTriggerComp(create, root, triggerData, index)
+  data.id === Triggers.TimeRemap && timeRemapTriggerComp(create, root, triggerData, index),
+  data.id === Triggers.CustomSkin && false
   )
 }
 
@@ -170,6 +176,10 @@ function timeStampComp (create, root, data, index) {
     constraintProps.secondProps,
     constraintProps.frameProps
   ]
+
+  if (!Array.isArray(data)) {
+    return null
+  }
 
   return data.map((timeValue, timeIndex) => {
     return create('div', null,
@@ -381,6 +391,18 @@ function readWriteComps (create, root) {
           color: root.state.hasError ? 'Red' : 'Black'
         }
       }, root.state.errorMessage)
+    )
+  )
+}
+
+function skinEditorComp (create, root, data) {
+  return create('div', null,
+    create('div', {
+      style: {
+        ...triggerWindowStyle,
+        overflow: 'hidden'
+      }
+    }
     )
   )
 }
