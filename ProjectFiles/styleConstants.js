@@ -190,3 +190,79 @@ const dropdownOptionStyle = {
   ...triggerTextStyle,
   textAlign: 'center'
 }
+
+const riderStyle = {
+  noFill: {
+    fill: 'none'
+  },
+  flag: {
+    fill: 'rgba(0,0,0,0.4)'
+  },
+  outline: {
+    stroke: 'black',
+    strokeWidth: 0.3
+  },
+  skin: {
+    fill: 'white'
+  },
+  hair: {
+    fill: 'black'
+  },
+  eye: {
+    fill: 'black'
+  },
+  torso: {
+    fill: 'white'
+  },
+  scarfEven: {
+    fill: 'white'
+  },
+  scarfOdd: {
+
+  },
+  scarf1: {
+    fill: '#FD4F38'
+  },
+  scarf3: {
+    fill: '#06A725'
+  },
+  scarf5: {
+    fill: '#3995FD'
+  },
+  hat: {
+    ball: {
+      fill: 'black'
+    },
+    top: {
+      fill: 'white'
+    },
+    bottom: {
+      stroke: 'black',
+      strokeWidth: 1,
+      strokeLinecap: 'round'
+    }
+  },
+  sled: {
+    fill: 'white'
+  },
+  string: {
+    strokeWidth: '0.3',
+    stroke: 'black'
+  },
+  arm: {
+    sleeve: {
+      fill: 'black'
+    },
+    hand: {
+      fill: 'white'
+    }
+  },
+  leg: {
+    pants: {
+      fill: 'black'
+    },
+    foot: {
+      fill: 'white'
+    }
+  }
+}
