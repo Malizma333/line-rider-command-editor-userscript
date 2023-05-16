@@ -415,20 +415,13 @@ function skinEditorComp (create, root, data) {
 
 function FlagComponent (create) {
   return create('svg', { transform: 'scale(5)', width: '15', height: '18' },
-    create('path', {
-      ...riderStyle.flagFill,
-      fill: 'rgba(0,0,0,0.4)'
-    }),
-    create('path', {
-      ...riderStyle.flagOutline,
-      fill: 'rgba(0,0,0,0.4)',
-      onClick: () => doSomething()
-    })
+    create('path', { ...riderStyle.flag, fill: 'rgba(0,0,0,0.4)' }),
+    create('path', { ...riderStyle.startFlag, fill: 'rgba(0,0,0,0.4)', onClick: () => doSomething() })
   )
 }
 
 function RiderComponent (create) {
-  return create('svg', { transform: 'scale(5)', width: '20', height: '20' },
+  return create('svg', { style: { border: '1px solid red' }, transform: 'scale(5)', width: '20', height: '20' },
     create('rect', { ...riderStyle.skin, fill: 'white' }),
     create('rect', { ...riderStyle.hair, fill: 'black' }),
     create('rect', { ...riderStyle.faceOutline, fill: 'black' }),
