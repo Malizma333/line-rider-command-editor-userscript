@@ -192,77 +192,40 @@ const dropdownOptionStyle = {
 }
 
 const riderStyle = {
-  noFill: {
-    fill: 'none'
-  },
-  flag: {
-    fill: 'rgba(0,0,0,0.4)'
-  },
+  flagFill: { transform: 'translate(-5, -3)', d: 'M6,3A1,1 0 0,1 7,4V4.88C8.06,4.44 9.5,4 11,4C14,4 14,6 16,6C19,6 20,4 20,4V12C20,12 19,14 16,14C13,14 13,12 11,12C8,12 7,14 7,14V21H5V4A1,1 0 0,1 6,3Z' },
+  flagOutline: { transform: 'translate(-5, -3)', d: 'M6,3A1,1 0 0,1 7,4V4.88C8.06,4.44 9.5,4 11,4C14,4 14,6 16,6C19,6 20,4 20,4V12C20,12 19,14 16,14C13,14 13,12 11,12C8,12 7,14 7,14V21H5V4A1,1 0 0,1 6,3M7,7.25V11.5C7,11.5 9,10 11,10C13,10 14,12 16,12C18,12 18,11 18,11V7.5C18,7.5 17,8 16,8C14,8 13,6 11,6C9,6 7,7.25 7,7.25Z' },
   outline: {
     stroke: 'black',
     strokeWidth: 0.3
   },
-  skin: {
-    fill: 'white'
-  },
-  hair: {
-    fill: 'black'
-  },
-  eye: {
-    fill: 'black'
-  },
-  torso: {
-    fill: 'white'
-  },
-  scarfEven: {
-    fill: 'white'
-  },
-  scarfOdd: {
-
-  },
-  scarf1: {
-    fill: '#FD4F38'
-  },
-  scarf3: {
-    fill: '#06A725'
-  },
-  scarf5: {
-    fill: '#3995FD'
-  },
-  hat: {
-    ball: {
-      fill: 'black'
-    },
-    top: {
-      fill: 'white'
-    },
-    bottom: {
-      stroke: 'black',
-      strokeWidth: 1,
-      strokeLinecap: 'round'
-    }
-  },
-  sled: {
-    fill: 'white'
-  },
-  string: {
-    strokeWidth: '0.3',
-    stroke: 'black'
-  },
+  skin: { x: '7', y: '-2.25', width: '3.1', height: '4.5' },
+  hair: { x: '9.95', y: '-2.25', width: '0.3', height: '4.5' },
+  faceOutline: { x: '7', y: '-0.15', width: '3.1', height: '0.3' },
+  hairFill: { y: '-2.4', width: '3.1', height: '4.8' },
+  eye: { points: '0.4,-0.4 0,-0.5 -0.4,-0.4 -0.5,0 -0.4,0.4 0,0.5 0.4,0.4 0.5,0' },
+  nose: { d: 'M 0 -0.25 v 0.4 c 0.1 1.3 1.2 1.2 3.1 0 v -0.4' },
+  sled: { transform: 'translate(.7, 12)', d: 'M13.6-2.2c-1.35,0-2.55,0.75-3.15,1.85H0C-0.2-0.35-0.35-0.2-0.35,0S-0.2,0.35,0,0.35h1.75V4.4H-0.2c-0.2,0-0.35,0.15-0.35,0.35S-0.4,5.1-0.2,5.1h13.8c2,0,3.65-1.65,3.65-3.65S15.6-2.2,13.6-2.2zM9.05,4.4h-6.6V0.35h6.6V4.4z M13.6,4.4H9.75V0.35h0.35C10.05,0.5,10,0.7,10,0.9c0,0.2,0.15,0.35,0.35,0.35c0.15,0,0.3-0.1,0.35-0.25c0.05-0.2,0.1-0.45,0.2-0.65h0.9c0.2,0,0.35-0.15,0.35-0.35S12-0.35,11.8-0.35h-0.5c0.5-0.7,1.35-1.15,2.3-1.15c1.65,0,2.95,1.3,2.95,2.95C16.55,3.1,15.25,4.4,13.6,4.4z' },
+  string: { x1: '0', y1: '0', x2: '8', y2: '0', strokeWidth: '0.3' },
   arm: {
-    sleeve: {
-      fill: 'black'
-    },
-    hand: {
-      fill: 'white'
-    }
+    sleeve: { d: 'M5,0.7H0c-0.4,0-0.7-0.3-0.7-0.7S-0.4-0.7,0-0.7h5' },
+    hand: { d: 'M5-0.7h0.5c0,0,0.3-0.7,0.5-0.6c0.2,0.1,0,0.6,0,0.6s0.4,0,0.6,0c0.2,0,0.5,0.3,0.5,0.7c0,0.4-0.2,0.7-0.5,0.7c-0.5,0-1.6,0-1.6,0' }
   },
   leg: {
-    pants: {
-      fill: 'black'
-    },
-    foot: {
-      fill: 'white'
-    }
-  }
+    pants: { d: 'M4.8-0.7H0c-0.4,0-0.7,0.3-0.7,0.7S-0.4,0.7,0,0.7h4.8' },
+    foot: { d: 'M4.8,0.7h2.4l0-2.7L6.7-2L6-0.7H4.8' }
+  },
+  torso: { x: '0', y: '-2.2', width: '7', height: '4.4' },
+  scarfEven: { fill: 'white' },
+  scarfOdd: { },
+  scarf1: { strokeWidth: '0', x: '5.2', y: '1.5', width: '2', height: '1' },
+  scarf2: { strokeWidth: '0', x: '5.2', y: '0.5', width: '2', height: '1' },
+  scarf3: { strokeWidth: '0', x: '5.2', y: '-0.5', width: '2', height: '1' },
+  scarf4: { strokeWidth: '0', x: '5.2', y: '-1.5', width: '2', height: '1' },
+  scarf5: { strokeWidth: '0', x: '5.2', y: '-2.5', width: '2', height: '1' },
+  hat: {
+    top: { d: 'M11-2.6h-0.4v5.2H11c1.2,0,2.2-1.2,2.2-2.6S12.2-2.6,11-2.6z' },
+    bottom: { strokeWidth: 1, strokeLinecap: 'round', d: 'M10.6-2.6 v5.2' },
+    ball: { cx: '13.9', cy: '0', r: '0.7' }
+  },
+  scarf: { x: '0', y: '-1', width: '2', height: '2' }
 }
