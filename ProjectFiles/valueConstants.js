@@ -34,7 +34,7 @@ const constraintTypes = {
 const commandDataTypes = {
   Zoom: {
     displayName: 'Zoom',
-    template: [[0, 0, 0], 2],
+    template: [[0, 0, 0], 1],
     header: 'getAutoZoom=createZoomer({0},{1});'
   },
   CameraPan: {
