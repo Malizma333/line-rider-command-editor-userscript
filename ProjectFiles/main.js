@@ -133,26 +133,29 @@ function main () {
     }
 
     onRead () {
-      const [read, data] = this.commandEditor.read()
-      if (read) {
-        this.setState({ triggerData: data })
-        this.setState({ errorMessage: 'Success' })
-        this.setState({ hasError: false })
-      } else {
-        this.setState({ errorMessage: 'Error: See Console' })
+      const readInformation = this.commandEditor.read()
+      if (readInformation.status === -1) {
         this.setState({ hasError: true })
+      } else {
+        this.setState({ hasError: false })
       }
+
+      if (readInformation.status === 1) {
+        this.setState({ triggerData: readInformation.data })
+      }
+
+      this.setState({ errorMessage: readInformation.message })
     }
 
     onCommit () {
-      const committed = this.commandEditor.commit()
-      if (committed) {
-        this.setState({ errorMessage: 'Success' })
-        this.setState({ hasError: false })
-      } else {
-        this.setState({ errorMessage: 'Error: See Console' })
+      const commitInformation = this.commandEditor.commit()
+      if (commitInformation.status === -1) {
         this.setState({ hasError: true })
+      } else {
+        this.setState({ hasError: false })
       }
+
+      this.setState({ errorMessage: commitInformation.message })
     }
 
     onActivate () {

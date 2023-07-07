@@ -18,14 +18,31 @@ class CommandEditor {
 
   read () {
     try {
-      return [true, this.parseScript(this.script)]
+      const parsedScipt = this.parseScript(this.script)
+      return {
+        status: 1,
+        message: 'Success',
+        data: parsedScipt
+      }
     } catch (error) {
       console.error('Read Error:\n', error)
-      return [false, null]
+      return {
+        status: -1,
+        message: 'Error: See Console'
+      }
     }
   }
 
   commit () {
+    const doCommit = confirm('Are you sure you want to commit? Your old script will be logged to the console and overwritten.')
+
+    if (!doCommit) {
+      return {
+        status: 0,
+        message: 'Canceled'
+      }
+    }
+
     console.info('Old Script', this.script)
     const script = this.generateScript()
 
@@ -33,7 +50,10 @@ class CommandEditor {
       this.store.dispatch(setTrackScript(script))
     } catch (error) {
       console.error('Commit Error:\n', error)
-      return false
+      return {
+        status: -1,
+        message: 'Error: See Console'
+      }
     }
 
     try {
@@ -41,10 +61,16 @@ class CommandEditor {
       eval.call(window, script)
     } catch (error) {
       console.error('Run Error:\n', error)
-      return false
+      return {
+        status: -1,
+        message: 'Error: See Console'
+      }
     }
 
-    return true
+    return {
+      status: 1,
+      message: 'Success'
+    }
   }
 
   onUpdate (nextState = this.state) {
