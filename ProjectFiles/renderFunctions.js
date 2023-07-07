@@ -49,10 +49,6 @@ function windowComps (create, root) {
 }
 
 function windowComp (create, root, data) {
-  if (data.id === Triggers.CustomSkin) {
-    return skinEditorComp(create, root, data)
-  }
-
   return create('div', null,
     smoothTabComp(create, root, data),
     create('div', { style: triggerWindowStyle },
@@ -137,8 +133,7 @@ function triggerComp (create, root, data, index) {
   data.id === Triggers.Zoom && zoomTriggerComp(create, root, triggerData, index),
   data.id === Triggers.CameraPan && camPanTriggerComp(create, root, triggerData, index),
   data.id === Triggers.CameraFocus && camFocusTriggerComp(create, root, triggerData, index),
-  data.id === Triggers.TimeRemap && timeRemapTriggerComp(create, root, triggerData, index),
-  data.id === Triggers.CustomSkin && false
+  data.id === Triggers.TimeRemap && timeRemapTriggerComp(create, root, triggerData, index)
   )
 }
 
@@ -393,65 +388,4 @@ function readWriteComps (create, root) {
       }, root.state.errorMessage)
     )
   )
-}
-
-function skinEditorComp (create, root, data) {
-  return create('div', null,
-    create('div', {
-      style: {
-        ...triggerWindowStyle,
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }
-    },
-    FlagComponent(create),
-    create('svg', { width: '200' }),
-    RiderComponent(create)
-    )
-  )
-}
-
-function FlagComponent (create) {
-  return create('svg', { transform: 'scale(5)', width: '15', height: '18' },
-    create('path', { ...riderStyle.flag, fill: 'rgba(0,0,0,0.4)' }),
-    create('path', { ...riderStyle.startFlag, fill: 'rgba(0,0,0,0.4)', onClick: () => doSomething() })
-  )
-}
-
-function RiderComponent (create) {
-  return create('svg', { style: { border: '1px solid red' }, transform: 'scale(5)', width: '20', height: '20' },
-    create('rect', { ...riderStyle.skin, fill: 'white' }),
-    create('rect', { ...riderStyle.hair, fill: 'black' }),
-    create('rect', { ...riderStyle.faceOutline, fill: 'black' }),
-    create('rect', { ...riderStyle.hairFill, fill: 'black' }),
-    create('polygon', { ...riderStyle.eye, fill: 'black' }),
-    create('path', { ...riderStyle.nose, ...riderStyle.outline, fill: 'white' }),
-    create('path', { ...riderStyle.sled, ...riderStyle.outline, fill: 'white' }),
-    create('line', { ...riderStyle.string, stroke: 'black' }),
-    create('path', { ...riderStyle.armSleeve, fill: 'black' }),
-    create('path', { ...riderStyle.armHand, fill: 'white' }),
-    create('path', { ...riderStyle.legPants, fill: 'black' }),
-    create('path', { ...riderStyle.legFoot, fill: 'white' }),
-    create('rect', { ...riderStyle.torso, ...riderStyle.outline, fill: 'white' }),
-    create('rect', { ...riderStyle.scarf1, ...riderStyle.scarfOdd, fill: '#FD4F38' }),
-    create('rect', { ...riderStyle.scarf2, ...riderStyle.scarfEven, fill: 'white' }),
-    create('rect', { ...riderStyle.scarf3, ...riderStyle.scarfOdd, fill: '#06A725' }),
-    create('rect', { ...riderStyle.scarf4, ...riderStyle.scarfEven, fill: 'white' }),
-    create('rect', { ...riderStyle.scarf5, ...riderStyle.scarfOdd, fill: '#3995FD' }),
-    create('path', { ...riderStyle.hatTop, ...riderStyle.outline, fill: 'white' }),
-    create('path', { ...riderStyle.hatBottom, stroke: 'black' }),
-    create('circle', { ...riderStyle.hatBall, fill: 'black' }),
-    create('rect', { ...riderStyle.scarf, ...riderStyle.scarfEven, fill: 'white' }),
-    create('rect', { ...riderStyle.scarf, ...riderStyle.scarfOdd, fill: '#FD4F38' }),
-    create('rect', { ...riderStyle.scarf, ...riderStyle.scarfEven, fill: 'white' }),
-    create('rect', { ...riderStyle.scarf, ...riderStyle.scarfOdd, fill: '#06A725' }),
-    create('rect', { ...riderStyle.scarf, ...riderStyle.scarfEven, fill: 'white' }),
-    create('rect', { ...riderStyle.scarf, ...riderStyle.scarfOdd, fill: '#3995FD' })
-  )
-}
-
-function doSomething () {
-  console.log('Hi')
 }
