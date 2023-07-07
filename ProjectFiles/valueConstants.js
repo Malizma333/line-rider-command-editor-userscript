@@ -38,17 +38,17 @@ const commandDataTypes = {
     header: 'getAutoZoom=createZoomer({0},{1});'
   },
   CameraPan: {
-    displayName: 'Camera Pan',
+    displayName: 'Pan',
     template: [[0, 0, 0], { w: 0.4, h: 0.4, x: 0, y: 0 }],
     header: 'getCamBounds=createBoundsPanner({0},{1});'
   },
   CameraFocus: {
-    displayName: 'Camera Focus',
+    displayName: 'Focus',
     template: [[0, 0, 0], [1]],
     header: 'getCamFocus=createFocuser({0},{1});'
   },
   TimeRemap: {
-    displayName: 'Time Remap',
+    displayName: 'Speed',
     template: [[0, 0, 0], 1],
     header: 'timeRemapper=createTimeRemapper({0},{1});'
   }
