@@ -17,7 +17,7 @@ const constraintProps = {
   frameProps: { default: 0, min: 0, max: 39, type: 'Integer' },
   secondProps: { default: 0, min: 0, max: 59, type: 'Integer' },
   minuteProps: { default: 0, min: 0, max: 99, type: 'Integer' },
-  zoomProps: { default: 2, min: -50, max: 50, type: 'Float' },
+  zoomProps: { default: 1, min: -50, max: 50, type: 'Float' },
   xProps: { default: 0, min: -100, max: 100, type: 'Float' },
   yProps: { default: 0, min: -100, max: 100, type: 'Float' },
   wProps: { default: 0.4, min: 0, max: 2, type: 'Float' },
