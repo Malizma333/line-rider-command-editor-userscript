@@ -38,8 +38,7 @@ function tabComp (create, root, tab) {
           : colorTheme.darkgray1
     },
     onClick: () => root.onChangeTab(tab)
-  }, root.state.activeTab === tab &&
-    create('text', { style: textStyle.S }, commandDataTypes[tab].displayName))
+  }, create('text', { style: textStyle.S }, commandDataTypes[tab].displayName))
 }
 
 function windowComps (create, root) {
@@ -331,7 +330,7 @@ function camFocusTriggerComp (create, root, data, index) {
 }
 
 function timeRemapTriggerComp (create, root, data, index) {
-  const label = 'TIME SCALE'
+  const label = 'SPEED'
 
   return create('div', null,
     create('text', { style: triggerTextStyle }, label),
