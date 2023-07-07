@@ -4,6 +4,7 @@ class CommandEditor {
     this.state = initState
 
     this.script = getCurrentScript(this.store.getState())
+    this.scriptExtra = ''
     this.riderCount = getNumRiders(this.store.getState())
 
     store.subscribeImmediate(() => {
@@ -19,18 +20,19 @@ class CommandEditor {
     try {
       return [true, this.parseScript(this.script)]
     } catch (error) {
-      console.info('Read Error:\n', error)
+      console.error('Read Error:\n', error)
       return [false, null]
     }
   }
 
   commit () {
+    console.info('Old Script', this.script)
     const script = this.generateScript()
 
     try {
       this.store.dispatch(setTrackScript(script))
     } catch (error) {
-      console.info('Commit Error:\n', error)
+      console.error('Commit Error:\n', error)
       return false
     }
 
@@ -38,7 +40,7 @@ class CommandEditor {
       // eslint-disable-next-line no-eval
       eval.call(window, script)
     } catch (error) {
-      console.info('Run Error:\n', error)
+      console.error('Run Error:\n', error)
       return false
     }
 
@@ -97,73 +99,62 @@ class CommandEditor {
       scriptResult += currentHeader
     })
 
-    return scriptResult.replace(' ', '')
+    return scriptResult.replace(' ', '') + '\n' + this.scriptExtra
   }
 
   parseScript (scriptText) {
-    if (scriptText.trim() === '') {
-      throw new Error('Script blank!')
-    }
+    let scriptCopy = scriptText
 
     const currentData = this.state.triggerData
-    const scriptTrim = scriptText.replace(/\s+/g, '').replace(/\n+/g, '')
     const commands = Object.keys(commandDataTypes)
 
     commands.forEach(command => {
-      this.parseCommand(command, currentData, scriptTrim)
+      scriptCopy = this.parseCommand(command, currentData, scriptCopy)
     })
+
+    this.scriptExtra = scriptCopy
 
     return currentData
   }
 
-  parseCommand (command, currentData, scriptTrim) {
+  // TODO: Rewrite this so it works
+  parseCommand (command, currentData, scriptCopy) {
     const currentHeader = commandDataTypes[command].header.split('(')[0]
-    const headerIndex = scriptTrim.indexOf(currentHeader)
-
-    if (headerIndex === -1) return
-
-    const startIndex = headerIndex + currentHeader.length + 1
-    let endIndex = startIndex
-
-    for (let j = 1; j > 0 || endIndex >= scriptTrim.length; endIndex++) {
-      if (scriptTrim.charAt(endIndex + 1) === '(') j++
-      if (scriptTrim.charAt(endIndex + 1) === ')') j--
-    }
-
-    const commandData = scriptTrim.substring(startIndex, endIndex)
-    const sepComma = commandData.lastIndexOf(',')
-
-    if (sepComma === -1) throw new Error('Invalid syntax!')
-
-    currentData[command].triggers = JSON.parse(commandData.substring(0, sepComma))
-    this.parseSmoothing(command, currentData, commandData.substring(sepComma + 1))
-  }
-
-  parseSmoothing (command, currentData, smoothingValue) {
-    if (command === Triggers.TimeRemap) {
-      if (smoothingValue === 'true') {
-        currentData[command].interpolate = true
-      } else if (smoothingValue === 'false') {
-        currentData[command].interpolate = false
-      } else {
-        throw new Error('Invalid boolean!')
-      }
-    } else {
-      const parsedValue = parseInt(smoothingValue)
-
-      if (isNaN(parsedValue)) {
-        throw new Error('Invalid integer!')
-      }
-
-      const constraints = constraintProps.smoothProps
-
-      if (parsedValue > constraints.max) {
-        currentData[command].smoothing = constraints.max
-      } else if (parsedValue < constraints.min) {
-        currentData[command].smoothing = constraints.min
-      } else {
-        currentData[command].smoothing = parsedValue
-      }
-    }
+    console.log(currentHeader)
+    return scriptCopy
   }
 }
+
+// currentData[command].triggers = commandArray
+
+// for (let i = 0; i < commandArray.length; i++) {
+//   const timeList = commandArray[i][0]
+
+//   if (!isNaN(timeList)) {
+//     commandArray[i][0] = [0, 0, timeList]
+//   }
+
+//   if (timeList.length === 1) {
+//     commandArray[i][0] = [0, 0, timeList[0]]
+//   }
+
+//   if (timeList.length === 2) {
+//     commandArray[i][0] = [0, timeList[0], timeList[1]]
+//   }
+// }
+
+// if (command === Triggers.TimeRemap) {
+//   if (smoothingValue === 'true') {
+//     currentData[command].interpolate = true
+//   } else if (smoothingValue === 'false') {
+//     currentData[command].interpolate = false
+//   } else {
+//     throw new Error('Invalid boolean!')
+//   }
+// } else {
+//   const parsedValue = parseInt(smoothingValue)
+
+//   if (isNaN(parsedValue)) {
+//     throw new Error('Invalid integer!')
+//   }
+// }
