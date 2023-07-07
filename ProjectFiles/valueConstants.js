@@ -13,7 +13,7 @@ const Triggers = {
 
 const constraintProps = {
   interpolateProps: { default: true, type: 'Boolean' },
-  smoothProps: { default: 10, min: 0, max: 20, type: 'Integer' },
+  smoothProps: { default: 20, min: 0, max: 40, type: 'Integer' },
   frameProps: { default: 0, min: 0, max: 39, type: 'Integer' },
   secondProps: { default: 0, min: 0, max: 59, type: 'Integer' },
   minuteProps: { default: 0, min: 0, max: 99, type: 'Integer' },
