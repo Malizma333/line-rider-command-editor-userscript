@@ -56,7 +56,6 @@ const squareButtonStyle = {
 const readWriteContainerStyle = {
   alignItems: 'center',
   bottom: '0px',
-  border: '1px solid red',
   display: 'flex',
   height: '25%',
   justifyContent: 'center',

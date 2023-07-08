@@ -129,13 +129,62 @@ class CommandEditor {
     return currentData
   }
 
-  // TODO: Rewrite this so it works
   parseCommand (command, currentData, scriptCopy) {
     const currentHeader = commandDataTypes[command].header.split('(')[0]
-    console.log(currentHeader)
+
     return scriptCopy
   }
 }
+
+// parseCommand (command, currentData, scriptTrim) {
+//   const currentHeader = commandDataTypes[command].header.split('(')[0]
+//   const headerIndex = scriptTrim.indexOf(currentHeader)
+
+//   if (headerIndex === -1) return
+
+//   const startIndex = headerIndex + currentHeader.length + 1
+//   let endIndex = startIndex
+
+//   for (let j = 1; j > 0 || endIndex >= scriptTrim.length; endIndex++) {
+//     if (scriptTrim.charAt(endIndex + 1) === '(') j++
+//     if (scriptTrim.charAt(endIndex + 1) === ')') j--
+//   }
+
+//   const commandData = scriptTrim.substring(startIndex, endIndex)
+//   const sepComma = commandData.lastIndexOf(',')
+
+//   if (sepComma === -1) throw new Error('Invalid syntax!')
+
+//   currentData[command].triggers = JSON.parse(commandData.substring(0, sepComma))
+//   this.parseSmoothing(command, currentData, commandData.substring(sepComma + 1))
+// }
+
+// parseSmoothing (command, currentData, smoothingValue) {
+//   if (command === Triggers.TimeRemap) {
+//     if (smoothingValue === 'true') {
+//       currentData[command].interpolate = true
+//     } else if (smoothingValue === 'false') {
+//       currentData[command].interpolate = false
+//     } else {
+//       throw new Error('Invalid boolean!')
+//     }
+//   } else {
+//     const parsedValue = parseInt(smoothingValue)
+
+//     if (isNaN(parsedValue)) {
+//       throw new Error('Invalid integer!')
+//     }
+
+//     const constraints = constraintProps.smoothProps
+
+//     if (parsedValue > constraints.max) {
+//       currentData[command].smoothing = constraints.max
+//     } else if (parsedValue < constraints.min) {
+//       currentData[command].smoothing = constraints.min
+//     } else {
+//       currentData[command].smoothing = parsedValue
+//     }
+//   }
 
 // currentData[command].triggers = commandArray
 

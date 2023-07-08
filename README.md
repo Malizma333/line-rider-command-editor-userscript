@@ -2,11 +2,9 @@
 
 ## Background Information
 
-This is a userscript for linerider.com meant to add user-interface functionality to the many hidden features blocked behind console commands. Currently, it supports adding camera controls (zooming, panning, rider focus) and time remapping, but there are plans to add more features in the future such as layer automation and rider skin customization.
+This is a userscript for linerider.com meant to add user-interface functionality to the many hidden features blocked behind console commands. Currently, it supports adding camera controls (zooming, panning, rider focus) and time remapping, but there are plans to add more features in the future such as layer automation, custom gravity, and rider skin customization.
 
 This is the repository that actually hosts all of the code, not the place to download it. For the proper download, please go [here](https://github.com/Malizma333/linerider-userscript-mods) and follow the userscript install instructions.
-
-For feature updates, new feature requests, or bug reports, please use this [google form](https://forms.gle/LPD7cEau69WpGEcB9).
 
 ## User Guide
 
@@ -15,17 +13,17 @@ Clicking on it will expand the window. Clicking on it again will collapse the wi
 
 ### Main Buttons
 - The `Read` button will parse the currently loaded track script (located in settings -> advanced) into trigger data
-- The `Commit` button will convert trigger data back into an executable track script
-- The text field represents the error field, and will notify if there was any error reading or committing.
+- The `Test` button will convert trigger data back into a script and run it, so you can test new triggers
+- The `Print` button will convert trigger data back into a script and paste it into the textbox to its left
+- The textbox also represents the error field, and will notify if there was any error reading or running code
 - The tabs at the top are the various commands that have trigger support
-  - There is also a smoothing/interpolation tab for the specific command tab that is loaded
 
 ### Tabs
 - The `Zoom` tab has triggers that zoom the camera in and out
-- The `Camera Pan` tab has triggers that offset the camera from bosh and expand the collision boxes of the camera
-- The `Camera Focus` tab has triggers that specify (in the case of multiple riders) which riders the camera should focus on
-- The `Time Remap` tab has triggers that slow down or speed up the timeline for a certain period of time
-- The `Smooth` tab has the value of smoothing for the currently focused command tab (interpolation toggle for time remap)
+- The `Pan` tab has triggers that offset the camera from bosh and expand the collision boxes of the camera
+- The `Focus` tab has triggers that specify (in the case of multiple riders) which riders the camera should focus on
+- The `Speed` tab has triggers that slow down or speed up the timeline for a certain period of time
+- The `Smoothing` area has the value of smoothing for the currently focused command tab (interpolation toggle for time remap)
 
 ### Triggers
 - Triggers can be deleted with the `X` button located at the top right of the trigger
