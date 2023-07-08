@@ -21,15 +21,15 @@ function toolbarComps (create, root) {
   return create('div', { style: toolbarStyle },
     create('button', {
       style: toolbarButtonStyle,
-      onClick: () => window.open('https://github.com/Malizma333/line-rider-command-editor-userscript#readme')
-    },
-    create('text', { style: toolbarButtonText }, '?')
-    ),
-    create('button', {
-      style: toolbarButtonStyle,
       onClick: () => window.open('https://github.com/Malizma333/line-rider-command-editor-userscript/issues/new')
     },
     create('text', { style: toolbarButtonText }, '⚑')
+    ),
+    create('button', {
+      style: toolbarButtonStyle,
+      onClick: () => window.open('https://github.com/Malizma333/line-rider-command-editor-userscript#readme')
+    },
+    create('text', { style: toolbarButtonText }, '?')
     )
   )
 }
