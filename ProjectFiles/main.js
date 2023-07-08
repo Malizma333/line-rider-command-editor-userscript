@@ -133,34 +133,38 @@ function main () {
     }
 
     onRead () {
-      const readInformation = this.commandEditor.read()
-      if (readInformation.status === -1) {
-        this.setState({ message: readInformation.message })
-        this.setState({ hasError: true })
-      } else {
-        this.setState({ triggerData: readInformation.data })
+      try {
+        if (this.state.hasError) {
+          this.setState({ message: '' })
+        }
+
+        const readInformation = this.commandEditor.read()
+        this.setState({ triggerData: readInformation })
         this.setState({ hasError: false })
+      } catch (error) {
+        this.setState({ message: 'Error: ' + error.message })
+        this.setState({ hasError: true })
       }
     }
 
     onTest () {
-      const testInformation = this.commandEditor.test()
-      if (testInformation.status === -1) {
-        this.setState({ message: testInformation.message })
-        this.setState({ hasError: true })
-      } else {
+      try {
+        this.commandEditor.test()
         this.setState({ hasError: false })
+      } catch (error) {
+        this.setState({ message: 'Error: ' + error.message })
+        this.setState({ hasError: true })
       }
     }
 
     onPrint () {
-      const printInformation = this.commandEditor.print()
-
-      if (printInformation.status === -1) {
-        this.setState({ hasError: true })
-      } else {
-        this.setState({ message: printInformation.message })
+      try {
+        const printInformation = this.commandEditor.print()
+        this.setState({ message: printInformation })
         this.setState({ hasError: false })
+      } catch (error) {
+        this.setState({ message: 'Error: ' + error.message })
+        this.setState({ hasError: true })
       }
     }
 

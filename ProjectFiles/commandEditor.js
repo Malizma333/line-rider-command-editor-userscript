@@ -16,44 +16,17 @@ class CommandEditor {
   }
 
   read () {
-    try {
-      const parsedScipt = this.parseScript(this.script)
-      return {
-        status: 1,
-        data: parsedScipt
-      }
-    } catch (error) {
-      return {
-        status: -1,
-        message: error
-      }
-    }
+    return this.parseScript(this.script)
   }
 
   test () {
     const script = this.generateScript()
-
-    try {
-      // eslint-disable-next-line no-eval
-      eval.call(window, script)
-      return {
-        status: 1
-      }
-    } catch (error) {
-      return {
-        status: -1,
-        message: error
-      }
-    }
+    // eslint-disable-next-line no-eval
+    eval.call(window, script)
   }
 
   print () {
-    const script = this.generateScript()
-
-    return {
-      status: 1,
-      message: script
-    }
+    return this.generateScript()
   }
 
   onUpdate (nextState = this.state) {
@@ -117,11 +90,7 @@ class CommandEditor {
     const scriptCopy = scriptText.replace(/\s/g, '')
 
     commands.forEach(command => {
-      try {
-        this.parseCommand(command, currentData, scriptCopy)
-      } catch (error) {
-        console.log(error)
-      }
+      this.parseCommand(command, currentData, scriptCopy)
     })
 
     return currentData
@@ -141,18 +110,13 @@ class CommandEditor {
       if (scriptCopy.charAt(endIndex + 1) === ')') i--
     }
 
-    const commandData = scriptCopy.substring(startIndex, endIndex)
-    const sepComma = commandData.lastIndexOf(',')
-
-    if (sepComma === -1) throw new Error('Invalid syntax!')
-
-    const parameterText = commandData.substring(0, sepComma)
+    const parameterText = '[' + scriptCopy.substring(startIndex, endIndex) + ']'
     // eslint-disable-next-line no-eval
-    const commandArray = eval(parameterText)
+    const parameterArray = eval(parameterText)
 
-    currentData[command].triggers = this.adjustTimestamps(commandArray)
+    currentData[command].triggers = this.adjustTimestamps(parameterArray[0])
 
-    this.parseSmoothing(command, currentData, commandData.substring(sepComma + 1))
+    this.parseSmoothing(command, currentData, parameterArray[1])
   }
 
   adjustTimestamps (commandArray) {
@@ -177,28 +141,36 @@ class CommandEditor {
 
   parseSmoothing (command, currentData, smoothingValue) {
     if (command === Triggers.TimeRemap) {
-      if (smoothingValue === 'true') {
-        currentData[command].interpolate = true
-      } else if (smoothingValue === 'false') {
-        currentData[command].interpolate = false
+      const constraints = constraintProps.interpolateProps
+
+      if (!smoothingValue) {
+        currentData[command].interpolate = constraints.default
+        return
+      }
+
+      if (smoothingValue === true || smoothingValue === false) {
+        currentData[command].interpolate = smoothingValue
       } else {
         throw new Error('Invalid boolean!')
       }
     } else {
-      const parsedValue = parseInt(smoothingValue)
+      const constraints = constraintProps.smoothProps
 
-      if (isNaN(parsedValue)) {
+      if (!smoothingValue) {
+        currentData[command].interpolate = constraints.default
+        return
+      }
+
+      if (isNaN(smoothingValue)) {
         throw new Error('Invalid integer!')
       }
 
-      const constraints = constraintProps.smoothProps
-
-      if (parsedValue > constraints.max) {
+      if (smoothingValue > constraints.max) {
         currentData[command].smoothing = constraints.max
-      } else if (parsedValue < constraints.min) {
+      } else if (smoothingValue < constraints.min) {
         currentData[command].smoothing = constraints.min
       } else {
-        currentData[command].smoothing = parsedValue
+        currentData[command].smoothing = smoothingValue
       }
     }
   }
