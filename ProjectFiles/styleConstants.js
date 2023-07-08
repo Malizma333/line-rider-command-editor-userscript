@@ -53,6 +53,32 @@ const squareButtonStyle = {
   width: '35px'
 }
 
+const toolbarStyle = {
+  alignItems: 'center',
+  display: 'flex',
+  height: '20px',
+  justifyContent: 'right',
+  position: 'absolute',
+  right: '0px',
+  top: '0px',
+  width: '30%'
+}
+
+const toolbarButtonStyle = {
+  backgroundColor: colorTheme.white,
+  borderRadius: '10px',
+  height: '20px',
+  margin: '5px',
+  padding: '0px',
+  width: '20px'
+}
+
+const toolbarButtonText = {
+  bottom: '2px',
+  position: 'relative',
+  ...textStyle.S
+}
+
 const readWriteContainerStyle = {
   alignItems: 'center',
   bottom: '0px',
@@ -87,7 +113,6 @@ const dataContainerStyle = {
 }
 
 const dataTextStyle = {
-  fontSize: '8px',
   textAlign: 'center',
   ...textStyle.S,
   width: '90%'

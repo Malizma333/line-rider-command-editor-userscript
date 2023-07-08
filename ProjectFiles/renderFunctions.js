@@ -9,9 +9,27 @@ function mainComp (create, root) {
     )
     ),
     create('div', !root.state.active && { style: { display: 'none' } },
+      toolbarComps(create, root),
       tabComps(create, root),
       windowComps(create, root),
       readWriteComps(create, root)
+    )
+  )
+}
+
+function toolbarComps (create, root) {
+  return create('div', { style: toolbarStyle },
+    create('button', {
+      style: toolbarButtonStyle,
+      onClick: () => console.log('A')
+    },
+    create('text', { style: toolbarButtonText }, '?')
+    ),
+    create('button', {
+      style: toolbarButtonStyle,
+      onClick: () => console.log('B')
+    },
+    create('text', { style: toolbarButtonText }, '⚑')
     )
   )
 }
