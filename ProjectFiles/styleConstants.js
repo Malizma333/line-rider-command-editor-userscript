@@ -78,7 +78,7 @@ const dataContainerStyle = {
   border: '2px solid black',
   bottom: '20px',
   display: 'flex',
-  flex: 2,
+  flex: 3,
   height: '80px',
   margin: '10px',
   overflowY: 'scroll',

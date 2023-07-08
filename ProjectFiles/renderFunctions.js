@@ -370,7 +370,7 @@ function readWriteComps (create, root) {
     },
     onClick: () => root.onRead()
   },
-  create('text', { style: textStyle.M }, 'Read')
+  create('text', { style: textStyle.S }, 'Load')
   ),
   create('button', {
     style: {
@@ -378,7 +378,7 @@ function readWriteComps (create, root) {
     },
     onClick: () => root.onTest()
   },
-  create('text', { style: textStyle.M }, 'Test')
+  create('text', { style: textStyle.S }, 'Run')
   ),
   create('button', {
     style: {
@@ -386,7 +386,7 @@ function readWriteComps (create, root) {
     },
     onClick: () => root.onPrint()
   },
-  create('text', { style: textStyle.M }, 'Print')
+  create('text', { style: textStyle.S }, 'Print Code')
   ),
   create('div', { style: dataContainerStyle },
     create('text', {
