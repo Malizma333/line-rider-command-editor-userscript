@@ -60,7 +60,7 @@ const toolbarStyle = {
   justifyContent: 'right',
   position: 'absolute',
   right: '0px',
-  top: '0px',
+  top: '2px',
   width: '30%'
 }
 
