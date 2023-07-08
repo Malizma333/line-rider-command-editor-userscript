@@ -12,9 +12,9 @@ To start out, there should a plus sign that appears in the top left of the scree
 Clicking on it will expand the window. Clicking on it again will collapse the window.
 
 ### Main Buttons
-- The `Read` button will parse the currently loaded track script (located in settings -> advanced) into trigger data
-- The `Test` button will convert trigger data back into a script and run it, so you can test new triggers
-- The `Print` button will convert trigger data back into a script and paste it into the textbox to its left
+- The `Load` button will parse the currently loaded track script (located in settings -> advanced) into trigger data
+- The `Run` button will convert trigger data back into a script and run it, so you can test new triggers
+- The `Print Code` button will convert trigger data back into a script and paste it into the textbox to its left
 - The textbox also represents the error field, and will notify if there was any error reading or running code
 - The tabs at the top are the various commands that have trigger support
 
