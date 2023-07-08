@@ -27,7 +27,7 @@ function main () {
       this.state = {
         active: DEBUG,
         activeTab: null,
-        errorMessage: '...',
+        message: '',
         hasError: false,
         initialized: false,
         triggerData: {},
@@ -133,24 +133,37 @@ function main () {
     }
 
     onRead () {
-      const [read, data] = this.commandEditor.read()
-      if (read) {
-        this.setState({ triggerData: data })
-        this.setState({ errorMessage: 'Success' })
+      try {
+        if (this.state.hasError) {
+          this.setState({ message: '' })
+        }
+
+        const readInformation = this.commandEditor.read()
+        this.setState({ triggerData: readInformation })
         this.setState({ hasError: false })
-      } else {
-        this.setState({ errorMessage: 'Error: See Console' })
+      } catch (error) {
+        this.setState({ message: 'Error: ' + error.message })
         this.setState({ hasError: true })
       }
     }
 
-    onCommit () {
-      const committed = this.commandEditor.commit()
-      if (committed) {
-        this.setState({ errorMessage: 'Success' })
+    onTest () {
+      try {
+        this.commandEditor.test()
         this.setState({ hasError: false })
-      } else {
-        this.setState({ errorMessage: 'Error: See Console' })
+      } catch (error) {
+        this.setState({ message: 'Error: ' + error.message })
+        this.setState({ hasError: true })
+      }
+    }
+
+    onPrint () {
+      try {
+        const printInformation = this.commandEditor.print()
+        this.setState({ message: printInformation })
+        this.setState({ hasError: false })
+      } catch (error) {
+        this.setState({ message: 'Error: ' + error.message })
         this.setState({ hasError: true })
       }
     }

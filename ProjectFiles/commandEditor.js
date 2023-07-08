@@ -16,33 +16,17 @@ class CommandEditor {
   }
 
   read () {
-    try {
-      return [true, this.parseScript(this.script)]
-    } catch (error) {
-      console.info('Read Error:\n', error)
-      return [false, null]
-    }
+    return this.parseScript(this.script)
   }
 
-  commit () {
+  test () {
     const script = this.generateScript()
+    // eslint-disable-next-line no-eval
+    eval.call(window, script)
+  }
 
-    try {
-      this.store.dispatch(setTrackScript(script))
-    } catch (error) {
-      console.info('Commit Error:\n', error)
-      return false
-    }
-
-    try {
-      // eslint-disable-next-line no-eval
-      eval.call(window, script)
-    } catch (error) {
-      console.info('Run Error:\n', error)
-      return false
-    }
-
-    return true
+  print () {
+    return this.generateScript()
   }
 
   onUpdate (nextState = this.state) {
@@ -94,75 +78,99 @@ class CommandEditor {
         )
       }
 
-      scriptResult += currentHeader
+      scriptResult += currentHeader + '\n'
     })
 
     return scriptResult.replace(' ', '')
   }
 
   parseScript (scriptText) {
-    if (scriptText.trim() === '') {
-      throw new Error('Script blank!')
-    }
-
-    const currentData = this.state.triggerData
-    const scriptTrim = scriptText.replace(/\s+/g, '').replace(/\n+/g, '')
     const commands = Object.keys(commandDataTypes)
+    const currentData = this.state.triggerData
+    const scriptCopy = scriptText.replace(/\s/g, '')
 
     commands.forEach(command => {
-      this.parseCommand(command, currentData, scriptTrim)
+      this.parseCommand(command, currentData, scriptCopy)
     })
 
     return currentData
   }
 
-  parseCommand (command, currentData, scriptTrim) {
+  parseCommand (command, currentData, scriptCopy) {
     const currentHeader = commandDataTypes[command].header.split('(')[0]
-    const headerIndex = scriptTrim.indexOf(currentHeader)
+    const currentHeaderIndex = scriptCopy.indexOf(currentHeader)
 
-    if (headerIndex === -1) return
+    if (currentHeaderIndex === -1) return
 
-    const startIndex = headerIndex + currentHeader.length + 1
+    const startIndex = currentHeaderIndex + currentHeader.length + 1
     let endIndex = startIndex
 
-    for (let j = 1; j > 0 || endIndex >= scriptTrim.length; endIndex++) {
-      if (scriptTrim.charAt(endIndex + 1) === '(') j++
-      if (scriptTrim.charAt(endIndex + 1) === ')') j--
+    for (let i = 1; i > 0 || endIndex >= scriptCopy.length; endIndex++) {
+      if (scriptCopy.charAt(endIndex + 1) === '(') i++
+      if (scriptCopy.charAt(endIndex + 1) === ')') i--
     }
 
-    const commandData = scriptTrim.substring(startIndex, endIndex)
-    const sepComma = commandData.lastIndexOf(',')
+    const parameterText = '[' + scriptCopy.substring(startIndex, endIndex) + ']'
+    // eslint-disable-next-line no-eval
+    const parameterArray = eval(parameterText)
 
-    if (sepComma === -1) throw new Error('Invalid syntax!')
+    currentData[command].triggers = this.adjustTimestamps(parameterArray[0])
 
-    currentData[command].triggers = JSON.parse(commandData.substring(0, sepComma))
-    this.parseSmoothing(command, currentData, commandData.substring(sepComma + 1))
+    this.parseSmoothing(command, currentData, parameterArray[1])
+  }
+
+  adjustTimestamps (commandArray) {
+    for (let i = 0; i < commandArray.length; i++) {
+      const timeList = commandArray[i][0]
+
+      if (!isNaN(timeList)) {
+        commandArray[i][0] = [0, 0, timeList]
+      }
+
+      if (timeList.length === 1) {
+        commandArray[i][0] = [0, 0, timeList[0]]
+      }
+
+      if (timeList.length === 2) {
+        commandArray[i][0] = [0, timeList[0], timeList[1]]
+      }
+    }
+
+    return commandArray
   }
 
   parseSmoothing (command, currentData, smoothingValue) {
     if (command === Triggers.TimeRemap) {
-      if (smoothingValue === 'true') {
-        currentData[command].interpolate = true
-      } else if (smoothingValue === 'false') {
-        currentData[command].interpolate = false
+      const constraints = constraintProps.interpolateProps
+
+      if (!smoothingValue) {
+        currentData[command].interpolate = constraints.default
+        return
+      }
+
+      if (smoothingValue === true || smoothingValue === false) {
+        currentData[command].interpolate = smoothingValue
       } else {
         throw new Error('Invalid boolean!')
       }
     } else {
-      const parsedValue = parseInt(smoothingValue)
+      const constraints = constraintProps.smoothProps
 
-      if (isNaN(parsedValue)) {
+      if (!smoothingValue) {
+        currentData[command].interpolate = constraints.default
+        return
+      }
+
+      if (isNaN(smoothingValue)) {
         throw new Error('Invalid integer!')
       }
 
-      const constraints = constraintProps.smoothProps
-
-      if (parsedValue > constraints.max) {
+      if (smoothingValue > constraints.max) {
         currentData[command].smoothing = constraints.max
-      } else if (parsedValue < constraints.min) {
+      } else if (smoothingValue < constraints.min) {
         currentData[command].smoothing = constraints.min
       } else {
-        currentData[command].smoothing = parsedValue
+        currentData[command].smoothing = smoothingValue
       }
     }
   }

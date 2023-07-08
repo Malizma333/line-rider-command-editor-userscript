@@ -359,32 +359,42 @@ function timeRemapTriggerComp (create, root, data, index) {
 }
 
 function readWriteComps (create, root) {
-  return create('div', null,
-    create('button', {
-      style: {
-        ...readWriteButtonStyle,
-        left: '18px'
-      },
-      onClick: () => root.onRead()
+  return create('div', {
+    style: {
+      ...readWriteContainerStyle
+    }
+  },
+  create('button', {
+    style: {
+      ...readWriteButtonStyle
     },
-    create('text', { style: textStyle.M }, 'Read')
-    ),
-    create('button', {
-      style: {
-        ...readWriteButtonStyle,
-        right: '18px'
-      },
-      onClick: () => root.onCommit()
+    onClick: () => root.onRead()
+  },
+  create('text', { style: textStyle.S }, 'Load')
+  ),
+  create('button', {
+    style: {
+      ...readWriteButtonStyle
     },
-    create('text', { style: textStyle.M }, 'Commit')
-    ),
-    create('div', { style: errorContainerStyle },
-      create('text', {
-        style: {
-          ...errorTextStyle,
-          color: root.state.hasError ? 'Red' : 'Black'
-        }
-      }, root.state.errorMessage)
-    )
+    onClick: () => root.onTest()
+  },
+  create('text', { style: textStyle.S }, 'Run')
+  ),
+  create('button', {
+    style: {
+      ...readWriteButtonStyle
+    },
+    onClick: () => root.onPrint()
+  },
+  create('text', { style: textStyle.S }, 'Print Code')
+  ),
+  create('div', { style: dataContainerStyle },
+    create('text', {
+      style: {
+        ...dataTextStyle,
+        color: root.state.hasError ? 'Red' : 'Black'
+      }
+    }, root.state.message)
+  )
   )
 }
