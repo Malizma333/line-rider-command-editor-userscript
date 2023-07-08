@@ -34,7 +34,7 @@ class CommandEditor {
   }
 
   commit () {
-    const doCommit = confirm('Are you sure you want to commit? Your old script will be logged to the console and overwritten.')
+    const doCommit = confirm('WARNING: This action will overwrite your current script. Although it will attempt to preserve extra code, it is not always reliable. Your old script will be pasted to the console. Do you wish to proceed?')
 
     if (!doCommit) {
       return {
