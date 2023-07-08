@@ -8,8 +8,9 @@ This is the repository that actually hosts all of the code, not the place to dow
 
 ## User Guide
 
-To start out, there should a plus sign that appears in the top left of the screen.
-Clicking on it will expand the window. Clicking on it again will collapse the window.
+To start out, there should a plus sign that appears in the top left of the screen. Clicking on it will expand the window. Clicking on it again will collapse the window.
+
+This guide can be accessed through the `?` icon, and bugs can be reported through the `⚑` icon.
 
 ### Main Buttons
 - The `Load` button will parse the currently loaded track script (located in settings -> advanced) into trigger data
