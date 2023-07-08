@@ -9,9 +9,27 @@ function mainComp (create, root) {
     )
     ),
     create('div', !root.state.active && { style: { display: 'none' } },
+      toolbarComps(create, root),
       tabComps(create, root),
       windowComps(create, root),
       readWriteComps(create, root)
+    )
+  )
+}
+
+function toolbarComps (create, root) {
+  return create('div', { style: toolbarStyle },
+    create('button', {
+      style: squareButtonStyle,
+      onClick: () => window.open('https://github.com/Malizma333/line-rider-command-editor-userscript/issues/new')
+    },
+    create('text', { style: toolbarButtonText }, '⚑')
+    ),
+    create('button', {
+      style: squareButtonStyle,
+      onClick: () => window.open('https://github.com/Malizma333/line-rider-command-editor-userscript#readme')
+    },
+    create('text', { style: toolbarButtonText }, '?')
     )
   )
 }
