@@ -53,19 +53,44 @@ const squareButtonStyle = {
   width: '35px'
 }
 
+const readWriteContainerStyle = {
+  alignItems: 'center',
+  bottom: '0px',
+  border: '1px solid red',
+  display: 'flex',
+  height: '25%',
+  justifyContent: 'center',
+  position: 'absolute',
+  width: '100%'
+}
+
 const readWriteButtonStyle = {
   backgroundColor: colorTheme.lightgray1,
   border: '2px solid black',
   borderRadius: '10px',
   bottom: '35px',
+  flex: 1,
   height: '50px',
-  position: 'absolute',
-  width: '24%'
+  margin: '10px'
 }
 
-const errorTextStyle = {
+const dataContainerStyle = {
+  backgroundColor: colorTheme.white,
+  border: '2px solid black',
+  bottom: '20px',
+  display: 'flex',
+  flex: 2,
+  height: '80px',
+  margin: '10px',
+  overflowY: 'scroll',
+  whiteSpace: 'normal',
+  wordWrap: 'break-word'
+}
+
+const dataTextStyle = {
+  fontSize: '8px',
   textAlign: 'center',
-  ...textStyle.M,
+  ...textStyle.S,
   width: '90%'
 }
 
@@ -109,19 +134,6 @@ const triggerWindowStyle = {
   position: 'absolute',
   top: '55px',
   width: '90%'
-}
-
-const errorContainerStyle = {
-  alignItems: 'center',
-  backgroundColor: colorTheme.white,
-  border: '2px solid black',
-  bottom: '20px',
-  display: 'flex',
-  height: '80px',
-  justifyContent: 'center',
-  left: '30%',
-  position: 'absolute',
-  width: '40%'
 }
 
 const smoothTextInputStyle = {

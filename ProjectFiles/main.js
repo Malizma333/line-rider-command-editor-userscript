@@ -27,7 +27,7 @@ function main () {
       this.state = {
         active: DEBUG,
         activeTab: null,
-        errorMessage: '...',
+        message: '',
         hasError: false,
         initialized: false,
         triggerData: {},
@@ -135,27 +135,33 @@ function main () {
     onRead () {
       const readInformation = this.commandEditor.read()
       if (readInformation.status === -1) {
+        this.setState({ message: readInformation.message })
         this.setState({ hasError: true })
       } else {
+        this.setState({ triggerData: readInformation.data })
         this.setState({ hasError: false })
       }
-
-      if (readInformation.status === 1) {
-        this.setState({ triggerData: readInformation.data })
-      }
-
-      this.setState({ errorMessage: readInformation.message })
     }
 
-    onCommit () {
-      const commitInformation = this.commandEditor.commit()
-      if (commitInformation.status === -1) {
+    onTest () {
+      const testInformation = this.commandEditor.test()
+      if (testInformation.status === -1) {
+        this.setState({ message: testInformation.message })
         this.setState({ hasError: true })
       } else {
         this.setState({ hasError: false })
       }
+    }
 
-      this.setState({ errorMessage: commitInformation.message })
+    onPrint () {
+      const printInformation = this.commandEditor.print()
+
+      if (printInformation.status === -1) {
+        this.setState({ hasError: true })
+      } else {
+        this.setState({ message: printInformation.message })
+        this.setState({ hasError: false })
+      }
     }
 
     onActivate () {

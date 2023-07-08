@@ -17,59 +17,47 @@ class CommandEditor {
   }
 
   read () {
+    console.log('Read')
+
     try {
       const parsedScipt = this.parseScript(this.script)
       return {
         status: 1,
-        message: 'Success',
         data: parsedScipt
       }
     } catch (error) {
-      console.error('Read Error:\n', error)
       return {
         status: -1,
-        message: 'Error: See Console'
+        message: error
       }
     }
   }
 
-  commit () {
-    const doCommit = confirm('WARNING: This action will overwrite your current script. Although it will attempt to preserve extra code, it is not always reliable. Your old script will be pasted to the console. Do you wish to proceed?')
-
-    if (!doCommit) {
-      return {
-        status: 0,
-        message: 'Canceled'
-      }
-    }
-
-    console.info('Old Script', this.script)
+  test () {
     const script = this.generateScript()
-
-    try {
-      this.store.dispatch(setTrackScript(script))
-    } catch (error) {
-      console.error('Commit Error:\n', error)
-      return {
-        status: -1,
-        message: 'Error: See Console'
-      }
-    }
 
     try {
       // eslint-disable-next-line no-eval
       eval.call(window, script)
+      return {
+        status: 1
+      }
     } catch (error) {
-      console.error('Run Error:\n', error)
       return {
         status: -1,
-        message: 'Error: See Console'
+        message: error
       }
     }
+  }
+
+  print () {
+    console.log('Print')
+
+    const script = this.generateScript()
 
     return {
       status: 1,
-      message: 'Success'
+      message: script
     }
   }
 
@@ -122,7 +110,7 @@ class CommandEditor {
         )
       }
 
-      scriptResult += currentHeader
+      scriptResult += currentHeader + '\n'
     })
 
     return scriptResult.replace(' ', '') + '\n' + this.scriptExtra
@@ -137,8 +125,6 @@ class CommandEditor {
     commands.forEach(command => {
       scriptCopy = this.parseCommand(command, currentData, scriptCopy)
     })
-
-    this.scriptExtra = scriptCopy
 
     return currentData
   }
