@@ -42,7 +42,7 @@ const parentStyle = {
 }
 
 const expandedWindow = {
-  height: '400px',
+  height: '440px',
   width: '575px'
 }
 
@@ -74,9 +74,9 @@ const toolbarButtonStyle = {
 }
 
 const toolbarButtonText = {
-  bottom: '2px',
+  top: '3px',
   position: 'relative',
-  ...textStyle.S
+  ...textStyle.M
 }
 
 const readWriteContainerStyle = {
@@ -122,7 +122,7 @@ const tabHeaderStyle = {
   display: 'flex',
   left: '5%',
   position: 'absolute',
-  top: '25px'
+  top: '35px'
 }
 
 const tabButtonStyle = {
@@ -143,7 +143,7 @@ const smoothTabStyle = {
   justifyContent: 'center',
   right: '5%',
   position: 'absolute',
-  top: '25px',
+  top: '35px',
   width: '130px'
 }
 
@@ -156,7 +156,7 @@ const triggerWindowStyle = {
   left: '5%',
   overflowY: 'scroll',
   position: 'absolute',
-  top: '55px',
+  top: '65px',
   width: '90%'
 }
 
