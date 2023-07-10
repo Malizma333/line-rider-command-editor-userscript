@@ -7,7 +7,8 @@ const Triggers = {
   Zoom: 'Zoom',
   CameraPan: 'CameraPan',
   CameraFocus: 'CameraFocus',
-  TimeRemap: 'TimeRemap'
+  TimeRemap: 'TimeRemap',
+  CustomSkin: 'CustomSkin'
 }
 
 const constraintProps = {
@@ -51,5 +52,16 @@ const commandDataTypes = {
     displayName: 'Speed',
     template: [[0, 0, 0], 1],
     header: 'timeRemapper=createTimeRemapper({0},{1});'
+  },
+  CustomSkin: {
+    displayName: 'Skin',
+    template: ['',
+      '.flag { fill: #FD4F38; opacity: 0.4; } .scarfOdd { fill: #FD4F38; }',
+      '.flag { fill: #06A725; opacity: 0.4; } .scarfOdd { fill: #06A725; }',
+      '.flag { fill: #3995FD; opacity: 0.4; } .scarfOdd { fill: #3995FD; }',
+      '.flag { fill: #FFD54B; opacity: 0.4; } .scarfOdd { fill: #FFD54B; }',
+      '.flag { fill: #62DAD4; opacity: 0.4; } .scarfOdd { fill: #62DAD4; }',
+      '.flag { fill: #D171DF; opacity: 0.4; } .scarfOdd { fill: #D171DF; }'],
+    header: 'setCustomRiders({0})'
   }
 }
