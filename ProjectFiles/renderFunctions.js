@@ -425,13 +425,7 @@ function timeRemapTriggerComp (create, root, data, index) {
 function skinEditorComp (create, root, data) {
   return create('div', null,
     create('div', {
-      style: {
-        ...triggerWindowStyle,
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }
+      style: customSkinWindowStyle
     },
     FlagComponent(create),
     create('svg', { width: '200' }),
@@ -441,40 +435,41 @@ function skinEditorComp (create, root, data) {
 }
 
 function FlagComponent (create) {
-  return create('svg', { transform: 'scale(5)', width: '15', height: '18' },
+  return create('svg', { style: flagSVG },
     create('path', { ...riderStyle.flag, fill: 'rgba(0,0,0,0.4)' }),
     create('path', { ...riderStyle.startFlag, fill: 'rgba(0,0,0,0.4)' })
   )
 }
 
 function RiderComponent (create) {
-  return create('svg', { style: { border: '1px solid red' }, transform: 'scale(5)', width: '20', height: '20' },
-    create('rect', { ...riderStyle.skin, fill: 'white' }),
-    create('rect', { ...riderStyle.hair, fill: 'black' }),
-    create('rect', { ...riderStyle.faceOutline, fill: 'black' }),
-    create('rect', { ...riderStyle.hairFill, fill: 'black' }),
-    create('polygon', { ...riderStyle.eye, fill: 'black' }),
-    create('path', { ...riderStyle.nose, ...riderStyle.outline, fill: 'white' }),
-    create('path', { ...riderStyle.sled, ...riderStyle.outline, fill: 'white' }),
-    create('line', { ...riderStyle.string, stroke: 'black' }),
-    create('path', { ...riderStyle.armSleeve, fill: 'black' }),
-    create('path', { ...riderStyle.armHand, fill: 'white' }),
-    create('path', { ...riderStyle.legPants, fill: 'black' }),
-    create('path', { ...riderStyle.legFoot, fill: 'white' }),
-    create('rect', { ...riderStyle.torso, ...riderStyle.outline, fill: 'white' }),
-    create('rect', { ...riderStyle.scarf1, ...riderStyle.scarfOdd, fill: '#FD4F38' }),
-    create('rect', { ...riderStyle.scarf2, ...riderStyle.scarfEven, fill: 'white' }),
-    create('rect', { ...riderStyle.scarf3, ...riderStyle.scarfOdd, fill: '#06A725' }),
-    create('rect', { ...riderStyle.scarf4, ...riderStyle.scarfEven, fill: 'white' }),
-    create('rect', { ...riderStyle.scarf5, ...riderStyle.scarfOdd, fill: '#3995FD' }),
-    create('path', { ...riderStyle.hatTop, ...riderStyle.outline, fill: 'white' }),
-    create('path', { ...riderStyle.hatBottom, stroke: 'black' }),
-    create('circle', { ...riderStyle.hatBall, fill: 'black' }),
-    create('rect', { ...riderStyle.scarf, ...riderStyle.scarfEven, fill: 'white' }),
-    create('rect', { ...riderStyle.scarf, ...riderStyle.scarfOdd, fill: '#FD4F38' }),
-    create('rect', { ...riderStyle.scarf, ...riderStyle.scarfEven, fill: 'white' }),
-    create('rect', { ...riderStyle.scarf, ...riderStyle.scarfOdd, fill: '#06A725' }),
-    create('rect', { ...riderStyle.scarf, ...riderStyle.scarfEven, fill: 'white' }),
-    create('rect', { ...riderStyle.scarf, ...riderStyle.scarfOdd, fill: '#3995FD' })
+  return create('svg', { style: riderSVG },
+    create('rect', { ...riderStyle.skin, fill: 'white' }), // .skin
+    create('rect', { ...riderStyle.hair, fill: 'black' }), // .hair
+    create('rect', { ...riderStyle.faceOutline, fill: 'black' }), // .hair
+    create('rect', { ...riderStyle.hairFill, fill: 'black' }), // .fill
+    create('polygon', { ...riderStyle.eye, fill: 'black' }), // #eye
+    create('path', { ...riderStyle.nose, ...riderStyle.outline, fill: 'white' }), // .skin
+    create('path', { ...riderStyle.sled, ...riderStyle.outline, fill: 'white' }), // .sled
+    create('line', { ...riderStyle.string, stroke: 'black' }), // #string
+    // create('path', { ...riderStyle.armSleeve, fill: 'black' }), // .arm .sleeve
+    create('path', { ...riderStyle.armHand, ...riderStyle.outline, fill: 'white' }), // .arm .hand
+    create('path', { ...riderStyle.legPants, fill: 'black' }), // .leg .pants
+    create('path', { ...riderStyle.legFoot, ...riderStyle.outline, fill: 'white' }), // .leg .foot
+    create('rect', { ...riderStyle.torso, ...riderStyle.outline, fill: 'white' }), // .torso
+    create('rect', { ...riderStyle.scarf1, ...riderStyle.scarfOdd, fill: '#FD4F38' }), // .scarf1 || .scarfOdd
+    create('rect', { ...riderStyle.scarf2, ...riderStyle.scarfEven, fill: 'white' }), // .scarf2 || .scarfEven
+    create('rect', { ...riderStyle.scarf3, ...riderStyle.scarfOdd, fill: '#06A725' }), // .scarf3 || .scarfOdd
+    create('rect', { ...riderStyle.scarf4, ...riderStyle.scarfEven, fill: 'white' }), // .scarf4 || .scarfEven
+    create('rect', { ...riderStyle.scarf5, ...riderStyle.scarfOdd, fill: '#3995FD' }), // .scarf5 || .scarfOdd
+    create('path', { ...riderStyle.hatTop, ...riderStyle.outline, fill: 'white' }), // .hat .top
+    create('path', { ...riderStyle.hatBottom, stroke: 'black' }), // .hat .bottom
+    create('circle', { ...riderStyle.hatBall, fill: 'black' }), // .hat .ball
+    create('path', { ...riderStyle.armSleeve, fill: 'black' }) // .arm .sleeve
+    // create('rect', { ...riderStyle.scarf, ...riderStyle.scarfEven, fill: 'white' }),
+    // create('rect', { ...riderStyle.scarf, ...riderStyle.scarfOdd, fill: '#FD4F38' }),
+    // create('rect', { ...riderStyle.scarf, ...riderStyle.scarfEven, fill: 'white' }),
+    // create('rect', { ...riderStyle.scarf, ...riderStyle.scarfOdd, fill: '#06A725' }),
+    // create('rect', { ...riderStyle.scarf, ...riderStyle.scarfEven, fill: 'white' }),
+    // create('rect', { ...riderStyle.scarf, ...riderStyle.scarfOdd, fill: '#3995FD' })
   )
 }
