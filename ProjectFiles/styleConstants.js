@@ -235,6 +235,15 @@ const customSkinWindowStyle = {
   justifyContent: 'center'
 }
 
+const colorPickerStyle = {
+  height: '40px',
+  margin: '10px',
+  position: 'absolute',
+  right: '0px',
+  top: '0px',
+  width: '40px'
+}
+
 const flagSVG = {
   height: '18',
   transform: 'scale(5)',

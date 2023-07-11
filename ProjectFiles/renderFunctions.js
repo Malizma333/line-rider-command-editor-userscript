@@ -427,21 +427,29 @@ function skinEditorComp (create, root, data) {
     create('div', {
       style: customSkinWindowStyle
     },
-    FlagComponent(create),
+    create('input', {
+      style: colorPickerStyle,
+      type: 'color',
+      value: root.state.selectedColor,
+      onChange: (event) => root.onChangeColor(
+        event.target.value
+      )
+    }),
+    FlagComponent(create, root),
     create('svg', { width: '200' }),
-    RiderComponent(create)
+    RiderComponent(create, root)
     )
   )
 }
 
-function FlagComponent (create) {
+function FlagComponent (create, root) {
   return create('svg', { style: flagSVG },
     create('path', { ...riderStyle.flag, fill: 'rgba(0,0,0,0.4)' }),
     create('path', { ...riderStyle.startFlag, fill: 'rgba(0,0,0,0.4)' })
   )
 }
 
-function RiderComponent (create) {
+function RiderComponent (create, root) {
   return create('svg', { style: riderSVG },
     create('rect', { ...riderStyle.skin, fill: 'white' }), // .skin
     create('rect', { ...riderStyle.hair, fill: 'black' }), // .hair

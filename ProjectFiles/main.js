@@ -31,7 +31,8 @@ function main () {
         hasError: false,
         initialized: false,
         triggerData: {},
-        focuserDropdowns: []
+        focuserDropdowns: [],
+        selectedColor: '#000000'
       }
 
       this.commandEditor = new CommandEditor(store, this.state)
@@ -166,6 +167,10 @@ function main () {
         this.setState({ message: 'Error: ' + error.message })
         this.setState({ hasError: true })
       }
+    }
+
+    onChangeColor (color) {
+      this.setState({ selectedColor: color })
     }
 
     onActivate () {
