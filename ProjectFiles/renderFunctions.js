@@ -446,8 +446,16 @@ function skinEditorComp (create, root, data) {
 
 function FlagComponent (create, root, data, index) {
   return create('svg', { style: flagSVG },
-    create('path', { ...riderStyle.flag, fill: data.flag.fill }),
-    create('path', { ...riderStyle.flagOutline, fill: data.flag.stroke })
+    create('path', {
+      ...riderStyle.flag,
+      fill: data.flag.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'flag', 'fill'])
+    }), // .flag .fill
+    create('path', {
+      ...riderStyle.flagOutline,
+      fill: data.flag.stroke,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'flag', 'stroke'])
+    }) // .flag .stroke
   )
 }
 

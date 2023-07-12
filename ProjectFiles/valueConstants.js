@@ -56,7 +56,8 @@ const commandDataTypes = {
   CustomSkin: {
     displayName: 'Skin',
     template: {
-      flag: { fill: 'rgba(0,0,0,0.4)', stroke: 'rgba(0,0,0,0.4)' },
+      outline: { stroke: 'black' },
+      flag: { fill: 'black', stroke: 'black' },
       skin: { fill: 'white' },
       hair: { fill: 'black' },
       fill: { fill: 'black' },
