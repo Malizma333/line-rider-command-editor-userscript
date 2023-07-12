@@ -444,8 +444,17 @@ function skinEditorToolbar (create, root) {
   create('input', {
     style: colorPickerStyle,
     type: 'color',
-    value: root.state.selectedColor,
-    onChange: (e) => root.onChangeColor(e.target.value)
+    value: root.state.selectedColor.substring(0, 7),
+    onChange: (e) => root.onChangeColor(e.target.value, null)
+  }),
+  create('input', {
+    style: colorPickerStyle,
+    type: 'range',
+    min: 0,
+    max: 1,
+    step: 0.01,
+    value: parseInt(root.state.selectedColor.substring(7), 16) / 255,
+    onChange: (e) => root.onChangeColor(null, e.target.value)
   })
   )
 }

@@ -32,7 +32,7 @@ function main () {
         initialized: false,
         triggerData: {},
         focuserDropdowns: [],
-        selectedColor: '#000000'
+        selectedColor: '#000000ff'
       }
 
       this.commandEditor = new CommandEditor(store, this.state)
@@ -107,7 +107,7 @@ function main () {
         return
       }
 
-      this.onChangeTab(commands[0])
+      this.onChangeTab(commands[4])
 
       const data = {}
 
@@ -176,8 +176,17 @@ function main () {
       }
     }
 
-    onChangeColor (color) {
-      this.setState({ selectedColor: color })
+    onChangeColor (color, alpha) {
+      const hexAlpha = alpha
+        ? Math.round(Math.min(Math.max(parseFloat(alpha), 0), 1) * 255)
+          .toString(16).padStart(2, '0')
+        : this.state.selectedColor.substring(7)
+
+      const hexColor = color
+        ? color + hexAlpha
+        : this.state.selectedColor.substring(0, 7) + hexAlpha
+
+      this.setState({ selectedColor: hexColor })
     }
 
     onActivate () {

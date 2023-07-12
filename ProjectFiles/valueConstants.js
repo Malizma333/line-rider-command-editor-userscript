@@ -1,4 +1,4 @@
-const DEBUG = false
+const DEBUG = true
 
 const fps = 40
 const secondsInMinute = 60
