@@ -1,4 +1,6 @@
 function validateData (valueChange, constraints, bounded) {
+  if (!constraints) return valueChange.new
+
   switch (constraints.type) {
     case constraintTypes.bool: {
       return valueChange.new

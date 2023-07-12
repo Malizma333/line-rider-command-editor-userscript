@@ -261,7 +261,7 @@ const riderStyle = {
   flag: { transform: 'translate(-5, -3)', d: 'M6,3A1,1 0 0,1 7,4V4.88C8.06,4.44 9.5,4 11,4C14,4 14,6 16,6C19,6 20,4 20,4V12C20,12 19,14 16,14C13,14 13,12 11,12C8,12 7,14 7,14V21H5V4A1,1 0 0,1 6,3Z' },
   flagOutline: { transform: 'translate(-5, -3)', d: 'M6,3A1,1 0 0,1 7,4V4.88C8.06,4.44 9.5,4 11,4C14,4 14,6 16,6C19,6 20,4 20,4V12C20,12 19,14 16,14C13,14 13,12 11,12C8,12 7,14 7,14V21H5V4A1,1 0 0,1 6,3M7,7.25V11.5C7,11.5 9,10 11,10C13,10 14,12 16,12C18,12 18,11 18,11V7.5C18,7.5 17,8 16,8C14,8 13,6 11,6C9,6 7,7.25 7,7.25Z' },
   skin: { transform: 'translate(7,8) rotate(-90)', width: '3.1', height: '4.5' },
-  hair: { transform: 'translate(6.5, 5.1) rotate(-90)', width: '0.3', height: '4.5' },
+  hair: { transform: 'translate(6.6, 5.15) rotate(-90)', width: '0.3', height: '4.5' },
   faceOutline: { transform: 'translate(8.5, 8) rotate(-90)', width: '3.1', height: '0.3' },
   hairFill: { transform: 'translate(6.2,4.2) scale(0.8,0.8)', width: '3.1', height: '4.8' },
   eye: { transform: 'translate(10.3,6.7)', points: '0.4,-0.4 0,-0.5 -0.4,-0.4 -0.5,0 -0.4,0.4 0,0.5 0.4,0.4 0.5,0' },

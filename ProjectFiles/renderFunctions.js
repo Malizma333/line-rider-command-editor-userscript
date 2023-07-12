@@ -423,6 +423,8 @@ function timeRemapTriggerComp (create, root, data, index) {
 }
 
 function skinEditorComp (create, root, data) {
+  const index = 0
+
   return create('div', null,
     create('div', {
       style: customSkinWindowStyle
@@ -435,42 +437,139 @@ function skinEditorComp (create, root, data) {
         event.target.value
       )
     }),
-    FlagComponent(create, root, data.triggers[0]),
+    FlagComponent(create, root, data.triggers[index], index),
     create('svg', { width: '200' }),
-    RiderComponent(create, root, data.triggers[0])
+    RiderComponent(create, root, data.triggers[index], index)
     )
   )
 }
 
-function FlagComponent (create, root, data) {
+function FlagComponent (create, root, data, index) {
   return create('svg', { style: flagSVG },
     create('path', { ...riderStyle.flag, fill: data.flag.fill }),
     create('path', { ...riderStyle.flagOutline, fill: data.flag.stroke })
   )
 }
 
-function RiderComponent (create, root, data) {
+function RiderComponent (create, root, data, index) {
   return create('svg', { style: riderSVG },
-    create('rect', { ...riderStyle.skin, fill: data.skin.fill }), // .skin
-    create('rect', { ...riderStyle.hair, fill: data.hair.fill }), // .hair
-    create('rect', { ...riderStyle.faceOutline, fill: data.hair.fill }), // .hair
-    create('rect', { ...riderStyle.hairFill, fill: data.fill.fill }), // .fill
-    create('polygon', { ...riderStyle.eye, fill: data.eye.fill }), // #eye
-    create('path', { ...riderStyle.nose, ...riderStyle.outline, fill: data.skin.fill }), // .skin
-    create('path', { ...riderStyle.sled, ...riderStyle.outline, fill: data.sled.fill }), // .sled
-    create('line', { ...riderStyle.string, stroke: data.string.stroke }), // #string
-    create('path', { ...riderStyle.armHand, ...riderStyle.outline, fill: data.armHand.fill }), // .arm .hand
-    create('path', { ...riderStyle.legPants, fill: data.legPants.fill }), // .leg .pants
-    create('path', { ...riderStyle.legFoot, ...riderStyle.outline, fill: data.legFoot.fill }), // .leg .foot
-    create('rect', { ...riderStyle.torso, ...riderStyle.outline, fill: data.torso.fill }), // .torso
-    create('rect', { ...riderStyle.scarf1, ...riderStyle.scarfOdd, fill: data.scarf1.fill }), // .scarf1
-    create('rect', { ...riderStyle.scarf2, ...riderStyle.scarfEven, fill: data.scarf2.fill }), // .scarf2
-    create('rect', { ...riderStyle.scarf3, ...riderStyle.scarfOdd, fill: data.scarf3.fill }), // .scarf3
-    create('rect', { ...riderStyle.scarf4, ...riderStyle.scarfEven, fill: data.scarf4.fill }), // .scarf4
-    create('rect', { ...riderStyle.scarf5, ...riderStyle.scarfOdd, fill: data.scarf5.fill }), // .scarf5
-    create('path', { ...riderStyle.hatTop, ...riderStyle.outline, fill: data.hatTop.fill }), // .hat .top
-    create('path', { ...riderStyle.hatBottom, stroke: data.hatBottom.stroke }), // .hat .bottom
-    create('circle', { ...riderStyle.hatBall, fill: data.hatBall.fill }), // .hat .ball
-    create('path', { ...riderStyle.armSleeve, fill: data.armSleeve.fill }) // .arm .sleeve
+    create('rect', {
+      ...riderStyle.skin,
+      fill: data.skin.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'skin', 'fill'])
+    }), // .skin
+    create('path', {
+      ...riderStyle.outline,
+      ...riderStyle.nose,
+      fill: data.skin.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'skin', 'fill'])
+    }), // .skin
+    create('rect', {
+      ...riderStyle.hair,
+      fill: data.hair.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hair', 'fill'])
+    }), // .hair
+    create('rect', {
+      ...riderStyle.faceOutline,
+      fill: data.hair.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hair', 'fill'])
+    }), // .hair
+    create('rect', {
+      ...riderStyle.hairFill,
+      fill: data.fill.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'fill', 'fill'])
+    }), // .fill
+    create('polygon', {
+      ...riderStyle.eye,
+      fill: data.eye.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'eye', 'fill'])
+    }), // #eye
+    create('path', {
+      ...riderStyle.outline,
+      ...riderStyle.sled,
+      fill: data.sled.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'sled', 'fill'])
+    }), // .sled
+    create('line', {
+      ...riderStyle.string,
+      stroke: data.string.stroke,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'string', 'stroke'])
+    }), // #string
+    create('path', {
+      ...riderStyle.outline,
+      ...riderStyle.armHand,
+      fill: data.armHand.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'armHand', 'fill'])
+    }), // .arm .hand
+    create('path', {
+      ...riderStyle.outline,
+      ...riderStyle.legPants,
+      fill: data.legPants.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'legPants', 'fill'])
+    }), // .leg .pants
+    create('path', {
+      ...riderStyle.outline,
+      ...riderStyle.legFoot,
+      fill: data.legFoot.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'legFoot', 'fill'])
+    }), // .leg .foot
+    create('rect', {
+      ...riderStyle.torso,
+      ...riderStyle.outline,
+      fill: data.torso.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'torso', 'fill'])
+    }), // .torso
+    create('rect', {
+      ...riderStyle.scarfOdd,
+      ...riderStyle.scarf1,
+      fill: data.scarf1.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf1', 'fill'])
+    }), // .scarf1
+    create('rect', {
+      ...riderStyle.scarfOdd,
+      ...riderStyle.scarf2,
+      fill: data.scarf2.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf2', 'fill'])
+    }), // .scarf2
+    create('rect', {
+      ...riderStyle.scarfOdd,
+      ...riderStyle.scarf3,
+      fill: data.scarf3.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf3', 'fill'])
+    }), // .scarf3
+    create('rect', {
+      ...riderStyle.scarfOdd,
+      ...riderStyle.scarf4,
+      fill: data.scarf4.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf4', 'fill'])
+    }), // .scarf4
+    create('rect', {
+      ...riderStyle.scarfOdd,
+      ...riderStyle.scarf5,
+      fill: data.scarf5.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf5', 'fill'])
+    }), // .scarf5
+    create('path', {
+      ...riderStyle.outline,
+      ...riderStyle.hatTop,
+      fill: data.hatTop.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatTop', 'fill'])
+    }), // .hat .top
+    create('path', {
+      ...riderStyle.hatBottom,
+      stroke: data.hatBottom.stroke,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatBottom', 'stroke'])
+    }), // .hat .bottom
+    create('circle', {
+      ...riderStyle.hatBall,
+      fill: data.hatBall.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatBall', 'fill'])
+    }), // .hat .ball
+    create('path', {
+      ...riderStyle.outline,
+      ...riderStyle.armSleeve,
+      fill: data.armSleeve.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'armSleeve', 'fill'])
+    }) // .arm .sleeve
   )
 }
