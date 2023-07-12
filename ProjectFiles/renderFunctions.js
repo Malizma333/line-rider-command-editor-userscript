@@ -146,18 +146,18 @@ function smoothTabComp (create, root, data) {
         marginLeft: '5px'
       },
       value: data.smoothing,
-      onChange: (event) => root.updateTrigger(
+      onChange: (e) => root.updateTrigger(
         {
           prev: data.smoothing,
-          new: event.target.value
+          new: e.target.value
         },
         ['smoothing'],
         constraintProps.smoothProps
       ),
-      onBlur: (event) => root.updateTrigger(
+      onBlur: (e) => root.updateTrigger(
         {
           prev: data.smoothing,
-          new: event.target.value
+          new: e.target.value
         },
         ['smoothing'],
         constraintProps.smoothProps,
@@ -254,18 +254,18 @@ function timeStampComp (create, root, data, index) {
         },
         disabled: index === 0,
         value: timeValue,
-        onChange: (event) => root.updateTrigger(
+        onChange: (e) => root.updateTrigger(
           {
             prev: timeValue,
-            new: event.target.value
+            new: e.target.value
           },
           ['triggers', index, 0, timeIndex],
           tProps[timeIndex]
         ),
-        onBlur: (event) => root.updateTrigger(
+        onBlur: (e) => root.updateTrigger(
           {
             prev: timeValue,
-            new: event.target.value
+            new: e.target.value
           },
           ['triggers', index, 0, timeIndex],
           tProps[timeIndex],
@@ -284,18 +284,18 @@ function zoomTriggerComp (create, root, data, index) {
     create('input', {
       style: triggerTextStyle,
       value: data[1],
-      onChange: (event) => root.updateTrigger(
+      onChange: (e) => root.updateTrigger(
         {
           prev: data[1],
-          new: event.target.value
+          new: e.target.value
         },
         ['triggers', index, 1],
         constraintProps.zoomProps
       ),
-      onBlur: (event) => root.updateTrigger(
+      onBlur: (e) => root.updateTrigger(
         {
           prev: data[1],
-          new: event.target.value
+          new: e.target.value
         },
         ['triggers', index, 1],
         constraintProps.zoomProps,
@@ -326,18 +326,18 @@ function camPanTriggerComp (create, root, data, index) {
       create('input', {
         style: triggerTextStyle,
         value: data[1][prop],
-        onChange: (event) => root.updateTrigger(
+        onChange: (e) => root.updateTrigger(
           {
             prev: data[1][prop],
-            new: event.target.value
+            new: e.target.value
           },
           ['triggers', index, 1, prop],
           cProps[propIndex]
         ),
-        onBlur: (event) => root.updateTrigger(
+        onBlur: (e) => root.updateTrigger(
           {
             prev: data[1][prop],
-            new: event.target.value
+            new: e.target.value
           },
           ['triggers', index, 1, prop],
           cProps[propIndex],
@@ -356,8 +356,8 @@ function camFocusTriggerComp (create, root, data, index) {
     create('select', {
       style: dropdownHeaderStyle,
       value: dropdownIndex,
-      onChange: (event) => root.onChangeDropdown(
-        index, event.target.value
+      onChange: (e) => root.onChangeDropdown(
+        index, e.target.value
       )
     },
     Object.keys(data[1]).map(riderIndex => {
@@ -372,18 +372,18 @@ function camFocusTriggerComp (create, root, data, index) {
     create('input', {
       style: triggerTextStyle,
       value: data[1][dropdownIndex],
-      onChange: (event) => root.updateTrigger(
+      onChange: (e) => root.updateTrigger(
         {
           prev: data[1][dropdownIndex],
-          new: event.target.value
+          new: e.target.value
         },
         ['triggers', index, 1, dropdownIndex],
         constraintProps.fWeightProps
       ),
-      onBlur: (event) => root.updateTrigger(
+      onBlur: (e) => root.updateTrigger(
         {
           prev: data[1][dropdownIndex],
-          new: event.target.value
+          new: e.target.value
         },
         ['triggers', index, 1, dropdownIndex],
         constraintProps.fWeightProps,
@@ -401,18 +401,18 @@ function timeRemapTriggerComp (create, root, data, index) {
     create('input', {
       style: triggerTextStyle,
       value: data[1],
-      onChange: (event) => root.updateTrigger(
+      onChange: (e) => root.updateTrigger(
         {
           prev: data[1],
-          new: event.target.value
+          new: e.target.value
         },
         ['triggers', index, 1],
         constraintProps.timeProps
       ),
-      onBlur: (event) => root.updateTrigger(
+      onBlur: (e) => root.updateTrigger(
         {
           prev: data[1],
-          new: event.target.value
+          new: e.target.value
         },
         ['triggers', index, 1],
         constraintProps.timeProps,
@@ -429,18 +429,24 @@ function skinEditorComp (create, root, data) {
     create('div', {
       style: customSkinWindowStyle
     },
-    create('input', {
-      style: colorPickerStyle,
-      type: 'color',
-      value: root.state.selectedColor,
-      onChange: (event) => root.onChangeColor(
-        event.target.value
-      )
-    }),
+    skinEditorToolbar(create, root),
     FlagComponent(create, root, data.triggers[index], index),
     create('svg', { width: '200' }),
     RiderComponent(create, root, data.triggers[index], index)
     )
+  )
+}
+
+function skinEditorToolbar (create, root) {
+  return create('div', {
+    style: customSkinToolbarStyle
+  },
+  create('input', {
+    style: colorPickerStyle,
+    type: 'color',
+    value: root.state.selectedColor,
+    onChange: (e) => root.onChangeColor(e.target.value)
+  })
   )
 }
 
@@ -450,12 +456,12 @@ function FlagComponent (create, root, data, index) {
       ...riderStyle.flag,
       fill: data.flag.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'flag', 'fill'])
-    }), // .flag .fill
+    }),
     create('path', {
       ...riderStyle.flagOutline,
       fill: data.flag.stroke,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'flag', 'stroke'])
-    }) // .flag .stroke
+    })
   )
 }
 
@@ -465,119 +471,119 @@ function RiderComponent (create, root, data, index) {
       ...riderStyle.skin,
       fill: data.skin.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'skin', 'fill'])
-    }), // .skin
+    }),
     create('path', {
       ...riderStyle.outline,
       ...riderStyle.nose,
       fill: data.skin.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'skin', 'fill'])
-    }), // .skin
+    }),
     create('rect', {
       ...riderStyle.hair,
       fill: data.hair.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hair', 'fill'])
-    }), // .hair
+    }),
     create('rect', {
       ...riderStyle.faceOutline,
       fill: data.hair.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hair', 'fill'])
-    }), // .hair
+    }),
     create('rect', {
       ...riderStyle.hairFill,
       fill: data.fill.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'fill', 'fill'])
-    }), // .fill
+    }),
     create('polygon', {
       ...riderStyle.eye,
       fill: data.eye.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'eye', 'fill'])
-    }), // #eye
+    }),
     create('path', {
       ...riderStyle.outline,
       ...riderStyle.sled,
       fill: data.sled.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'sled', 'fill'])
-    }), // .sled
+    }),
     create('line', {
       ...riderStyle.string,
       stroke: data.string.stroke,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'string', 'stroke'])
-    }), // #string
+    }),
     create('path', {
       ...riderStyle.outline,
       ...riderStyle.armHand,
       fill: data.armHand.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'armHand', 'fill'])
-    }), // .arm .hand
+    }),
     create('path', {
       ...riderStyle.outline,
       ...riderStyle.legPants,
       fill: data.legPants.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'legPants', 'fill'])
-    }), // .leg .pants
+    }),
     create('path', {
       ...riderStyle.outline,
       ...riderStyle.legFoot,
       fill: data.legFoot.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'legFoot', 'fill'])
-    }), // .leg .foot
+    }),
     create('rect', {
       ...riderStyle.torso,
       ...riderStyle.outline,
       fill: data.torso.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'torso', 'fill'])
-    }), // .torso
+    }),
     create('rect', {
       ...riderStyle.scarfOdd,
       ...riderStyle.scarf1,
       fill: data.scarf1.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf1', 'fill'])
-    }), // .scarf1
+    }),
     create('rect', {
       ...riderStyle.scarfOdd,
       ...riderStyle.scarf2,
       fill: data.scarf2.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf2', 'fill'])
-    }), // .scarf2
+    }),
     create('rect', {
       ...riderStyle.scarfOdd,
       ...riderStyle.scarf3,
       fill: data.scarf3.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf3', 'fill'])
-    }), // .scarf3
+    }),
     create('rect', {
       ...riderStyle.scarfOdd,
       ...riderStyle.scarf4,
       fill: data.scarf4.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf4', 'fill'])
-    }), // .scarf4
+    }),
     create('rect', {
       ...riderStyle.scarfOdd,
       ...riderStyle.scarf5,
       fill: data.scarf5.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf5', 'fill'])
-    }), // .scarf5
+    }),
     create('path', {
       ...riderStyle.outline,
       ...riderStyle.hatTop,
       fill: data.hatTop.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatTop', 'fill'])
-    }), // .hat .top
+    }),
     create('path', {
       ...riderStyle.hatBottom,
       stroke: data.hatBottom.stroke,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatBottom', 'stroke'])
-    }), // .hat .bottom
+    }),
     create('circle', {
       ...riderStyle.hatBall,
       fill: data.hatBall.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatBall', 'fill'])
-    }), // .hat .ball
+    }),
     create('path', {
       ...riderStyle.outline,
       ...riderStyle.armSleeve,
       fill: data.armSleeve.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'armSleeve', 'fill'])
-    }) // .arm .sleeve
+    })
   )
 }

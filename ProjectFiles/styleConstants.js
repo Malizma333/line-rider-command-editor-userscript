@@ -235,12 +235,17 @@ const customSkinWindowStyle = {
   justifyContent: 'center'
 }
 
-const colorPickerStyle = {
-  height: '40px',
+const customSkinToolbarStyle = {
+  display: 'flex',
   margin: '10px',
   position: 'absolute',
   right: '0px',
-  top: '0px',
+  top: '0px'
+}
+
+const colorPickerStyle = {
+  height: '40px',
+  marginLeft: '5px',
   width: '40px'
 }
 
