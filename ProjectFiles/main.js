@@ -121,10 +121,17 @@ function main () {
           ]
         }
 
-        if (command === Triggers.TimeRemap) {
-          data[command].interpolate = constraintProps.interpolateProps.default
-        } else {
-          data[command].smoothing = constraintProps.smoothProps.default
+        switch (command) {
+          case Triggers.CameraFocus:
+          case Triggers.CameraPan:
+          case Triggers.Zoom:
+            data[command].smoothing = constraintProps.smoothProps.default
+            break
+          case Triggers.TimeRemap:
+            data[command].interpolate = constraintProps.interpolateProps.default
+            break
+          default:
+            break
         }
       })
 

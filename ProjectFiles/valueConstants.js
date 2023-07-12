@@ -55,7 +55,28 @@ const commandDataTypes = {
   },
   CustomSkin: {
     displayName: 'Skin',
-    template: '',
+    template: {
+      flag: { fill: 'rgba(0,0,0,0.4)', stroke: 'rgba(0,0,0,0.4)' },
+      skin: { fill: 'white' },
+      hair: { fill: 'black' },
+      fill: { fill: 'black' },
+      eye: { fill: 'black' },
+      sled: { fill: 'white' },
+      string: { stroke: 'black' },
+      armSleeve: { fill: 'black' },
+      armHand: { fill: 'white' },
+      legPants: { fill: 'black' },
+      legFoot: { fill: 'white' },
+      torso: { fill: 'white' },
+      hatTop: { fill: 'white' },
+      hatBottom: { stroke: 'black' },
+      hatBall: { fill: 'black' },
+      scarf1: { fill: '#FD4F38' },
+      scarf2: { fill: 'white' },
+      scarf3: { fill: '#06A725' },
+      scarf4: { fill: 'white' },
+      scarf5: { fill: '#3995FD' }
+    },
     header: 'setCustomRiders({0})'
   }
 }
