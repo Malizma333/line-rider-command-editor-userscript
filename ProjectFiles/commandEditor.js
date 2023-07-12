@@ -64,18 +64,22 @@ class CommandEditor {
       const currentData = this.state.triggerData[command]
       let currentHeader = commandDataTypes[command].header
 
-      currentHeader = currentHeader.replace(
-        '{0}', JSON.stringify(currentData.triggers)
-      )
-
-      if (command === Triggers.TimeRemap) {
-        currentHeader = currentHeader.replace(
-          '{1}', currentData.interpolate
-        )
-      } else {
-        currentHeader = currentHeader.replace(
-          '{1}', currentData.smoothing
-        )
+      switch (command) {
+        case Triggers.CameraFocus:
+        case Triggers.CameraPan:
+        case Triggers.Zoom:
+          currentHeader = currentHeader.replace('{0}', JSON.stringify(currentData.triggers))
+          currentHeader = currentHeader.replace('{1}', currentData.smoothing)
+          break
+        case Triggers.TimeRemap:
+          currentHeader = currentHeader.replace('{0}', JSON.stringify(currentData.triggers))
+          currentHeader = currentHeader.replace('{1}', currentData.interpolate)
+          break
+        case Triggers.CustomSkin:
+          currentHeader = currentHeader.replace('{0}', formatSkins(currentData.triggers))
+          break
+        default:
+          currentHeader = ''
       }
 
       scriptResult += currentHeader + '\n'

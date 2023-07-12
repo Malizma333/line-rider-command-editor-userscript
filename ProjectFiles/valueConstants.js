@@ -78,6 +78,6 @@ const commandDataTypes = {
       scarf4: { fill: 'white' },
       scarf5: { fill: '#3995FD' }
     },
-    header: 'setCustomRiders({0})'
+    header: 'setCustomRiders({0});'
   }
 }
