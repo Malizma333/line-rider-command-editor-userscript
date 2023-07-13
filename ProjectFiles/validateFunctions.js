@@ -88,6 +88,8 @@ function validateTimeStamps (triggerData) {
   const commands = Object.keys(triggerData)
 
   commands.forEach(command => {
+    if (command === Triggers.CustomSkin) return
+
     const triggers = triggerData[command].triggers
 
     for (let i = 0; i < triggers.length - 1; i++) {
@@ -139,6 +141,8 @@ function formatSkins (customSkinData) {
       .hat .ball {fill: ${customSkin.hatBall.fill}}
     `.replace(/\n/g, '')
   })
+
+  customSkinStrings.unshift(customSkinStrings.pop())
 
   return JSON.stringify(customSkinStrings)
 }

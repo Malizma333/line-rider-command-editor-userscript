@@ -216,13 +216,13 @@ const triggerTextStyle = {
   width: '4ch'
 }
 
-const dropdownHeaderStyle = {
+const triggerDropdownHeaderStyle = {
   ...triggerTextStyle,
   height: '3ch',
   width: '120px'
 }
 
-const dropdownOptionStyle = {
+const triggerDropdownOptionStyle = {
   ...triggerTextStyle,
   textAlign: 'center'
 }
@@ -236,6 +236,7 @@ const customSkinWindowStyle = {
 }
 
 const customSkinToolbarStyle = {
+  alignItems: 'center',
   display: 'flex',
   margin: '10px',
   position: 'absolute',
@@ -245,8 +246,20 @@ const customSkinToolbarStyle = {
 
 const colorPickerStyle = {
   height: '40px',
-  marginLeft: '5px',
+  marginLeft: '10px',
   width: '40px'
+}
+
+const alphaSliderStyle = {
+  appearance: 'none',
+  background: 'linear-gradient(to left, #000000, #ffffff)',
+  border: '1px solid #000000',
+  borderRadius: '5px',
+  direction: 'ltr',
+  height: '8px',
+  marginLeft: '10px',
+  opacity: '0.7',
+  width: '100px'
 }
 
 const flagSVG = {

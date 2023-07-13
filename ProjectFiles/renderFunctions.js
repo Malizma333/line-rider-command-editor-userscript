@@ -350,21 +350,19 @@ function camPanTriggerComp (create, root, data, index) {
 }
 
 function camFocusTriggerComp (create, root, data, index) {
-  const dropdownIndex = root.state.focuserDropdowns[index]
+  const dropdownIndex = root.state.focuserDropdownIndices[index]
 
   return create('div', null,
     create('select', {
-      style: dropdownHeaderStyle,
+      style: triggerDropdownHeaderStyle,
       value: dropdownIndex,
-      onChange: (e) => root.onChangeDropdown(
-        index, e.target.value
-      )
+      onChange: (e) => root.onChangeFocuserDropdown(index, e.target.value)
     },
     Object.keys(data[1]).map(riderIndex => {
       const riderNum = 1 + parseInt(riderIndex)
 
       return create('option', {
-        style: dropdownOptionStyle,
+        style: triggerDropdownOptionStyle,
         value: parseInt(riderIndex)
       }, create('text', null, `Rider ${riderNum}`))
     })),
@@ -423,39 +421,55 @@ function timeRemapTriggerComp (create, root, data, index) {
 }
 
 function skinEditorComp (create, root, data) {
-  const index = 0
+  const dropdownIndex = root.state.skinDropdownIndex
 
   return create('div', null,
     create('div', {
       style: customSkinWindowStyle
     },
-    skinEditorToolbar(create, root),
-    FlagComponent(create, root, data.triggers[index], index),
+    skinEditorToolbar(create, root, data.triggers, dropdownIndex),
+    FlagComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
     create('svg', { width: '200' }),
-    RiderComponent(create, root, data.triggers[index], index)
+    RiderComponent(create, root, data.triggers[dropdownIndex], dropdownIndex)
     )
   )
 }
 
-function skinEditorToolbar (create, root) {
+function skinEditorToolbar (create, root, data, index) {
+  const colorValue = root.state.selectedColor.substring(0, 7)
+  const alphaValue = parseInt(root.state.selectedColor.substring(7), 16) / 255
+
   return create('div', {
     style: customSkinToolbarStyle
   },
   create('input', {
     style: colorPickerStyle,
     type: 'color',
-    value: root.state.selectedColor.substring(0, 7),
+    value: colorValue,
     onChange: (e) => root.onChangeColor(e.target.value, null)
   }),
   create('input', {
-    style: colorPickerStyle,
+    style: alphaSliderStyle,
     type: 'range',
     min: 0,
     max: 1,
     step: 0.01,
-    value: parseInt(root.state.selectedColor.substring(7), 16) / 255,
+    value: alphaValue,
     onChange: (e) => root.onChangeColor(null, e.target.value)
-  })
+  }),
+  create('select', {
+    style: triggerDropdownHeaderStyle,
+    value: index,
+    onChange: (e) => root.onChangeSkinDropdown(e.target.value)
+  },
+  Object.keys(data).map(riderIndex => {
+    const riderNum = 1 + parseInt(riderIndex)
+
+    return create('option', {
+      style: triggerDropdownOptionStyle,
+      value: parseInt(riderIndex)
+    }, create('text', null, `Rider ${riderNum}`))
+  }))
   )
 }
 
