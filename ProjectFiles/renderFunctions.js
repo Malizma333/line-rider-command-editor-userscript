@@ -494,8 +494,8 @@ function FlagComponent (create, root, data, index) {
     }),
     create('path', {
       ...riderStyle.flagOutline,
-      fill: data.flag.stroke,
-      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'flag', 'stroke'])
+      fill: data.flag.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'flag', 'fill'])
     })
   )
 }

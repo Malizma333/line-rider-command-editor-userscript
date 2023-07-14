@@ -57,7 +57,7 @@ const commandDataTypes = {
     displayName: 'Skin',
     template: {
       outline: { stroke: 'black' },
-      flag: { fill: 'black', stroke: 'black' },
+      flag: { fill: '#00000066' },
       skin: { fill: 'white' },
       hair: { fill: 'black' },
       fill: { fill: 'black' },

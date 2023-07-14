@@ -141,6 +141,7 @@ function formatSkins (customSkinData) {
       .hat .top {fill: ${customSkin.hatTop.fill}}
       .hat .bottom {stroke: ${customSkin.hatBottom.stroke}}
       .hat .ball {fill: ${customSkin.hatBall.fill}}
+      .flag {fill: ${customSkin.flag.fill}}
     `.replace(/\n/g, '')
   })
 
