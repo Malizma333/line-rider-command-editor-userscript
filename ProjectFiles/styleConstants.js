@@ -13,16 +13,19 @@ const colorTheme = {
 
 const textStyle = {
   S: {
+    direction: 'ltr',
     fontFamily: 'Helvetica',
     fontSize: '14px',
     fontWeight: 'bold'
   },
   M: {
+    direction: 'ltr',
     fontFamily: 'Helvetica',
     fontSize: '22px',
     fontWeight: 'bold'
   },
   L: {
+    direction: 'ltr',
     fontFamily: 'Helvetica',
     fontSize: '32px',
     fontWeight: 'bold'
@@ -218,6 +221,7 @@ const triggerTextStyle = {
 
 const triggerDropdownHeaderStyle = {
   ...triggerTextStyle,
+  marginRight: '10px',
   height: '3ch',
   width: '120px'
 }
@@ -229,24 +233,39 @@ const triggerDropdownOptionStyle = {
 
 const customSkinWindowStyle = {
   ...triggerWindowStyle,
-  overflow: 'hidden',
-  display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center'
+  display: 'flex',
+  justifyContent: 'center',
+  overflow: 'hidden'
+}
+
+const customSkinBackgroundStyle = {
+  background: `
+  linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),
+  linear-gradient(-45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%)`,
+  backgroundSize: '10px 10px',
+  height: '210%',
+  position: 'absolute',
+  transform: 'rotate(45deg)',
+  width: '200%'
 }
 
 const customSkinToolbarStyle = {
   alignItems: 'center',
+  backgroundColor: colorTheme.lightgray1,
+  borderBottom: '3px solid black',
   display: 'flex',
-  margin: '10px',
+  justifyContent: 'left',
+  left: '0px',
+  padding: '10px',
   position: 'absolute',
-  right: '0px',
-  top: '0px'
+  top: '0px',
+  width: '100%'
 }
 
 const colorPickerStyle = {
   height: '40px',
-  marginLeft: '10px',
+  marginRight: '10px',
   width: '40px'
 }
 
@@ -255,8 +274,15 @@ const alphaContainerStyle = {
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
+  marginRight: '10px',
+  position: 'relative'
+}
+
+const alphaSliderContainerStyle = {
+  alignItems: 'center',
+  display: 'flex',
   position: 'relative',
-  width: '175px'
+  left: '7px'
 }
 
 const alphaSliderStyle = {
@@ -266,28 +292,38 @@ const alphaSliderStyle = {
   borderRadius: '5px',
   direction: 'ltr',
   height: '8px',
-  marginTop: '5px',
+  margin: '5px',
+  marginTop: '10px',
   opacity: '0.7',
   width: '100px'
 }
 
 const outlineColorDivStyle = {
-  backgroundColor: 'black',
+  alignItems: 'center',
+  display: 'flex',
+  position: 'absolute',
+  bottom: '10px',
+  left: '10px'
+}
+
+const outlineColorPickerStyle = {
   border: '1px solid black',
   borderRadius: '10px',
   height: '20px',
-  marginRight: '10px',
+  marginLeft: '5px',
   width: '20px'
 }
 
 const flagSVG = {
   height: '18',
+  marginTop: '40px',
   transform: 'scale(5)',
   width: '15'
 }
 
 const riderSVG = {
   height: '25',
+  marginTop: '40px',
   transform: 'scale(5)',
   width: '31'
 }
@@ -297,18 +333,18 @@ const riderStyle = {
   flag: { opacity: 0.4, transform: 'translate(-5, -3)', d: 'M6,3A1,1 0 0,1 7,4V4.88C8.06,4.44 9.5,4 11,4C14,4 14,6 16,6C19,6 20,4 20,4V12C20,12 19,14 16,14C13,14 13,12 11,12C8,12 7,14 7,14V21H5V4A1,1 0 0,1 6,3Z' },
   flagOutline: { opacity: 0.4, transform: 'translate(-5, -3)', d: 'M6,3A1,1 0 0,1 7,4V4.88C8.06,4.44 9.5,4 11,4C14,4 14,6 16,6C19,6 20,4 20,4V12C20,12 19,14 16,14C13,14 13,12 11,12C8,12 7,14 7,14V21H5V4A1,1 0 0,1 6,3M7,7.25V11.5C7,11.5 9,10 11,10C13,10 14,12 16,12C18,12 18,11 18,11V7.5C18,7.5 17,8 16,8C14,8 13,6 11,6C9,6 7,7.25 7,7.25Z' },
   skin: { transform: 'translate(13,8) rotate(-90)', width: '3.1', height: '4.5' },
-  hair: { transform: 'translate(12.6, 5.15) rotate(-90)', width: '0.3', height: '4.5' },
-  faceOutline: { transform: 'translate(14.5, 8) rotate(-90)', width: '3.1', height: '0.3' },
+  hair: { transform: 'translate(12.4, 5.15) rotate(-90)', width: '0.3', height: '5.1' },
+  faceOutline: { transform: 'translate(12.2, 8.1) rotate(-90)', width: '3.1', height: '0.3' },
   hairFill: { transform: 'translate(12.2,4.2) scale(0.8,0.8)', width: '3.1', height: '4.8' },
   eye: { transform: 'translate(16.3,6.7)', points: '0.4,-0.4 0,-0.5 -0.4,-0.4 -0.5,0 -0.4,0.4 0,0.5 0.4,0.4 0.5,0' },
   nose: { transform: 'translate(17.3,8.1) rotate(-90)', d: 'M 0 -0.25 v 0.4 c 0.1 1.3 1.2 1.2 3.1 0 v -0.4' },
   sled: { transform: 'translate(9.7, 15.9) scale(1.04,1)', d: 'M13.6-2.2c-1.35,0-2.55,0.75-3.15,1.85H0C-0.2-0.35-0.35-0.2-0.35,0S-0.2,0.35,0,0.35h1.75V4.4H-0.2c-0.2,0-0.35,0.15-0.35,0.35S-0.4,5.1-0.2,5.1h13.8c2,0,3.65-1.65,3.65-3.65S15.6-2.2,13.6-2.2zM9.05,4.4h-6.6V0.35h6.6V4.4z M13.6,4.4H9.75V0.35h0.35C10.05,0.5,10,0.7,10,0.9c0,0.2,0.15,0.35,0.35,0.35c0.15,0,0.3-0.1,0.35-0.25c0.05-0.2,0.1-0.45,0.2-0.65h0.9c0.2,0,0.35-0.15,0.35-0.35S12-0.35,11.8-0.35h-0.5c0.5-0.7,1.35-1.15,2.3-1.15c1.65,0,2.95,1.3,2.95,2.95C16.55,3.1,15.25,4.4,13.6,4.4z' },
-  string: { transform: 'translate(21, 10) rotate(40)', x1: '0', y1: '0', x2: '8', y2: '0', strokeWidth: '0.3' },
+  string: { transform: 'translate(21.5, 10.5) rotate(40)', x1: '0', y1: '0', x2: '8', y2: '0', strokeWidth: '0.3' },
   armSleeve: { transform: 'translate(15, 10) rotate(5)', d: 'M5,0.7H0c-0.4,0-0.7-0.3-0.7-0.7S-0.4-0.7,0-0.7h5' },
   armHand: { transform: 'translate(15, 10) rotate(5)', d: 'M5-0.7h0.5c0,0,0.3-0.7,0.5-0.6c0.2,0.1,0,0.6,0,0.6s0.4,0,0.6,0c0.2,0,0.5,0.3,0.5,0.7c0,0.4-0.2,0.7-0.5,0.7c-0.5,0-1.6,0-1.6,0' },
   legPants: { transform: 'translate(15, 16) rotate(45)', d: 'M4.8-0.7H0c-0.4,0-0.7,0.3-0.7,0.7S-0.4,0.7,0,0.7h4.8' },
   legFoot: { transform: 'translate(15, 16) rotate(45)', d: 'M4.8,0.7h2.4l0-2.7L6.7-2L6-0.7H4.8' },
-  torso: { transform: 'translate(16.9, 8.9) rotate(90)', width: '7', height: '4.4' },
+  torso: { transform: 'translate(16.9, 8.1) rotate(90)', width: '7.8', height: '4.4' },
   scarfEven: { transform: 'translate(14.8, 15.2) rotate(-90)' },
   scarfOdd: { transform: 'translate(14.8, 15.2) rotate(-90)' },
   scarf1: { strokeWidth: '0', x: '5.2', y: '1.5', width: '2', height: '1' },

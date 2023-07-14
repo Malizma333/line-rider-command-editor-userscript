@@ -423,14 +423,21 @@ function timeRemapTriggerComp (create, root, data, index) {
 function skinEditorComp (create, root, data) {
   const dropdownIndex = root.state.skinDropdownIndex
 
-  return create('div', null,
-    create('div', {
-      style: customSkinWindowStyle
-    },
+  return create('div', { style: customSkinWindowStyle },
+    create('div', { style: customSkinBackgroundStyle }),
     skinEditorToolbar(create, root, data.triggers, dropdownIndex),
     FlagComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
     create('svg', { width: '200' }),
-    RiderComponent(create, root, data.triggers[dropdownIndex], dropdownIndex)
+    RiderComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
+    create('div', { style: outlineColorDivStyle },
+      create('div', {
+        style: {
+          ...outlineColorPickerStyle,
+          backgroundColor: data.triggers[dropdownIndex].outline.stroke
+        },
+        onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', dropdownIndex, 'outline', 'stroke'])
+      }),
+      create('text', { style: textStyle.S }, 'Outline:')
     )
   )
 }
@@ -439,47 +446,42 @@ function skinEditorToolbar (create, root, data, index) {
   const colorValue = root.state.selectedColor.substring(0, 7)
   const alphaValue = parseInt(root.state.selectedColor.substring(7), 16) / 255
 
-  return create('div', {
-    style: customSkinToolbarStyle
-  },
-  create('input', {
-    style: colorPickerStyle,
-    type: 'color',
-    value: colorValue,
-    onChange: (e) => root.onChangeColor(e.target.value, null)
-  }),
-  create('div', { style: alphaContainerStyle },
-    create('text', null, 'Transparency'),
-    create('text', { style: { bottom: '-5px', left: '10px', position: 'absolute' } }, '0%'),
-    create('text', { style: { bottom: '-5px', right: '-5px', position: 'absolute' } }, '100%'),
+  return create('div', { style: customSkinToolbarStyle },
+    create('div', { style: alphaContainerStyle },
+      create('text', { style: textStyle.S }, 'Transparency'),
+      create('div', { style: alphaSliderContainerStyle },
+        create('text', { style: textStyle.S }, '100%'),
+        create('input', {
+          style: alphaSliderStyle,
+          type: 'range',
+          min: 0,
+          max: 1,
+          step: 0.01,
+          value: alphaValue,
+          onChange: (e) => root.onChangeColor(null, e.target.value)
+        }),
+        create('text', { style: textStyle.S }, '0%')
+      )
+    ),
     create('input', {
-      style: alphaSliderStyle,
-      type: 'range',
-      min: 0,
-      max: 1,
-      step: 0.01,
-      value: alphaValue,
-      onChange: (e) => root.onChangeColor(null, e.target.value)
-    })
-  ),
-  create('select', {
-    style: triggerDropdownHeaderStyle,
-    value: index,
-    onChange: (e) => root.onChangeSkinDropdown(e.target.value)
-  },
-  Object.keys(data).map(riderIndex => {
-    const riderNum = 1 + parseInt(riderIndex)
+      style: colorPickerStyle,
+      type: 'color',
+      value: colorValue,
+      onChange: (e) => root.onChangeColor(e.target.value, null)
+    }),
+    create('select', {
+      style: triggerDropdownHeaderStyle,
+      value: index,
+      onChange: (e) => root.onChangeSkinDropdown(e.target.value)
+    },
+    Object.keys(data).map(riderIndex => {
+      const riderNum = 1 + parseInt(riderIndex)
 
-    return create('option', {
-      style: triggerDropdownOptionStyle,
-      value: parseInt(riderIndex)
-    }, create('text', null, `Rider ${riderNum}`))
-  })),
-  create('div', {
-    style: { ...outlineColorDivStyle, backgroundColor: data[index].outline.stroke },
-    onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'outline', 'stroke'])
-  },
-  create('text', { style: { position: 'relative', right: '25px' } }, 'Outline'))
+      return create('option', {
+        style: triggerDropdownOptionStyle,
+        value: parseInt(riderIndex)
+      }, create('text', null, `Rider ${riderNum}`))
+    }))
   )
 }
 
