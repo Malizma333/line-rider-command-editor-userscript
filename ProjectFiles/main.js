@@ -31,14 +31,17 @@ function main () {
         hasError: false,
         initialized: false,
         triggerData: {},
-        focuserDropdowns: []
+        focuserDropdownIndices: [],
+        skinDropdownIndex: 0,
+        selectedColor: '#000000ff'
       }
 
       this.commandEditor = new CommandEditor(store, this.state)
 
       store.subscribeImmediate(() => {
         if (this.state.initialized) {
-          this.onAdjustDropdown()
+          this.onAdjustFocuserDropdown()
+          this.onAdjustSkinDropdown()
         }
       })
     }
@@ -61,10 +64,10 @@ function main () {
 
       if (this.state.activeTab === Triggers.CameraFocus) {
         this.setState({
-          focuserDropdowns: [...this.state.focuserDropdowns, 0]
+          focuserDropdownIndices: [...this.state.focuserDropdownIndices, 0]
         })
 
-        this.onAdjustDropdown()
+        this.onAdjustFocuserDropdown()
       }
     }
 
@@ -91,7 +94,7 @@ function main () {
       const data = { ...this.state.triggerData }
 
       data[this.state.activeTab].triggers = data[this.state.activeTab].triggers.filter(
-        (el, i) => { return index !== i }
+        (e, i) => { return index !== i }
       )
 
       this.setState({ triggerData: data })
@@ -106,7 +109,7 @@ function main () {
         return
       }
 
-      this.onChangeTab(commands[0])
+      this.onChangeTab(commands[4])
 
       const data = {}
 
@@ -120,16 +123,23 @@ function main () {
           ]
         }
 
-        if (command === Triggers.TimeRemap) {
-          data[command].interpolate = constraintProps.interpolateProps.default
-        } else {
-          data[command].smoothing = constraintProps.smoothProps.default
+        switch (command) {
+          case Triggers.CameraFocus:
+          case Triggers.CameraPan:
+          case Triggers.Zoom:
+            data[command].smoothing = constraintProps.smoothProps.default
+            break
+          case Triggers.TimeRemap:
+            data[command].interpolate = constraintProps.interpolateProps.default
+            break
+          default:
+            break
         }
       })
 
       this.setState({ triggerData: data })
 
-      this.setState({ focuserDropdowns: [0] })
+      this.setState({ focuserDropdownIndices: [0] })
     }
 
     onRead () {
@@ -168,6 +178,19 @@ function main () {
       }
     }
 
+    onChangeColor (color, alpha) {
+      const hexAlpha = alpha
+        ? Math.round(Math.min(Math.max(parseFloat(alpha), 0), 1) * 255)
+          .toString(16).padStart(2, '0')
+        : this.state.selectedColor.substring(7)
+
+      const hexColor = color
+        ? color + hexAlpha
+        : this.state.selectedColor.substring(0, 7) + hexAlpha
+
+      this.setState({ selectedColor: hexColor })
+    }
+
     onActivate () {
       if (this.state.active) {
         this.setState({ active: false })
@@ -180,17 +203,21 @@ function main () {
       this.setState({ activeTab: tabName })
     }
 
-    onChangeDropdown (index, value) {
-      const dropdownData = [...this.state.focuserDropdowns]
+    onChangeFocuserDropdown (index, value) {
+      const dropdownData = [...this.state.focuserDropdownIndices]
 
-      dropdownData[index] = value
+      dropdownData[index] = parseInt(value)
 
-      this.setState({ focuserDropdowns: dropdownData })
+      this.setState({ focuserDropdownIndices: dropdownData })
     }
 
-    onAdjustDropdown () {
-      const data = { ...this.state.triggerData }
-      const focusTriggers = data[Triggers.CameraFocus].triggers
+    onChangeSkinDropdown (value) {
+      this.setState({ skinDropdownIndex: parseInt(value) })
+    }
+
+    onAdjustFocuserDropdown () {
+      const triggerData = { ...this.state.triggerData }
+      const focusTriggers = triggerData[Triggers.CameraFocus].triggers
       const clamp = this.commandEditor.RiderCount
 
       focusTriggers.forEach((e, i) => {
@@ -203,8 +230,45 @@ function main () {
         }
       })
 
-      data[Triggers.CameraFocus].triggers = focusTriggers
-      this.setState({ triggerData: data })
+      triggerData[Triggers.CameraFocus].triggers = focusTriggers
+      this.setState({ triggerData })
+
+      const focuserDropdownIndices = this.state.focuserDropdownIndices
+
+      focuserDropdownIndices.forEach((e, i) => {
+        if (focuserDropdownIndices[i] >= clamp) {
+          focuserDropdownIndices[i] = clamp - 1
+        }
+      })
+
+      this.setState({ focuserDropdownIndices })
+    }
+
+    onAdjustSkinDropdown () {
+      const triggerData = { ...this.state.triggerData }
+      let skinTriggers = triggerData[Triggers.CustomSkin].triggers
+      const clamp = this.commandEditor.RiderCount
+
+      for (let j = skinTriggers.length; j < clamp; j++) {
+        skinTriggers = [...skinTriggers, JSON.parse(JSON.stringify(
+          commandDataTypes.CustomSkin.template
+        ))]
+      }
+
+      for (let j = skinTriggers.length; j > clamp; j--) {
+        skinTriggers = skinTriggers.slice(0, -1)
+      }
+
+      triggerData[Triggers.CustomSkin].triggers = skinTriggers
+      this.setState({ triggerData })
+
+      let skinDropdownIndex = this.state.skinDropdownIndex
+
+      if (skinDropdownIndex >= clamp) {
+        skinDropdownIndex = clamp - 1
+      }
+
+      this.setState({ skinDropdownIndex })
     }
 
     /* Render Events */
