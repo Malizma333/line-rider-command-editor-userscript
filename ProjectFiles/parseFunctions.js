@@ -109,6 +109,8 @@ function parseSkinCss (skinCSSArray) {
     skinJSONArray.push(template)
   })
 
+  skinJSONArray.push(skinJSONArray.shift())
+
   return skinJSONArray
 }
 
