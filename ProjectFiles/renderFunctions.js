@@ -474,7 +474,12 @@ function skinEditorToolbar (create, root, data, index) {
       style: triggerDropdownOptionStyle,
       value: parseInt(riderIndex)
     }, create('text', null, `Rider ${riderNum}`))
-  }))
+  })),
+  create('div', {
+    style: { ...outlineColorDivStyle, backgroundColor: data[index].outline.stroke },
+    onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'outline', 'stroke'])
+  },
+  create('text', { style: { position: 'relative', right: '25px' } }, 'Outline'))
   )
 }
 
@@ -503,6 +508,7 @@ function RiderComponent (create, root, data, index) {
     create('path', {
       ...riderStyle.outline,
       ...riderStyle.nose,
+      stroke: data.outline.stroke,
       fill: data.skin.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'skin', 'fill'])
     }),
@@ -529,6 +535,7 @@ function RiderComponent (create, root, data, index) {
     create('path', {
       ...riderStyle.outline,
       ...riderStyle.sled,
+      stroke: data.outline.stroke,
       fill: data.sled.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'sled', 'fill'])
     }),
@@ -540,18 +547,21 @@ function RiderComponent (create, root, data, index) {
     create('path', {
       ...riderStyle.outline,
       ...riderStyle.armHand,
+      stroke: data.outline.stroke,
       fill: data.armHand.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'armHand', 'fill'])
     }),
     create('path', {
       ...riderStyle.outline,
       ...riderStyle.legPants,
+      stroke: data.outline.stroke,
       fill: data.legPants.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'legPants', 'fill'])
     }),
     create('path', {
       ...riderStyle.outline,
       ...riderStyle.legFoot,
+      stroke: data.outline.stroke,
       fill: data.legFoot.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'legFoot', 'fill'])
     }),
@@ -592,8 +602,9 @@ function RiderComponent (create, root, data, index) {
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf5', 'fill'])
     }),
     create('rect', {
-      ...riderStyle.torso,
       ...riderStyle.outline,
+      ...riderStyle.torso,
+      stroke: data.outline.stroke,
       fill: data.torso.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'torso', 'fill'])
     }),
@@ -630,6 +641,7 @@ function RiderComponent (create, root, data, index) {
     create('path', {
       ...riderStyle.outline,
       ...riderStyle.hatTop,
+      stroke: data.outline.stroke,
       fill: data.hatTop.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatTop', 'fill'])
     }),
@@ -646,6 +658,7 @@ function RiderComponent (create, root, data, index) {
     create('path', {
       ...riderStyle.outline,
       ...riderStyle.armSleeve,
+      stroke: data.outline.stroke,
       fill: data.armSleeve.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'armSleeve', 'fill'])
     })

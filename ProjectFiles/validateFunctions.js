@@ -120,6 +120,7 @@ function validateTimeStamps (triggerData) {
 function formatSkins (customSkinData) {
   const customSkinStrings = customSkinData.map((customSkin) => {
     return `
+      .outline {stroke: ${customSkin.outline.stroke}}
       .skin {fill: ${customSkin.skin.fill}}
       .hair {fill: ${customSkin.hair.fill}}
       .fill {fill: ${customSkin.fill.fill}}
