@@ -94,7 +94,7 @@ function main () {
       const data = { ...this.state.triggerData }
 
       data[this.state.activeTab].triggers = data[this.state.activeTab].triggers.filter(
-        (el, i) => { return index !== i }
+        (e, i) => { return index !== i }
       )
 
       this.setState({ triggerData: data })

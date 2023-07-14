@@ -72,6 +72,7 @@ const commandDataTypes = {
       hatTop: { fill: 'white' },
       hatBottom: { stroke: 'black' },
       hatBall: { fill: 'black' },
+      scarf0: { fill: 'white' },
       scarf1: { fill: '#FD4F38' },
       scarf2: { fill: 'white' },
       scarf3: { fill: '#06A725' },

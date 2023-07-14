@@ -250,6 +250,15 @@ const colorPickerStyle = {
   width: '40px'
 }
 
+const alphaContainerStyle = {
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  position: 'relative',
+  width: '175px'
+}
+
 const alphaSliderStyle = {
   appearance: 'none',
   background: 'linear-gradient(to left, #000000, #ffffff)',
@@ -257,7 +266,7 @@ const alphaSliderStyle = {
   borderRadius: '5px',
   direction: 'ltr',
   height: '8px',
-  marginLeft: '10px',
+  marginTop: '5px',
   opacity: '0.7',
   width: '100px'
 }
@@ -271,34 +280,42 @@ const flagSVG = {
 const riderSVG = {
   height: '25',
   transform: 'scale(5)',
-  width: '25'
+  width: '31'
 }
 
 const riderStyle = {
   outline: { stroke: 'black', strokeWidth: 0.3 },
   flag: { opacity: 0.4, transform: 'translate(-5, -3)', d: 'M6,3A1,1 0 0,1 7,4V4.88C8.06,4.44 9.5,4 11,4C14,4 14,6 16,6C19,6 20,4 20,4V12C20,12 19,14 16,14C13,14 13,12 11,12C8,12 7,14 7,14V21H5V4A1,1 0 0,1 6,3Z' },
   flagOutline: { opacity: 0.4, transform: 'translate(-5, -3)', d: 'M6,3A1,1 0 0,1 7,4V4.88C8.06,4.44 9.5,4 11,4C14,4 14,6 16,6C19,6 20,4 20,4V12C20,12 19,14 16,14C13,14 13,12 11,12C8,12 7,14 7,14V21H5V4A1,1 0 0,1 6,3M7,7.25V11.5C7,11.5 9,10 11,10C13,10 14,12 16,12C18,12 18,11 18,11V7.5C18,7.5 17,8 16,8C14,8 13,6 11,6C9,6 7,7.25 7,7.25Z' },
-  skin: { transform: 'translate(7,8) rotate(-90)', width: '3.1', height: '4.5' },
-  hair: { transform: 'translate(6.6, 5.15) rotate(-90)', width: '0.3', height: '4.5' },
-  faceOutline: { transform: 'translate(8.5, 8) rotate(-90)', width: '3.1', height: '0.3' },
-  hairFill: { transform: 'translate(6.2,4.2) scale(0.8,0.8)', width: '3.1', height: '4.8' },
-  eye: { transform: 'translate(10.3,6.7)', points: '0.4,-0.4 0,-0.5 -0.4,-0.4 -0.5,0 -0.4,0.4 0,0.5 0.4,0.4 0.5,0' },
-  nose: { transform: 'translate(11.3,8.1) rotate(-90)', d: 'M 0 -0.25 v 0.4 c 0.1 1.3 1.2 1.2 3.1 0 v -0.4' },
-  sled: { transform: 'translate(3.7, 15.9) scale(1.04,1)', d: 'M13.6-2.2c-1.35,0-2.55,0.75-3.15,1.85H0C-0.2-0.35-0.35-0.2-0.35,0S-0.2,0.35,0,0.35h1.75V4.4H-0.2c-0.2,0-0.35,0.15-0.35,0.35S-0.4,5.1-0.2,5.1h13.8c2,0,3.65-1.65,3.65-3.65S15.6-2.2,13.6-2.2zM9.05,4.4h-6.6V0.35h6.6V4.4z M13.6,4.4H9.75V0.35h0.35C10.05,0.5,10,0.7,10,0.9c0,0.2,0.15,0.35,0.35,0.35c0.15,0,0.3-0.1,0.35-0.25c0.05-0.2,0.1-0.45,0.2-0.65h0.9c0.2,0,0.35-0.15,0.35-0.35S12-0.35,11.8-0.35h-0.5c0.5-0.7,1.35-1.15,2.3-1.15c1.65,0,2.95,1.3,2.95,2.95C16.55,3.1,15.25,4.4,13.6,4.4z' },
-  string: { transform: 'translate(15, 10) rotate(40)', x1: '0', y1: '0', x2: '8', y2: '0', strokeWidth: '0.3' },
-  armSleeve: { transform: 'translate(9, 10) rotate(5)', d: 'M5,0.7H0c-0.4,0-0.7-0.3-0.7-0.7S-0.4-0.7,0-0.7h5' },
-  armHand: { transform: 'translate(9, 10) rotate(5)', d: 'M5-0.7h0.5c0,0,0.3-0.7,0.5-0.6c0.2,0.1,0,0.6,0,0.6s0.4,0,0.6,0c0.2,0,0.5,0.3,0.5,0.7c0,0.4-0.2,0.7-0.5,0.7c-0.5,0-1.6,0-1.6,0' },
-  legPants: { transform: 'translate(9, 16) rotate(45)', d: 'M4.8-0.7H0c-0.4,0-0.7,0.3-0.7,0.7S-0.4,0.7,0,0.7h4.8' },
-  legFoot: { transform: 'translate(9, 16) rotate(45)', d: 'M4.8,0.7h2.4l0-2.7L6.7-2L6-0.7H4.8' },
-  torso: { transform: 'translate(10.9, 8.9) rotate(90)', width: '7', height: '4.4' },
-  scarfEven: { transform: 'translate(8.8, 15.2) rotate(-90)' },
-  scarfOdd: { transform: 'translate(8.8, 15.2) rotate(-90)' },
+  skin: { transform: 'translate(13,8) rotate(-90)', width: '3.1', height: '4.5' },
+  hair: { transform: 'translate(12.6, 5.15) rotate(-90)', width: '0.3', height: '4.5' },
+  faceOutline: { transform: 'translate(14.5, 8) rotate(-90)', width: '3.1', height: '0.3' },
+  hairFill: { transform: 'translate(12.2,4.2) scale(0.8,0.8)', width: '3.1', height: '4.8' },
+  eye: { transform: 'translate(16.3,6.7)', points: '0.4,-0.4 0,-0.5 -0.4,-0.4 -0.5,0 -0.4,0.4 0,0.5 0.4,0.4 0.5,0' },
+  nose: { transform: 'translate(17.3,8.1) rotate(-90)', d: 'M 0 -0.25 v 0.4 c 0.1 1.3 1.2 1.2 3.1 0 v -0.4' },
+  sled: { transform: 'translate(9.7, 15.9) scale(1.04,1)', d: 'M13.6-2.2c-1.35,0-2.55,0.75-3.15,1.85H0C-0.2-0.35-0.35-0.2-0.35,0S-0.2,0.35,0,0.35h1.75V4.4H-0.2c-0.2,0-0.35,0.15-0.35,0.35S-0.4,5.1-0.2,5.1h13.8c2,0,3.65-1.65,3.65-3.65S15.6-2.2,13.6-2.2zM9.05,4.4h-6.6V0.35h6.6V4.4z M13.6,4.4H9.75V0.35h0.35C10.05,0.5,10,0.7,10,0.9c0,0.2,0.15,0.35,0.35,0.35c0.15,0,0.3-0.1,0.35-0.25c0.05-0.2,0.1-0.45,0.2-0.65h0.9c0.2,0,0.35-0.15,0.35-0.35S12-0.35,11.8-0.35h-0.5c0.5-0.7,1.35-1.15,2.3-1.15c1.65,0,2.95,1.3,2.95,2.95C16.55,3.1,15.25,4.4,13.6,4.4z' },
+  string: { transform: 'translate(21, 10) rotate(40)', x1: '0', y1: '0', x2: '8', y2: '0', strokeWidth: '0.3' },
+  armSleeve: { transform: 'translate(15, 10) rotate(5)', d: 'M5,0.7H0c-0.4,0-0.7-0.3-0.7-0.7S-0.4-0.7,0-0.7h5' },
+  armHand: { transform: 'translate(15, 10) rotate(5)', d: 'M5-0.7h0.5c0,0,0.3-0.7,0.5-0.6c0.2,0.1,0,0.6,0,0.6s0.4,0,0.6,0c0.2,0,0.5,0.3,0.5,0.7c0,0.4-0.2,0.7-0.5,0.7c-0.5,0-1.6,0-1.6,0' },
+  legPants: { transform: 'translate(15, 16) rotate(45)', d: 'M4.8-0.7H0c-0.4,0-0.7,0.3-0.7,0.7S-0.4,0.7,0,0.7h4.8' },
+  legFoot: { transform: 'translate(15, 16) rotate(45)', d: 'M4.8,0.7h2.4l0-2.7L6.7-2L6-0.7H4.8' },
+  torso: { transform: 'translate(16.9, 8.9) rotate(90)', width: '7', height: '4.4' },
+  scarfEven: { transform: 'translate(14.8, 15.2) rotate(-90)' },
+  scarfOdd: { transform: 'translate(14.8, 15.2) rotate(-90)' },
   scarf1: { strokeWidth: '0', x: '5.2', y: '1.5', width: '2', height: '1' },
   scarf2: { strokeWidth: '0', x: '5.2', y: '0.5', width: '2', height: '1' },
   scarf3: { strokeWidth: '0', x: '5.2', y: '-0.5', width: '2', height: '1' },
   scarf4: { strokeWidth: '0', x: '5.2', y: '-1.5', width: '2', height: '1' },
   scarf5: { strokeWidth: '0', x: '5.2', y: '-2.5', width: '2', height: '1' },
-  hatTop: { transform: 'translate(8.8,5) rotate(-90) translate(-10,0)', d: 'M11-2.6h-0.4v5.2H11c1.2,0,2.2-1.2,2.2-2.6S12.2-2.6,11-2.6z' },
-  hatBottom: { transform: 'translate(8.8,5) rotate(-90) translate(-10,0)', strokeWidth: 1, strokeLinecap: 'round', d: 'M10.6-2.6 v5.2' },
-  hatBall: { transform: 'translate(8.8,5) rotate(-90) translate(-10,0)', cx: '13.9', cy: '0', r: '0.7' }
+  hatTop: { transform: 'translate(14.8,5) rotate(-90) translate(-10,0)', d: 'M11-2.6h-0.4v5.2H11c1.2,0,2.2-1.2,2.2-2.6S12.2-2.6,11-2.6z' },
+  hatBottom: { transform: 'translate(14.8,5) rotate(-90) translate(-10,0)', strokeWidth: 1, strokeLinecap: 'round', d: 'M10.6-2.6 v5.2' },
+  hatBall: { transform: 'translate(14.8,5) rotate(-90) translate(-10,0)', cx: '13.9', cy: '0', r: '0.7' },
+  scarfEvenb: { transform: 'translate(10.5, 8.5)' },
+  scarfOddb: { transform: 'translate(10.5, 8.5)' },
+  scarf0b: { strokeWidth: '0', x: '0', width: '2', height: '2' },
+  scarf1b: { strokeWidth: '0', x: '-2', width: '2', height: '2' },
+  scarf2b: { strokeWidth: '0', x: '-4', width: '2', height: '2' },
+  scarf3b: { strokeWidth: '0', x: '-6', width: '2', height: '2' },
+  scarf4b: { strokeWidth: '0', x: '-8', width: '2', height: '2' },
+  scarf5b: { strokeWidth: '0', x: '-10', width: '2', height: '2' }
 }

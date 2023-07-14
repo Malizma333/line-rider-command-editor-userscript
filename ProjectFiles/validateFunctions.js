@@ -131,6 +131,7 @@ function formatSkins (customSkinData) {
       .leg .pants {fill: ${customSkin.legPants.fill}}
       .leg .foot {fill: ${customSkin.legFoot.fill}}
       .torso {fill: ${customSkin.torso.fill}}
+      .scarf0 {fill: ${customSkin.scarf0.fill}}
       .scarf1 {fill: ${customSkin.scarf1.fill}}
       .scarf2 {fill: ${customSkin.scarf2.fill}}
       .scarf3 {fill: ${customSkin.scarf3.fill}}
