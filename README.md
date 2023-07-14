@@ -24,6 +24,7 @@ This guide can be accessed through the `?` icon, and bugs can be reported throug
 - The `Pan` tab has triggers that offset the camera from bosh and expand the collision boxes of the camera
 - The `Focus` tab has triggers that specify (in the case of multiple riders) which riders the camera should focus on
 - The `Speed` tab has triggers that slow down or speed up the timeline for a certain period of time
+- The `Skin` tab has a custom skin editor for changing the color of parts of the rider skin
 - The `Smoothing` area has the value of smoothing for the currently focused command tab (interpolation toggle for time remap)
 
 ### Triggers
@@ -44,3 +45,10 @@ This guide can be accessed through the `?` icon, and bugs can be reported throug
   - The dropdown includes as many riders as there are in the loaded track file
 - Time Remap triggers have a time scale property that the render engine runs at
   - The time scale ranges from **0.01** to **10**
+
+### Using the skin editor tab
+- Select a color using the color picker from the toolbar
+- The color's transparency can be changed using the slider
+- The currently selected rider can be changed using the dropdown
+- Click anywhere on bosh's texture to change it's color
+- The color of bosh's outline can be changed by clicking the circle next to the "Outline:" label
