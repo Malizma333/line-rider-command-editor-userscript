@@ -109,7 +109,7 @@ function main () {
         return
       }
 
-      this.onChangeTab(commands[0])
+      this.onChangeTab(commands[4])
 
       const data = {}
 
@@ -175,6 +175,14 @@ function main () {
       } catch (error) {
         this.setState({ message: 'Error: ' + error.message })
         this.setState({ hasError: true })
+      }
+    }
+
+    onResetSkin (index) {
+      const confirmReset = confirm('Are you sure you want to reset the current rider\'s skin?')
+
+      if (confirmReset) {
+        console.log('Clear', index)
       }
     }
 

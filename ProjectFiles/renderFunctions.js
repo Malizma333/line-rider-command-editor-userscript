@@ -447,6 +447,17 @@ function skinEditorToolbar (create, root, data, index) {
   const alphaValue = parseInt(root.state.selectedColor.substring(7), 16) / 255
 
   return create('div', { style: customSkinToolbarStyle },
+    create('button', {
+      style: {
+        ...squareButtonStyle,
+        position: 'absolute',
+        right: '10px'
+      },
+      onClick: () => root.onResetSkin(index)
+    },
+    create('text', {
+      style: { ...textStyle.L, color: 'red', fontWeight: 700 }
+    }, 'X')),
     create('div', { style: alphaContainerStyle },
       create('text', { style: textStyle.S }, 'Transparency'),
       create('div', { style: alphaSliderContainerStyle },
