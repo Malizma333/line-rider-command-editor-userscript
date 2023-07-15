@@ -109,7 +109,7 @@ function main () {
         return
       }
 
-      this.onChangeTab(commands[4])
+      this.onChangeTab(commands[0])
 
       const data = {}
 
