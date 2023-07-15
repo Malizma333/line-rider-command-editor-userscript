@@ -182,7 +182,13 @@ function main () {
       const confirmReset = confirm('Are you sure you want to reset the current rider\'s skin?')
 
       if (confirmReset) {
-        console.log('Clear', index)
+        const triggerData = this.state.triggerData
+
+        triggerData.CustomSkin.triggers[index] = JSON.parse(JSON.stringify(
+          commandDataTypes.CustomSkin.template
+        ))
+
+        this.setState({ triggerData })
       }
     }
 
