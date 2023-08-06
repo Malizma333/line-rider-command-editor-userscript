@@ -159,7 +159,7 @@ function main () {
 
     onTest () {
       try {
-        this.commandEditor.test()
+        this.commandEditor.test(this.state.activeTab)
         this.setState({ hasError: false })
       } catch (error) {
         this.setState({ message: 'Error: ' + error.message })

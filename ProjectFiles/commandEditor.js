@@ -19,8 +19,8 @@ class CommandEditor {
     return this.parseScript(this.script)
   }
 
-  test () {
-    const script = this.generateScript()
+  test (command) {
+    const script = this.generateScript(command)
     // eslint-disable-next-line no-eval
     eval.call(window, script)
   }
