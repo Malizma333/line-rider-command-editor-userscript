@@ -25,8 +25,8 @@ class CommandEditor {
     eval.call(window, script)
   }
 
-  print () {
-    return this.generateScript()
+  print (command) {
+    return this.generateScript(command)
   }
 
   onUpdate (nextState = this.state) {
@@ -56,34 +56,31 @@ class CommandEditor {
     this.changed = true
   }
 
-  generateScript () {
+  generateScript (command) {
     let scriptResult = ''
-    const commands = Object.keys(commandDataTypes)
 
-    commands.forEach(command => {
-      const currentData = this.state.triggerData[command]
-      let currentHeader = commandDataTypes[command].header
+    const currentData = this.state.triggerData[command]
+    let currentHeader = commandDataTypes[command].header
 
-      switch (command) {
-        case Triggers.CameraFocus:
-        case Triggers.CameraPan:
-        case Triggers.Zoom:
-          currentHeader = currentHeader.replace('{0}', JSON.stringify(currentData.triggers))
-          currentHeader = currentHeader.replace('{1}', currentData.smoothing)
-          break
-        case Triggers.TimeRemap:
-          currentHeader = currentHeader.replace('{0}', JSON.stringify(currentData.triggers))
-          currentHeader = currentHeader.replace('{1}', currentData.interpolate)
-          break
-        case Triggers.CustomSkin:
-          currentHeader = currentHeader.replace('{0}', formatSkins(currentData.triggers))
-          break
-        default:
-          currentHeader = ''
-      }
+    switch (command) {
+      case Triggers.CameraFocus:
+      case Triggers.CameraPan:
+      case Triggers.Zoom:
+        currentHeader = currentHeader.replace('{0}', JSON.stringify(currentData.triggers))
+        currentHeader = currentHeader.replace('{1}', currentData.smoothing)
+        break
+      case Triggers.TimeRemap:
+        currentHeader = currentHeader.replace('{0}', JSON.stringify(currentData.triggers))
+        currentHeader = currentHeader.replace('{1}', currentData.interpolate)
+        break
+      case Triggers.CustomSkin:
+        currentHeader = currentHeader.replace('{0}', formatSkins(currentData.triggers))
+        break
+      default:
+        currentHeader = ''
+    }
 
-      scriptResult += currentHeader + '\n'
-    })
+    scriptResult += currentHeader
 
     return scriptResult.replace(' ', '')
   }

@@ -169,7 +169,7 @@ function main () {
 
     onPrint () {
       try {
-        const printInformation = this.commandEditor.print()
+        const printInformation = this.commandEditor.print(this.state.activeTab)
         this.setState({ message: printInformation })
         this.setState({ hasError: false })
       } catch (error) {
