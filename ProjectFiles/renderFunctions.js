@@ -73,7 +73,7 @@ function readWriteComps (create, root) {
     }, root.state.message),
     create('button', {
       style: dataCopyPrintStyle,
-      onClick: () => console.log(root.state.message)
+      onClick: () => root.onCopyClipboard(root.state.message)
     }, '🖶')
   )
   )
