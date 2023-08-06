@@ -1,4 +1,4 @@
-const DEBUG = false
+const DEBUG = true
 
 const helpLink = 'https://github.com/Malizma333/line-rider-command-editor-userscript#readme'
 const reportLink = 'https://trello.com/invite/b/HQI4mr1y/ATTI88d27c72cf8ffcd70c6e2b424e4ffb548519EDDF/line-rider-command-editor'
