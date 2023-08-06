@@ -159,7 +159,7 @@ function main () {
 
     onTest () {
       try {
-        this.commandEditor.test()
+        this.commandEditor.test(this.state.activeTab)
         this.setState({ hasError: false })
       } catch (error) {
         this.setState({ message: 'Error: ' + error.message })
@@ -169,7 +169,7 @@ function main () {
 
     onPrint () {
       try {
-        const printInformation = this.commandEditor.print()
+        const printInformation = this.commandEditor.print(this.state.activeTab)
         this.setState({ message: printInformation })
         this.setState({ hasError: false })
       } catch (error) {
