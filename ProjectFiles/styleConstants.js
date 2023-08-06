@@ -112,13 +112,24 @@ const dataContainerStyle = {
   margin: '10px',
   overflowY: 'scroll',
   whiteSpace: 'normal',
-  wordWrap: 'break-word'
+  wordWrap: 'break-word',
+  userSelect: 'text'
 }
 
 const dataTextStyle = {
   textAlign: 'center',
   ...textStyle.S,
   width: '90%'
+}
+
+const dataCopyPrintStyle = {
+  backgroundColor: colorTheme.white,
+  border: '2px solide black',
+  bottom: '17px',
+  fontSize: '20px',
+  fontWeight: 'bold',
+  position: 'absolute',
+  userSelect: 'none'
 }
 
 const tabHeaderStyle = {

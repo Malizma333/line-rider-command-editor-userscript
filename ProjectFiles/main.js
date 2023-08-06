@@ -205,6 +205,16 @@ function main () {
       this.setState({ selectedColor: hexColor })
     }
 
+    onCopyClipboard (text) {
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          console.log('Text copied to clipboard successfully')
+        })
+        .catch((error) => {
+          console.error('Error copying text to clipboard: ', error)
+        })
+    }
+
     onActivate () {
       if (this.state.active) {
         this.setState({ active: false })

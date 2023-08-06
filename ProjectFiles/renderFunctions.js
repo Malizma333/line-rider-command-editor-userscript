@@ -70,7 +70,11 @@ function readWriteComps (create, root) {
         ...dataTextStyle,
         color: root.state.hasError ? 'Red' : 'Black'
       }
-    }, root.state.message)
+    }, root.state.message),
+    create('button', {
+      style: dataCopyPrintStyle,
+      onClick: () => root.onCopyClipboard(root.state.message)
+    }, '🖶')
   )
   )
 }
