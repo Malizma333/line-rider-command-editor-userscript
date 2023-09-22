@@ -1,3 +1,7 @@
+/* Group of functions for custom data validation */
+
+// Parses the script by checking for a command header keyword and verifying it's in a valid format
+
 function parseCommand (command, currentData, scriptCopy) {
   const currentHeader = commandDataTypes[command].header.split('(')[0]
   const currentHeaderIndex = scriptCopy.indexOf(currentHeader)
@@ -32,6 +36,8 @@ function parseCommand (command, currentData, scriptCopy) {
       break
   }
 }
+
+// Parses smoothing specifically by checking if the value exists and type
 
 function parseSmoothing (command, currentData, smoothingValue) {
   if (command === Triggers.TimeRemap) {
@@ -69,6 +75,8 @@ function parseSmoothing (command, currentData, smoothingValue) {
   }
 }
 
+// Adjusts each of the time stamps to fit the [M,S,F] format
+
 function adjustTimestamps (commandArray) {
   for (let i = 0; i < commandArray.length; i++) {
     const timeList = commandArray[i][0]
@@ -86,6 +94,8 @@ function adjustTimestamps (commandArray) {
     }
   }
 }
+
+// Parses each of the skin css codes in a custom riders command
 
 function parseSkinCss (skinCSSArray) {
   const skinJSONArray = []
@@ -113,6 +123,8 @@ function parseSkinCss (skinCSSArray) {
 
   return skinJSONArray
 }
+
+// Looks through each of the css property keywords and associates them with a JSON compatible keyword
 
 function parseProp (propString, object) {
   const wordRegex = /(['"])?([#]?[a-z0-9A-Z_-]+)(['"])?/g
