@@ -1,3 +1,5 @@
+/* Main function, entry point of the application */
+
 function main () {
   window.V2 = window.V2 || getWindowStart(window.store.getState())
 
@@ -10,6 +12,8 @@ function main () {
   let playerRunning = getPlayerRunning(store.getState())
   let windowFocused = getWindowFocused(store.getState())
 
+  // Listens for changes in window state to update UI accordingly
+
   store.subscribe(() => {
     playerRunning = getPlayerRunning(store.getState())
     windowFocused = getWindowFocused(store.getState())
@@ -19,6 +23,8 @@ function main () {
     commandEditorParent.style.opacity = shouldBeVisible ? 1 : 0
     commandEditorParent.style.pointerEvents = shouldBeVisible ? null : 'none'
   })
+
+  // Entry point for the UI components
 
   class CommandEditorComponent extends React.Component {
     constructor () {
@@ -46,7 +52,49 @@ function main () {
       })
     }
 
-    /* Trigger Events */
+    // State initialization, populates the triggers with base data
+
+    async onInitializeState () {
+      const commands = Object.keys(commandDataTypes)
+
+      if (commands.length === 0) {
+        return
+      }
+
+      this.onChangeTab(commands[0])
+
+      const data = {}
+
+      commands.forEach(command => {
+        data[command] = {
+          id: command,
+          triggers: [
+            JSON.parse(JSON.stringify(
+              commandDataTypes[command].template
+            ))
+          ]
+        }
+
+        switch (command) {
+          case Triggers.CameraFocus:
+          case Triggers.CameraPan:
+          case Triggers.Zoom:
+            data[command].smoothing = constraintProps.smoothProps.default
+            break
+          case Triggers.TimeRemap:
+            data[command].interpolate = constraintProps.interpolateProps.default
+            break
+          default:
+            break
+        }
+      })
+
+      this.setState({ triggerData: data })
+
+      this.setState({ focuserDropdownIndices: [0] })
+    }
+
+    // Trigger editing actions, follows a Create-Update-Delete structure
 
     createTrigger () {
       const data = { ...this.state.triggerData }
@@ -101,47 +149,7 @@ function main () {
       this.setState({ triggerData: data })
     }
 
-    /* Interaction Events */
-
-    async onInitializeState () {
-      const commands = Object.keys(commandDataTypes)
-
-      if (commands.length === 0) {
-        return
-      }
-
-      this.onChangeTab(commands[0])
-
-      const data = {}
-
-      commands.forEach(command => {
-        data[command] = {
-          id: command,
-          triggers: [
-            JSON.parse(JSON.stringify(
-              commandDataTypes[command].template
-            ))
-          ]
-        }
-
-        switch (command) {
-          case Triggers.CameraFocus:
-          case Triggers.CameraPan:
-          case Triggers.Zoom:
-            data[command].smoothing = constraintProps.smoothProps.default
-            break
-          case Triggers.TimeRemap:
-            data[command].interpolate = constraintProps.interpolateProps.default
-            break
-          default:
-            break
-        }
-      })
-
-      this.setState({ triggerData: data })
-
-      this.setState({ focuserDropdownIndices: [0] })
-    }
+    // Interaction events, used when a UI component needs to change the state
 
     onRead () {
       try {
@@ -296,7 +304,7 @@ function main () {
       this.setState({ skinDropdownIndex })
     }
 
-    /* Render Events */
+    // Rendering events that handle the basic React component rendering
 
     componentDidMount () {
       Object.assign(commandEditorParent.style, parentStyle)
@@ -313,6 +321,8 @@ function main () {
       return this.state.initialized && mainComp(React.createElement, this)
     }
   }
+
+  // Adds the mod component to the root UI element
 
   const commandEditorParent = document.createElement('div')
 
