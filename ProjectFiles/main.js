@@ -113,9 +113,7 @@ function main () {
       if (this.state.activeTab === Triggers.CameraFocus) {
         this.setState({
           focuserDropdownIndices: [...this.state.focuserDropdownIndices, 0]
-        })
-
-        this.onAdjustFocuserDropdown()
+        }, () => this.onAdjustFocuserDropdown())
       }
     }
 
