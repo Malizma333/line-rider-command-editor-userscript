@@ -101,7 +101,7 @@ function main () {
       const commandData = data[this.state.activeTab]
 
       const newTrigger = JSON.parse(JSON.stringify(
-        commandDataTypes[this.state.activeTab].template
+        commandData.triggers[commandData.triggers.length - 1]
       ))
 
       commandData.triggers = [...commandData.triggers, newTrigger]
@@ -113,9 +113,7 @@ function main () {
       if (this.state.activeTab === Triggers.CameraFocus) {
         this.setState({
           focuserDropdownIndices: [...this.state.focuserDropdownIndices, 0]
-        })
-
-        this.onAdjustFocuserDropdown()
+        }, () => this.onAdjustFocuserDropdown())
       }
     }
 
