@@ -52,6 +52,7 @@ function main () {
       const data = { ...this.state.triggerData }
       const commandData = data[this.state.activeTab]
 
+      console.log(commandData[-1])
       const newTrigger = JSON.parse(JSON.stringify(
         commandDataTypes[this.state.activeTab].template
       ))
