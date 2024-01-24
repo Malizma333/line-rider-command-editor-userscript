@@ -1,4 +1,4 @@
-const DEBUG = true
+const DEBUG = false
 
 const helpLink = 'https://github.com/Malizma333/line-rider-command-editor-userscript#readme'
 const reportLink = 'https://trello.com/invite/b/HQI4mr1y/ATTI88d27c72cf8ffcd70c6e2b424e4ffb548519EDDF/line-rider-command-editor'
@@ -28,7 +28,7 @@ const constraintProps = {
   hProps: { default: 0.4, min: 0, max: 2, type: 'Float' },
   fWeightProps: { default: 0, min: 0, max: 1, type: 'Float' },
   timeProps: { default: 1, min: 0.01, max: 10, type: 'Float' },
-  skinZoomProps: { default: 1, min: 1, max: 3, type: 'Float' }
+  skinZoomProps: { default: 1, min: 1, max: 4, type: 'Float' }
 }
 
 const constraintTypes = {

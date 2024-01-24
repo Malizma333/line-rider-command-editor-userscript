@@ -435,7 +435,7 @@ function skinEditorComp (create, root, data) {
     },
     FlagComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
     create('svg', { width: '200' }),
-    RiderComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
+    RiderComponent(create, root, data.triggers[dropdownIndex], dropdownIndex)
     ),
     create('div', { style: skinZoomScrollContainerStyle },
       create('input', {
