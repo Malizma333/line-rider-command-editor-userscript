@@ -72,7 +72,7 @@ function readWriteComps (create, root) {
       }
     }, root.state.message),
     create('button', {
-      style: dataCopyPrintStyle,
+      style: { ...squareFilledButtonStyle, bottom: '17px' },
       onClick: () => root.onCopyClipboard(root.state.message)
     }, '🖶')
   )
@@ -120,23 +120,7 @@ function windowComp (create, root, data) {
     create('div', { style: triggerWindowStyle },
       Object.keys(data.triggers).map(i => {
         return triggerComp(create, root, data, parseInt(i))
-      }),
-      create('button', {
-        style: {
-          ...squareButtonStyle,
-          position: 'relative',
-          right: '10px',
-          bottom: '4.5px'
-        },
-        onClick: () => root.createTrigger()
-      },
-      create('text', {
-        style: {
-          ...textStyle.L,
-          fontWeight: 900
-        }
-      }, '+')
-      )
+      })
     )
   )
 }
@@ -200,7 +184,18 @@ function triggerComp (create, root, data, index) {
   data.id === Triggers.CameraPan && camPanTriggerComp(create, root, triggerData, index),
   data.id === Triggers.CameraFocus && camFocusTriggerComp(create, root, triggerData, index),
   data.id === Triggers.TimeRemap && timeRemapTriggerComp(create, root, triggerData, index),
-  data.id === Triggers.CustomSkin && false
+  data.id === Triggers.CustomSkin && false,
+  create('button', {
+    style: smallCenteredButton,
+    onClick: () => root.createTrigger(index)
+  },
+  create('text', {
+    style: {
+      ...textStyle.M,
+      fontWeight: 900
+    }
+  }, '+')
+  )
   )
 }
 

@@ -96,15 +96,12 @@ function main () {
 
     // Trigger editing actions, follows a Create-Update-Delete structure
 
-    createTrigger () {
+    createTrigger (index) {
       const data = { ...this.state.triggerData }
       const commandData = data[this.state.activeTab]
+      const newTrigger = JSON.parse(JSON.stringify(commandData.triggers[index]))
 
-      const newTrigger = JSON.parse(JSON.stringify(
-        commandData.triggers[commandData.triggers.length - 1]
-      ))
-
-      commandData.triggers = [...commandData.triggers, newTrigger]
+      commandData.triggers.splice(index, 0, newTrigger)
 
       validateTimeStamps(data)
 
