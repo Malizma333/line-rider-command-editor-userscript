@@ -39,9 +39,7 @@ function main () {
         triggerData: {},
         focuserDropdownIndices: [],
         skinDropdownIndex: 0,
-        skinEditorZoom: 1,
-        skinEditorZoomX: 0,
-        skinEditorZoomY: 0,
+        skinEditorZoomProps: {},
         selectedColor: '#000000ff'
       }
 
@@ -95,6 +93,14 @@ function main () {
       this.setState({ triggerData: data })
 
       this.setState({ focuserDropdownIndices: [0] })
+
+      this.setState({
+        skinEditorZoomProps: {
+          scale: 1,
+          xOffset: 0,
+          yOffset: 0
+        }
+      })
     }
 
     // Trigger editing actions, follows a Create-Update-Delete structure
@@ -303,28 +309,27 @@ function main () {
 
     onZoomSkinEditor (event, isMouse) {
       const rect = document.getElementById('skinElementContainer').getBoundingClientRect()
-      console.log(rect)
+      const skinEditorZoomProps = this.state.skinEditorZoomProps
       if (isMouse) {
-        this.setState({ skinEditorZoomX: event.clientX * this.state.skinEditorZoom - rect.left })
-        this.setState({ skinEditorZoomY: event.clientY * this.state.skinEditorZoom - rect.top })
-        const skinEditorZoom = Math.max(
+        skinEditorZoomProps.xOffset = rect.left + event.clientX * skinEditorZoomProps.scale
+        skinEditorZoomProps.yOffset = rect.top + event.clientY * skinEditorZoomProps.scale
+        skinEditorZoomProps.scale = Math.max(
           Math.min(
-            this.state.skinEditorZoom - event.deltaY * scrollMultiplier,
+            skinEditorZoomProps.scale - event.deltaY * scrollMultiplier,
             constraintProps.skinZoomProps.max
           ), constraintProps.skinZoomProps.min
         )
-        this.setState({ skinEditorZoom })
+        this.setState({ skinEditorZoomProps })
       } else {
-        this.setState({ skinEditorZoomX: rect.width / 2 - rect.left + 86.75 })
-        this.setState({ skinEditorZoomY: rect.height / 2 - rect.top + 88 })
-        console.log(rect.width / 2 - rect.left + 86.75, rect.height / 2 - rect.top + 88)
-        const skinEditorZoom = Math.max(
+        skinEditorZoomProps.xOffset = rect.left
+        skinEditorZoomProps.yOffset = rect.top
+        skinEditorZoomProps.scale = Math.max(
           Math.min(
             event.target.value,
             constraintProps.skinZoomProps.max
           ), constraintProps.skinZoomProps.min
         )
-        this.setState({ skinEditorZoom })
+        this.setState({ skinEditorZoomProps })
       }
     }
 
