@@ -306,8 +306,10 @@ function main () {
       const skinEditorZoomProps = this.state.skinEditorZoomProps
 
       if (isMouseAction) {
-        skinEditorZoomProps.xOffset = (event.clientX - rect.x) / skinEditorZoomProps.scale
-        skinEditorZoomProps.yOffset = (event.clientY - rect.y) / skinEditorZoomProps.scale
+        if (skinEditorZoomProps.scale < constraintProps.skinZoomProps.max) {
+          skinEditorZoomProps.xOffset = (event.clientX - rect.x) / skinEditorZoomProps.scale
+          skinEditorZoomProps.yOffset = (event.clientY - rect.y) / skinEditorZoomProps.scale
+        }
         skinEditorZoomProps.scale = Math.max(
           Math.min(
             skinEditorZoomProps.scale - event.deltaY * scrollMultiplier,
