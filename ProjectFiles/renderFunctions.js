@@ -424,20 +424,25 @@ function skinEditorComp (create, root, data) {
 
   return create('div', { style: customSkinWindowStyle },
     create('div', { style: customSkinBackgroundStyle }),
-    skinEditorToolbar(create, root, data.triggers, dropdownIndex),
-    FlagComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
-    create('svg', { width: '200' }),
-    RiderComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
+    create('div', { style: { transform: 'scale(1)' } },
+      FlagComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
+      create('svg', { width: '200' }),
+      RiderComponent(create, root, data.triggers[dropdownIndex], dropdownIndex)
+    ),
     create('div', { style: outlineColorDivStyle },
       create('div', {
         style: {
           ...outlineColorPickerStyle,
           backgroundColor: data.triggers[dropdownIndex].outline.stroke
         },
-        onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', dropdownIndex, 'outline', 'stroke'])
+        onClick: () => root.updateTrigger(
+          { new: root.state.selectedColor },
+          ['triggers', dropdownIndex, 'outline', 'stroke']
+        )
       }),
       create('text', { style: textStyle.S }, 'Outline:')
-    )
+    ),
+    skinEditorToolbar(create, root, data.triggers, dropdownIndex)
   )
 }
 
