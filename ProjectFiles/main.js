@@ -39,6 +39,7 @@ function main () {
         triggerData: {},
         focuserDropdownIndices: [],
         skinDropdownIndex: 0,
+        skinEditorZoomProps: {},
         selectedColor: '#000000ff'
       }
 
@@ -92,6 +93,8 @@ function main () {
       this.setState({ triggerData: data })
 
       this.setState({ focuserDropdownIndices: [0] })
+
+      this.setState({ skinEditorZoomProps: { scale: 1 } })
     }
 
     // Trigger editing actions, follows a Create-Update-Delete structure
@@ -296,6 +299,33 @@ function main () {
       }
 
       this.setState({ skinDropdownIndex })
+    }
+
+    onZoomSkinEditor (event, isMouseAction) {
+      const rect = document.getElementById('skinElementContainer').getBoundingClientRect()
+      const skinEditorZoomProps = this.state.skinEditorZoomProps
+
+      if (isMouseAction) {
+        if (skinEditorZoomProps.scale < constraintProps.skinZoomProps.max) {
+          skinEditorZoomProps.xOffset = (event.clientX - rect.x) / skinEditorZoomProps.scale
+          skinEditorZoomProps.yOffset = (event.clientY - rect.y) / skinEditorZoomProps.scale
+        }
+        skinEditorZoomProps.scale = Math.max(
+          Math.min(
+            skinEditorZoomProps.scale - event.deltaY * scrollMultiplier,
+            constraintProps.skinZoomProps.max
+          ), constraintProps.skinZoomProps.min
+        )
+      } else {
+        skinEditorZoomProps.scale = Math.max(
+          Math.min(
+            event.target.value,
+            constraintProps.skinZoomProps.max
+          ), constraintProps.skinZoomProps.min
+        )
+      }
+
+      this.setState({ skinEditorZoomProps })
     }
 
     // Rendering events that handle the basic React component rendering

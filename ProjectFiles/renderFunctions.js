@@ -424,20 +424,46 @@ function skinEditorComp (create, root, data) {
 
   return create('div', { style: customSkinWindowStyle },
     create('div', { style: customSkinBackgroundStyle }),
-    skinEditorToolbar(create, root, data.triggers, dropdownIndex),
+    create('div', {
+      id: 'skinElementContainer',
+      style: {
+        ...skinElementContainerStyle,
+        transform: `scale(${root.state.skinEditorZoomProps.scale})`,
+        transformOrigin: `${root.state.skinEditorZoomProps.xOffset}px ${root.state.skinEditorZoomProps.yOffset}px`
+      },
+      onWheel: (e) => root.onZoomSkinEditor(e, true)
+    },
     FlagComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
     create('svg', { width: '200' }),
-    RiderComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
+    RiderComponent(create, root, data.triggers[dropdownIndex], dropdownIndex)
+    ),
+    create('div', { style: skinZoomScrollContainerStyle },
+      create('input', {
+        style: { appearance: 'slider-vertical' },
+        type: 'range',
+        orient: 'vertical',
+        min: constraintProps.skinZoomProps.min,
+        max: constraintProps.skinZoomProps.max,
+        step: 0.1,
+        value: root.state.skinEditorZoomProps.scale,
+        onChange: (e) => root.onZoomSkinEditor(e, false)
+      }),
+      create('text', { style: textStyle.S }, `x${Math.round(root.state.skinEditorZoomProps.scale * 10) / 10}`)
+    ),
     create('div', { style: outlineColorDivStyle },
       create('div', {
         style: {
           ...outlineColorPickerStyle,
           backgroundColor: data.triggers[dropdownIndex].outline.stroke
         },
-        onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', dropdownIndex, 'outline', 'stroke'])
+        onClick: () => root.updateTrigger(
+          { new: root.state.selectedColor },
+          ['triggers', dropdownIndex, 'outline', 'stroke']
+        )
       }),
       create('text', { style: textStyle.S }, 'Outline:')
-    )
+    ),
+    skinEditorToolbar(create, root, data.triggers, dropdownIndex)
   )
 }
 

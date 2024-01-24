@@ -264,6 +264,26 @@ const customSkinWindowStyle = {
   overflow: 'hidden'
 }
 
+const skinElementContainerStyle = {
+  alignItems: 'center',
+  display: 'flex',
+  height: '100%',
+  justifyContent: 'center',
+  position: 'absolute',
+  width: '100%'
+}
+
+const skinZoomScrollContainerStyle = {
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  position: 'absolute',
+  right: '0px',
+  top: '100px',
+  width: '40px'
+}
+
 const customSkinBackgroundStyle = {
   background: `
   linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),
