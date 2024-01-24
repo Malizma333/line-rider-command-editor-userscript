@@ -40,6 +40,8 @@ function main () {
         focuserDropdownIndices: [],
         skinDropdownIndex: 0,
         skinEditorZoom: 1,
+        skinEditorZoomX: 0,
+        skinEditorZoomY: 0,
         selectedColor: '#000000ff'
       }
 
@@ -299,15 +301,31 @@ function main () {
       this.setState({ skinDropdownIndex })
     }
 
-    onZoomSkinEditor (deltaZoom) {
-      const skinEditorZoom = Math.max(
-        Math.min(
-          this.state.skinEditorZoom - deltaZoom,
-          constraintProps.skinZoomProps.max
-        ), constraintProps.skinZoomProps.min
-      )
-
-      this.setState({ skinEditorZoom })
+    onZoomSkinEditor (event, isMouse) {
+      const rect = document.getElementById('skinElementContainer').getBoundingClientRect()
+      console.log(rect)
+      if (isMouse) {
+        this.setState({ skinEditorZoomX: event.clientX * this.state.skinEditorZoom - rect.left })
+        this.setState({ skinEditorZoomY: event.clientY * this.state.skinEditorZoom - rect.top })
+        const skinEditorZoom = Math.max(
+          Math.min(
+            this.state.skinEditorZoom - event.deltaY * scrollMultiplier,
+            constraintProps.skinZoomProps.max
+          ), constraintProps.skinZoomProps.min
+        )
+        this.setState({ skinEditorZoom })
+      } else {
+        this.setState({ skinEditorZoomX: rect.width / 2 - rect.left + 86.75 })
+        this.setState({ skinEditorZoomY: rect.height / 2 - rect.top + 88 })
+        console.log(rect.width / 2 - rect.left + 86.75, rect.height / 2 - rect.top + 88)
+        const skinEditorZoom = Math.max(
+          Math.min(
+            event.target.value,
+            constraintProps.skinZoomProps.max
+          ), constraintProps.skinZoomProps.min
+        )
+        this.setState({ skinEditorZoom })
+      }
     }
 
     // Rendering events that handle the basic React component rendering
