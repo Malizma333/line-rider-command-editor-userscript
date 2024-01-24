@@ -5,6 +5,7 @@ const reportLink = 'https://trello.com/invite/b/HQI4mr1y/ATTI88d27c72cf8ffcd70c6
 
 const fps = 40
 const secondsInMinute = 60
+const scrollMultiplier = 0.001
 
 const Triggers = {
   Zoom: 'Zoom',
@@ -26,7 +27,8 @@ const constraintProps = {
   wProps: { default: 0.4, min: 0, max: 2, type: 'Float' },
   hProps: { default: 0.4, min: 0, max: 2, type: 'Float' },
   fWeightProps: { default: 0, min: 0, max: 1, type: 'Float' },
-  timeProps: { default: 1, min: 0.01, max: 10, type: 'Float' }
+  timeProps: { default: 1, min: 0.01, max: 10, type: 'Float' },
+  skinZoomProps: { default: 1, min: 1, max: 3, type: 'Float' }
 }
 
 const constraintTypes = {

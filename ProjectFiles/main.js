@@ -39,6 +39,7 @@ function main () {
         triggerData: {},
         focuserDropdownIndices: [],
         skinDropdownIndex: 0,
+        skinEditorZoom: 1,
         selectedColor: '#000000ff'
       }
 
@@ -296,6 +297,17 @@ function main () {
       }
 
       this.setState({ skinDropdownIndex })
+    }
+
+    onZoomSkinEditor (cursorZoom) {
+      const skinEditorZoom = Math.max(
+        Math.min(
+          this.state.skinEditorZoom - cursorZoom * scrollMultiplier,
+          constraintProps.skinZoomProps.max
+        ), constraintProps.skinZoomProps.min
+      )
+
+      this.setState({ skinEditorZoom })
     }
 
     // Rendering events that handle the basic React component rendering

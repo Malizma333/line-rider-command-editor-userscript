@@ -424,10 +424,13 @@ function skinEditorComp (create, root, data) {
 
   return create('div', { style: customSkinWindowStyle },
     create('div', { style: customSkinBackgroundStyle }),
-    create('div', { style: { transform: 'scale(1)' } },
-      FlagComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
-      create('svg', { width: '200' }),
-      RiderComponent(create, root, data.triggers[dropdownIndex], dropdownIndex)
+    create('div', {
+      style: { ...skinElementContainerStyle, transform: `scale(${root.state.skinEditorZoom})` },
+      onWheel: (e) => root.onZoomSkinEditor(e.deltaY)
+    },
+    FlagComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
+    create('svg', { width: '200' }),
+    RiderComponent(create, root, data.triggers[dropdownIndex], dropdownIndex)
     ),
     create('div', { style: outlineColorDivStyle },
       create('div', {
