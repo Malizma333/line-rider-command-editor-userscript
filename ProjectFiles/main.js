@@ -94,13 +94,7 @@ function main () {
 
       this.setState({ focuserDropdownIndices: [0] })
 
-      this.setState({
-        skinEditorZoomProps: {
-          scale: 1,
-          xOffset: 0,
-          yOffset: 0
-        }
-      })
+      this.setState({ skinEditorZoomProps: { scale: 1 } })
     }
 
     // Trigger editing actions, follows a Create-Update-Delete structure
@@ -307,30 +301,29 @@ function main () {
       this.setState({ skinDropdownIndex })
     }
 
-    onZoomSkinEditor (event, isMouse) {
+    onZoomSkinEditor (event, isMouseAction) {
       const rect = document.getElementById('skinElementContainer').getBoundingClientRect()
       const skinEditorZoomProps = this.state.skinEditorZoomProps
-      if (isMouse) {
-        skinEditorZoomProps.xOffset = rect.left + event.clientX * skinEditorZoomProps.scale
-        skinEditorZoomProps.yOffset = rect.top + event.clientY * skinEditorZoomProps.scale
+
+      if (isMouseAction) {
+        skinEditorZoomProps.xOffset = (event.clientX - rect.x) / skinEditorZoomProps.scale
+        skinEditorZoomProps.yOffset = (event.clientY - rect.y) / skinEditorZoomProps.scale
         skinEditorZoomProps.scale = Math.max(
           Math.min(
             skinEditorZoomProps.scale - event.deltaY * scrollMultiplier,
             constraintProps.skinZoomProps.max
           ), constraintProps.skinZoomProps.min
         )
-        this.setState({ skinEditorZoomProps })
       } else {
-        skinEditorZoomProps.xOffset = rect.left
-        skinEditorZoomProps.yOffset = rect.top
         skinEditorZoomProps.scale = Math.max(
           Math.min(
             event.target.value,
             constraintProps.skinZoomProps.max
           ), constraintProps.skinZoomProps.min
         )
-        this.setState({ skinEditorZoomProps })
       }
+
+      this.setState({ skinEditorZoomProps })
     }
 
     // Rendering events that handle the basic React component rendering

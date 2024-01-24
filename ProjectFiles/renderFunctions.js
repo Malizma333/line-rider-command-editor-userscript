@@ -429,14 +429,13 @@ function skinEditorComp (create, root, data) {
       style: {
         ...skinElementContainerStyle,
         transform: `scale(${root.state.skinEditorZoomProps.scale})`,
-        transformOrigin: `${root.state.skinEditorZoomProps.offsetX}px ${root.state.skinEditorZoomProps.offsetY}px`
+        transformOrigin: `${root.state.skinEditorZoomProps.xOffset}px ${root.state.skinEditorZoomProps.yOffset}px`
       },
       onWheel: (e) => root.onZoomSkinEditor(e, true)
     },
     FlagComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
     create('svg', { width: '200' }),
     RiderComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
-    create('div', { style: { position: 'absolute', border: '1px solid red', width: '10px', height: '10px' } })
     ),
     create('div', { style: skinZoomScrollContainerStyle },
       create('input', {
