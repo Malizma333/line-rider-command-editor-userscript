@@ -122,14 +122,27 @@ const dataTextStyle = {
   width: '90%'
 }
 
-const dataCopyPrintStyle = {
+const squareFilledButtonStyle = {
   backgroundColor: colorTheme.white,
   border: '2px solide black',
-  bottom: '17px',
   fontSize: '20px',
   fontWeight: 'bold',
   position: 'absolute',
   userSelect: 'none'
+}
+
+const smallCenteredButton = {
+  ...squareFilledButtonStyle,
+  bottom: '-1ch',
+  height: '2ch',
+  left: '0px',
+  lineHeight: '0px',
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  padding: '0px',
+  right: '0px',
+  width: '2ch',
+  zIndex: 1
 }
 
 const tabHeaderStyle = {
@@ -219,6 +232,7 @@ const triggerStyle = {
   borderLeft: '2px solid black',
   direction: 'ltr',
   padding: '10px',
+  position: 'relative',
   width: '100%'
 }
 
