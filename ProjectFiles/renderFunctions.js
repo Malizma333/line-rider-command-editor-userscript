@@ -426,11 +426,24 @@ function skinEditorComp (create, root, data) {
     create('div', { style: customSkinBackgroundStyle }),
     create('div', {
       style: { ...skinElementContainerStyle, transform: `scale(${root.state.skinEditorZoom})` },
-      onWheel: (e) => root.onZoomSkinEditor(e.deltaY)
+      onWheel: (e) => root.onZoomSkinEditor(e.deltaY * scrollMultiplier)
     },
     FlagComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
     create('svg', { width: '200' }),
     RiderComponent(create, root, data.triggers[dropdownIndex], dropdownIndex)
+    ),
+    create('div', { style: skinZoomScrollContainerStyle },
+      create('input', {
+        style: { appearance: 'slider-vertical' },
+        type: 'range',
+        orient: 'vertical',
+        min: constraintProps.skinZoomProps.min,
+        max: constraintProps.skinZoomProps.max,
+        step: 0.1,
+        value: root.state.skinEditorZoom,
+        onChange: (e) => root.onZoomSkinEditor(root.state.skinEditorZoom - e.target.value)
+      }),
+      create('text', { style: textStyle.S }, `x${Math.round(root.state.skinEditorZoom * 10) / 10}`)
     ),
     create('div', { style: outlineColorDivStyle },
       create('div', {

@@ -299,10 +299,10 @@ function main () {
       this.setState({ skinDropdownIndex })
     }
 
-    onZoomSkinEditor (cursorZoom) {
+    onZoomSkinEditor (deltaZoom) {
       const skinEditorZoom = Math.max(
         Math.min(
-          this.state.skinEditorZoom - cursorZoom * scrollMultiplier,
+          this.state.skinEditorZoom - deltaZoom,
           constraintProps.skinZoomProps.max
         ), constraintProps.skinZoomProps.min
       )
