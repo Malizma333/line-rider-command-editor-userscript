@@ -18,7 +18,7 @@ function main () {
     playerRunning = getPlayerRunning(store.getState())
     windowFocused = getWindowFocused(store.getState())
 
-    const shouldBeVisible = DEBUG || (!playerRunning && windowFocused)
+    const shouldBeVisible = window.CMD_EDITOR_DEBUG || (!playerRunning && windowFocused)
 
     commandEditorParent.style.opacity = shouldBeVisible ? 1 : 0
     commandEditorParent.style.pointerEvents = shouldBeVisible ? null : 'none'
@@ -31,7 +31,7 @@ function main () {
       super()
 
       this.state = {
-        active: DEBUG,
+        active: false,
         activeTab: null,
         message: '',
         hasError: false,
@@ -47,6 +47,7 @@ function main () {
 
       store.subscribeImmediate(() => {
         if (this.state.initialized) {
+          this.setState({ active: window.CMD_EDITOR_DEBUG })
           this.onAdjustFocuserDropdown()
           this.onAdjustSkinDropdown()
         }
