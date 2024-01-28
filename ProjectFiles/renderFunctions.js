@@ -605,7 +605,13 @@ function RiderComponent (create, root, data, index) {
     }),
     create('rect', {
       ...riderStyle._scarfEven,
-      ...riderStyle._scarf0,
+      ...riderStyle._scarf0a,
+      fill: data._scarf0.fill,
+      onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, '_scarf0', 'fill'])
+    }),
+    create('rect', {
+      ...riderStyle._scarfEven,
+      ...riderStyle._scarf0b,
       fill: data._scarf0.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, '_scarf0', 'fill'])
     }),
