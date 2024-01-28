@@ -604,37 +604,37 @@ function RiderComponent (create, root, data, index) {
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'legFoot', 'fill'])
     }),
     create('rect', {
-      ...riderStyle.scarfEvenb,
+      ...riderStyle._scarfEven,
       ...riderStyle._scarf0,
       fill: data._scarf0.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, '_scarf0', 'fill'])
     }),
     create('rect', {
-      ...riderStyle.scarfOddb,
+      ...riderStyle._scarfOdd,
       ...riderStyle._scarf1,
       fill: data._scarf1.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, '_scarf1', 'fill'])
     }),
     create('rect', {
-      ...riderStyle.scarfOddb,
+      ...riderStyle._scarfOdd,
       ...riderStyle._scarf2,
       fill: data._scarf2.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, '_scarf2', 'fill'])
     }),
     create('rect', {
-      ...riderStyle.scarfOddb,
+      ...riderStyle._scarfOdd,
       ...riderStyle._scarf3,
       fill: data._scarf3.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, '_scarf3', 'fill'])
     }),
     create('rect', {
-      ...riderStyle.scarfOddb,
+      ...riderStyle._scarfOdd,
       ...riderStyle._scarf4,
       fill: data._scarf4.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, '_scarf4', 'fill'])
     }),
     create('rect', {
-      ...riderStyle.scarfOddb,
+      ...riderStyle._scarfOdd,
       ...riderStyle._scarf5,
       fill: data._scarf5.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, '_scarf5', 'fill'])
