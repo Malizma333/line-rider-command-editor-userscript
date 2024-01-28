@@ -400,12 +400,13 @@ const riderStyle = {
   hatTop: { transform: 'translate(14.8,5) rotate(-90) translate(-10,0)', d: 'M11-2.6h-0.4v5.2H11c1.2,0,2.2-1.2,2.2-2.6S12.2-2.6,11-2.6z' },
   hatBottom: { transform: 'translate(14.8,5) rotate(-90) translate(-10,0)', strokeWidth: 1, strokeLinecap: 'round', d: 'M10.6-2.6 v5.2' },
   hatBall: { transform: 'translate(14.8,5) rotate(-90) translate(-10,0)', cx: '13.9', cy: '0', r: '0.7' },
-  scarfEvenb: { transform: 'translate(10.5, 8.5)' },
-  scarfOddb: { transform: 'translate(10.5, 8.5)' },
-  scarf0b: { strokeWidth: '0', x: '0', width: '2', height: '2' },
-  scarf1b: { strokeWidth: '0', x: '-2', width: '2', height: '2' },
-  scarf2b: { strokeWidth: '0', x: '-4', width: '2', height: '2' },
-  scarf3b: { strokeWidth: '0', x: '-6', width: '2', height: '2' },
-  scarf4b: { strokeWidth: '0', x: '-8', width: '2', height: '2' },
-  scarf5b: { strokeWidth: '0', x: '-10', width: '2', height: '2' }
+  _scarfEven: { transform: 'translate(10.5, 8.5)' },
+  _scarfOdd: { transform: 'translate(10.5, 8.5)' },
+  _scarf0a: { strokeWidth: '0', x: '2', width: '2', height: '2' },
+  _scarf0b: { strokeWidth: '0', x: '0', width: '2', height: '2' },
+  _scarf1: { strokeWidth: '0', x: '-2', width: '2', height: '2' },
+  _scarf2: { strokeWidth: '0', x: '-4', width: '2', height: '2' },
+  _scarf3: { strokeWidth: '0', x: '-6', width: '2', height: '2' },
+  _scarf4: { strokeWidth: '0', x: '-8', width: '2', height: '2' },
+  _scarf5: { strokeWidth: '0', x: '-10', width: '2', height: '2' }
 }

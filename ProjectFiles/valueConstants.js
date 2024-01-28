@@ -75,12 +75,17 @@ const commandDataTypes = {
       hatTop: { fill: 'white' },
       hatBottom: { stroke: 'black' },
       hatBall: { fill: 'black' },
-      scarf0: { fill: 'white' },
       scarf1: { fill: '#FD4F38' },
       scarf2: { fill: 'white' },
       scarf3: { fill: '#06A725' },
       scarf4: { fill: 'white' },
-      scarf5: { fill: '#3995FD' }
+      scarf5: { fill: '#3995FD' },
+      _scarf0: { fill: 'white' },
+      _scarf1: { fill: '#FD4F38' },
+      _scarf2: { fill: 'white' },
+      _scarf3: { fill: '#06A725' },
+      _scarf4: { fill: 'white' },
+      _scarf5: { fill: '#3995FD' }
     },
     header: 'setCustomRiders({0});'
   }

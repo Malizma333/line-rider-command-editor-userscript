@@ -132,12 +132,17 @@ function formatSkins (customSkinData) {
       .leg .pants {fill: ${customSkin.legPants.fill}}
       .leg .foot {fill: ${customSkin.legFoot.fill}}
       .torso {fill: ${customSkin.torso.fill}}
-      .scarf0 {fill: ${customSkin.scarf0.fill}}
       .scarf1 {fill: ${customSkin.scarf1.fill}}
       .scarf2 {fill: ${customSkin.scarf2.fill}}
       .scarf3 {fill: ${customSkin.scarf3.fill}}
       .scarf4 {fill: ${customSkin.scarf4.fill}}
       .scarf5 {fill: ${customSkin.scarf5.fill}}
+      #scarf0 {fill: ${customSkin._scarf0.fill}}
+      #scarf1 {fill: ${customSkin._scarf1.fill}}
+      #scarf2 {fill: ${customSkin._scarf2.fill}}
+      #scarf3 {fill: ${customSkin._scarf3.fill}}
+      #scarf4 {fill: ${customSkin._scarf4.fill}}
+      #scarf5 {fill: ${customSkin._scarf5.fill}}
       .hat .top {fill: ${customSkin.hatTop.fill}}
       .hat .bottom {stroke: ${customSkin.hatBottom.stroke}}
       .hat .ball {fill: ${customSkin.hatBall.fill}}
