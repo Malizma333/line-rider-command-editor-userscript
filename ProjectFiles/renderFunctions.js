@@ -21,6 +21,12 @@ function toolbarComps (create, root) {
   return create('div', { style: toolbarStyle },
     create('button', {
       style: squareButtonStyle,
+      onClick: () => console.log('Open Settings')
+    },
+    create('text', { style: toolbarButtonText }, '⚙')
+    ),
+    create('button', {
+      style: squareButtonStyle,
       onClick: () => window.open(reportLink)
     },
     create('text', { style: toolbarButtonText }, '⚑')
