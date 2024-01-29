@@ -10,8 +10,7 @@ function mainComp (create, root) {
     ),
     create('div', !root.state.active && { style: { display: 'none' } },
       toolbarComps(create, root),
-      tabComps(create, root),
-      windowComps(create, root),
+      activeAreaComp(create, root),
       readWriteComps(create, root)
     )
   )
@@ -21,7 +20,7 @@ function toolbarComps (create, root) {
   return create('div', { style: toolbarStyle },
     create('button', {
       style: squareButtonStyle,
-      onClick: () => console.log('Open Settings')
+      onClick: () => root.onToggleSettings(true)
     },
     create('text', { style: toolbarButtonText }, '⚙')
     ),
@@ -82,6 +81,31 @@ function readWriteComps (create, root) {
       onClick: () => root.onCopyClipboard(root.state.message)
     }, '🖶')
   )
+  )
+}
+
+function activeAreaComp (create, root) {
+  return create('div', null,
+    !root.state.settingsActive && tabComps(create, root),
+    !root.state.settingsActive && windowComps(create, root),
+    root.state.settingsActive && settingsComp(create, root)
+  )
+}
+
+function settingsComp (create, root) {
+  return create('div', { style: settingsWindowStyle },
+    create('button', {
+      style: {
+        ...squareButtonStyle,
+        margin: '5px',
+        position: 'absolute',
+        right: '0px'
+      },
+      onClick: () => root.onToggleSettings(false)
+    },
+    create('text', {
+      style: { ...textStyle.L, fontWeight: 700 }
+    }, 'X'))
   )
 }
 

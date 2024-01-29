@@ -40,7 +40,8 @@ function main () {
         focuserDropdownIndices: [],
         skinDropdownIndex: 0,
         skinEditorZoomProps: {},
-        selectedColor: '#000000ff'
+        selectedColor: '#000000ff',
+        settingsActive: false
       }
 
       this.commandEditor = new CommandEditor(store, this.state)
@@ -232,6 +233,10 @@ function main () {
 
     onChangeTab (tabName) {
       this.setState({ activeTab: tabName })
+    }
+
+    onToggleSettings (settingsActive) {
+      this.setState({ settingsActive })
     }
 
     onChangeFocuserDropdown (index, value) {

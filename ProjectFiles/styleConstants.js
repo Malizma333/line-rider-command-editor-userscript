@@ -410,3 +410,9 @@ const riderStyle = {
   _scarf4: { strokeWidth: '0', x: '-8', width: '2', height: '2' },
   _scarf5: { strokeWidth: '0', x: '-10', width: '2', height: '2' }
 }
+
+const settingsWindowStyle = {
+  ...triggerWindowStyle,
+  display: 'flex',
+  overflow: 'hidden'
+}
