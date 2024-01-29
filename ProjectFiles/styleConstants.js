@@ -414,12 +414,13 @@ const riderStyle = {
 const settingsWindowStyle = {
   ...triggerWindowStyle,
   display: 'flex',
-  overflow: 'hidden'
+  height: '67%',
+  overflow: 'hidden',
+  top: '35px'
 }
 
 const settingsTitleStyle = {
   ...textStyle.L,
-  fontSize: '44px',
   left: '0px',
   marginLeft: 'auto',
   marginRight: 'auto',
