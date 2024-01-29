@@ -416,3 +416,13 @@ const settingsWindowStyle = {
   display: 'flex',
   overflow: 'hidden'
 }
+
+const settingsTitleStyle = {
+  ...textStyle.L,
+  fontSize: '44px',
+  left: '0px',
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  marginTop: '10px',
+  right: '0px'
+}

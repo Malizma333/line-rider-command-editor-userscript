@@ -105,7 +105,10 @@ function settingsComp (create, root) {
     },
     create('text', {
       style: { ...textStyle.L, fontWeight: 700 }
-    }, 'X'))
+    }, 'X')),
+    create('text', {
+      style: settingsTitleStyle
+    }, 'Settings')
   )
 }
 
