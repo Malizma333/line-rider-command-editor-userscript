@@ -32,16 +32,18 @@ function main () {
 
       this.state = {
         active: false,
-        activeTab: null,
-        message: '',
-        hasError: false,
         initialized: false,
+        hasError: false,
+        message: '',
+        activeTab: null,
+        settingsActive: false,
         triggerData: {},
         focuserDropdownIndices: [],
         skinDropdownIndex: 0,
         skinEditorZoomProps: {},
-        selectedColor: '#000000ff',
-        settingsActive: false
+        selectedColor: opaqueWhite,
+        fontSize: constraintProps.textSizeProps.default,
+        resolution: viewportSizes.FHD
       }
 
       this.commandEditor = new CommandEditor(store, this.state)
@@ -332,6 +334,14 @@ function main () {
       }
 
       this.setState({ skinEditorZoomProps })
+    }
+
+    onChangeFontSize (fontSize) {
+      this.setState({ fontSize })
+    }
+
+    onChangeViewport (resolution) {
+      this.setState({ resolution })
     }
 
     // Rendering events that handle the basic React component rendering

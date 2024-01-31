@@ -414,6 +414,7 @@ const riderStyle = {
 const settingsWindowStyle = {
   ...triggerWindowStyle,
   display: 'flex',
+  flexDirection: 'column',
   height: '67%',
   overflow: 'hidden',
   top: '35px'
@@ -426,4 +427,37 @@ const settingsTitleStyle = {
   marginRight: 'auto',
   marginTop: '10px',
   right: '0px'
+}
+
+const settingsRowStyle = {
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'row',
+  height: '30px',
+  paddingBottom: '1em',
+  paddingTop: '1em'
+}
+
+const settingsLabelStyle = {
+  ...textStyle.M,
+  left: '5px',
+  position: 'absolute'
+}
+
+const settingsParameterStyle = {
+  alignItems: 'center',
+  display: 'flex',
+  direction: 'ltr',
+  textAlign: 'center',
+  lineHeight: '100%',
+  position: 'absolute',
+  right: '5px'
+}
+
+const settingsButtonStyle = {
+  border: '2px solid black',
+  borderRadius: '10px',
+  height: '100%',
+  marginLeft: '5px',
+  marginRight: '5px'
 }

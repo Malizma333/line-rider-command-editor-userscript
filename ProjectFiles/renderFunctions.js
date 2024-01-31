@@ -103,12 +103,68 @@ function settingsComp (create, root) {
       },
       onClick: () => root.onToggleSettings(false)
     },
-    create('text', {
-      style: { ...textStyle.L, fontWeight: 700 }
-    }, 'X')),
-    create('text', {
-      style: settingsTitleStyle
-    }, 'Settings')
+    create('text', { style: { ...textStyle.L, fontWeight: 700 } }, 'X')
+    ),
+    create('text', { style: settingsTitleStyle }, 'Settings'),
+    settingsFeatureComps(create, root)
+  )
+}
+
+function settingsFeatureComps (create, root) {
+  return create('div', null,
+    create('div', { style: settingsRowStyle },
+      create('text', { style: settingsLabelStyle }, 'TEXT SIZE'),
+      create('div', { style: settingsParameterStyle },
+        create('text', { style: textStyle.S }, 'Small'),
+        create('input', {
+          style: { margin: '5px' },
+          type: 'range',
+          min: constraintProps.textSizeProps.min,
+          max: constraintProps.textSizeProps.max,
+          step: 0.1,
+          value: root.state.fontSize,
+          onChange: (e) => root.onChangeFontSize(e.target.value)
+        }),
+        create('text', { style: textStyle.S }, 'Large')
+      )
+    ),
+    create('div', { style: settingsRowStyle },
+      create('text', { style: settingsLabelStyle }, 'VIEWPORT'),
+      create('div', { style: settingsParameterStyle },
+        create('button', {
+          style: {
+            ...settingsButtonStyle,
+            backgroundColor:
+              root.state.resolution === viewportSizes.HD ? colorTheme.lightgray1 : colorTheme.darkgray1
+          },
+          onClick: () => root.onChangeViewport(viewportSizes.HD)
+        }, create('text', { style: textStyle.S }, viewportSizes.HD)),
+        create('button', {
+          style: {
+            ...settingsButtonStyle,
+            backgroundColor:
+              root.state.resolution === viewportSizes.FHD ? colorTheme.lightgray1 : colorTheme.darkgray1
+          },
+          onClick: () => root.onChangeViewport(viewportSizes.FHD)
+        }, create('text', { style: textStyle.S }, viewportSizes.FHD)),
+        create('button', {
+          style: {
+            ...settingsButtonStyle,
+            backgroundColor:
+              root.state.resolution === viewportSizes.QHD ? colorTheme.lightgray1 : colorTheme.darkgray1
+          },
+          onClick: () => root.onChangeViewport(viewportSizes.QHD)
+        }, create('text', { style: textStyle.S }, viewportSizes.QHD)),
+        create('button', {
+          style: {
+            ...settingsButtonStyle,
+            backgroundColor:
+              root.state.resolution === viewportSizes.UHD ? colorTheme.lightgray1 : colorTheme.darkgray1
+          },
+          onClick: () => root.onChangeViewport(viewportSizes.UHD)
+        }, create('text', { style: textStyle.S }, viewportSizes.UHD))
+      )
+    )
   )
 }
 
