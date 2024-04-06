@@ -4,5 +4,8 @@
     "react": {
       "version": "16.3.1"
     }
+  },
+  "rules": {
+    "linebreak-style": "off"
   }
 }

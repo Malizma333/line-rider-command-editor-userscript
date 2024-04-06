@@ -1,125 +1,124 @@
-function validateData (valueChange, constraints, bounded) {
-  if (!constraints) return valueChange.new
+function validateData(valueChange, constraints, bounded) {
+  if (!constraints) return valueChange.new;
 
   switch (constraints.type) {
     case constraintTypes.bool: {
-      return valueChange.new
+      return valueChange.new;
     }
 
     case constraintTypes.int: {
-      return validateInteger(valueChange, constraints, bounded)
+      return validateInteger(valueChange, constraints, bounded);
     }
 
     case constraintTypes.float: {
-      return validateFloat(valueChange, constraints, bounded)
+      return validateFloat(valueChange, constraints, bounded);
     }
 
-    default: return valueChange.prev
+    default: return valueChange.prev;
   }
 }
 
-function validateInteger (valueChange, constraints, bounded) {
-  const prevValue = valueChange.prev
-  const newValue = valueChange.new
+function validateInteger(valueChange, constraints, bounded) {
+  const prevValue = valueChange.prev;
+  const newValue = valueChange.new;
 
   if (newValue.trim() === '') {
-    return 0
+    return 0;
   }
 
-  const parsedValue = Math.floor(Number(newValue))
+  const parsedValue = Math.floor(Number(newValue));
 
   if (isNaN(parsedValue)) {
-    return prevValue
+    return prevValue;
   }
 
   if (newValue.includes('.')) {
-    return prevValue
+    return prevValue;
   }
 
   if (!bounded) {
-    return parsedValue
+    return parsedValue;
   }
 
   if (parsedValue < constraints.min) {
-    return constraints.min
+    return constraints.min;
   }
 
   if (parsedValue > constraints.max) {
-    return constraints.max
+    return constraints.max;
   }
 
-  return parsedValue
+  return parsedValue;
 }
 
-function validateFloat (valueChange, constraints, bounded) {
-  const prevValue = valueChange.prev
-  const newValue = valueChange.new
+function validateFloat(valueChange, constraints, bounded) {
+  const prevValue = valueChange.prev;
+  const newValue = valueChange.new;
 
   if (newValue.trim() === '') {
-    return 0.0
+    return 0.0;
   }
 
-  const parsedValue = Number(newValue)
+  const parsedValue = Number(newValue);
 
   if (isNaN(parsedValue)) {
-    return prevValue
+    return prevValue;
   }
 
   if (!bounded) {
     if (newValue.includes('.')) {
-      return newValue
+      return newValue;
     }
 
-    return parsedValue
+    return parsedValue;
   }
 
   if (parsedValue < constraints.min) {
-    return constraints.min
+    return constraints.min;
   }
 
   if (parsedValue > constraints.max) {
-    return constraints.max
+    return constraints.max;
   }
 
-  return parsedValue
+  return parsedValue;
 }
 
-function validateTimeStamps (triggerData) {
-  const commands = Object.keys(triggerData)
+function validateTimeStamps(triggerData) {
+  const commands = Object.keys(triggerData);
 
-  commands.forEach(command => {
-    if (command === Triggers.CustomSkin) return
+  commands.forEach((command) => {
+    if (command === Triggers.CustomSkin) return;
 
-    const triggers = triggerData[command].triggers
+    const { triggers } = triggerData[command];
 
     for (let i = 0; i < triggers.length - 1; i++) {
-      const time1 = triggers[i][0]
-      const time2 = triggers[i + 1][0]
+      const time1 = triggers[i][0];
+      const time2 = triggers[i + 1][0];
 
       if ((time1[0] * secondsInMinute + time1[1]) * fps + time1[2] < (time2[0] * secondsInMinute + time2[1]) * fps + time2[2]) {
-        continue
+        continue;
       }
 
-      time2[0] = time1[0]
-      time2[1] = time1[1]
-      time2[2] = time1[2] + 1
+      time2[0] = time1[0];
+      time2[1] = time1[1];
+      time2[2] = time1[2] + 1;
 
       if (time2[2] === fps) {
-        time2[2] = 0
-        time2[1] += 1
+        time2[2] = 0;
+        time2[1] += 1;
       }
 
       if (time2[1] === secondsInMinute) {
-        time2[1] = 0
-        time2[0] += 1
+        time2[1] = 0;
+        time2[0] += 1;
       }
     }
-  })
+  });
 }
 
-function formatSkins (customSkinData) {
-  const customSkinStrings = customSkinData.map((customSkin) => {
-    return `
+function formatSkins(customSkinData) {
+  const customSkinStrings = customSkinData.map((customSkin) => `
       .outline {stroke: ${customSkin.outline.stroke}}
       .skin {fill: ${customSkin.skin.fill}}
       .hair {fill: ${customSkin.hair.fill}}
@@ -147,10 +146,9 @@ function formatSkins (customSkinData) {
       .hat .bottom {stroke: ${customSkin.hatBottom.stroke}}
       .hat .ball {fill: ${customSkin.hatBall.fill}}
       .flag {fill: ${customSkin.flag.fill}}
-    `.replace(/\n/g, '')
-  })
+    `.replace(/\n/g, ''));
 
-  customSkinStrings.unshift(customSkinStrings.pop())
+  customSkinStrings.unshift(customSkinStrings.pop());
 
-  return JSON.stringify(customSkinStrings)
+  return JSON.stringify(customSkinStrings);
 }

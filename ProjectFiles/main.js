@@ -1,34 +1,34 @@
 /* Main function, entry point of the application */
 
-function main () {
-  window.V2 = window.V2 || getWindowStart(window.store.getState())
+function main() {
+  window.V2 = window.V2 || getWindowStart(window.store.getState());
 
   const {
     React,
     ReactDOM,
-    store
-  } = window
+    store,
+  } = window;
 
-  let playerRunning = getPlayerRunning(store.getState())
-  let windowFocused = getWindowFocused(store.getState())
+  let playerRunning = getPlayerRunning(store.getState());
+  let windowFocused = getWindowFocused(store.getState());
 
   // Listens for changes in window state to update UI accordingly
 
   store.subscribe(() => {
-    playerRunning = getPlayerRunning(store.getState())
-    windowFocused = getWindowFocused(store.getState())
+    playerRunning = getPlayerRunning(store.getState());
+    windowFocused = getWindowFocused(store.getState());
 
-    const shouldBeVisible = window.CMD_EDITOR_DEBUG || (!playerRunning && windowFocused)
+    const shouldBeVisible = window.CMD_EDITOR_DEBUG || (!playerRunning && windowFocused);
 
-    commandEditorParent.style.opacity = shouldBeVisible ? 1 : 0
-    commandEditorParent.style.pointerEvents = shouldBeVisible ? null : 'none'
-  })
+    commandEditorParent.style.opacity = shouldBeVisible ? 1 : 0;
+    commandEditorParent.style.pointerEvents = shouldBeVisible ? null : 'none';
+  });
 
   // Entry point for the UI components
 
   class CommandEditorComponent extends React.Component {
-    constructor () {
-      super()
+    constructor() {
+      super();
 
       this.state = {
         active: false,
@@ -43,339 +43,333 @@ function main () {
         skinEditorZoomProps: {},
         selectedColor: opaqueWhite,
         fontSize: constraintProps.textSizeProps.default,
-        resolution: viewportSizes.FHD
-      }
+        resolution: viewportSizes.FHD,
+      };
 
-      this.commandEditor = new CommandEditor(store, this.state)
+      this.commandEditor = new CommandEditor(store, this.state);
 
       store.subscribeImmediate(() => {
         if (this.state.initialized) {
-          this.setState({ active: window.CMD_EDITOR_DEBUG })
-          this.onAdjustFocuserDropdown()
-          this.onAdjustSkinDropdown()
+          this.setState({ active: window.CMD_EDITOR_DEBUG });
+          this.onAdjustFocuserDropdown();
+          this.onAdjustSkinDropdown();
         }
-      })
+      });
     }
 
     // State initialization, populates the triggers with base data
 
-    async onInitializeState () {
-      const commands = Object.keys(commandDataTypes)
+    async onInitializeState() {
+      const commands = Object.keys(commandDataTypes);
 
       if (commands.length === 0) {
-        return
+        return;
       }
 
-      this.onChangeTab(commands[0])
+      this.onChangeTab(commands[0]);
 
-      const data = {}
+      const data = {};
 
-      commands.forEach(command => {
+      commands.forEach((command) => {
         data[command] = {
           id: command,
           triggers: [
             JSON.parse(JSON.stringify(
-              commandDataTypes[command].template
-            ))
-          ]
-        }
+              commandDataTypes[command].template,
+            )),
+          ],
+        };
 
         switch (command) {
           case Triggers.CameraFocus:
           case Triggers.CameraPan:
           case Triggers.Zoom:
-            data[command].smoothing = constraintProps.smoothProps.default
-            break
+            data[command].smoothing = constraintProps.smoothProps.default;
+            break;
           case Triggers.TimeRemap:
-            data[command].interpolate = constraintProps.interpolateProps.default
-            break
+            data[command].interpolate = constraintProps.interpolateProps.default;
+            break;
           default:
-            break
+            break;
         }
-      })
+      });
 
-      this.setState({ triggerData: data })
+      this.setState({ triggerData: data });
 
-      this.setState({ focuserDropdownIndices: [0] })
+      this.setState({ focuserDropdownIndices: [0] });
 
-      this.setState({ skinEditorZoomProps: { scale: 1 } })
+      this.setState({ skinEditorZoomProps: { scale: 1 } });
     }
 
     // Trigger editing actions, follows a Create-Update-Delete structure
 
-    createTrigger (index) {
-      const data = { ...this.state.triggerData }
-      const commandData = data[this.state.activeTab]
-      const newTrigger = JSON.parse(JSON.stringify(commandData.triggers[index]))
+    createTrigger(index) {
+      const data = { ...this.state.triggerData };
+      const commandData = data[this.state.activeTab];
+      const newTrigger = JSON.parse(JSON.stringify(commandData.triggers[index]));
 
-      commandData.triggers.splice(index, 0, newTrigger)
+      commandData.triggers.splice(index, 0, newTrigger);
 
-      validateTimeStamps(data)
+      validateTimeStamps(data);
 
-      this.setState({ triggerData: data })
+      this.setState({ triggerData: data });
 
       if (this.state.activeTab === Triggers.CameraFocus) {
         this.setState({
-          focuserDropdownIndices: [...this.state.focuserDropdownIndices, 0]
-        }, () => this.onAdjustFocuserDropdown())
+          focuserDropdownIndices: [...this.state.focuserDropdownIndices, 0],
+        }, () => this.onAdjustFocuserDropdown());
       }
     }
 
-    updateTrigger (valueChange, path, constraints, bounded = false) {
-      const data = { ...this.state.triggerData }
-      let pathPointer = data[this.state.activeTab]
+    updateTrigger(valueChange, path, constraints, bounded = false) {
+      const data = { ...this.state.triggerData };
+      let pathPointer = data[this.state.activeTab];
 
       for (let i = 0; i < path.length - 1; i++) {
-        pathPointer = pathPointer[path[i]]
+        pathPointer = pathPointer[path[i]];
       }
 
-      pathPointer[path[path.length - 1]] = validateData(
-        valueChange, constraints, bounded
-      )
+      pathPointer[path[path.length - 1]] = validateData(valueChange, constraints, bounded);
 
       if (bounded) {
-        validateTimeStamps(data)
+        validateTimeStamps(data);
       }
 
-      this.setState({ triggerData: data })
+      this.setState({ triggerData: data });
     }
 
-    deleteTrigger (index) {
-      const data = { ...this.state.triggerData }
+    deleteTrigger(index) {
+      const data = { ...this.state.triggerData };
 
       data[this.state.activeTab].triggers = data[this.state.activeTab].triggers.filter(
-        (e, i) => { return index !== i }
-      )
+        (e, i) => index !== i,
+      );
 
-      this.setState({ triggerData: data })
+      this.setState({ triggerData: data });
     }
 
     // Interaction events, used when a UI component needs to change the state
 
-    onRead () {
+    onRead() {
       try {
         if (this.state.hasError) {
-          this.setState({ message: '' })
+          this.setState({ message: '' });
         }
 
-        const readInformation = this.commandEditor.read()
-        this.setState({ triggerData: readInformation })
-        this.setState({ hasError: false })
+        const readInformation = this.commandEditor.read();
+        this.setState({ triggerData: readInformation });
+        this.setState({ hasError: false });
       } catch (error) {
-        this.setState({ message: 'Error: ' + error.message })
-        this.setState({ hasError: true })
+        this.setState({ message: `Error: ${error.message}` });
+        this.setState({ hasError: true });
       }
     }
 
-    onTest () {
+    onTest() {
       try {
-        this.commandEditor.test(this.state.activeTab)
-        this.setState({ hasError: false })
+        this.commandEditor.test(this.state.activeTab);
+        this.setState({ hasError: false });
       } catch (error) {
-        this.setState({ message: 'Error: ' + error.message })
-        this.setState({ hasError: true })
+        this.setState({ message: `Error: ${error.message}` });
+        this.setState({ hasError: true });
       }
     }
 
-    onPrint () {
+    onPrint() {
       try {
-        const printInformation = this.commandEditor.print(this.state.activeTab)
-        this.setState({ message: printInformation })
-        this.setState({ hasError: false })
+        const printInformation = this.commandEditor.print(this.state.activeTab);
+        this.setState({ message: printInformation });
+        this.setState({ hasError: false });
       } catch (error) {
-        this.setState({ message: 'Error: ' + error.message })
-        this.setState({ hasError: true })
+        this.setState({ message: `Error: ${error.message}` });
+        this.setState({ hasError: true });
       }
     }
 
-    onResetSkin (index) {
-      const confirmReset = confirm('Are you sure you want to reset the current rider\'s skin?')
+    onResetSkin(index) {
+      const confirmReset = confirm('Are you sure you want to reset the current rider\'s skin?');
 
       if (confirmReset) {
-        const triggerData = this.state.triggerData
+        const { triggerData } = this.state;
 
         triggerData.CustomSkin.triggers[index] = JSON.parse(JSON.stringify(
-          commandDataTypes.CustomSkin.template
-        ))
+          commandDataTypes.CustomSkin.template,
+        ));
 
-        this.setState({ triggerData })
+        this.setState({ triggerData });
       }
     }
 
-    onChangeColor (color, alpha) {
+    onChangeColor(color, alpha) {
       const hexAlpha = alpha
         ? Math.round(Math.min(Math.max(parseFloat(alpha), 0), 1) * 255)
           .toString(16).padStart(2, '0')
-        : this.state.selectedColor.substring(7)
+        : this.state.selectedColor.substring(7);
 
       const hexColor = color
         ? color + hexAlpha
-        : this.state.selectedColor.substring(0, 7) + hexAlpha
+        : this.state.selectedColor.substring(0, 7) + hexAlpha;
 
-      this.setState({ selectedColor: hexColor })
+      this.setState({ selectedColor: hexColor });
     }
 
-    onCopyClipboard (text) {
+    onCopyClipboard(text) {
       navigator.clipboard.writeText(text)
         .then(() => {
-          console.log('Text copied to clipboard successfully')
+          console.log('Text copied to clipboard successfully');
         })
         .catch((error) => {
-          console.error('Error copying text to clipboard: ', error)
-        })
+          console.error('Error copying text to clipboard: ', error);
+        });
     }
 
-    onActivate () {
+    onActivate() {
       if (this.state.active) {
-        this.setState({ active: false })
+        this.setState({ active: false });
       } else {
-        this.setState({ active: true })
+        this.setState({ active: true });
       }
     }
 
-    onChangeTab (tabName) {
-      this.setState({ activeTab: tabName })
+    onChangeTab(tabName) {
+      this.setState({ activeTab: tabName });
     }
 
-    onToggleSettings (settingsActive) {
-      this.setState({ settingsActive })
+    onToggleSettings(settingsActive) {
+      this.setState({ settingsActive });
     }
 
-    onChangeFocuserDropdown (index, value) {
-      const dropdownData = [...this.state.focuserDropdownIndices]
+    onChangeFocuserDropdown(index, value) {
+      const dropdownData = [...this.state.focuserDropdownIndices];
 
-      dropdownData[index] = parseInt(value)
+      dropdownData[index] = parseInt(value);
 
-      this.setState({ focuserDropdownIndices: dropdownData })
+      this.setState({ focuserDropdownIndices: dropdownData });
     }
 
-    onChangeSkinDropdown (value) {
-      this.setState({ skinDropdownIndex: parseInt(value) })
+    onChangeSkinDropdown(value) {
+      this.setState({ skinDropdownIndex: parseInt(value) });
     }
 
-    onAdjustFocuserDropdown () {
-      const triggerData = { ...this.state.triggerData }
-      const focusTriggers = triggerData[Triggers.CameraFocus].triggers
-      const clamp = this.commandEditor.RiderCount
+    onAdjustFocuserDropdown() {
+      const triggerData = { ...this.state.triggerData };
+      const focusTriggers = triggerData[Triggers.CameraFocus].triggers;
+      const clamp = this.commandEditor.RiderCount;
 
       focusTriggers.forEach((e, i) => {
         for (let j = focusTriggers[i][1].length; j < clamp; j++) {
-          focusTriggers[i][1] = [...focusTriggers[i][1], 0]
+          focusTriggers[i][1] = [...focusTriggers[i][1], 0];
         }
 
         for (let j = focusTriggers[i][1].length; j > clamp; j--) {
-          focusTriggers[i][1] = focusTriggers[i][1].slice(0, -1)
+          focusTriggers[i][1] = focusTriggers[i][1].slice(0, -1);
         }
-      })
+      });
 
-      triggerData[Triggers.CameraFocus].triggers = focusTriggers
-      this.setState({ triggerData })
+      triggerData[Triggers.CameraFocus].triggers = focusTriggers;
+      this.setState({ triggerData });
 
-      const focuserDropdownIndices = this.state.focuserDropdownIndices
+      const { focuserDropdownIndices } = this.state;
 
       focuserDropdownIndices.forEach((e, i) => {
         if (focuserDropdownIndices[i] >= clamp) {
-          focuserDropdownIndices[i] = clamp - 1
+          focuserDropdownIndices[i] = clamp - 1;
         }
-      })
+      });
 
-      this.setState({ focuserDropdownIndices })
+      this.setState({ focuserDropdownIndices });
     }
 
-    onAdjustSkinDropdown () {
-      const triggerData = { ...this.state.triggerData }
-      let skinTriggers = triggerData[Triggers.CustomSkin].triggers
-      const clamp = this.commandEditor.RiderCount
+    onAdjustSkinDropdown() {
+      const triggerData = { ...this.state.triggerData };
+      let skinTriggers = triggerData[Triggers.CustomSkin].triggers;
+      const clamp = this.commandEditor.RiderCount;
 
       for (let j = skinTriggers.length; j < clamp; j++) {
         skinTriggers = [...skinTriggers, JSON.parse(JSON.stringify(
-          commandDataTypes.CustomSkin.template
-        ))]
+          commandDataTypes.CustomSkin.template,
+        ))];
       }
 
       for (let j = skinTriggers.length; j > clamp; j--) {
-        skinTriggers = skinTriggers.slice(0, -1)
+        skinTriggers = skinTriggers.slice(0, -1);
       }
 
-      triggerData[Triggers.CustomSkin].triggers = skinTriggers
-      this.setState({ triggerData })
+      triggerData[Triggers.CustomSkin].triggers = skinTriggers;
+      this.setState({ triggerData });
 
-      let skinDropdownIndex = this.state.skinDropdownIndex
+      let { skinDropdownIndex } = this.state;
 
       if (skinDropdownIndex >= clamp) {
-        skinDropdownIndex = clamp - 1
+        skinDropdownIndex = clamp - 1;
       }
 
-      this.setState({ skinDropdownIndex })
+      this.setState({ skinDropdownIndex });
     }
 
-    onZoomSkinEditor (event, isMouseAction) {
-      const rect = document.getElementById('skinElementContainer').getBoundingClientRect()
-      const skinEditorZoomProps = this.state.skinEditorZoomProps
+    onZoomSkinEditor(event, isMouseAction) {
+      const rect = document.getElementById('skinElementContainer').getBoundingClientRect();
+      const { skinEditorZoomProps } = this.state;
 
       if (isMouseAction) {
         if (skinEditorZoomProps.scale < constraintProps.skinZoomProps.max) {
-          skinEditorZoomProps.xOffset = (event.clientX - rect.x) / skinEditorZoomProps.scale
-          skinEditorZoomProps.yOffset = (event.clientY - rect.y) / skinEditorZoomProps.scale
+          skinEditorZoomProps.xOffset = (event.clientX - rect.x) / skinEditorZoomProps.scale;
+          skinEditorZoomProps.yOffset = (event.clientY - rect.y) / skinEditorZoomProps.scale;
         }
-        skinEditorZoomProps.scale = Math.max(
-          Math.min(
-            skinEditorZoomProps.scale - event.deltaY * scrollMultiplier,
-            constraintProps.skinZoomProps.max
-          ), constraintProps.skinZoomProps.min
-        )
+        skinEditorZoomProps.scale = Math.max(Math.min(
+          skinEditorZoomProps.scale - event.deltaY * scrollMultiplier,
+          constraintProps.skinZoomProps.max,
+        ), constraintProps.skinZoomProps.min);
       } else {
-        skinEditorZoomProps.scale = Math.max(
-          Math.min(
-            event.target.value,
-            constraintProps.skinZoomProps.max
-          ), constraintProps.skinZoomProps.min
-        )
+        skinEditorZoomProps.scale = Math.max(Math.min(
+          event.target.value,
+          constraintProps.skinZoomProps.max,
+        ), constraintProps.skinZoomProps.min);
       }
 
-      this.setState({ skinEditorZoomProps })
+      this.setState({ skinEditorZoomProps });
     }
 
-    onChangeFontSize (fontSize) {
-      this.setState({ fontSize })
+    onChangeFontSize(fontSize) {
+      this.setState({ fontSize });
     }
 
-    onChangeViewport (resolution) {
-      this.setState({ resolution })
+    onChangeViewport(resolution) {
+      this.setState({ resolution });
     }
 
     // Rendering events that handle the basic React component rendering
 
-    componentDidMount () {
-      Object.assign(commandEditorParent.style, parentStyle)
+    componentDidMount() {
+      Object.assign(commandEditorParent.style, parentStyle);
       this.onInitializeState().then(() => {
-        this.setState({ initialized: true })
-      })
+        this.setState({ initialized: true });
+      });
     }
 
-    componentWillUpdate (nextProps, nextState) {
-      this.commandEditor.onUpdate(nextState)
+    componentWillUpdate(nextProps, nextState) {
+      this.commandEditor.onUpdate(nextState);
     }
 
-    render () {
-      return this.state.initialized && mainComp(React.createElement, this)
+    render() {
+      return this.state.initialized && mainComp(React.createElement, this);
     }
   }
 
   // Adds the mod component to the root UI element
 
-  const commandEditorParent = document.createElement('div')
+  const commandEditorParent = document.createElement('div');
 
-  document.getElementById('content').appendChild(commandEditorParent)
+  document.getElementById('content').appendChild(commandEditorParent);
 
   ReactDOM.render(
     React.createElement(CommandEditorComponent),
-    commandEditorParent
-  )
+    commandEditorParent,
+  );
 }
 
 if (window.store) {
-  main()
+  main();
 } else {
-  window.onAppReady = main
+  window.onAppReady = main;
 }
