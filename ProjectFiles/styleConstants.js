@@ -11,24 +11,21 @@ const colorTheme = {
   white: '#ffffff',
 };
 
+const textGlobal = {
+  direction: 'ltr',
+  fontFamily: 'Helvetica',
+  fontWeight: 'bold',
+}
+
 const textStyle = {
   S: {
-    direction: 'ltr',
-    fontFamily: 'Helvetica',
-    fontSize: '14px',
-    fontWeight: 'bold',
+    fontSize: '14px'
   },
   M: {
-    direction: 'ltr',
-    fontFamily: 'Helvetica',
-    fontSize: '22px',
-    fontWeight: 'bold',
+    fontSize: '22px'
   },
   L: {
-    direction: 'ltr',
-    fontFamily: 'Helvetica',
-    fontSize: '32px',
-    fontWeight: 'bold',
+    fontSize: '32px'
   },
 };
 

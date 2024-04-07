@@ -53,7 +53,7 @@ const constraintProps = {
     default: 1, min: 1, max: 4, type: 'Float',
   },
   textSizeProps: {
-    default: 1, min: 0.5, max: 2, type: 'Float',
+    default: 1, min: 0, max: 2, type: 'Integer',
   },
 };
 

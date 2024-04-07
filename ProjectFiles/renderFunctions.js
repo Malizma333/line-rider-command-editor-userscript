@@ -1,26 +1,28 @@
 function mainComp(create, root) {
-  return create(
-    'div',
-    root.state.active && { style: expandedWindow },
-    create(
-      'button',
-      {
-        style: squareButtonStyle,
-        onClick: () => root.onActivate(),
-      },
-      create(
-        'text',
-        { style: textStyle.L },
-        root.state.active ? '-' : '+',
-      ),
-    ),
+  return create('div', { style: textGlobal },
     create(
       'div',
-      !root.state.active && { style: { display: 'none' } },
-      toolbarComps(create, root),
-      activeAreaComp(create, root),
-      readWriteComps(create, root),
-    ),
+      root.state.active && { style: expandedWindow },
+      create(
+        'button',
+        {
+          style: squareButtonStyle,
+          onClick: () => root.onActivate(),
+        },
+        create(
+          'text',
+          { style: textStyle.L },
+          root.state.active ? '-' : '+',
+        ),
+      ),
+      create(
+        'div',
+        !root.state.active && { style: { display: 'none' } },
+        toolbarComps(create, root),
+        activeAreaComp(create, root),
+        readWriteComps(create, root),
+      ),
+    )
   );
 }
 
@@ -159,9 +161,9 @@ function settingsFeatureComps(create, root) {
           type: 'range',
           min: constraintProps.textSizeProps.min,
           max: constraintProps.textSizeProps.max,
-          step: 0.1,
-          value: root.state.fontSize,
-          onChange: (e) => root.onChangeFontSize(e.target.value),
+          step: 1,
+          value: root.state.fontSizePreset,
+          onChange: (e) => root.onChangeFontSizePreset(e.target.value),
         }),
         create('text', { style: textStyle.S }, 'Large'),
       ),

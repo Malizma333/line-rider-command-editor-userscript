@@ -42,7 +42,7 @@ function main() {
         skinDropdownIndex: 0,
         skinEditorZoomProps: {},
         selectedColor: opaqueWhite,
-        fontSize: constraintProps.textSizeProps.default,
+        fontSizePreset: constraintProps.textSizeProps.default,
         resolution: viewportSizes.FHD,
       };
 
@@ -330,8 +330,8 @@ function main() {
       this.setState({ skinEditorZoomProps });
     }
 
-    onChangeFontSize(fontSize) {
-      this.setState({ fontSize });
+    onChangeFontSizePreset(fontSizePreset) {
+      this.setState({ fontSizePreset });
     }
 
     onChangeViewport(resolution) {
