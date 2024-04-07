@@ -155,7 +155,7 @@ function settingsFeatureComps(rc, root) {
     rc(
       'div',
       { style: settingsRowStyle },
-      rc('label', { for: 'fontSizePreset', style: settingsLabelStyle }, 'TEXT SIZE'),
+      rc('label', { for: 'fontSizePreset', style: settingsLabelStyle }, 'Font Sizes'),
       rc(
         'div',
         { style: settingsParameterStyle },
@@ -176,7 +176,7 @@ function settingsFeatureComps(rc, root) {
     rc(
       'div',
       { style: settingsRowStyle },
-      rc('text', { style: settingsLabelStyle }, 'VIEWPORT'),
+      rc('text', { style: settingsLabelStyle }, 'Viewport'),
       rc(
         'div',
         { style: {...settingsParameterStyle, fontSize: textStyle.S[root.state.fontSizePreset]} },
