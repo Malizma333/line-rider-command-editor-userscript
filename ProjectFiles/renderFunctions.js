@@ -11,7 +11,7 @@ function mainComp(create, root) {
         },
         create(
           'text',
-          { style: textStyle.L },
+          { style: {fontSize: '32px'} },
           root.state.active ? '-' : '+',
         ),
       ),
@@ -63,6 +63,7 @@ function readWriteComps(create, root) {
     {
       style: {
         ...readWriteContainerStyle,
+        ...textStyle.S
       },
     },
     create(
@@ -73,7 +74,7 @@ function readWriteComps(create, root) {
         },
         onClick: () => root.onRead(),
       },
-      create('text', { style: textStyle.S }, 'Load'),
+      create('text', null, 'Load'),
     ),
     create(
       'button',
@@ -83,7 +84,7 @@ function readWriteComps(create, root) {
         },
         onClick: () => root.onTest(),
       },
-      create('text', { style: textStyle.S }, 'Run'),
+      create('text', null, 'Run'),
     ),
     create(
       'button',
@@ -93,7 +94,7 @@ function readWriteComps(create, root) {
         },
         onClick: () => root.onPrint(),
       },
-      create('text', { style: textStyle.S }, 'Print Code'),
+      create('text', null, 'Print Code'),
     ),
     create(
       'div',
@@ -101,7 +102,6 @@ function readWriteComps(create, root) {
       create('text', {
         style: {
           ...dataTextStyle,
-          ...textStyle.S,
           color: root.state.hasError ? 'Red' : 'Black',
         },
       }, root.state.message),
@@ -175,7 +175,7 @@ function settingsFeatureComps(create, root) {
       create('text', { style: settingsLabelStyle }, 'VIEWPORT'),
       create(
         'div',
-        { style: settingsParameterStyle },
+        { style: {...settingsParameterStyle, ...textStyle.S} },
         create('button', {
           style: {
             ...settingsButtonStyle,
@@ -183,7 +183,7 @@ function settingsFeatureComps(create, root) {
               root.state.resolution === viewportSizes.HD ? colorTheme.lightgray1 : colorTheme.darkgray1,
           },
           onClick: () => root.onChangeViewport(viewportSizes.HD),
-        }, create('text', { style: textStyle.S }, viewportSizes.HD)),
+        }, create('text', null, viewportSizes.HD)),
         create('button', {
           style: {
             ...settingsButtonStyle,
@@ -191,7 +191,7 @@ function settingsFeatureComps(create, root) {
               root.state.resolution === viewportSizes.FHD ? colorTheme.lightgray1 : colorTheme.darkgray1,
           },
           onClick: () => root.onChangeViewport(viewportSizes.FHD),
-        }, create('text', { style: textStyle.S }, viewportSizes.FHD)),
+        }, create('text', null, viewportSizes.FHD)),
         create('button', {
           style: {
             ...settingsButtonStyle,
@@ -199,7 +199,7 @@ function settingsFeatureComps(create, root) {
               root.state.resolution === viewportSizes.QHD ? colorTheme.lightgray1 : colorTheme.darkgray1,
           },
           onClick: () => root.onChangeViewport(viewportSizes.QHD),
-        }, create('text', { style: textStyle.S }, viewportSizes.QHD)),
+        }, create('text', null, viewportSizes.QHD)),
         create('button', {
           style: {
             ...settingsButtonStyle,
@@ -207,7 +207,7 @@ function settingsFeatureComps(create, root) {
               root.state.resolution === viewportSizes.UHD ? colorTheme.lightgray1 : colorTheme.darkgray1,
           },
           onClick: () => root.onChangeViewport(viewportSizes.UHD),
-        }, create('text', { style: textStyle.S }, viewportSizes.UHD)),
+        }, create('text', null, viewportSizes.UHD)),
       ),
     ),
   );
@@ -369,7 +369,7 @@ function triggerHeaderComp(create, root, data, index) {
       },
       create('text', {
         style: {
-          ...textStyle.M,
+          fontSize: '20px',
           color: index === 0 ? colorTheme.darkgray2 : colorTheme.black,
           fontWeight: 900,
         },
@@ -657,7 +657,7 @@ function skinEditorToolbar(create, root, data, index) {
         onClick: () => root.onResetSkin(index),
       },
       create('text', {
-        style: { ...textStyle.L, color: 'red', fontWeight: 700 },
+        style: { fontSize: '32px', color: 'red', fontWeight: 700 },
       }, 'X'),
     ),
     create(
