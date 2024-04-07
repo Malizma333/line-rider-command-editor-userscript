@@ -369,7 +369,7 @@ function triggerHeaderComp(create, root, data, index) {
       },
       create('text', {
         style: {
-          fontSize: '20px',
+          fontSize: '22px',
           color: index === 0 ? colorTheme.darkgray2 : colorTheme.black,
           fontWeight: 900,
         },

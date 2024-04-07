@@ -76,7 +76,7 @@ const toolbarButtonStyle = {
 const toolbarButtonText = {
   top: '3px',
   position: 'relative',
-  fontSize: '24px'
+  fontSize: '22px'
 };
 
 const readWriteContainerStyle = {
@@ -121,7 +121,7 @@ const dataTextStyle = {
 const squareFilledButtonStyle = {
   backgroundColor: colorTheme.white,
   border: '2px solid black',
-  fontSize: '20px',
+  fontSize: '22px',
   fontWeight: 'bold',
   position: 'absolute',
   userSelect: 'none',
