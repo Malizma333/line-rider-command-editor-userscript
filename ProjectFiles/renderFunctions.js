@@ -10,7 +10,7 @@ function mainComp(rc, root) {
           onClick: () => root.onActivate(),
         },
         rc(
-          'text',
+          'span',
           { style: {fontSize: '32px'} },
           root.state.active ? '-' : '+',
         ),
@@ -36,7 +36,7 @@ function toolbarComps(rc, root) {
         style: squareButtonStyle,
         onClick: () => root.onToggleSettings(!root.state.settingsActive),
       },
-      rc('text', { style: toolbarButtonText }, '⚙'),
+      rc('span', { style: toolbarButtonText }, '⚙'),
     ),
     rc(
       'button',
@@ -44,7 +44,7 @@ function toolbarComps(rc, root) {
         style: squareButtonStyle,
         onClick: () => window.open(reportLink),
       },
-      rc('text', { style: toolbarButtonText }, '⚑'),
+      rc('span', { style: toolbarButtonText }, '⚑'),
     ),
     rc(
       'button',
@@ -52,7 +52,7 @@ function toolbarComps(rc, root) {
         style: squareButtonStyle,
         onClick: () => window.open(helpLink),
       },
-      rc('text', { style: toolbarButtonText }, '?'),
+      rc('span', { style: toolbarButtonText }, '?'),
     ),
   );
 }
@@ -138,7 +138,7 @@ function settingsComp(rc, root) {
         },
         onClick: () => root.onToggleSettings(false),
       },
-      rc('text', { style: { fontSize: '32px', fontWeight: 700 } }, 'X'),
+      rc('span', { style: { fontSize: '32px', fontWeight: 700 } }, 'X'),
     ),
     rc('text', { style: {
       ...settingsTitleStyle,
@@ -155,12 +155,13 @@ function settingsFeatureComps(rc, root) {
     rc(
       'div',
       { style: settingsRowStyle },
-      rc('text', { style: settingsLabelStyle }, 'TEXT SIZE'),
+      rc('label', { for: 'fontSizePreset', style: settingsLabelStyle }, 'TEXT SIZE'),
       rc(
         'div',
         { style: settingsParameterStyle },
         rc('text', { style: {fontSize: textStyle.S[root.state.fontSizePreset]} }, 'Small'),
         rc('input', {
+          id: 'fontSizePreset',
           style: { margin: '5px' },
           type: 'range',
           min: constraintProps.textSizeProps.min,
@@ -271,8 +272,12 @@ function smoothTabComp(rc, root, data) {
   return rc(
     'div',
     { style: smoothTabStyle },
-    rc('text', { style: {fontSize: textStyle.S[root.state.fontSizePreset]} }, 'Smoothing'),
+    rc('label', {
+      for: 'smoothTextInput',
+      style: {fontSize: textStyle.S[root.state.fontSizePreset]}
+    }, 'Smoothing'),
     data.id !== Triggers.TimeRemap && rc('input', {
+      id: 'smoothTextInput',
       style: {
         ...smoothTextInputStyle,
         fontSize: textStyle.S[root.state.fontSizePreset],
@@ -341,7 +346,7 @@ function triggerComp(rc, root, data, index) {
         style: smallCenteredButton,
         onClick: () => root.createTrigger(index),
       },
-      rc('text', {
+      rc('span', {
         style: {
           fontSize: '22px',
           fontWeight: 900,
@@ -373,7 +378,7 @@ function triggerHeaderComp(rc, root, data, index) {
         disabled: index === 0,
         onClick: () => root.deleteTrigger(index),
       },
-      rc('text', {
+      rc('span', {
         style: {
           fontSize: '22px',
           color: index === 0 ? colorTheme.darkgray2 : colorTheme.black,
@@ -435,13 +440,17 @@ function timeStampComp(rc, root, data, index) {
 }
 
 function zoomTriggerComp(rc, root, data, index) {
-  const label = 'ZOOM TO';
+  const labels = ['ZOOM TO'];
 
   return rc(
     'div',
     null,
-    rc('text', { style: triggerTextStyle }, label),
+    rc('label', {
+      for: `triggerText_${labels[0]}_${index}`,
+      style: triggerTextStyle
+    }, labels[0]),
     rc('input', {
+      id: `triggerText_${labels[0]}_${index}`,
       style: triggerTextStyle,
       value: data[1],
       onChange: (e) => root.updateTrigger(
@@ -485,8 +494,12 @@ function camPanTriggerComp(rc, root, data, index) {
           display: 'inline-block',
         },
       },
-      rc('text', { style: triggerTextStyle }, labels[propIndex]),
+      rc('label', {
+        for: `triggerText_${labels[propIndex]}_${index}`,
+        style: triggerTextStyle
+      }, labels[propIndex]),
       rc('input', {
+        id: `triggerText_${labels[propIndex]}_${index}`,
         style: triggerTextStyle,
         value: data[1][prop],
         onChange: (e) => root.updateTrigger(
@@ -513,6 +526,7 @@ function camPanTriggerComp(rc, root, data, index) {
 
 function camFocusTriggerComp(rc, root, data, index) {
   const dropdownIndex = root.state.focuserDropdownIndices[index];
+  const labels = ['WEIGHT'];
 
   return rc(
     'div',
@@ -533,8 +547,12 @@ function camFocusTriggerComp(rc, root, data, index) {
         }, rc('text', null, `Rider ${riderNum}`));
       }),
     ),
-    rc('text', { style: triggerTextStyle }, 'WEIGHT'),
+    rc('label', {
+      for: `triggerText_${labels[0]}_${dropdownIndex}_${index}`,
+      style: triggerTextStyle
+    }, labels[0]),
     rc('input', {
+      id: `triggerText_${labels[0]}_${dropdownIndex}_${index}`,
       style: triggerTextStyle,
       value: data[1][dropdownIndex],
       onChange: (e) => root.updateTrigger(
@@ -559,13 +577,17 @@ function camFocusTriggerComp(rc, root, data, index) {
 }
 
 function timeRemapTriggerComp(rc, root, data, index) {
-  const label = 'SPEED';
+  const labels = ['SPEED'];
 
   return rc(
     'div',
     null,
-    rc('text', { style: triggerTextStyle }, label),
+    rc('label', {
+      for: `triggerText_${labels[0]}_${index}`,
+      style: triggerTextStyle
+    }, labels[0]),
     rc('input', {
+      id: `triggerText_${labels[0]}_${index}`,
       style: triggerTextStyle,
       value: data[1],
       onChange: (e) => root.updateTrigger(
@@ -665,19 +687,20 @@ function skinEditorToolbar(rc, root, data, index) {
         },
         onClick: () => root.onResetSkin(index),
       },
-      rc('text', {
+      rc('span', {
         style: { fontSize: '32px', color: 'red', fontWeight: 700 },
       }, 'X'),
     ),
     rc(
       'div',
       { style: {...alphaContainerStyle, fontSize: textStyle.S[root.state.fontSizePreset]} },
-      rc('text', null, 'Transparency'),
+      rc('label', {for: 'alphaSlider'}, 'Transparency'),
       rc(
         'div',
         { style: alphaSliderContainerStyle },
         rc('text', null, '100%'),
         rc('input', {
+          id: 'alphaSlider',
           style: alphaSliderStyle,
           type: 'range',
           min: 0,
