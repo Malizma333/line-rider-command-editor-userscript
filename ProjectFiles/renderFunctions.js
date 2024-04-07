@@ -63,7 +63,7 @@ function readWriteComps(create, root) {
     {
       style: {
         ...readWriteContainerStyle,
-        ...textStyle.S
+        fontSize: textStyle.S[root.state.fontSizePreset]
       },
     },
     create(
@@ -140,7 +140,10 @@ function settingsComp(create, root) {
       },
       create('text', { style: { fontSize: '32px', fontWeight: 700 } }, 'X'),
     ),
-    create('text', { style: {...settingsTitleStyle, ...textStyle.L} }, 'Settings'),
+    create('text', { style: {
+      ...settingsTitleStyle,
+      fontSize: textStyle.L[root.state.fontSizePreset]
+    }}, 'Settings'),
     settingsFeatureComps(create, root),
   );
 }
@@ -148,7 +151,7 @@ function settingsComp(create, root) {
 function settingsFeatureComps(create, root) {
   return create(
     'div',
-    { style: textStyle.M},
+    { style: {fontSize: textStyle.M[root.state.fontSizePreset]}},
     create(
       'div',
       { style: settingsRowStyle },
@@ -156,7 +159,7 @@ function settingsFeatureComps(create, root) {
       create(
         'div',
         { style: settingsParameterStyle },
-        create('text', { style: textStyle.S }, 'Small'),
+        create('text', { style: {fontSize: textStyle.S[root.state.fontSizePreset]} }, 'Small'),
         create('input', {
           style: { margin: '5px' },
           type: 'range',
@@ -166,7 +169,7 @@ function settingsFeatureComps(create, root) {
           value: root.state.fontSizePreset,
           onChange: (e) => root.onChangeFontSizePreset(e.target.value),
         }),
-        create('text', { style: textStyle.S }, 'Large'),
+        create('text', { style: {fontSize: textStyle.S[root.state.fontSizePreset]} }, 'Large'),
       ),
     ),
     create(
@@ -175,7 +178,7 @@ function settingsFeatureComps(create, root) {
       create('text', { style: settingsLabelStyle }, 'VIEWPORT'),
       create(
         'div',
-        { style: {...settingsParameterStyle, ...textStyle.S} },
+        { style: {...settingsParameterStyle, fontSize: textStyle.S[root.state.fontSizePreset]} },
         create('button', {
           style: {
             ...settingsButtonStyle,
@@ -237,7 +240,10 @@ function tabComp(create, root, tab) {
           : colorTheme.darkgray1,
     },
     onClick: () => root.onChangeTab(tab),
-  }, create('text', { style: textStyle.S }, commandDataTypes[tab].displayName));
+  }, create('text',
+    { style: {fontSize: textStyle.S[root.state.fontSizePreset]} },
+    commandDataTypes[tab].displayName
+  ));
 }
 
 function windowComps(create, root) {
@@ -265,11 +271,11 @@ function smoothTabComp(create, root, data) {
   return create(
     'div',
     { style: smoothTabStyle },
-    create('text', { style: textStyle.S }, 'Smoothing'),
+    create('text', { style: {fontSize: textStyle.S[root.state.fontSizePreset]} }, 'Smoothing'),
     data.id !== Triggers.TimeRemap && create('input', {
       style: {
         ...smoothTextInputStyle,
-        ...textStyle.S,
+        fontSize: textStyle.S[root.state.fontSizePreset],
         marginLeft: '5px',
       },
       value: data.smoothing,
@@ -319,7 +325,7 @@ function triggerComp(create, root, data, index) {
     {
       style: {
         ...triggerStyle,
-        ...textStyle.M,
+        fontSize: textStyle.M[root.state.fontSizePreset],
         backgroundColor: index === 0 ? colorTheme.gray : colorTheme.white,
       },
     },
@@ -351,7 +357,7 @@ function triggerHeaderComp(create, root, data, index) {
     { style: triggerDivStyle },
     create('text', {
       style: {
-        ...textStyle.L,
+        fontSize: textStyle.L[root.state.fontSizePreset],
         paddingRight: '10px',
       },
     }, index + 1),
@@ -618,7 +624,10 @@ function skinEditorComp(create, root, data) {
         value: root.state.skinEditorZoomProps.scale,
         onChange: (e) => root.onZoomSkinEditor(e, false),
       }),
-      create('text', { style: textStyle.S }, `x${Math.round(root.state.skinEditorZoomProps.scale * 10) / 10}`),
+      create('text',
+        { style: {fontSize: textStyle.S[root.state.fontSizePreset]} },
+        `x${Math.round(root.state.skinEditorZoomProps.scale * 10) / 10}`
+      ),
     ),
     create(
       'div',
@@ -633,7 +642,7 @@ function skinEditorComp(create, root, data) {
           ['triggers', dropdownIndex, 'outline', 'stroke'],
         ),
       }),
-      create('text', { style: textStyle.S }, 'Outline'),
+      create('text', { style: {fontSize: textStyle.S[root.state.fontSizePreset]} }, 'Outline'),
     ),
     skinEditorToolbar(create, root, data.triggers, dropdownIndex),
   );
@@ -662,12 +671,12 @@ function skinEditorToolbar(create, root, data, index) {
     ),
     create(
       'div',
-      { style: alphaContainerStyle },
-      create('text', { style: textStyle.S }, 'Transparency'),
+      { style: {...alphaContainerStyle, fontSize: textStyle.S[root.state.fontSizePreset]} },
+      create('text', null, 'Transparency'),
       create(
         'div',
         { style: alphaSliderContainerStyle },
-        create('text', { style: textStyle.S }, '100%'),
+        create('text', null, '100%'),
         create('input', {
           style: alphaSliderStyle,
           type: 'range',
@@ -677,7 +686,7 @@ function skinEditorToolbar(create, root, data, index) {
           value: alphaValue,
           onChange: (e) => root.onChangeColor(null, e.target.value),
         }),
-        create('text', { style: textStyle.S }, '0%'),
+        create('text', null, '0%'),
       ),
     ),
     create('input', {
@@ -689,7 +698,7 @@ function skinEditorToolbar(create, root, data, index) {
     create(
       'select',
       {
-        style: {...triggerDropdownHeaderStyle, ...textStyle.M},
+        style: {...triggerDropdownHeaderStyle, fontSize: textStyle.M[root.state.fontSizePreset]},
         value: index,
         onChange: (e) => root.onChangeSkinDropdown(e.target.value),
       },

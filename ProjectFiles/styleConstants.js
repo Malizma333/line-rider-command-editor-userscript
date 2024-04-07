@@ -18,15 +18,9 @@ const textGlobal = {
 }
 
 const textStyle = {
-  S: {
-    fontSize: '14px'
-  },
-  M: {
-    fontSize: '22px'
-  },
-  L: {
-    fontSize: '32px'
-  },
+  S: ['12px','14px','18px'],
+  M: ['18px','22px','24px'],
+  L: ['28px','32px','36px']
 };
 
 const parentStyle = {
