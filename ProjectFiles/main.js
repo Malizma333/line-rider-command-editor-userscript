@@ -50,7 +50,6 @@ function main() {
 
       store.subscribeImmediate(() => {
         if (this.state.initialized) {
-          this.setState({ active: window.CMD_EDITOR_DEBUG });
           this.onAdjustFocuserDropdown();
           this.onAdjustSkinDropdown();
         }
@@ -344,6 +343,7 @@ function main() {
       Object.assign(commandEditorParent.style, parentStyle);
       this.onInitializeState().then(() => {
         this.setState({ initialized: true });
+        this.setState({ active: window.CMD_EDITOR_DEBUG });
       });
     }
 

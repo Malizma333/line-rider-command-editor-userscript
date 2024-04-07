@@ -3,6 +3,7 @@
 // Parses the script by checking for a command header keyword and verifying it's in a valid format
 
 function parseCommand(command, currentData, scriptCopy) {
+  const currentHeader = commandDataTypes[command].header.split('(')[0];
   const currentHeaderIndex = scriptCopy.indexOf(currentHeader);
 
   if (currentHeaderIndex === -1) return;

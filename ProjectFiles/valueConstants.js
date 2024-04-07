@@ -67,7 +67,7 @@ const viewportSizes = {
   HD: '720p',
   FHD: '1080p',
   QHD: '1440p',
-  UHD: '4K',
+  UHD: '4K'
 };
 
 const commandDataTypes = {
