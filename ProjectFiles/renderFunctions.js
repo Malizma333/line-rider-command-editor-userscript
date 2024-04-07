@@ -1,64 +1,64 @@
-function mainComp(create, root) {
-  return create('div', { style: textGlobal },
-    create(
+function mainComp(rc, root) {
+  return rc('div', { style: textGlobal },
+    rc(
       'div',
       root.state.active && { style: expandedWindow },
-      create(
+      rc(
         'button',
         {
           style: squareButtonStyle,
           onClick: () => root.onActivate(),
         },
-        create(
+        rc(
           'text',
           { style: {fontSize: '32px'} },
           root.state.active ? '-' : '+',
         ),
       ),
-      create(
+      rc(
         'div',
         !root.state.active && { style: { display: 'none' } },
-        toolbarComps(create, root),
-        activeAreaComp(create, root),
-        readWriteComps(create, root),
+        toolbarComps(rc, root),
+        activeAreaComp(rc, root),
+        readWriteComps(rc, root),
       ),
     )
   );
 }
 
-function toolbarComps(create, root) {
-  return create(
+function toolbarComps(rc, root) {
+  return rc(
     'div',
     { style: toolbarStyle },
-    create(
+    rc(
       'button',
       {
         style: squareButtonStyle,
         onClick: () => root.onToggleSettings(!root.state.settingsActive),
       },
-      create('text', { style: toolbarButtonText }, '⚙'),
+      rc('text', { style: toolbarButtonText }, '⚙'),
     ),
-    create(
+    rc(
       'button',
       {
         style: squareButtonStyle,
         onClick: () => window.open(reportLink),
       },
-      create('text', { style: toolbarButtonText }, '⚑'),
+      rc('text', { style: toolbarButtonText }, '⚑'),
     ),
-    create(
+    rc(
       'button',
       {
         style: squareButtonStyle,
         onClick: () => window.open(helpLink),
       },
-      create('text', { style: toolbarButtonText }, '?'),
+      rc('text', { style: toolbarButtonText }, '?'),
     ),
   );
 }
 
-function readWriteComps(create, root) {
-  return create(
+function readWriteComps(rc, root) {
+  return rc(
     'div',
     {
       style: {
@@ -66,7 +66,7 @@ function readWriteComps(create, root) {
         fontSize: textStyle.S[root.state.fontSizePreset]
       },
     },
-    create(
+    rc(
       'button',
       {
         style: {
@@ -74,9 +74,9 @@ function readWriteComps(create, root) {
         },
         onClick: () => root.onRead(),
       },
-      create('text', null, 'Load'),
+      rc('text', null, 'Load'),
     ),
-    create(
+    rc(
       'button',
       {
         style: {
@@ -84,9 +84,9 @@ function readWriteComps(create, root) {
         },
         onClick: () => root.onTest(),
       },
-      create('text', null, 'Run'),
+      rc('text', null, 'Run'),
     ),
-    create(
+    rc(
       'button',
       {
         style: {
@@ -94,18 +94,18 @@ function readWriteComps(create, root) {
         },
         onClick: () => root.onPrint(),
       },
-      create('text', null, 'Print Code'),
+      rc('text', null, 'Print Code'),
     ),
-    create(
+    rc(
       'div',
       { style: dataContainerStyle },
-      create('text', {
+      rc('text', {
         style: {
           ...dataTextStyle,
           color: root.state.hasError ? 'Red' : 'Black',
         },
       }, root.state.message),
-      create('button', {
+      rc('button', {
         style: { ...squareFilledButtonStyle, bottom: '17px' },
         onClick: () => root.onCopyClipboard(root.state.message),
       }, '🖶'),
@@ -113,21 +113,21 @@ function readWriteComps(create, root) {
   );
 }
 
-function activeAreaComp(create, root) {
-  return create(
+function activeAreaComp(rc, root) {
+  return rc(
     'div',
     null,
-    !root.state.settingsActive && tabComps(create, root),
-    !root.state.settingsActive && windowComps(create, root),
-    root.state.settingsActive && settingsComp(create, root),
+    !root.state.settingsActive && tabComps(rc, root),
+    !root.state.settingsActive && windowComps(rc, root),
+    root.state.settingsActive && settingsComp(rc, root),
   );
 }
 
-function settingsComp(create, root) {
-  return create(
+function settingsComp(rc, root) {
+  return rc(
     'div',
     { style: settingsWindowStyle },
-    create(
+    rc(
       'button',
       {
         style: {
@@ -138,29 +138,29 @@ function settingsComp(create, root) {
         },
         onClick: () => root.onToggleSettings(false),
       },
-      create('text', { style: { fontSize: '32px', fontWeight: 700 } }, 'X'),
+      rc('text', { style: { fontSize: '32px', fontWeight: 700 } }, 'X'),
     ),
-    create('text', { style: {
+    rc('text', { style: {
       ...settingsTitleStyle,
       fontSize: textStyle.L[root.state.fontSizePreset]
     }}, 'Settings'),
-    settingsFeatureComps(create, root),
+    settingsFeatureComps(rc, root),
   );
 }
 
-function settingsFeatureComps(create, root) {
-  return create(
+function settingsFeatureComps(rc, root) {
+  return rc(
     'div',
     { style: {fontSize: textStyle.M[root.state.fontSizePreset]}},
-    create(
+    rc(
       'div',
       { style: settingsRowStyle },
-      create('text', { style: settingsLabelStyle }, 'TEXT SIZE'),
-      create(
+      rc('text', { style: settingsLabelStyle }, 'TEXT SIZE'),
+      rc(
         'div',
         { style: settingsParameterStyle },
-        create('text', { style: {fontSize: textStyle.S[root.state.fontSizePreset]} }, 'Small'),
-        create('input', {
+        rc('text', { style: {fontSize: textStyle.S[root.state.fontSizePreset]} }, 'Small'),
+        rc('input', {
           style: { margin: '5px' },
           type: 'range',
           min: constraintProps.textSizeProps.min,
@@ -169,69 +169,69 @@ function settingsFeatureComps(create, root) {
           value: root.state.fontSizePreset,
           onChange: (e) => root.onChangeFontSizePreset(e.target.value),
         }),
-        create('text', { style: {fontSize: textStyle.S[root.state.fontSizePreset]} }, 'Large'),
+        rc('text', { style: {fontSize: textStyle.S[root.state.fontSizePreset]} }, 'Large'),
       ),
     ),
-    create(
+    rc(
       'div',
       { style: settingsRowStyle },
-      create('text', { style: settingsLabelStyle }, 'VIEWPORT'),
-      create(
+      rc('text', { style: settingsLabelStyle }, 'VIEWPORT'),
+      rc(
         'div',
         { style: {...settingsParameterStyle, fontSize: textStyle.S[root.state.fontSizePreset]} },
-        create('button', {
+        rc('button', {
           style: {
             ...settingsButtonStyle,
             backgroundColor:
               root.state.resolution === viewportSizes.HD ? colorTheme.lightgray1 : colorTheme.darkgray1,
           },
           onClick: () => root.onChangeViewport(viewportSizes.HD),
-        }, create('text', null, viewportSizes.HD)),
-        create('button', {
+        }, rc('text', null, viewportSizes.HD)),
+        rc('button', {
           style: {
             ...settingsButtonStyle,
             backgroundColor:
               root.state.resolution === viewportSizes.FHD ? colorTheme.lightgray1 : colorTheme.darkgray1,
           },
           onClick: () => root.onChangeViewport(viewportSizes.FHD),
-        }, create('text', null, viewportSizes.FHD)),
-        create('button', {
+        }, rc('text', null, viewportSizes.FHD)),
+        rc('button', {
           style: {
             ...settingsButtonStyle,
             backgroundColor:
               root.state.resolution === viewportSizes.QHD ? colorTheme.lightgray1 : colorTheme.darkgray1,
           },
           onClick: () => root.onChangeViewport(viewportSizes.QHD),
-        }, create('text', null, viewportSizes.QHD)),
-        create('button', {
+        }, rc('text', null, viewportSizes.QHD)),
+        rc('button', {
           style: {
             ...settingsButtonStyle,
             backgroundColor:
               root.state.resolution === viewportSizes.UHD ? colorTheme.lightgray1 : colorTheme.darkgray1,
           },
           onClick: () => root.onChangeViewport(viewportSizes.UHD),
-        }, create('text', null, viewportSizes.UHD)),
+        }, rc('text', null, viewportSizes.UHD)),
       ),
     ),
   );
 }
 
-function tabComps(create, root) {
-  return create(
+function tabComps(rc, root) {
+  return rc(
     'div',
     { style: tabHeaderStyle },
     Object.keys(
       commandDataTypes,
-    ).map((command) => create(
+    ).map((command) => rc(
       'div',
       null,
-      tabComp(create, root, command),
+      tabComp(rc, root, command),
     )),
   );
 }
 
-function tabComp(create, root, tab) {
-  return create('button', {
+function tabComp(rc, root, tab) {
+  return rc('button', {
     style: {
       ...tabButtonStyle,
       backgroundColor:
@@ -240,39 +240,39 @@ function tabComp(create, root, tab) {
           : colorTheme.darkgray1,
     },
     onClick: () => root.onChangeTab(tab),
-  }, create('text',
+  }, rc('text',
     { style: {fontSize: textStyle.S[root.state.fontSizePreset]} },
     commandDataTypes[tab].displayName
   ));
 }
 
-function windowComps(create, root) {
-  return windowComp(create, root, root.state.triggerData[root.state.activeTab]);
+function windowComps(rc, root) {
+  return windowComp(rc, root, root.state.triggerData[root.state.activeTab]);
 }
 
-function windowComp(create, root, data) {
+function windowComp(rc, root, data) {
   if (data.id === Triggers.CustomSkin) {
-    return skinEditorComp(create, root, data);
+    return skinEditorComp(rc, root, data);
   }
 
-  return create(
+  return rc(
     'div',
     null,
-    smoothTabComp(create, root, data),
-    create(
+    smoothTabComp(rc, root, data),
+    rc(
       'div',
       { style: triggerWindowStyle },
-      Object.keys(data.triggers).map((i) => triggerComp(create, root, data, parseInt(i))),
+      Object.keys(data.triggers).map((i) => triggerComp(rc, root, data, parseInt(i))),
     ),
   );
 }
 
-function smoothTabComp(create, root, data) {
-  return create(
+function smoothTabComp(rc, root, data) {
+  return rc(
     'div',
     { style: smoothTabStyle },
-    create('text', { style: {fontSize: textStyle.S[root.state.fontSizePreset]} }, 'Smoothing'),
-    data.id !== Triggers.TimeRemap && create('input', {
+    rc('text', { style: {fontSize: textStyle.S[root.state.fontSizePreset]} }, 'Smoothing'),
+    data.id !== Triggers.TimeRemap && rc('input', {
       style: {
         ...smoothTextInputStyle,
         fontSize: textStyle.S[root.state.fontSizePreset],
@@ -297,10 +297,10 @@ function smoothTabComp(create, root, data) {
         true,
       ),
     }),
-    data.id === Triggers.TimeRemap && create(
+    data.id === Triggers.TimeRemap && rc(
       'div',
       { style: checkboxDivStyle },
-      create('input', {
+      rc('input', {
         style: checkboxStyle,
         type: 'checkbox',
         onChange: () => root.updateTrigger(
@@ -312,15 +312,15 @@ function smoothTabComp(create, root, data) {
           constraintProps.interpolateProps,
         ),
       }),
-      data.interpolate && create('square', { style: checkboxFillStyle }),
+      data.interpolate && rc('square', { style: checkboxFillStyle }),
     ),
   );
 }
 
-function triggerComp(create, root, data, index) {
+function triggerComp(rc, root, data, index) {
   const triggerData = data.triggers[index];
 
-  return create(
+  return rc(
     'div',
     {
       style: {
@@ -329,19 +329,19 @@ function triggerComp(create, root, data, index) {
         backgroundColor: index === 0 ? colorTheme.gray : colorTheme.white,
       },
     },
-    triggerHeaderComp(create, root, triggerData, index),
-    data.id === Triggers.Zoom && zoomTriggerComp(create, root, triggerData, index),
-    data.id === Triggers.CameraPan && camPanTriggerComp(create, root, triggerData, index),
-    data.id === Triggers.CameraFocus && camFocusTriggerComp(create, root, triggerData, index),
-    data.id === Triggers.TimeRemap && timeRemapTriggerComp(create, root, triggerData, index),
+    triggerHeaderComp(rc, root, triggerData, index),
+    data.id === Triggers.Zoom && zoomTriggerComp(rc, root, triggerData, index),
+    data.id === Triggers.CameraPan && camPanTriggerComp(rc, root, triggerData, index),
+    data.id === Triggers.CameraFocus && camFocusTriggerComp(rc, root, triggerData, index),
+    data.id === Triggers.TimeRemap && timeRemapTriggerComp(rc, root, triggerData, index),
     data.id === Triggers.CustomSkin && false,
-    create(
+    rc(
       'button',
       {
         style: smallCenteredButton,
         onClick: () => root.createTrigger(index),
       },
-      create('text', {
+      rc('text', {
         style: {
           fontSize: '22px',
           fontWeight: 900,
@@ -351,18 +351,18 @@ function triggerComp(create, root, data, index) {
   );
 }
 
-function triggerHeaderComp(create, root, data, index) {
-  return create(
+function triggerHeaderComp(rc, root, data, index) {
+  return rc(
     'div',
     { style: triggerDivStyle },
-    create('text', {
+    rc('text', {
       style: {
         fontSize: textStyle.L[root.state.fontSizePreset],
         paddingRight: '10px',
       },
     }, index + 1),
-    timeStampComp(create, root, data[0], index),
-    create(
+    timeStampComp(rc, root, data[0], index),
+    rc(
       'button',
       {
         style: {
@@ -373,7 +373,7 @@ function triggerHeaderComp(create, root, data, index) {
         disabled: index === 0,
         onClick: () => root.deleteTrigger(index),
       },
-      create('text', {
+      rc('text', {
         style: {
           fontSize: '22px',
           color: index === 0 ? colorTheme.darkgray2 : colorTheme.black,
@@ -384,7 +384,7 @@ function triggerHeaderComp(create, root, data, index) {
   );
 }
 
-function timeStampComp(create, root, data, index) {
+function timeStampComp(rc, root, data, index) {
   const tProps = [
     constraintProps.minuteProps,
     constraintProps.secondProps,
@@ -395,15 +395,15 @@ function timeStampComp(create, root, data, index) {
     return null;
   }
 
-  return data.map((timeValue, timeIndex) => create(
+  return data.map((timeValue, timeIndex) => rc(
     'div',
     null,
-    create(
+    rc(
       'text',
       { style: triggerTextStyle },
       ['TIME', ':', ':'][timeIndex],
     ),
-    create('input', {
+    rc('input', {
       style: {
         ...triggerTextStyle,
         backgroundColor:
@@ -434,14 +434,14 @@ function timeStampComp(create, root, data, index) {
   ));
 }
 
-function zoomTriggerComp(create, root, data, index) {
+function zoomTriggerComp(rc, root, data, index) {
   const label = 'ZOOM TO';
 
-  return create(
+  return rc(
     'div',
     null,
-    create('text', { style: triggerTextStyle }, label),
-    create('input', {
+    rc('text', { style: triggerTextStyle }, label),
+    rc('input', {
       style: triggerTextStyle,
       value: data[1],
       onChange: (e) => root.updateTrigger(
@@ -465,7 +465,7 @@ function zoomTriggerComp(create, root, data, index) {
   );
 }
 
-function camPanTriggerComp(create, root, data, index) {
+function camPanTriggerComp(rc, root, data, index) {
   const cProps = [
     constraintProps.wProps,
     constraintProps.hProps,
@@ -474,10 +474,10 @@ function camPanTriggerComp(create, root, data, index) {
   ];
   const labels = ['WIDTH', 'HEIGHT', 'X OFFSET', 'Y OFFSET'];
 
-  return create(
+  return rc(
     'div',
     null,
-    Object.keys(data[1]).map((prop, propIndex) => create(
+    Object.keys(data[1]).map((prop, propIndex) => rc(
       'div',
       {
         style: {
@@ -485,8 +485,8 @@ function camPanTriggerComp(create, root, data, index) {
           display: 'inline-block',
         },
       },
-      create('text', { style: triggerTextStyle }, labels[propIndex]),
-      create('input', {
+      rc('text', { style: triggerTextStyle }, labels[propIndex]),
+      rc('input', {
         style: triggerTextStyle,
         value: data[1][prop],
         onChange: (e) => root.updateTrigger(
@@ -511,13 +511,13 @@ function camPanTriggerComp(create, root, data, index) {
   );
 }
 
-function camFocusTriggerComp(create, root, data, index) {
+function camFocusTriggerComp(rc, root, data, index) {
   const dropdownIndex = root.state.focuserDropdownIndices[index];
 
-  return create(
+  return rc(
     'div',
     null,
-    create(
+    rc(
       'select',
       {
         style: triggerDropdownHeaderStyle,
@@ -527,14 +527,14 @@ function camFocusTriggerComp(create, root, data, index) {
       Object.keys(data[1]).map((riderIndex) => {
         const riderNum = 1 + parseInt(riderIndex);
 
-        return create('option', {
+        return rc('option', {
           style: triggerDropdownOptionStyle,
           value: parseInt(riderIndex),
-        }, create('text', null, `Rider ${riderNum}`));
+        }, rc('text', null, `Rider ${riderNum}`));
       }),
     ),
-    create('text', { style: triggerTextStyle }, 'WEIGHT'),
-    create('input', {
+    rc('text', { style: triggerTextStyle }, 'WEIGHT'),
+    rc('input', {
       style: triggerTextStyle,
       value: data[1][dropdownIndex],
       onChange: (e) => root.updateTrigger(
@@ -558,14 +558,14 @@ function camFocusTriggerComp(create, root, data, index) {
   );
 }
 
-function timeRemapTriggerComp(create, root, data, index) {
+function timeRemapTriggerComp(rc, root, data, index) {
   const label = 'SPEED';
 
-  return create(
+  return rc(
     'div',
     null,
-    create('text', { style: triggerTextStyle }, label),
-    create('input', {
+    rc('text', { style: triggerTextStyle }, label),
+    rc('input', {
       style: triggerTextStyle,
       value: data[1],
       onChange: (e) => root.updateTrigger(
@@ -589,14 +589,14 @@ function timeRemapTriggerComp(create, root, data, index) {
   );
 }
 
-function skinEditorComp(create, root, data) {
+function skinEditorComp(rc, root, data) {
   const dropdownIndex = root.state.skinDropdownIndex;
 
-  return create(
+  return rc(
     'div',
     { style: customSkinWindowStyle },
-    create('div', { style: customSkinBackgroundStyle }),
-    create(
+    rc('div', { style: customSkinBackgroundStyle }),
+    rc(
       'div',
       {
         id: 'skinElementContainer',
@@ -607,14 +607,14 @@ function skinEditorComp(create, root, data) {
         },
         onWheel: (e) => root.onZoomSkinEditor(e, true),
       },
-      FlagComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
-      create('svg', { width: '200' }),
-      RiderComponent(create, root, data.triggers[dropdownIndex], dropdownIndex),
+      FlagComponent(rc, root, data.triggers[dropdownIndex], dropdownIndex),
+      rc('svg', { width: '200' }),
+      RiderComponent(rc, root, data.triggers[dropdownIndex], dropdownIndex),
     ),
-    create(
+    rc(
       'div',
       { style: skinZoomScrollContainerStyle },
-      create('input', {
+      rc('input', {
         style: { appearance: 'slider-vertical' },
         type: 'range',
         orient: 'vertical',
@@ -624,15 +624,15 @@ function skinEditorComp(create, root, data) {
         value: root.state.skinEditorZoomProps.scale,
         onChange: (e) => root.onZoomSkinEditor(e, false),
       }),
-      create('text',
+      rc('text',
         { style: {fontSize: textStyle.S[root.state.fontSizePreset]} },
         `x${Math.round(root.state.skinEditorZoomProps.scale * 10) / 10}`
       ),
     ),
-    create(
+    rc(
       'div',
       { style: outlineColorDivStyle },
-      create('div', {
+      rc('div', {
         style: {
           ...outlineColorPickerStyle,
           backgroundColor: data.triggers[dropdownIndex].outline.stroke,
@@ -642,20 +642,20 @@ function skinEditorComp(create, root, data) {
           ['triggers', dropdownIndex, 'outline', 'stroke'],
         ),
       }),
-      create('text', { style: {fontSize: textStyle.S[root.state.fontSizePreset]} }, 'Outline'),
+      rc('text', { style: {fontSize: textStyle.S[root.state.fontSizePreset]} }, 'Outline'),
     ),
-    skinEditorToolbar(create, root, data.triggers, dropdownIndex),
+    skinEditorToolbar(rc, root, data.triggers, dropdownIndex),
   );
 }
 
-function skinEditorToolbar(create, root, data, index) {
+function skinEditorToolbar(rc, root, data, index) {
   const colorValue = root.state.selectedColor.substring(0, 7);
   const alphaValue = parseInt(root.state.selectedColor.substring(7), 16) / 255;
 
-  return create(
+  return rc(
     'div',
     { style: customSkinToolbarStyle },
-    create(
+    rc(
       'button',
       {
         style: {
@@ -665,19 +665,19 @@ function skinEditorToolbar(create, root, data, index) {
         },
         onClick: () => root.onResetSkin(index),
       },
-      create('text', {
+      rc('text', {
         style: { fontSize: '32px', color: 'red', fontWeight: 700 },
       }, 'X'),
     ),
-    create(
+    rc(
       'div',
       { style: {...alphaContainerStyle, fontSize: textStyle.S[root.state.fontSizePreset]} },
-      create('text', null, 'Transparency'),
-      create(
+      rc('text', null, 'Transparency'),
+      rc(
         'div',
         { style: alphaSliderContainerStyle },
-        create('text', null, '100%'),
-        create('input', {
+        rc('text', null, '100%'),
+        rc('input', {
           style: alphaSliderStyle,
           type: 'range',
           min: 0,
@@ -686,16 +686,16 @@ function skinEditorToolbar(create, root, data, index) {
           value: alphaValue,
           onChange: (e) => root.onChangeColor(null, e.target.value),
         }),
-        create('text', null, '0%'),
+        rc('text', null, '0%'),
       ),
     ),
-    create('input', {
+    rc('input', {
       style: colorPickerStyle,
       type: 'color',
       value: colorValue,
       onChange: (e) => root.onChangeColor(e.target.value, null),
     }),
-    create(
+    rc(
       'select',
       {
         style: {...triggerDropdownHeaderStyle, fontSize: textStyle.M[root.state.fontSizePreset]},
@@ -705,25 +705,25 @@ function skinEditorToolbar(create, root, data, index) {
       Object.keys(data).map((riderIndex) => {
         const riderNum = 1 + parseInt(riderIndex);
 
-        return create('option', {
+        return rc('option', {
           style: triggerDropdownOptionStyle,
           value: parseInt(riderIndex),
-        }, create('text', null, `Rider ${riderNum}`));
+        }, rc('text', null, `Rider ${riderNum}`));
       }),
     ),
   );
 }
 
-function FlagComponent(create, root, data, index) {
-  return create(
+function FlagComponent(rc, root, data, index) {
+  return rc(
     'svg',
     { style: flagSVG },
-    create('path', {
+    rc('path', {
       ...riderStyle.flag,
       fill: data.flag.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'flag', 'fill']),
     }),
-    create('path', {
+    rc('path', {
       ...riderStyle.flagOutline,
       fill: data.flag.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'flag', 'fill']),
@@ -731,172 +731,172 @@ function FlagComponent(create, root, data, index) {
   );
 }
 
-function RiderComponent(create, root, data, index) {
-  return create(
+function RiderComponent(rc, root, data, index) {
+  return rc(
     'svg',
     { style: riderSVG },
-    create('rect', {
+    rc('rect', {
       ...riderStyle.skin,
       fill: data.skin.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'skin', 'fill']),
     }),
-    create('path', {
+    rc('path', {
       ...riderStyle.outline,
       ...riderStyle.nose,
       stroke: data.outline.stroke,
       fill: data.skin.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'skin', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle.hair,
       fill: data.hair.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hair', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle.faceOutline,
       fill: data.hair.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hair', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle.hairFill,
       fill: data.fill.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'fill', 'fill']),
     }),
-    create('polygon', {
+    rc('polygon', {
       ...riderStyle.eye,
       fill: data.eye.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'eye', 'fill']),
     }),
-    create('path', {
+    rc('path', {
       ...riderStyle.outline,
       ...riderStyle.sled,
       stroke: data.outline.stroke,
       fill: data.sled.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'sled', 'fill']),
     }),
-    create('line', {
+    rc('line', {
       ...riderStyle.string,
       stroke: data.string.stroke,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'string', 'stroke']),
     }),
-    create('path', {
+    rc('path', {
       ...riderStyle.outline,
       ...riderStyle.armHand,
       stroke: data.outline.stroke,
       fill: data.armHand.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'armHand', 'fill']),
     }),
-    create('path', {
+    rc('path', {
       ...riderStyle.outline,
       ...riderStyle.legPants,
       stroke: data.outline.stroke,
       fill: data.legPants.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'legPants', 'fill']),
     }),
-    create('path', {
+    rc('path', {
       ...riderStyle.outline,
       ...riderStyle.legFoot,
       stroke: data.outline.stroke,
       fill: data.legFoot.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'legFoot', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle._scarfEven,
       ...riderStyle._scarf0a,
       fill: data._scarf0.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, '_scarf0', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle._scarfEven,
       ...riderStyle._scarf0b,
       fill: data._scarf0.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, '_scarf0', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle._scarfOdd,
       ...riderStyle._scarf1,
       fill: data._scarf1.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, '_scarf1', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle._scarfOdd,
       ...riderStyle._scarf2,
       fill: data._scarf2.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, '_scarf2', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle._scarfOdd,
       ...riderStyle._scarf3,
       fill: data._scarf3.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, '_scarf3', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle._scarfOdd,
       ...riderStyle._scarf4,
       fill: data._scarf4.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, '_scarf4', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle._scarfOdd,
       ...riderStyle._scarf5,
       fill: data._scarf5.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, '_scarf5', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle.outline,
       ...riderStyle.torso,
       stroke: data.outline.stroke,
       fill: data.torso.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'torso', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle.scarfOdd,
       ...riderStyle.scarf1,
       fill: data.scarf1.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf1', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle.scarfOdd,
       ...riderStyle.scarf2,
       fill: data.scarf2.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf2', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle.scarfOdd,
       ...riderStyle.scarf3,
       fill: data.scarf3.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf3', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle.scarfOdd,
       ...riderStyle.scarf4,
       fill: data.scarf4.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf4', 'fill']),
     }),
-    create('rect', {
+    rc('rect', {
       ...riderStyle.scarfOdd,
       ...riderStyle.scarf5,
       fill: data.scarf5.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf5', 'fill']),
     }),
-    create('path', {
+    rc('path', {
       ...riderStyle.outline,
       ...riderStyle.hatTop,
       stroke: data.outline.stroke,
       fill: data.hatTop.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatTop', 'fill']),
     }),
-    create('path', {
+    rc('path', {
       ...riderStyle.hatBottom,
       stroke: data.hatBottom.stroke,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatBottom', 'stroke']),
     }),
-    create('circle', {
+    rc('circle', {
       ...riderStyle.hatBall,
       fill: data.hatBall.fill,
       onClick: () => root.updateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatBall', 'fill']),
     }),
-    create('path', {
+    rc('path', {
       ...riderStyle.outline,
       ...riderStyle.armSleeve,
       stroke: data.outline.stroke,
