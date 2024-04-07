@@ -101,6 +101,7 @@ function readWriteComps(create, root) {
       create('text', {
         style: {
           ...dataTextStyle,
+          ...textStyle.S,
           color: root.state.hasError ? 'Red' : 'Black',
         },
       }, root.state.message),
@@ -137,9 +138,9 @@ function settingsComp(create, root) {
         },
         onClick: () => root.onToggleSettings(false),
       },
-      create('text', { style: { ...textStyle.L, fontWeight: 700 } }, 'X'),
+      create('text', { style: { fontSize: '32px', fontWeight: 700 } }, 'X'),
     ),
-    create('text', { style: settingsTitleStyle }, 'Settings'),
+    create('text', { style: {...settingsTitleStyle, ...textStyle.L} }, 'Settings'),
     settingsFeatureComps(create, root),
   );
 }
@@ -147,7 +148,7 @@ function settingsComp(create, root) {
 function settingsFeatureComps(create, root) {
   return create(
     'div',
-    null,
+    { style: textStyle.M},
     create(
       'div',
       { style: settingsRowStyle },
@@ -268,6 +269,7 @@ function smoothTabComp(create, root, data) {
     data.id !== Triggers.TimeRemap && create('input', {
       style: {
         ...smoothTextInputStyle,
+        ...textStyle.S,
         marginLeft: '5px',
       },
       value: data.smoothing,
@@ -317,6 +319,7 @@ function triggerComp(create, root, data, index) {
     {
       style: {
         ...triggerStyle,
+        ...textStyle.M,
         backgroundColor: index === 0 ? colorTheme.gray : colorTheme.white,
       },
     },
@@ -334,7 +337,7 @@ function triggerComp(create, root, data, index) {
       },
       create('text', {
         style: {
-          ...textStyle.M,
+          fontSize: '22px',
           fontWeight: 900,
         },
       }, '+'),
@@ -630,7 +633,7 @@ function skinEditorComp(create, root, data) {
           ['triggers', dropdownIndex, 'outline', 'stroke'],
         ),
       }),
-      create('text', { style: textStyle.S }, 'Outline:'),
+      create('text', { style: textStyle.S }, 'Outline'),
     ),
     skinEditorToolbar(create, root, data.triggers, dropdownIndex),
   );
@@ -686,7 +689,7 @@ function skinEditorToolbar(create, root, data, index) {
     create(
       'select',
       {
-        style: triggerDropdownHeaderStyle,
+        style: {...triggerDropdownHeaderStyle, ...textStyle.M},
         value: index,
         onChange: (e) => root.onChangeSkinDropdown(e.target.value),
       },

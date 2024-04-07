@@ -76,7 +76,7 @@ const toolbarButtonStyle = {
 const toolbarButtonText = {
   top: '3px',
   position: 'relative',
-  ...textStyle.M,
+  fontSize: '24px'
 };
 
 const readWriteContainerStyle = {
@@ -115,13 +115,12 @@ const dataContainerStyle = {
 
 const dataTextStyle = {
   textAlign: 'center',
-  ...textStyle.S,
   width: '90%',
 };
 
 const squareFilledButtonStyle = {
   backgroundColor: colorTheme.white,
-  border: '2px solide black',
+  border: '2px solid black',
   fontSize: '20px',
   fontWeight: 'bold',
   position: 'absolute',
@@ -129,7 +128,8 @@ const squareFilledButtonStyle = {
 };
 
 const smallCenteredButton = {
-  ...squareFilledButtonStyle,
+  backgroundColor: colorTheme.white,
+  border: '2px solid black',
   bottom: '-1ch',
   height: '2ch',
   left: '0px',
@@ -137,8 +137,10 @@ const smallCenteredButton = {
   marginLeft: 'auto',
   marginRight: 'auto',
   padding: '0px',
+  position: 'absolute',
   right: '0px',
   width: '2ch',
+  userSelect: 'none',
   zIndex: 1,
 };
 
@@ -189,7 +191,6 @@ const smoothTextInputStyle = {
   height: '20px',
   overflow: 'hidden',
   textAlign: 'center',
-  ...textStyle.S,
   width: '40px',
 };
 
@@ -237,28 +238,37 @@ const triggerTextStyle = {
   height: '2ch',
   padding: '5px',
   textAlign: 'right',
-  ...textStyle.M,
   width: '4ch',
 };
 
 const triggerDropdownHeaderStyle = {
-  ...triggerTextStyle,
-  marginRight: '10px',
   height: '3ch',
+  marginRight: '10px',
+  padding: '5px',
+  textAlign: 'right',
   width: '120px',
 };
 
 const triggerDropdownOptionStyle = {
-  ...triggerTextStyle,
+  height: '2ch',
+  padding: '5px',
   textAlign: 'center',
+  width: '4ch',
 };
 
 const customSkinWindowStyle = {
-  ...triggerWindowStyle,
   alignItems: 'center',
+  border: '2px solid black',
+  borderBottom: '2px solid black',
+  direction: 'rtl',
   display: 'flex',
+  height: '60%',
   justifyContent: 'center',
+  left: '5%',
   overflow: 'hidden',
+  position: 'absolute',
+  top: '65px',
+  width: '90%',
 };
 
 const skinElementContainerStyle = {
@@ -439,16 +449,21 @@ const riderStyle = {
 };
 
 const settingsWindowStyle = {
-  ...triggerWindowStyle,
+  backgroundColor: colorTheme.white,
+  border: '2px solid black',
+  borderBottom: '2px solid black',
+  direction: 'rtl',
   display: 'flex',
   flexDirection: 'column',
   height: '67%',
+  left: '5%',
   overflow: 'hidden',
+  position: 'absolute',
   top: '35px',
+  width: '90%'
 };
 
 const settingsTitleStyle = {
-  ...textStyle.L,
   left: '0px',
   marginLeft: 'auto',
   marginRight: 'auto',
@@ -466,7 +481,6 @@ const settingsRowStyle = {
 };
 
 const settingsLabelStyle = {
-  ...textStyle.M,
   left: '5px',
   position: 'absolute',
 };
