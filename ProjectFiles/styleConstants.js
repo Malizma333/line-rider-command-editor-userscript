@@ -162,9 +162,9 @@ const smoothTabStyle = {
   height: '30px',
   justifyContent: 'center',
   right: '5%',
+  padding: '1ch',
   position: 'absolute',
-  top: '35px',
-  width: '130px',
+  top: '35px'
 };
 
 const triggerWindowStyle = {

@@ -34,7 +34,7 @@ function toolbarComps(create, root) {
       'button',
       {
         style: squareButtonStyle,
-        onClick: () => root.onToggleSettings(true),
+        onClick: () => root.onToggleSettings(!root.state.settingsActive),
       },
       create('text', { style: toolbarButtonText }, '⚙'),
     ),
