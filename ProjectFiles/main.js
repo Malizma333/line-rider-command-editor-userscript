@@ -47,6 +47,7 @@ function main() {
         resolution: viewportSizes.FHD,
       };
 
+      this.componentManager = new ComponentManager(React.createElement, this);
       this.commandEditor = new CommandEditor(store, this.state);
 
       store.subscribeImmediate(() => {
@@ -364,7 +365,9 @@ function main() {
 
     render() {
       const { initialized } = this.state;
-      return initialized && mainComp(React.createElement, this);
+      if (!initialized) return false;
+      this.componentManager.updateState(this.state);
+      return this.componentManager.main();
     }
   }
 
