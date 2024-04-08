@@ -1,4 +1,4 @@
-/* Group of functions for custom data validation */
+/* Group of functions for parsing script data */
 class Parser {
   constructor() {
     this.commandData = {};

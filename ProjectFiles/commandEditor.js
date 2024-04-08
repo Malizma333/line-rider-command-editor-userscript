@@ -77,7 +77,7 @@ class CommandEditor {
         currentHeader = currentHeader.replace('{1}', currentData.interpolate);
         break;
       case Triggers.CustomSkin:
-        currentHeader = currentHeader.replace('{0}', formatSkins(currentData.triggers));
+        currentHeader = currentHeader.replace('{0}', Validator.formatSkins(currentData.triggers));
         break;
       default:
         currentHeader = '';

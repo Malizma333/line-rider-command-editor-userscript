@@ -81,8 +81,7 @@ function main() {
       const newTrigger = JSON.parse(JSON.stringify(commandData.triggers[index]));
 
       commandData.triggers.splice(index, 0, newTrigger);
-
-      validateTimeStamps(triggerData);
+      commandData.triggers = Validator.validateTimes(commandData);
 
       this.setState({ triggerData });
 
@@ -95,16 +94,21 @@ function main() {
 
     onUpdateTrigger(valueChange, path, constraints, bounded = false) {
       const { triggerData, activeTab } = this.state;
+      const commandData = triggerData[activeTab];
       let pathPointer = triggerData[activeTab];
 
       for (let i = 0; i < path.length - 1; i += 1) {
         pathPointer = pathPointer[path[i]];
       }
 
-      pathPointer[path[path.length - 1]] = validateData(valueChange, constraints, bounded);
+      pathPointer[path[path.length - 1]] = Validator.validateData(
+        valueChange,
+        constraints,
+        bounded,
+      );
 
       if (bounded) {
-        validateTimeStamps(triggerData);
+        commandData.triggers = Validator.validateTimes(commandData);
       }
 
       this.setState({ triggerData });
