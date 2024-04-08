@@ -8,6 +8,8 @@
     "eslint-plugin-react-hooks": "^4.3.0"
   },
   "scripts": {
-    "lint": "npx eslint . --fix"
+    "lint": "npx eslint . --fix",
+    "build": "bash build.sh -d",
+    "deploy": "bash build.sh"
   }
 }

@@ -13,7 +13,8 @@
     "no-eval": "warn"
   },
   "ignorePatterns": [
-    "node_modules"
+    "node_modules",
+    "*.user.js"
   ],
   "globals": {
     "window": "readonly",
