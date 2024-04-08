@@ -1,266 +1,270 @@
-function mainComp(rc, root) {
-  return rc(
+let mainComp = (rc, root) => {};
+let toolbarComps = (rc, root) => {};
+let readWriteComps = (rc, root) => {};
+let activeAreaComp = (rc, root) => {};
+let settingsComp = (rc, root) => {};
+let settingsFeatureComps = (rc, root) => {};
+let tabComps = (rc, root) => {};
+let tabComp = (rc, root, tab) => {};
+let windowComps = (rc, root) => {};
+let windowComp = (rc, root, data) => {};
+let smoothTabComp = (rc, root, data) => {};
+let triggerComp = (rc, root, data, index) => {};
+let triggerHeaderComp = (rc, root, data, index) => {};
+let timeStampComp = (rc, root, data, index) => {};
+let zoomTriggerComp = (rc, root, data, index) => {};
+let camPanTriggerComp = (rc, root, data, index) => {};
+let camFocusTriggerComp = (rc, root, data, index) => {};
+let timeRemapTriggerComp = (rc, root, data, index) => {};
+let skinEditorComp = (rc, root, data) => {};
+let flagComponent = (rc, root, data, index) => {};
+let riderComponent = (rc, root, data, index) => {};
+
+mainComp = (rc, root) => rc(
+  'div',
+  { style: textGlobal },
+  rc(
     'div',
-    { style: textGlobal },
+    root.state.active && { style: expandedWindow },
+    rc(
+      'button',
+      {
+        style: squareButtonStyle,
+        onClick: () => root.onActivate(),
+      },
+      rc(
+        'span',
+        { style: { fontSize: '32px' } },
+        root.state.active ? '-' : '+',
+      ),
+    ),
     rc(
       'div',
-      root.state.active && { style: expandedWindow },
-      rc(
-        'button',
-        {
-          style: squareButtonStyle,
-          onClick: () => root.onActivate(),
-        },
-        rc(
-          'span',
-          { style: { fontSize: '32px' } },
-          root.state.active ? '-' : '+',
-        ),
-      ),
-      rc(
-        'div',
-        !root.state.active && { style: { display: 'none' } },
-        toolbarComps(rc, root),
-        activeAreaComp(rc, root),
-        readWriteComps(rc, root),
-      ),
+      !root.state.active && { style: { display: 'none' } },
+      toolbarComps(rc, root),
+      activeAreaComp(rc, root),
+      readWriteComps(rc, root),
     ),
-  );
-}
+  ),
+);
 
-function toolbarComps(rc, root) {
-  return rc(
-    'div',
-    { style: toolbarStyle },
-    rc(
-      'button',
-      {
-        style: squareButtonStyle,
-        onClick: () => root.onToggleSettings(!root.state.settingsActive),
-      },
-      rc('span', { style: toolbarButtonText }, '⚙'),
-    ),
-    rc(
-      'button',
-      {
-        style: squareButtonStyle,
-        onClick: () => window.open(reportLink),
-      },
-      rc('span', { style: toolbarButtonText }, '⚑'),
-    ),
-    rc(
-      'button',
-      {
-        style: squareButtonStyle,
-        onClick: () => window.open(helpLink),
-      },
-      rc('span', { style: toolbarButtonText }, '?'),
-    ),
-  );
-}
+toolbarComps = (rc, root) => rc(
+  'div',
+  { style: toolbarStyle },
+  rc(
+    'button',
+    {
+      style: squareButtonStyle,
+      onClick: () => root.onToggleSettings(!root.state.settingsActive),
+    },
+    rc('span', { style: toolbarButtonText }, '⚙'),
+  ),
+  rc(
+    'button',
+    {
+      style: squareButtonStyle,
+      onClick: () => window.open(reportLink),
+    },
+    rc('span', { style: toolbarButtonText }, '⚑'),
+  ),
+  rc(
+    'button',
+    {
+      style: squareButtonStyle,
+      onClick: () => window.open(helpLink),
+    },
+    rc('span', { style: toolbarButtonText }, '?'),
+  ),
+);
 
-function readWriteComps(rc, root) {
-  return rc(
-    'div',
+readWriteComps = (rc, root) => rc(
+  'div',
+  {
+    style: {
+      ...readWriteContainerStyle,
+      fontSize: textStyle.S[root.state.fontSizePreset],
+    },
+  },
+  rc(
+    'button',
     {
       style: {
-        ...readWriteContainerStyle,
-        fontSize: textStyle.S[root.state.fontSizePreset],
+        ...readWriteButtonStyle,
       },
+      onClick: () => root.onRead(),
     },
-    rc(
-      'button',
-      {
-        style: {
-          ...readWriteButtonStyle,
-        },
-        onClick: () => root.onRead(),
+    rc('text', null, 'Load'),
+  ),
+  rc(
+    'button',
+    {
+      style: {
+        ...readWriteButtonStyle,
       },
-      rc('text', null, 'Load'),
-    ),
-    rc(
-      'button',
-      {
-        style: {
-          ...readWriteButtonStyle,
-        },
-        onClick: () => root.onTest(),
+      onClick: () => root.onTest(),
+    },
+    rc('text', null, 'Run'),
+  ),
+  rc(
+    'button',
+    {
+      style: {
+        ...readWriteButtonStyle,
       },
-      rc('text', null, 'Run'),
-    ),
-    rc(
-      'button',
-      {
-        style: {
-          ...readWriteButtonStyle,
-        },
-        onClick: () => root.onPrint(),
-      },
-      rc('text', null, 'Print Code'),
-    ),
-    rc(
-      'div',
-      { style: dataContainerStyle },
-      rc('text', {
-        style: {
-          ...dataTextStyle,
-          color: root.state.hasError ? 'Red' : 'Black',
-        },
-      }, root.state.message),
-      rc('button', {
-        style: { ...squareFilledButtonStyle, bottom: '17px' },
-        onClick: () => root.onCopyClipboard(),
-      }, '🖶'),
-    ),
-  );
-}
-
-function activeAreaComp(rc, root) {
-  return rc(
+      onClick: () => root.onPrint(),
+    },
+    rc('text', null, 'Print Code'),
+  ),
+  rc(
     'div',
-    null,
-    !root.state.settingsActive && tabComps(rc, root),
-    !root.state.settingsActive && windowComps(rc, root),
-    root.state.settingsActive && settingsComp(rc, root),
-  );
-}
-
-function settingsComp(rc, root) {
-  return rc(
-    'div',
-    { style: settingsWindowStyle },
-    rc(
-      'button',
-      {
-        style: {
-          ...squareButtonStyle,
-          margin: '5px',
-          position: 'absolute',
-          right: '0px',
-        },
-        onClick: () => root.onToggleSettings(false),
-      },
-      rc('span', { style: { fontSize: '32px', fontWeight: 700 } }, 'X'),
-    ),
+    { style: dataContainerStyle },
     rc('text', {
       style: {
-        ...settingsTitleStyle,
-        fontSize: textStyle.L[root.state.fontSizePreset],
+        ...dataTextStyle,
+        color: root.state.hasError ? 'Red' : 'Black',
       },
-    }, 'Settings'),
-    settingsFeatureComps(rc, root),
-  );
-}
+    }, root.state.message),
+    rc('button', {
+      style: { ...squareFilledButtonStyle, bottom: '17px' },
+      onClick: () => root.onCopyClipboard(),
+    }, '🖶'),
+  ),
+);
 
-function settingsFeatureComps(rc, root) {
-  return rc(
+activeAreaComp = (rc, root) => rc(
+  'div',
+  null,
+  !root.state.settingsActive && tabComps(rc, root),
+  !root.state.settingsActive && windowComps(rc, root),
+  root.state.settingsActive && settingsComp(rc, root),
+);
+
+settingsComp = (rc, root) => rc(
+  'div',
+  { style: settingsWindowStyle },
+  rc(
+    'button',
+    {
+      style: {
+        ...squareButtonStyle,
+        margin: '5px',
+        position: 'absolute',
+        right: '0px',
+      },
+      onClick: () => root.onToggleSettings(false),
+    },
+    rc('span', { style: { fontSize: '32px', fontWeight: 700 } }, 'X'),
+  ),
+  rc('text', {
+    style: {
+      ...settingsTitleStyle,
+      fontSize: textStyle.L[root.state.fontSizePreset],
+    },
+  }, 'Settings'),
+  settingsFeatureComps(rc, root),
+);
+
+settingsFeatureComps = (rc, root) => rc(
+  'div',
+  { style: { fontSize: textStyle.M[root.state.fontSizePreset] } },
+  rc(
     'div',
-    { style: { fontSize: textStyle.M[root.state.fontSizePreset] } },
+    { style: settingsRowStyle },
+    rc('label', { for: 'fontSizePreset', style: settingsLabelStyle }, 'Font Sizes'),
     rc(
       'div',
-      { style: settingsRowStyle },
-      rc('label', { for: 'fontSizePreset', style: settingsLabelStyle }, 'Font Sizes'),
-      rc(
-        'div',
-        { style: settingsParameterStyle },
-        rc('text', { style: { fontSize: textStyle.S[root.state.fontSizePreset] } }, 'Small'),
-        rc('input', {
-          id: 'fontSizePreset',
-          style: { margin: '5px' },
-          type: 'range',
-          min: constraintProps.textSizeProps.min,
-          max: constraintProps.textSizeProps.max,
-          step: 1,
-          value: root.state.fontSizePreset,
-          onChange: (e) => root.onChangeFontSizePreset(e.target.value),
-        }),
-        rc('text', { style: { fontSize: textStyle.S[root.state.fontSizePreset] } }, 'Large'),
-      ),
+      { style: settingsParameterStyle },
+      rc('text', { style: { fontSize: textStyle.S[root.state.fontSizePreset] } }, 'Small'),
+      rc('input', {
+        id: 'fontSizePreset',
+        style: { margin: '5px' },
+        type: 'range',
+        min: constraintProps.textSizeProps.min,
+        max: constraintProps.textSizeProps.max,
+        step: 1,
+        value: root.state.fontSizePreset,
+        onChange: (e) => root.onChangeFontSizePreset(e.target.value),
+      }),
+      rc('text', { style: { fontSize: textStyle.S[root.state.fontSizePreset] } }, 'Large'),
     ),
+  ),
+  rc(
+    'div',
+    { style: settingsRowStyle },
+    rc('text', { style: settingsLabelStyle }, 'Viewport'),
     rc(
       'div',
-      { style: settingsRowStyle },
-      rc('text', { style: settingsLabelStyle }, 'Viewport'),
-      rc(
-        'div',
-        { style: { ...settingsParameterStyle, fontSize: textStyle.S[root.state.fontSizePreset] } },
-        rc('button', {
-          style: {
-            ...settingsButtonStyle,
-            backgroundColor:
+      { style: { ...settingsParameterStyle, fontSize: textStyle.S[root.state.fontSizePreset] } },
+      rc('button', {
+        style: {
+          ...settingsButtonStyle,
+          backgroundColor:
               root.state.resolution === viewportSizes.HD
                 ? colorTheme.lightgray1 : colorTheme.darkgray1,
-          },
-          onClick: () => root.onChangeViewport(viewportSizes.HD),
-        }, rc('text', null, viewportSizes.HD)),
-        rc('button', {
-          style: {
-            ...settingsButtonStyle,
-            backgroundColor:
+        },
+        onClick: () => root.onChangeViewport(viewportSizes.HD),
+      }, rc('text', null, viewportSizes.HD)),
+      rc('button', {
+        style: {
+          ...settingsButtonStyle,
+          backgroundColor:
               root.state.resolution === viewportSizes.FHD
                 ? colorTheme.lightgray1 : colorTheme.darkgray1,
-          },
-          onClick: () => root.onChangeViewport(viewportSizes.FHD),
-        }, rc('text', null, viewportSizes.FHD)),
-        rc('button', {
-          style: {
-            ...settingsButtonStyle,
-            backgroundColor:
+        },
+        onClick: () => root.onChangeViewport(viewportSizes.FHD),
+      }, rc('text', null, viewportSizes.FHD)),
+      rc('button', {
+        style: {
+          ...settingsButtonStyle,
+          backgroundColor:
               root.state.resolution === viewportSizes.QHD
                 ? colorTheme.lightgray1 : colorTheme.darkgray1,
-          },
-          onClick: () => root.onChangeViewport(viewportSizes.QHD),
-        }, rc('text', null, viewportSizes.QHD)),
-        rc('button', {
-          style: {
-            ...settingsButtonStyle,
-            backgroundColor:
+        },
+        onClick: () => root.onChangeViewport(viewportSizes.QHD),
+      }, rc('text', null, viewportSizes.QHD)),
+      rc('button', {
+        style: {
+          ...settingsButtonStyle,
+          backgroundColor:
               root.state.resolution === viewportSizes.UHD
                 ? colorTheme.lightgray1 : colorTheme.darkgray1,
-          },
-          onClick: () => root.onChangeViewport(viewportSizes.UHD),
-        }, rc('text', null, viewportSizes.UHD)),
-      ),
+        },
+        onClick: () => root.onChangeViewport(viewportSizes.UHD),
+      }, rc('text', null, viewportSizes.UHD)),
     ),
-  );
-}
+  ),
+);
 
-function tabComps(rc, root) {
-  return rc(
+tabComps = (rc, root) => rc(
+  'div',
+  { style: tabHeaderStyle },
+  Object.keys(
+    commandDataTypes,
+  ).map((command) => rc(
     'div',
-    { style: tabHeaderStyle },
-    Object.keys(
-      commandDataTypes,
-    ).map((command) => rc(
-      'div',
-      null,
-      tabComp(rc, root, command),
-    )),
-  );
-}
+    null,
+    tabComp(rc, root, command),
+  )),
+);
 
-function tabComp(rc, root, tab) {
-  return rc('button', {
-    style: {
-      ...tabButtonStyle,
-      backgroundColor:
+tabComp = (rc, root, tab) => rc('button', {
+  style: {
+    ...tabButtonStyle,
+    backgroundColor:
         root.state.activeTab === tab
           ? colorTheme.lightgray1
           : colorTheme.darkgray1,
-    },
-    onClick: () => root.onChangeTab(tab),
-  }, rc(
-    'text',
-    { style: { fontSize: textStyle.S[root.state.fontSizePreset] } },
-    commandDataTypes[tab].displayName,
-  ));
-}
+  },
+  onClick: () => root.onChangeTab(tab),
+}, rc(
+  'text',
+  { style: { fontSize: textStyle.S[root.state.fontSizePreset] } },
+  commandDataTypes[tab].displayName,
+));
 
-function windowComps(rc, root) {
-  return windowComp(rc, root, root.state.triggerData[root.state.activeTab]);
-}
+windowComps = (rc, root) => windowComp(rc, root, root.state.triggerData[root.state.activeTab]);
 
-function windowComp(rc, root, data) {
+windowComp = (rc, root, data) => {
   if (data.id === Triggers.CustomSkin) {
     return skinEditorComp(rc, root, data);
   }
@@ -275,63 +279,61 @@ function windowComp(rc, root, data) {
       Object.keys(data.triggers).map((i) => triggerComp(rc, root, data, parseInt(i, 10))),
     ),
   );
-}
+};
 
-function smoothTabComp(rc, root, data) {
-  return rc(
-    'div',
-    { style: smoothTabStyle },
-    rc('label', {
-      for: 'smoothTextInput',
-      style: { fontSize: textStyle.S[root.state.fontSizePreset] },
-    }, 'Smoothing'),
-    data.id !== Triggers.TimeRemap && rc('input', {
-      id: 'smoothTextInput',
-      style: {
-        ...smoothTextInputStyle,
-        fontSize: textStyle.S[root.state.fontSizePreset],
-        marginLeft: '5px',
+smoothTabComp = (rc, root, data) => rc(
+  'div',
+  { style: smoothTabStyle },
+  rc('label', {
+    for: 'smoothTextInput',
+    style: { fontSize: textStyle.S[root.state.fontSizePreset] },
+  }, 'Smoothing'),
+  data.id !== Triggers.TimeRemap && rc('input', {
+    id: 'smoothTextInput',
+    style: {
+      ...smoothTextInputStyle,
+      fontSize: textStyle.S[root.state.fontSizePreset],
+      marginLeft: '5px',
+    },
+    value: data.smoothing,
+    onChange: (e) => root.onUpdateTrigger(
+      {
+        prev: data.smoothing,
+        new: e.target.value,
       },
-      value: data.smoothing,
-      onChange: (e) => root.onUpdateTrigger(
+      ['smoothing'],
+      constraintProps.smoothProps,
+    ),
+    onBlur: (e) => root.onUpdateTrigger(
+      {
+        prev: data.smoothing,
+        new: e.target.value,
+      },
+      ['smoothing'],
+      constraintProps.smoothProps,
+      true,
+    ),
+  }),
+  data.id === Triggers.TimeRemap && rc(
+    'div',
+    { style: checkboxDivStyle },
+    rc('input', {
+      style: checkboxStyle,
+      type: 'checkbox',
+      onChange: () => root.onUpdateTrigger(
         {
-          prev: data.smoothing,
-          new: e.target.value,
+          prev: root.state.triggerData[root.state.activeTab].interpolate,
+          new: !root.state.triggerData[root.state.activeTab].interpolate,
         },
-        ['smoothing'],
-        constraintProps.smoothProps,
-      ),
-      onBlur: (e) => root.onUpdateTrigger(
-        {
-          prev: data.smoothing,
-          new: e.target.value,
-        },
-        ['smoothing'],
-        constraintProps.smoothProps,
-        true,
+        ['interpolate'],
+        constraintProps.interpolateProps,
       ),
     }),
-    data.id === Triggers.TimeRemap && rc(
-      'div',
-      { style: checkboxDivStyle },
-      rc('input', {
-        style: checkboxStyle,
-        type: 'checkbox',
-        onChange: () => root.onUpdateTrigger(
-          {
-            prev: root.state.triggerData[root.state.activeTab].interpolate,
-            new: !root.state.triggerData[root.state.activeTab].interpolate,
-          },
-          ['interpolate'],
-          constraintProps.interpolateProps,
-        ),
-      }),
-      data.interpolate && rc('square', { style: checkboxFillStyle }),
-    ),
-  );
-}
+    data.interpolate && rc('square', { style: checkboxFillStyle }),
+  ),
+);
 
-function triggerComp(rc, root, data, index) {
+triggerComp = (rc, root, data, index) => {
   const triggerData = data.triggers[index];
 
   return rc(
@@ -363,42 +365,40 @@ function triggerComp(rc, root, data, index) {
       }, '+'),
     ),
   );
-}
+};
 
-function triggerHeaderComp(rc, root, data, index) {
-  return rc(
-    'div',
-    { style: triggerDivStyle },
-    rc('text', {
+triggerHeaderComp = (rc, root, data, index) => rc(
+  'div',
+  { style: triggerDivStyle },
+  rc('text', {
+    style: {
+      fontSize: textStyle.L[root.state.fontSizePreset],
+      paddingRight: '10px',
+    },
+  }, index + 1),
+  timeStampComp(rc, root, data[0], index),
+  rc(
+    'button',
+    {
       style: {
-        fontSize: textStyle.L[root.state.fontSizePreset],
-        paddingRight: '10px',
+        ...squareButtonStyle,
+        position: 'absolute',
+        right: '10px',
       },
-    }, index + 1),
-    timeStampComp(rc, root, data[0], index),
-    rc(
-      'button',
-      {
-        style: {
-          ...squareButtonStyle,
-          position: 'absolute',
-          right: '10px',
-        },
-        disabled: index === 0,
-        onClick: () => root.onDeleteTrigger(index),
+      disabled: index === 0,
+      onClick: () => root.onDeleteTrigger(index),
+    },
+    rc('span', {
+      style: {
+        fontSize: '22px',
+        color: index === 0 ? colorTheme.darkgray2 : colorTheme.black,
+        fontWeight: 900,
       },
-      rc('span', {
-        style: {
-          fontSize: '22px',
-          color: index === 0 ? colorTheme.darkgray2 : colorTheme.black,
-          fontWeight: 900,
-        },
-      }, 'X'),
-    ),
-  );
-}
+    }, 'X'),
+  ),
+);
 
-function timeStampComp(rc, root, data, index) {
+timeStampComp = (rc, root, data, index) => {
   const tProps = [
     constraintProps.minuteProps,
     constraintProps.secondProps,
@@ -406,7 +406,7 @@ function timeStampComp(rc, root, data, index) {
   ];
 
   if (!Array.isArray(data)) {
-    return null;
+    return false;
   }
 
   return data.map((timeValue, timeIndex) => rc(
@@ -446,9 +446,9 @@ function timeStampComp(rc, root, data, index) {
       ),
     }),
   ));
-}
+};
 
-function zoomTriggerComp(rc, root, data, index) {
+zoomTriggerComp = (rc, root, data, index) => {
   const labels = ['ZOOM TO'];
 
   return rc(
@@ -481,9 +481,9 @@ function zoomTriggerComp(rc, root, data, index) {
       ),
     }),
   );
-}
+};
 
-function camPanTriggerComp(rc, root, data, index) {
+camPanTriggerComp = (rc, root, data, index) => {
   const cProps = [
     constraintProps.wProps,
     constraintProps.hProps,
@@ -531,9 +531,9 @@ function camPanTriggerComp(rc, root, data, index) {
       }),
     )),
   );
-}
+};
 
-function camFocusTriggerComp(rc, root, data, index) {
+camFocusTriggerComp = (rc, root, data, index) => {
   const dropdownIndex = root.state.focuserDropdownIndices[index];
   const labels = ['WEIGHT'];
 
@@ -583,9 +583,9 @@ function camFocusTriggerComp(rc, root, data, index) {
       ),
     }),
   );
-}
+};
 
-function timeRemapTriggerComp(rc, root, data, index) {
+timeRemapTriggerComp = (rc, root, data, index) => {
   const labels = ['SPEED'];
 
   return rc(
@@ -618,9 +618,9 @@ function timeRemapTriggerComp(rc, root, data, index) {
       ),
     }),
   );
-}
+};
 
-function skinEditorComp(rc, root, data) {
+skinEditorComp = (rc, root, data) => {
   const dropdownIndex = root.state.skinDropdownIndex;
 
   return rc(
@@ -638,9 +638,9 @@ function skinEditorComp(rc, root, data) {
         },
         onWheel: (e) => root.onZoomSkinEditor(e, true),
       },
-      FlagComponent(rc, root, data.triggers[dropdownIndex], dropdownIndex),
+      flagComponent(rc, root, data.triggers[dropdownIndex], dropdownIndex),
       rc('svg', { width: '200' }),
-      RiderComponent(rc, root, data.triggers[dropdownIndex], dropdownIndex),
+      riderComponent(rc, root, data.triggers[dropdownIndex], dropdownIndex),
     ),
     rc(
       'div',
@@ -678,9 +678,9 @@ function skinEditorComp(rc, root, data) {
     ),
     skinEditorToolbar(rc, root, data.triggers, dropdownIndex),
   );
-}
+};
 
-function skinEditorToolbar(rc, root, data, index) {
+skinEditorToolbar = (rc, root, data, index) => {
   const colorValue = root.state.selectedColor.substring(0, 7);
   const alphaValue = parseInt(root.state.selectedColor.substring(7), 16) / 255;
 
@@ -745,196 +745,192 @@ function skinEditorToolbar(rc, root, data, index) {
       }),
     ),
   );
-}
+};
 
-function FlagComponent(rc, root, data, index) {
-  return rc(
-    'svg',
-    { style: flagSVG },
-    rc('path', {
-      ...riderStyle.flag,
-      fill: data.flag.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'flag', 'fill']),
-    }),
-    rc('path', {
-      ...riderStyle.flagOutline,
-      fill: data.flag.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'flag', 'fill']),
-    }),
-  );
-}
+flagComponent = (rc, root, data, index) => rc(
+  'svg',
+  { style: flagSVG },
+  rc('path', {
+    ...riderStyle.flag,
+    fill: data.flag.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'flag', 'fill']),
+  }),
+  rc('path', {
+    ...riderStyle.flagOutline,
+    fill: data.flag.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'flag', 'fill']),
+  }),
+);
 
-function RiderComponent(rc, root, data, index) {
-  return rc(
-    'svg',
-    { style: riderSVG },
-    rc('rect', {
-      ...riderStyle.skin,
-      fill: data.skin.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'skin', 'fill']),
-    }),
-    rc('path', {
-      ...riderStyle.outline,
-      ...riderStyle.nose,
-      stroke: data.outline.stroke,
-      fill: data.skin.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'skin', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.hair,
-      fill: data.hair.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hair', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.faceOutline,
-      fill: data.hair.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hair', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.hairFill,
-      fill: data.fill.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'fill', 'fill']),
-    }),
-    rc('polygon', {
-      ...riderStyle.eye,
-      fill: data.eye.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'eye', 'fill']),
-    }),
-    rc('path', {
-      ...riderStyle.outline,
-      ...riderStyle.sled,
-      stroke: data.outline.stroke,
-      fill: data.sled.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'sled', 'fill']),
-    }),
-    rc('line', {
-      ...riderStyle.string,
-      stroke: data.string.stroke,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'string', 'stroke']),
-    }),
-    rc('path', {
-      ...riderStyle.outline,
-      ...riderStyle.armHand,
-      stroke: data.outline.stroke,
-      fill: data.armHand.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'armHand', 'fill']),
-    }),
-    rc('path', {
-      ...riderStyle.outline,
-      ...riderStyle.legPants,
-      stroke: data.outline.stroke,
-      fill: data.legPants.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'legPants', 'fill']),
-    }),
-    rc('path', {
-      ...riderStyle.outline,
-      ...riderStyle.legFoot,
-      stroke: data.outline.stroke,
-      fill: data.legFoot.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'legFoot', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.id_scarfEven,
-      ...riderStyle.id_scarf0a,
-      fill: data.id_scarf0.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'id_scarf0', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.id_scarfEven,
-      ...riderStyle.id_scarf0b,
-      fill: data.id_scarf0.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'id_scarf0', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.id_scarfOdd,
-      ...riderStyle.id_scarf1,
-      fill: data.id_scarf1.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'id_scarf1', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.id_scarfOdd,
-      ...riderStyle.id_scarf2,
-      fill: data.id_scarf2.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'id_scarf2', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.id_scarfOdd,
-      ...riderStyle.id_scarf3,
-      fill: data.id_scarf3.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'id_scarf3', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.id_scarfOdd,
-      ...riderStyle.id_scarf4,
-      fill: data.id_scarf4.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'id_scarf4', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.id_scarfOdd,
-      ...riderStyle.id_scarf5,
-      fill: data.id_scarf5.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'id_scarf5', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.outline,
-      ...riderStyle.torso,
-      stroke: data.outline.stroke,
-      fill: data.torso.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'torso', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.scarfOdd,
-      ...riderStyle.scarf1,
-      fill: data.scarf1.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf1', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.scarfOdd,
-      ...riderStyle.scarf2,
-      fill: data.scarf2.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf2', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.scarfOdd,
-      ...riderStyle.scarf3,
-      fill: data.scarf3.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf3', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.scarfOdd,
-      ...riderStyle.scarf4,
-      fill: data.scarf4.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf4', 'fill']),
-    }),
-    rc('rect', {
-      ...riderStyle.scarfOdd,
-      ...riderStyle.scarf5,
-      fill: data.scarf5.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf5', 'fill']),
-    }),
-    rc('path', {
-      ...riderStyle.outline,
-      ...riderStyle.hatTop,
-      stroke: data.outline.stroke,
-      fill: data.hatTop.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatTop', 'fill']),
-    }),
-    rc('path', {
-      ...riderStyle.hatBottom,
-      stroke: data.hatBottom.stroke,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatBottom', 'stroke']),
-    }),
-    rc('circle', {
-      ...riderStyle.hatBall,
-      fill: data.hatBall.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatBall', 'fill']),
-    }),
-    rc('path', {
-      ...riderStyle.outline,
-      ...riderStyle.armSleeve,
-      stroke: data.outline.stroke,
-      fill: data.armSleeve.fill,
-      onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'armSleeve', 'fill']),
-    }),
-  );
-}
+riderComponent = (rc, root, data, index) => rc(
+  'svg',
+  { style: riderSVG },
+  rc('rect', {
+    ...riderStyle.skin,
+    fill: data.skin.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'skin', 'fill']),
+  }),
+  rc('path', {
+    ...riderStyle.outline,
+    ...riderStyle.nose,
+    stroke: data.outline.stroke,
+    fill: data.skin.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'skin', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.hair,
+    fill: data.hair.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hair', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.faceOutline,
+    fill: data.hair.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hair', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.hairFill,
+    fill: data.fill.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'fill', 'fill']),
+  }),
+  rc('polygon', {
+    ...riderStyle.eye,
+    fill: data.eye.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'eye', 'fill']),
+  }),
+  rc('path', {
+    ...riderStyle.outline,
+    ...riderStyle.sled,
+    stroke: data.outline.stroke,
+    fill: data.sled.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'sled', 'fill']),
+  }),
+  rc('line', {
+    ...riderStyle.string,
+    stroke: data.string.stroke,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'string', 'stroke']),
+  }),
+  rc('path', {
+    ...riderStyle.outline,
+    ...riderStyle.armHand,
+    stroke: data.outline.stroke,
+    fill: data.armHand.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'armHand', 'fill']),
+  }),
+  rc('path', {
+    ...riderStyle.outline,
+    ...riderStyle.legPants,
+    stroke: data.outline.stroke,
+    fill: data.legPants.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'legPants', 'fill']),
+  }),
+  rc('path', {
+    ...riderStyle.outline,
+    ...riderStyle.legFoot,
+    stroke: data.outline.stroke,
+    fill: data.legFoot.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'legFoot', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.id_scarfEven,
+    ...riderStyle.id_scarf0a,
+    fill: data.id_scarf0.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'id_scarf0', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.id_scarfEven,
+    ...riderStyle.id_scarf0b,
+    fill: data.id_scarf0.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'id_scarf0', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.id_scarfOdd,
+    ...riderStyle.id_scarf1,
+    fill: data.id_scarf1.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'id_scarf1', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.id_scarfOdd,
+    ...riderStyle.id_scarf2,
+    fill: data.id_scarf2.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'id_scarf2', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.id_scarfOdd,
+    ...riderStyle.id_scarf3,
+    fill: data.id_scarf3.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'id_scarf3', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.id_scarfOdd,
+    ...riderStyle.id_scarf4,
+    fill: data.id_scarf4.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'id_scarf4', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.id_scarfOdd,
+    ...riderStyle.id_scarf5,
+    fill: data.id_scarf5.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'id_scarf5', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.outline,
+    ...riderStyle.torso,
+    stroke: data.outline.stroke,
+    fill: data.torso.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'torso', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.scarfOdd,
+    ...riderStyle.scarf1,
+    fill: data.scarf1.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf1', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.scarfOdd,
+    ...riderStyle.scarf2,
+    fill: data.scarf2.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf2', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.scarfOdd,
+    ...riderStyle.scarf3,
+    fill: data.scarf3.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf3', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.scarfOdd,
+    ...riderStyle.scarf4,
+    fill: data.scarf4.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf4', 'fill']),
+  }),
+  rc('rect', {
+    ...riderStyle.scarfOdd,
+    ...riderStyle.scarf5,
+    fill: data.scarf5.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'scarf5', 'fill']),
+  }),
+  rc('path', {
+    ...riderStyle.outline,
+    ...riderStyle.hatTop,
+    stroke: data.outline.stroke,
+    fill: data.hatTop.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatTop', 'fill']),
+  }),
+  rc('path', {
+    ...riderStyle.hatBottom,
+    stroke: data.hatBottom.stroke,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatBottom', 'stroke']),
+  }),
+  rc('circle', {
+    ...riderStyle.hatBall,
+    fill: data.hatBall.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'hatBall', 'fill']),
+  }),
+  rc('path', {
+    ...riderStyle.outline,
+    ...riderStyle.armSleeve,
+    stroke: data.outline.stroke,
+    fill: data.armSleeve.fill,
+    onClick: () => root.onUpdateTrigger({ new: root.state.selectedColor }, ['triggers', index, 'armSleeve', 'fill']),
+  }),
+);

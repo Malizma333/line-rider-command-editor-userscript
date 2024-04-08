@@ -1,4 +1,10 @@
-function validateData(valueChange, constraints, bounded) {
+let validateData = (valueChange, constraints, bounded) => {};
+let validateInteger = (valueChange, constraints, bounded) => {};
+let validateFloat = (valueChange, constraints, bounded) => {};
+let validateTimeStamps = (triggerData) => {};
+let formatSkins = (customSkinData) => {};
+
+validateData = (valueChange, constraints, bounded) => {
   if (!constraints) return valueChange.new;
 
   switch (constraints.type) {
@@ -16,9 +22,9 @@ function validateData(valueChange, constraints, bounded) {
 
     default: return valueChange.prev;
   }
-}
+};
 
-function validateInteger(valueChange, constraints, bounded) {
+validateInteger = (valueChange, constraints, bounded) => {
   const prevValue = valueChange.prev;
   const newValue = valueChange.new;
 
@@ -49,9 +55,9 @@ function validateInteger(valueChange, constraints, bounded) {
   }
 
   return parsedValue;
-}
+};
 
-function validateFloat(valueChange, constraints, bounded) {
+validateFloat = (valueChange, constraints, bounded) => {
   const prevValue = valueChange.prev;
   const newValue = valueChange.new;
 
@@ -82,9 +88,9 @@ function validateFloat(valueChange, constraints, bounded) {
   }
 
   return parsedValue;
-}
+};
 
-function validateTimeStamps(triggerData) {
+validateTimeStamps = (triggerData) => {
   const commands = Object.keys(triggerData);
 
   commands.forEach((command) => {
@@ -116,9 +122,9 @@ function validateTimeStamps(triggerData) {
       }
     }
   });
-}
+};
 
-function formatSkins(customSkinData) {
+formatSkins = (customSkinData) => {
   const customSkinStrings = customSkinData.map((customSkin) => `
       .outline {stroke: ${customSkin.outline.stroke}}
       .skin {fill: ${customSkin.skin.fill}}
@@ -152,4 +158,4 @@ function formatSkins(customSkinData) {
   customSkinStrings.unshift(customSkinStrings.pop());
 
   return JSON.stringify(customSkinStrings);
-}
+};
