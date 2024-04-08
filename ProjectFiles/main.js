@@ -129,7 +129,7 @@ function main() {
           this.setState({ message: '' });
         }
 
-        const readInformation = this.commandEditor.read();
+        const readInformation = this.commandEditor.load();
         this.setState({ triggerData: readInformation });
         this.setState({ hasError: false });
       } catch (error) {
@@ -329,37 +329,8 @@ function main() {
       }
 
       this.onChangeTab(commands[0]);
-
-      const data = {};
-
-      commands.forEach((command) => {
-        data[command] = {
-          id: command,
-          triggers: [
-            JSON.parse(JSON.stringify(
-              commandDataTypes[command].template,
-            )),
-          ],
-        };
-
-        switch (command) {
-          case Triggers.CameraFocus:
-          case Triggers.CameraPan:
-          case Triggers.Zoom:
-            data[command].smoothing = constraintProps.smoothProps.default;
-            break;
-          case Triggers.TimeRemap:
-            data[command].interpolate = constraintProps.interpolateProps.default;
-            break;
-          default:
-            break;
-        }
-      });
-
-      this.setState({ triggerData: data });
-
+      this.setState({ triggerData: this.commandEditor.parser.commandData });
       this.setState({ focuserDropdownIndices: [0] });
-
       this.setState({ skinEditorZoomProps: { scale: 1 } });
     }
 

@@ -3,6 +3,8 @@ class CommandEditor {
     this.store = store;
     this.state = initState;
 
+    this.parser = new Parser();
+
     this.script = getCurrentScript(this.store.getState());
     this.riderCount = getNumRiders(this.store.getState());
 
@@ -15,8 +17,10 @@ class CommandEditor {
     return this.riderCount;
   }
 
-  read() {
-    return this.parseScript(this.script);
+  load() {
+    this.parser.parseScript(this.script);
+    this.state.triggerData = this.parser.commandData;
+    return this.state.triggerData;
   }
 
   test(command) {
@@ -82,17 +86,5 @@ class CommandEditor {
     scriptResult += currentHeader;
 
     return scriptResult.replace(' ', '');
-  }
-
-  parseScript(scriptText) {
-    const commands = Object.keys(commandDataTypes);
-    const currentData = this.state.triggerData;
-    const scriptCopy = scriptText.replace(/\s/g, '');
-
-    commands.forEach((command) => {
-      currentData[command] = parseCommand(command, currentData, scriptCopy);
-    });
-
-    return currentData;
   }
 }

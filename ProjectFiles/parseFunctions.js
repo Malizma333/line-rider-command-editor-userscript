@@ -1,191 +1,216 @@
 /* Group of functions for custom data validation */
-
-// Parses the script by checking for a command header keyword and verifying it's in a valid format
-
-let parseCommand = (command, currentData, scriptCopy) => {};
-let parseSmoothing = (command, currentData, smoothingValue) => {};
-let adjustTimestamps = (commandArray) => {};
-let parseSkinCss = (skinCSSArray) => {};
-let parseProp = (propString, object) => {};
-
-parseCommand = (command, currentData, scriptCopy) => {
-  const currentHeader = commandDataTypes[command].header.split('(')[0];
-  const currentHeaderIndex = scriptCopy.indexOf(currentHeader);
-  let currentCommand = currentData[command];
-
-  if (currentHeaderIndex === -1) return currentCommand;
-
-  const startIndex = currentHeaderIndex + currentHeader.length + 1;
-  let endIndex = startIndex;
-
-  for (let i = 1; i > 0 || endIndex >= scriptCopy.length; endIndex += 1) {
-    if (scriptCopy.charAt(endIndex + 1) === '(') i += 1;
-    if (scriptCopy.charAt(endIndex + 1) === ')') i -= 1;
+class Parser {
+  constructor() {
+    this.commandData = {};
+    Object.keys(commandDataTypes).forEach((command) => {
+      this.initCommand(command, false);
+    });
   }
 
-  const parameterText = `[${scriptCopy.substring(startIndex, endIndex)}]`;
-  const parameterArray = JSON.parse(parameterText);
-  const [keyframes, smoothing] = parameterArray;
+  initCommand(command, empty) {
+    this.commandData[command] = {
+      id: command,
+      triggers: !empty
+        ? [Object.assign(commandDataTypes[command].template, {})]
+        : [],
+    };
 
-  switch (command) {
-    case Triggers.Zoom:
-    case Triggers.CameraPan:
-    case Triggers.CameraFocus:
-    case Triggers.TimeRemap:
-      currentCommand.triggers = adjustTimestamps(keyframes);
-      currentCommand = parseSmoothing(command, currentData, smoothing);
-      break;
-    case Triggers.CustomSkin:
-      currentCommand.triggers = parseSkinCss(keyframes);
-      break;
-    default:
-      break;
+    switch (command) {
+      case Triggers.CameraFocus:
+      case Triggers.CameraPan:
+      case Triggers.Zoom:
+        this.commandData[command].smoothing = constraintProps.smoothProps.default;
+        break;
+      case Triggers.TimeRemap:
+        this.commandData[command].interpolate = constraintProps.interpolateProps.default;
+        break;
+      default:
+        break;
+    }
   }
 
-  return currentCommand;
-};
+  parseScript(scriptText) {
+    this.script = scriptText.replace(/\s/g, '');
 
-// Parses smoothing specifically by checking if the value exists and type
+    Object.keys(commandDataTypes).forEach((command) => {
+      this.parseCommand(command);
+    });
+  }
 
-parseSmoothing = (command, currentData, smoothingValue) => {
-  const currentCommand = currentData[command];
-  if (command === Triggers.TimeRemap) {
-    const constraints = constraintProps.interpolateProps;
+  // Parses the script by checking for a command header keyword and verifying it's in a valid format
 
-    if (!smoothingValue) {
-      currentCommand.interpolate = constraints.default;
-      return currentCommand;
+  parseCommand(command) {
+    const currentHeader = commandDataTypes[command].header.split('(')[0];
+    const currentHeaderIndex = this.script.indexOf(currentHeader);
+
+    if (currentHeaderIndex === -1) return;
+
+    this.initCommand(command, true);
+
+    const startIndex = currentHeaderIndex + currentHeader.length + 1;
+    let endIndex = startIndex;
+
+    for (let i = 1; i > 0 || endIndex >= this.script.length; endIndex += 1) {
+      if (this.script.charAt(endIndex + 1) === '(') i += 1;
+      if (this.script.charAt(endIndex + 1) === ')') i -= 1;
     }
 
-    if (smoothingValue === true || smoothingValue === false) {
-      currentCommand.interpolate = smoothingValue;
+    const parameterText = `[${this.script.substring(startIndex, endIndex)}]`;
+    const parameterArray = JSON.parse(parameterText);
+    const [keyframes, smoothing] = parameterArray;
+
+    switch (command) {
+      case Triggers.Zoom:
+      case Triggers.CameraPan:
+      case Triggers.CameraFocus:
+      case Triggers.TimeRemap:
+        this.addTriggers(command, keyframes);
+        this.parseSmoothing(command, smoothing);
+        break;
+      case Triggers.CustomSkin:
+        this.parseSkinCss(keyframes);
+        break;
+      default:
+        break;
+    }
+  }
+
+  // Parses smoothing specifically by checking if the value exists and type
+
+  parseSmoothing(command, smoothingValue) {
+    if (command === Triggers.TimeRemap) {
+      const constraints = constraintProps.interpolateProps;
+
+      if (!smoothingValue) {
+        this.commandData[command].interpolate = constraints.default;
+        return;
+      }
+
+      if (smoothingValue === true || smoothingValue === false) {
+        this.commandData[command].interpolate = smoothingValue;
+      } else {
+        throw new Error('Invalid boolean!');
+      }
     } else {
-      throw new Error('Invalid boolean!');
-    }
-  } else {
-    const constraints = constraintProps.smoothProps;
+      const constraints = constraintProps.smoothProps;
 
-    if (!smoothingValue) {
-      currentCommand.interpolate = constraints.default;
-      return currentCommand;
-    }
+      if (!smoothingValue) {
+        this.commandData[command].interpolate = constraints.default;
+        return;
+      }
 
-    if (Number.isNaN(smoothingValue)) {
-      throw new Error('Invalid integer!');
-    }
+      if (Number.isNaN(smoothingValue)) {
+        throw new Error('Invalid integer!');
+      }
 
-    if (smoothingValue > constraints.max) {
-      currentCommand.smoothing = constraints.max;
-    } else if (smoothingValue < constraints.min) {
-      currentCommand.smoothing = constraints.min;
-    } else {
-      currentCommand.smoothing = smoothingValue;
+      if (smoothingValue > constraints.max) {
+        this.commandData[command].smoothing = constraints.max;
+      } else if (smoothingValue < constraints.min) {
+        this.commandData[command].smoothing = constraints.min;
+      } else {
+        this.commandData[command].smoothing = smoothingValue;
+      }
     }
   }
 
-  return currentCommand;
-};
+  // Add triggers and adjusts each of the time stamps to fit the [M,S,F] format
 
-// Adjusts each of the time stamps to fit the [M,S,F] format
+  addTriggers(command, commandArray) {
+    console.log(commandArray);
+    for (let i = 0; i < commandArray.length; i += 1) {
+      this.commandData[command].triggers.push([...commandArray[i]]);
 
-adjustTimestamps = (commandArray) => {
-  const newCommandArray = [];
-  for (let i = 0; i < commandArray.length; i += 1) {
-    const timeList = commandArray[i][0];
-    newCommandArray.push([...commandArray[i]]);
-
-    if (timeList.constructor === Number) {
-      newCommandArray[i][0] = [0, 0, timeList];
-    } else if (timeList.length === 1) {
-      newCommandArray[i][0] = [0, 0, timeList[0]];
-    } else if (timeList.length === 2) {
-      newCommandArray[i][0] = [0, timeList[0], timeList[1]];
+      const timeProp = commandArray[i][0];
+      if (timeProp.constructor === Number) {
+        this.commandData[command].triggers[i][0] = [0, 0, timeProp];
+      } else if (timeProp.length === 1) {
+        this.commandData[command].triggers[i][0] = [0, 0, timeProp[0]];
+      } else if (timeProp.length === 2) {
+        this.commandData[command].triggers[i][0] = [0, timeProp[0], timeProp[1]];
+      }
     }
   }
 
-  return newCommandArray;
-};
+  // Parses each of the skin css codes in a custom riders command
 
-// Parses each of the skin css codes in a custom riders command
+  parseSkinCss(skinCSSArray) {
+    skinCSSArray.forEach((skinCSS, skinIndex) => {
+      this.commandData[Triggers.CustomSkin].triggers.push(
+        Object.assign(commandDataTypes.CustomSkin.template, {}),
+      );
+      let depth = 0;
+      let zeroIndex = 0;
 
-parseSkinCss = (skinCSSArray) => {
-  const skinJSONArray = [];
-
-  skinCSSArray.forEach((skinCSS) => {
-    let template = Object.assign(commandDataTypes.CustomSkin.template, {});
-    let depth = 0;
-    let zeroIndex = 0;
-
-    for (let i = 0; i < skinCSS.length; i += 1) {
-      if (skinCSS.charAt(i) === '{') depth += 1;
-      if (skinCSS.charAt(i) === '}') {
-        depth -= 1;
-        if (depth === 0) {
-          template = parseProp(skinCSS.substring(zeroIndex, i + 1).replace(/\s/g, ''), template);
-          zeroIndex = i + 1;
+      for (let i = 0; i < skinCSS.length; i += 1) {
+        if (skinCSS.charAt(i) === '{') depth += 1;
+        if (skinCSS.charAt(i) === '}') {
+          depth -= 1;
+          if (depth === 0) {
+            this.parseProp(
+              skinCSS.substring(zeroIndex, i + 1).replace(/\s/g, ''),
+              skinIndex,
+            );
+            zeroIndex = i + 1;
+          }
         }
       }
-    }
+    });
 
-    skinJSONArray.push(template);
-  });
+    this.commandData[Triggers.CustomSkin].triggers.push(
+      this.commandData[Triggers.CustomSkin].triggers.shift(),
+    );
+  }
 
-  skinJSONArray.push(skinJSONArray.shift());
+  // Looks through each css property keyword and associates them with a JSON compatible keyword
 
-  return skinJSONArray;
-};
+  parseProp(propString, skinIndex) {
+    const wordRegex = /(['"])?([#]?[a-z0-9A-Z_-]+)(['"])?/g;
+    const cssPropKeywords = {
+      '.outline': 'outline',
+      '.skin': 'skin',
+      '.hair': 'hair',
+      '.fill': 'fill',
+      '#eye': 'eye',
+      '.sled': 'sled',
+      '#string': 'string',
+      '.arm.sleeve': 'armSleeve',
+      '.arm.hand': 'armHand',
+      '.leg.pants': 'legPants',
+      '.leg.foot': 'legFoot',
+      '.torso': 'torso',
+      '.scarf1': 'scarf1',
+      '.scarf2': 'scarf2',
+      '.scarf3': 'scarf3',
+      '.scarf4': 'scarf4',
+      '.scarf5': 'scarf5',
+      '#scarf0': 'id_scarf0',
+      '#scarf1': 'id_scarf1',
+      '#scarf2': 'id_scarf2',
+      '#scarf3': 'id_scarf3',
+      '#scarf4': 'id_scarf4',
+      '#scarf5': 'id_scarf5',
+      '.hat.top': 'hatTop',
+      '.hat.bottom': 'hatBottom',
+      '.hat.ball': 'hatBall',
+      '.flag': 'flag',
+    };
 
-// Looks through each css property keyword and associates them with a JSON compatible keyword
+    Object.keys(cssPropKeywords).forEach((key) => {
+      if (propString.startsWith(key)) {
+        const skinDataString = propString.substring(key.length).replace(wordRegex, '"$2"').replace(';', ',');
+        const skinDataJSON = JSON.parse(skinDataString);
+        const propName = cssPropKeywords[key];
 
-parseProp = (propString, object) => {
-  const wordRegex = /(['"])?([#]?[a-z0-9A-Z_-]+)(['"])?/g;
-  const cssPropKeywords = {
-    '.outline': 'outline',
-    '.skin': 'skin',
-    '.hair': 'hair',
-    '.fill': 'fill',
-    '#eye': 'eye',
-    '.sled': 'sled',
-    '#string': 'string',
-    '.arm.sleeve': 'armSleeve',
-    '.arm.hand': 'armHand',
-    '.leg.pants': 'legPants',
-    '.leg.foot': 'legFoot',
-    '.torso': 'torso',
-    '.scarf1': 'scarf1',
-    '.scarf2': 'scarf2',
-    '.scarf3': 'scarf3',
-    '.scarf4': 'scarf4',
-    '.scarf5': 'scarf5',
-    '#scarf0': 'id_scarf0',
-    '#scarf1': 'id_scarf1',
-    '#scarf2': 'id_scarf2',
-    '#scarf3': 'id_scarf3',
-    '#scarf4': 'id_scarf4',
-    '#scarf5': 'id_scarf5',
-    '.hat.top': 'hatTop',
-    '.hat.bottom': 'hatBottom',
-    '.hat.ball': 'hatBall',
-    '.flag': 'flag',
-  };
+        if ('fill' in skinDataJSON) {
+          this.commandData[Triggers.CustomSkin]
+            .triggers[skinIndex][propName].fill = skinDataJSON.fill;
+        }
 
-  const newObject = Object.assign(object, {});
-
-  Object.keys(cssPropKeywords).forEach((key) => {
-    if (propString.startsWith(key)) {
-      const skinDataString = propString.substring(key.length).replace(wordRegex, '"$2"').replace(';', ',');
-      const skinDataJSON = JSON.parse(skinDataString);
-      const propName = cssPropKeywords[key];
-
-      if ('fill' in skinDataJSON) {
-        newObject[propName].fill = skinDataJSON.fill;
+        if ('stroke' in skinDataJSON) {
+          this.commandData[Triggers.CustomSkin]
+            .triggers[skinIndex][propName].stroke = skinDataJSON.stroke;
+        }
       }
-
-      if ('stroke' in skinDataJSON) {
-        newObject[propName].stroke = skinDataJSON.stroke;
-      }
-    }
-  });
-
-  return newObject;
-};
+    });
+  }
+}
