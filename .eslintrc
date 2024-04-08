@@ -6,7 +6,6 @@
     }
   },
   "rules": {
-    "linebreak-style": "off",
     "no-undef": "warn",
     "no-unused-vars": "warn",
     "react/no-unused-class-component-methods": "warn",
