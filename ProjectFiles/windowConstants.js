@@ -1,6 +1,17 @@
-const getWindowStart = (state) => state.simulator.engine.engine.state.startPoint.constructor;
-const getWindowFocused = (state) => state.views.Main;
-const getPlayerRunning = (state) => state.player.running;
-const getCurrentScript = (state) => state.trackData.script;
-const getRiders = (state) => state.simulator.engine.engine.state.riders;
-const getNumRiders = (state) => getRiders(state).length;
+class Selectors {
+  static getSimulatorTrack(state) { return state.simulator.engine; }
+
+  static getTrackStart(state) { return Selectors.getSimulatorTrack(state).engine.state.startPoint; }
+
+  static getWindowStart(state) { return Selectors.getTrackStart(state).constructor; }
+
+  static getWindowFocused(state) { return state.views.Main; }
+
+  static getPlayerRunning(state) { return state.player.running; }
+
+  static getCurrentScript(state) { return state.trackData.script; }
+
+  static getRiders(state) { return Selectors.getSimulatorTrack(state).engine.state.riders; }
+
+  static getNumRiders(state) { return Selectors.getRiders(state).length; }
+}

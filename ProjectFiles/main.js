@@ -1,7 +1,7 @@
 /* Main function, entry point of the application */
 
 function main() {
-  window.V2 = window.V2 || getWindowStart(window.store.getState());
+  window.V2 = window.V2 || Selectors.getWindowStart(window.store.getState());
 
   const {
     React,
@@ -9,15 +9,15 @@ function main() {
     store,
   } = window;
 
-  let playerRunning = getPlayerRunning(store.getState());
-  let windowFocused = getWindowFocused(store.getState());
+  let playerRunning = Selectors.getPlayerRunning(store.getState());
+  let windowFocused = Selectors.getWindowFocused(store.getState());
   const commandEditorParent = document.createElement('div');
 
   // Listens for changes in window state to update UI accordingly
 
   store.subscribe(() => {
-    playerRunning = getPlayerRunning(store.getState());
-    windowFocused = getWindowFocused(store.getState());
+    playerRunning = Selectors.getPlayerRunning(store.getState());
+    windowFocused = Selectors.getWindowFocused(store.getState());
 
     const shouldBeVisible = window.CMD_EDITOR_DEBUG || (!playerRunning && windowFocused);
 

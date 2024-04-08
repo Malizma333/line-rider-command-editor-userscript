@@ -5,8 +5,8 @@ class CommandEditor {
 
     this.parser = new Parser();
 
-    this.script = getCurrentScript(this.store.getState());
-    this.riderCount = getNumRiders(this.store.getState());
+    this.script = Selectors.getCurrentScript(this.store.getState());
+    this.riderCount = Selectors.getNumRiders(this.store.getState());
 
     store.subscribeImmediate(() => {
       this.onUpdate();
@@ -40,14 +40,14 @@ class CommandEditor {
       shouldUpdate = true;
     }
 
-    const script = getCurrentScript(this.store.getState());
+    const script = Selectors.getCurrentScript(this.store.getState());
 
     if (this.script !== script) {
       this.script = script;
       shouldUpdate = true;
     }
 
-    const riderCount = getNumRiders(this.store.getState());
+    const riderCount = Selectors.getNumRiders(this.store.getState());
 
     if (this.riderCount !== riderCount) {
       this.riderCount = riderCount;
