@@ -2,53 +2,63 @@
 
 // Parses the script by checking for a command header keyword and verifying it's in a valid format
 
-function parseCommand(command, currentData, scriptCopy) {
+let parseCommand = (command, currentData, scriptCopy) => {};
+let parseSmoothing = (command, currentData, smoothingValue) => {};
+let adjustTimestamps = (commandArray) => {};
+let parseSkinCss = (skinCSSArray) => {};
+let parseProp = (propString, object) => {};
+
+parseCommand = (command, currentData, scriptCopy) => {
   const currentHeader = commandDataTypes[command].header.split('(')[0];
   const currentHeaderIndex = scriptCopy.indexOf(currentHeader);
+  let currentCommand = currentData[command];
 
-  if (currentHeaderIndex === -1) return;
+  if (currentHeaderIndex === -1) return currentCommand;
 
   const startIndex = currentHeaderIndex + currentHeader.length + 1;
   let endIndex = startIndex;
 
-  for (let i = 1; i > 0 || endIndex >= scriptCopy.length; endIndex++) {
-    if (scriptCopy.charAt(endIndex + 1) === '(') i++;
-    if (scriptCopy.charAt(endIndex + 1) === ')') i--;
+  for (let i = 1; i > 0 || endIndex >= scriptCopy.length; endIndex += 1) {
+    if (scriptCopy.charAt(endIndex + 1) === '(') i += 1;
+    if (scriptCopy.charAt(endIndex + 1) === ')') i -= 1;
   }
 
   const parameterText = `[${scriptCopy.substring(startIndex, endIndex)}]`;
-  const parameterArray = eval(parameterText);
+  const parameterArray = JSON.parse(parameterText);
+  const [keyframes, smoothing] = parameterArray;
 
   switch (command) {
     case Triggers.Zoom:
     case Triggers.CameraPan:
     case Triggers.CameraFocus:
     case Triggers.TimeRemap:
-      adjustTimestamps(parameterArray[0]);
-      currentData[command].triggers = parameterArray[0];
-      parseSmoothing(command, currentData, parameterArray[1]);
+      currentCommand.triggers = adjustTimestamps(keyframes);
+      currentCommand = parseSmoothing(command, currentData, smoothing);
       break;
     case Triggers.CustomSkin:
-      currentData[command].triggers = parseSkinCss(parameterArray[0]);
+      currentCommand.triggers = parseSkinCss(keyframes);
       break;
     default:
       break;
   }
-}
+
+  return currentCommand;
+};
 
 // Parses smoothing specifically by checking if the value exists and type
 
-function parseSmoothing(command, currentData, smoothingValue) {
+parseSmoothing = (command, currentData, smoothingValue) => {
+  const currentCommand = currentData[command];
   if (command === Triggers.TimeRemap) {
     const constraints = constraintProps.interpolateProps;
 
     if (!smoothingValue) {
-      currentData[command].interpolate = constraints.default;
-      return;
+      currentCommand.interpolate = constraints.default;
+      return currentCommand;
     }
 
     if (smoothingValue === true || smoothingValue === false) {
-      currentData[command].interpolate = smoothingValue;
+      currentCommand.interpolate = smoothingValue;
     } else {
       throw new Error('Invalid boolean!');
     }
@@ -56,60 +66,62 @@ function parseSmoothing(command, currentData, smoothingValue) {
     const constraints = constraintProps.smoothProps;
 
     if (!smoothingValue) {
-      currentData[command].interpolate = constraints.default;
-      return;
+      currentCommand.interpolate = constraints.default;
+      return currentCommand;
     }
 
-    if (isNaN(smoothingValue)) {
+    if (Number.isNaN(smoothingValue)) {
       throw new Error('Invalid integer!');
     }
 
     if (smoothingValue > constraints.max) {
-      currentData[command].smoothing = constraints.max;
+      currentCommand.smoothing = constraints.max;
     } else if (smoothingValue < constraints.min) {
-      currentData[command].smoothing = constraints.min;
+      currentCommand.smoothing = constraints.min;
     } else {
-      currentData[command].smoothing = smoothingValue;
+      currentCommand.smoothing = smoothingValue;
     }
   }
-}
+
+  return currentCommand;
+};
 
 // Adjusts each of the time stamps to fit the [M,S,F] format
 
-function adjustTimestamps(commandArray) {
-  for (let i = 0; i < commandArray.length; i++) {
+adjustTimestamps = (commandArray) => {
+  const newCommandArray = [];
+  for (let i = 0; i < commandArray.length; i += 1) {
     const timeList = commandArray[i][0];
+    newCommandArray.push([...commandArray[i]]);
 
-    if (!isNaN(timeList)) {
-      commandArray[i][0] = [0, 0, timeList];
-    }
-
-    if (timeList.length === 1) {
-      commandArray[i][0] = [0, 0, timeList[0]];
-    }
-
-    if (timeList.length === 2) {
-      commandArray[i][0] = [0, timeList[0], timeList[1]];
+    if (timeList.constructor === Number) {
+      newCommandArray[i][0] = [0, 0, timeList];
+    } else if (timeList.length === 1) {
+      newCommandArray[i][0] = [0, 0, timeList[0]];
+    } else if (timeList.length === 2) {
+      newCommandArray[i][0] = [0, timeList[0], timeList[1]];
     }
   }
-}
+
+  return newCommandArray;
+};
 
 // Parses each of the skin css codes in a custom riders command
 
-function parseSkinCss(skinCSSArray) {
+parseSkinCss = (skinCSSArray) => {
   const skinJSONArray = [];
 
   skinCSSArray.forEach((skinCSS) => {
-    const template = JSON.parse(JSON.stringify(commandDataTypes.CustomSkin.template));
+    let template = Object.assign(commandDataTypes.CustomSkin.template, {});
     let depth = 0;
     let zeroIndex = 0;
 
-    for (let i = 0; i < skinCSS.length; i++) {
+    for (let i = 0; i < skinCSS.length; i += 1) {
       if (skinCSS.charAt(i) === '{') depth += 1;
       if (skinCSS.charAt(i) === '}') {
         depth -= 1;
         if (depth === 0) {
-          parseProp(skinCSS.substring(zeroIndex, i + 1).replace(/\s/g, ''), template);
+          template = parseProp(skinCSS.substring(zeroIndex, i + 1).replace(/\s/g, ''), template);
           zeroIndex = i + 1;
         }
       }
@@ -121,11 +133,11 @@ function parseSkinCss(skinCSSArray) {
   skinJSONArray.push(skinJSONArray.shift());
 
   return skinJSONArray;
-}
+};
 
-// Looks through each of the css property keywords and associates them with a JSON compatible keyword
+// Looks through each css property keyword and associates them with a JSON compatible keyword
 
-function parseProp(propString, object) {
+parseProp = (propString, object) => {
   const wordRegex = /(['"])?([#]?[a-z0-9A-Z_-]+)(['"])?/g;
   const cssPropKeywords = {
     '.outline': 'outline',
@@ -145,33 +157,35 @@ function parseProp(propString, object) {
     '.scarf3': 'scarf3',
     '.scarf4': 'scarf4',
     '.scarf5': 'scarf5',
-    '#scarf0': '_scarf0',
-    '#scarf1': '_scarf1',
-    '#scarf2': '_scarf2',
-    '#scarf3': '_scarf3',
-    '#scarf4': '_scarf4',
-    '#scarf5': '_scarf5',
+    '#scarf0': 'id_scarf0',
+    '#scarf1': 'id_scarf1',
+    '#scarf2': 'id_scarf2',
+    '#scarf3': 'id_scarf3',
+    '#scarf4': 'id_scarf4',
+    '#scarf5': 'id_scarf5',
     '.hat.top': 'hatTop',
     '.hat.bottom': 'hatBottom',
     '.hat.ball': 'hatBall',
     '.flag': 'flag',
   };
 
-  for (const key in cssPropKeywords) {
+  const newObject = Object.assign(object, {});
+
+  Object.keys(cssPropKeywords).forEach((key) => {
     if (propString.startsWith(key)) {
       const skinDataString = propString.substring(key.length).replace(wordRegex, '"$2"').replace(';', ',');
       const skinDataJSON = JSON.parse(skinDataString);
       const propName = cssPropKeywords[key];
 
       if ('fill' in skinDataJSON) {
-        object[propName].fill = skinDataJSON.fill;
+        newObject[propName].fill = skinDataJSON.fill;
       }
 
       if ('stroke' in skinDataJSON) {
-        object[propName].stroke = skinDataJSON.stroke;
+        newObject[propName].stroke = skinDataJSON.stroke;
       }
-
-      return;
     }
-  }
-}
+  });
+
+  return newObject;
+};

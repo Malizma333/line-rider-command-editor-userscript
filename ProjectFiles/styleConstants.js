@@ -15,12 +15,12 @@ const textGlobal = {
   direction: 'ltr',
   fontFamily: 'Helvetica',
   fontWeight: 'bold',
-}
+};
 
 const textStyle = {
-  S: ['12px','14px','18px'],
-  M: ['18px','22px','24px'],
-  L: ['28px','32px','36px']
+  S: ['12px', '14px', '18px'],
+  M: ['18px', '22px', '24px'],
+  L: ['28px', '32px', '36px'],
 };
 
 const parentStyle = {
@@ -70,7 +70,7 @@ const toolbarButtonStyle = {
 const toolbarButtonText = {
   top: '3px',
   position: 'relative',
-  fontSize: '22px'
+  fontSize: '22px',
 };
 
 const readWriteContainerStyle = {
@@ -164,7 +164,7 @@ const smoothTabStyle = {
   right: '5%',
   padding: '1ch',
   position: 'absolute',
-  top: '35px'
+  top: '35px',
 };
 
 const triggerWindowStyle = {
@@ -417,27 +417,27 @@ const riderStyle = {
   hatBall: {
     transform: 'translate(14.8,5) rotate(-90) translate(-10,0)', cx: '13.9', cy: '0', r: '0.7',
   },
-  _scarfEven: { transform: 'translate(10.5, 8.5)' },
-  _scarfOdd: { transform: 'translate(10.5, 8.5)' },
-  _scarf0a: {
+  id_scarfEven: { transform: 'translate(10.5, 8.5)' },
+  id_scarfOdd: { transform: 'translate(10.5, 8.5)' },
+  id_scarf0a: {
     strokeWidth: '0', x: '2', width: '2', height: '2',
   },
-  _scarf0b: {
+  id_scarf0b: {
     strokeWidth: '0', x: '0', width: '2', height: '2',
   },
-  _scarf1: {
+  id_scarf1: {
     strokeWidth: '0', x: '-2', width: '2', height: '2',
   },
-  _scarf2: {
+  id_scarf2: {
     strokeWidth: '0', x: '-4', width: '2', height: '2',
   },
-  _scarf3: {
+  id_scarf3: {
     strokeWidth: '0', x: '-6', width: '2', height: '2',
   },
-  _scarf4: {
+  id_scarf4: {
     strokeWidth: '0', x: '-8', width: '2', height: '2',
   },
-  _scarf5: {
+  id_scarf5: {
     strokeWidth: '0', x: '-10', width: '2', height: '2',
   },
 };
@@ -454,7 +454,7 @@ const settingsWindowStyle = {
   overflow: 'hidden',
   position: 'absolute',
   top: '35px',
-  width: '90%'
+  width: '90%',
 };
 
 const settingsTitleStyle = {

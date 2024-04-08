@@ -6,6 +6,19 @@
     }
   },
   "rules": {
-    "linebreak-style": "off"
+    "linebreak-style": "off",
+    "no-undef": "warn",
+    "no-unused-vars": "warn",
+    "react/no-unused-class-component-methods": "warn",
+    "react/no-unused-state": "warn",
+    "no-use-before-define": "warn",
+    "no-eval": "warn"
+  },
+  "ignorePatterns": [
+    "node_modules"
+  ],
+  "globals": {
+    "window": "readonly",
+    "document": "readonly"
   }
 }

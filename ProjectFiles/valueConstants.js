@@ -67,7 +67,7 @@ const viewportSizes = {
   HD: '720p',
   FHD: '1080p',
   QHD: '1440p',
-  UHD: '4K'
+  UHD: '4K',
 };
 
 const commandDataTypes = {
@@ -117,12 +117,12 @@ const commandDataTypes = {
       scarf3: { fill: '#06A725' },
       scarf4: { fill: 'white' },
       scarf5: { fill: '#3995FD' },
-      _scarf0: { fill: 'white' },
-      _scarf1: { fill: '#FD4F38' },
-      _scarf2: { fill: 'white' },
-      _scarf3: { fill: '#06A725' },
-      _scarf4: { fill: 'white' },
-      _scarf5: { fill: '#3995FD' },
+      id_scarf0: { fill: 'white' },
+      id_scarf1: { fill: '#FD4F38' },
+      id_scarf2: { fill: 'white' },
+      id_scarf3: { fill: '#06A725' },
+      id_scarf4: { fill: 'white' },
+      id_scarf5: { fill: '#3995FD' },
     },
     header: 'setCustomRiders({0});',
   },

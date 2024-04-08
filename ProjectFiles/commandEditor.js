@@ -90,7 +90,7 @@ class CommandEditor {
     const scriptCopy = scriptText.replace(/\s/g, '');
 
     commands.forEach((command) => {
-      parseCommand(command, currentData, scriptCopy);
+      currentData[command] = parseCommand(command, currentData, scriptCopy);
     });
 
     return currentData;

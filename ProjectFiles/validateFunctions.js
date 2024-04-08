@@ -28,7 +28,7 @@ function validateInteger(valueChange, constraints, bounded) {
 
   const parsedValue = Math.floor(Number(newValue));
 
-  if (isNaN(parsedValue)) {
+  if (Number.isNaN(parsedValue)) {
     return prevValue;
   }
 
@@ -61,7 +61,7 @@ function validateFloat(valueChange, constraints, bounded) {
 
   const parsedValue = Number(newValue);
 
-  if (isNaN(parsedValue)) {
+  if (Number.isNaN(parsedValue)) {
     return prevValue;
   }
 
@@ -92,26 +92,27 @@ function validateTimeStamps(triggerData) {
 
     const { triggers } = triggerData[command];
 
-    for (let i = 0; i < triggers.length - 1; i++) {
+    for (let i = 0; i < triggers.length - 1; i += 1) {
       const time1 = triggers[i][0];
       const time2 = triggers[i + 1][0];
+      const index1 = (time1[0] * secondsInMinute + time1[1]) * fps + time1[2];
+      const index2 = (time2[0] * secondsInMinute + time2[1]) * fps + time2[2];
 
-      if ((time1[0] * secondsInMinute + time1[1]) * fps + time1[2] < (time2[0] * secondsInMinute + time2[1]) * fps + time2[2]) {
-        continue;
-      }
+      if (index1 >= index2) {
+        const [minute, second, frame] = time1;
+        time2[0] = minute;
+        time2[1] = second;
+        time2[2] = frame + 1;
 
-      time2[0] = time1[0];
-      time2[1] = time1[1];
-      time2[2] = time1[2] + 1;
+        if (time2[2] === fps) {
+          time2[2] = 0;
+          time2[1] += 1;
+        }
 
-      if (time2[2] === fps) {
-        time2[2] = 0;
-        time2[1] += 1;
-      }
-
-      if (time2[1] === secondsInMinute) {
-        time2[1] = 0;
-        time2[0] += 1;
+        if (time2[1] === secondsInMinute) {
+          time2[1] = 0;
+          time2[0] += 1;
+        }
       }
     }
   });
@@ -136,12 +137,12 @@ function formatSkins(customSkinData) {
       .scarf3 {fill: ${customSkin.scarf3.fill}}
       .scarf4 {fill: ${customSkin.scarf4.fill}}
       .scarf5 {fill: ${customSkin.scarf5.fill}}
-      #scarf0 {fill: ${customSkin._scarf0.fill}}
-      #scarf1 {fill: ${customSkin._scarf1.fill}}
-      #scarf2 {fill: ${customSkin._scarf2.fill}}
-      #scarf3 {fill: ${customSkin._scarf3.fill}}
-      #scarf4 {fill: ${customSkin._scarf4.fill}}
-      #scarf5 {fill: ${customSkin._scarf5.fill}}
+      #scarf0 {fill: ${customSkin.id_scarf0.fill}}
+      #scarf1 {fill: ${customSkin.id_scarf1.fill}}
+      #scarf2 {fill: ${customSkin.id_scarf2.fill}}
+      #scarf3 {fill: ${customSkin.id_scarf3.fill}}
+      #scarf4 {fill: ${customSkin.id_scarf4.fill}}
+      #scarf5 {fill: ${customSkin.id_scarf5.fill}}
       .hat .top {fill: ${customSkin.hatTop.fill}}
       .hat .bottom {stroke: ${customSkin.hatBottom.stroke}}
       .hat .ball {fill: ${customSkin.hatBall.fill}}
