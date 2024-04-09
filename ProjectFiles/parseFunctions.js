@@ -1,4 +1,5 @@
 // Group of functions for parsing script data
+// eslint-disable-next-line no-unused-vars
 class Parser {
   constructor() {
     this.commandData = {};

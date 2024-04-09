@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 class ComponentManager {
   constructor(rc, root) {
     this.rc = rc;

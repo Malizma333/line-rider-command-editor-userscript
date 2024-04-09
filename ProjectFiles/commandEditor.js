@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 class CommandEditor {
   constructor(store, initState) {
     this.store = store;

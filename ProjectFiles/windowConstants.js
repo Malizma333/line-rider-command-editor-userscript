@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 class Selectors {
   static getSimulatorTrack(state) { return state.simulator.engine; }
 
