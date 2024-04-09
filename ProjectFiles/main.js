@@ -43,8 +43,8 @@ function main() {
         skinDropdownIndex: 0,
         skinEditorZoomProps: {},
         selectedColor: '#000000ff',
-        fontSizePreset: CONSTANTS.CONSTRAINTS.TEXT_SIZE.DEFAULT,
-        resolution: CONSTANTS.VIEWPORTS.FHD,
+        settings: {},
+        unsavedSettings: {},
       };
 
       this.componentManager = new ComponentManager(React.createElement, this);
@@ -223,7 +223,55 @@ function main() {
     }
 
     onToggleSettings(settingsActive) {
+      const { unsavedSettings, settings } = this.state;
+
+      if (!settingsActive && unsavedSettings.dirty) {
+        if (!window.confirm('Discard changes?')) {
+          return;
+        }
+        Object.assign(unsavedSettings, settings);
+        unsavedSettings.dirty = false;
+        this.setState({ unsavedSettings });
+      }
+
       this.setState({ settingsActive });
+    }
+
+    onChangeFontSize(fontSize) {
+      const { unsavedSettings, settings } = this.state;
+
+      if (fontSize !== settings.fontSize) {
+        unsavedSettings.dirty = true;
+      }
+
+      unsavedSettings.fontSize = fontSize;
+      this.setState({ unsavedSettings });
+    }
+
+    onChangeViewport(resolution) {
+      const { unsavedSettings, settings } = this.state;
+
+      if (resolution !== settings.resolution) {
+        unsavedSettings.dirty = true;
+      }
+
+      unsavedSettings.resolution = resolution;
+      this.setState({ unsavedSettings });
+      this.setState({ resolution });
+    }
+
+    onApplySettings() {
+      const { unsavedSettings, settings } = this.state;
+
+      Object.keys(settings).forEach((setting) => {
+        settings[setting] = unsavedSettings[setting];
+      });
+
+      this.setState({ settings });
+
+      unsavedSettings.dirty = false;
+
+      this.setState({ unsavedSettings });
     }
 
     onChangeFocuserDropdown(index, value) {
@@ -315,14 +363,6 @@ function main() {
       this.setState({ skinEditorZoomProps });
     }
 
-    onChangeFontSizePreset(fontSizePreset) {
-      this.setState({ fontSizePreset });
-    }
-
-    onChangeViewport(resolution) {
-      this.setState({ resolution });
-    }
-
     // State initialization, populates the triggers with base data
 
     async onInitializeState() {
@@ -336,6 +376,13 @@ function main() {
       this.setState({ triggerData: this.commandEditor.parser.commandData });
       this.setState({ focuserDropdownIndices: [0] });
       this.setState({ skinEditorZoomProps: { scale: 1 } });
+      this.setState({ settings: { ...CONSTANTS.INIT_SETTINGS } });
+      this.setState({
+        unsavedSettings: {
+          ...CONSTANTS.INIT_SETTINGS,
+          dirty: false,
+        },
+      });
     }
 
     render() {

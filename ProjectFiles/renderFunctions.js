@@ -78,7 +78,7 @@ class ComponentManager {
       {
         style: {
           ...Styles.actionPanel.container,
-          fontSize: Styles.theme.textSizes.S[state.fontSizePreset],
+          fontSize: Styles.theme.textSizes.S[state.settings.fontSize],
         },
       },
       rc(
@@ -130,18 +130,27 @@ class ComponentManager {
   }
 
   settingsContainer() {
-    const { rc, root, state } = this;
+    const { rc } = this;
     return rc(
       'div',
       { style: Styles.settings.window },
+      this.settingsHeader(),
+      this.settings(),
+    );
+  }
+
+  settingsHeader() {
+    const { rc, root, state } = this;
+    return rc(
+      'div',
+      { style: Styles.settings.header },
       rc(
         'button',
         {
           style: {
             ...Styles.buttons.embedded,
-            fontSize: '32px',
-            margin: '5px',
             position: 'absolute',
+            fontSize: '32px',
             right: '0px',
           },
           onClick: () => root.onToggleSettings(false),
@@ -150,84 +159,125 @@ class ComponentManager {
       ),
       rc('text', {
         style: {
-          ...Styles.settings.title,
-          fontSize: Styles.theme.textSizes.L[state.fontSizePreset],
+          fontSize: Styles.theme.textSizes.L[state.settings.fontSize],
         },
       }, 'Settings'),
-      this.settings(),
+      rc('button', {
+        style: {
+          ...Styles.buttons.settings,
+          position: 'absolute',
+          fontSize: Styles.theme.textSizes.M[state.settings.fontSize],
+          left: '0px',
+          background: state.unsavedSettings.dirty
+            ? Styles.theme.light_gray3
+            : Styles.theme.dark_gray1,
+        },
+        disabled: !state.unsavedSettings.dirty,
+        onClick: () => root.onApplySettings(),
+      }, 'Apply'),
     );
   }
 
   settings() {
     const { rc, root, state } = this;
     return rc(
-      'div',
-      { style: { fontSize: Styles.theme.textSizes.M[state.fontSizePreset] } },
+      window.React.Fragment,
+      { style: { fontSize: Styles.theme.textSizes.M[state.settings.fontSize] } },
       rc(
         'div',
         { style: Styles.settings.row },
-        rc('label', { for: 'fontSizePreset', style: Styles.settings.label }, 'Font Sizes'),
-        rc(
-          'div',
-          { style: Styles.settings.parameter },
-          rc('text', { style: { fontSize: Styles.theme.textSizes.S[state.fontSizePreset] } }, 'Small'),
-          rc('input', {
-            id: 'fontSizePreset',
-            style: { margin: '5px' },
-            type: 'range',
-            min: CONSTANTS.CONSTRAINTS.TEXT_SIZE.MIN,
-            max: CONSTANTS.CONSTRAINTS.TEXT_SIZE.MAX,
-            step: 1,
-            value: state.fontSizePreset,
-            onChange: (e) => root.onChangeFontSizePreset(e.target.value),
-          }),
-          rc('text', { style: { fontSize: Styles.theme.textSizes.S[state.fontSizePreset] } }, 'Large'),
-        ),
-      ),
-      rc(
-        'div',
-        { style: Styles.settings.row },
-        rc('text', { style: Styles.settings.label }, 'Viewport'),
+        rc('text', {
+          style: {
+            ...Styles.settings.label,
+            fontSize: Styles.theme.textSizes.S[state.settings.fontSize],
+          },
+        }, 'Font Sizes'),
         rc(
           'div',
           {
             style: {
               ...Styles.settings.parameter,
-              fontSize: Styles.theme.textSizes.S[state.fontSizePreset],
+              fontSize: Styles.theme.textSizes.S[state.settings.fontSize],
             },
           },
           rc('button', {
             style: {
-              ...Styles.settings.button,
+              ...Styles.buttons.settings,
               backgroundColor:
-                state.resolution === CONSTANTS.VIEWPORTS.HD
+                state.unsavedSettings.fontSize === CONSTANTS.FONT_SIZES.SMALL
+                  ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
+            },
+            onClick: () => root.onChangeFontSize(CONSTANTS.FONT_SIZES.SMALL),
+          }, rc('text', null, 'Small')),
+          rc('button', {
+            style: {
+              ...Styles.buttons.settings,
+              backgroundColor:
+                state.unsavedSettings.fontSize === CONSTANTS.FONT_SIZES.MEDIUM
+                  ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
+            },
+            onClick: () => root.onChangeFontSize(CONSTANTS.FONT_SIZES.MEDIUM),
+          }, rc('text', null, 'Medium')),
+          rc('button', {
+            style: {
+              ...Styles.buttons.settings,
+              backgroundColor:
+                state.unsavedSettings.fontSize === CONSTANTS.FONT_SIZES.LARGE
+                  ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
+            },
+            onClick: () => root.onChangeFontSize(CONSTANTS.FONT_SIZES.LARGE),
+          }, rc('text', null, 'Large')),
+        ),
+      ),
+      rc(
+        'div',
+        { style: Styles.settings.row },
+        rc('text', {
+          style: {
+            ...Styles.settings.label,
+            fontSize: Styles.theme.textSizes.S[state.settings.fontSize],
+          },
+        }, 'Viewport'),
+        rc(
+          'div',
+          {
+            style: {
+              ...Styles.settings.parameter,
+              fontSize: Styles.theme.textSizes.S[state.settings.fontSize],
+            },
+          },
+          rc('button', {
+            style: {
+              ...Styles.buttons.settings,
+              backgroundColor:
+                state.unsavedSettings.resolution === CONSTANTS.VIEWPORTS.HD
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
             onClick: () => root.onChangeViewport(CONSTANTS.VIEWPORTS.HD),
           }, rc('text', null, CONSTANTS.VIEWPORTS.HD)),
           rc('button', {
             style: {
-              ...Styles.settings.button,
+              ...Styles.buttons.settings,
               backgroundColor:
-                state.resolution === CONSTANTS.VIEWPORTS.FHD
+                state.unsavedSettings.resolution === CONSTANTS.VIEWPORTS.FHD
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
             onClick: () => root.onChangeViewport(CONSTANTS.VIEWPORTS.FHD),
           }, rc('text', null, CONSTANTS.VIEWPORTS.FHD)),
           rc('button', {
             style: {
-              ...Styles.settings.button,
+              ...Styles.buttons.settings,
               backgroundColor:
-                state.resolution === CONSTANTS.VIEWPORTS.QHD
+                state.unsavedSettings.resolution === CONSTANTS.VIEWPORTS.QHD
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
             onClick: () => root.onChangeViewport(CONSTANTS.VIEWPORTS.QHD),
           }, rc('text', null, CONSTANTS.VIEWPORTS.QHD)),
           rc('button', {
             style: {
-              ...Styles.settings.button,
+              ...Styles.buttons.settings,
               backgroundColor:
-                state.resolution === CONSTANTS.VIEWPORTS.UHD
+                state.unsavedSettings.resolution === CONSTANTS.VIEWPORTS.UHD
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
             onClick: () => root.onChangeViewport(CONSTANTS.VIEWPORTS.UHD),
@@ -265,7 +315,7 @@ class ComponentManager {
       onClick: () => root.onChangeTab(tabID),
     }, rc(
       'text',
-      { style: { fontSize: Styles.theme.textSizes.S[state.fontSizePreset] } },
+      { style: { fontSize: Styles.theme.textSizes.S[state.settings.fontSize] } },
       CONSTANTS.TRIGGER_PROPS[tabID].DISPLAY_NAME,
     ));
   }
@@ -305,13 +355,13 @@ class ComponentManager {
       { style: Styles.smooth.container },
       rc('label', {
         for: 'smoothTextInput',
-        style: { fontSize: Styles.theme.textSizes.S[state.fontSizePreset] },
+        style: { fontSize: Styles.theme.textSizes.S[state.settings.fontSize] },
       }, 'Smoothing'),
       data.id !== CONSTANTS.TRIGGERS.TIME && rc('input', {
         id: 'smoothTextInput',
         style: {
           ...Styles.smooth.input,
-          fontSize: Styles.theme.textSizes.S[state.fontSizePreset],
+          fontSize: Styles.theme.textSizes.S[state.settings.fontSize],
           marginLeft: '5px',
         },
         value: data.smoothing,
@@ -362,7 +412,7 @@ class ComponentManager {
       {
         style: {
           ...Styles.trigger.container,
-          fontSize: Styles.theme.textSizes.M[state.fontSizePreset],
+          fontSize: Styles.theme.textSizes.M[state.settings.fontSize],
           backgroundColor: index === 0 ? Styles.theme.gray : Styles.theme.white,
         },
       },
@@ -668,14 +718,14 @@ class ComponentManager {
         }),
         rc(
           'text',
-          { style: { fontSize: Styles.theme.textSizes.S[state.fontSizePreset] } },
+          { style: { fontSize: Styles.theme.textSizes.S[state.settings.fontSize] } },
           `x${Math.round(state.skinEditorZoomProps.scale * 10) / 10}`,
         ),
       ),
       rc(
         'div',
         { style: Styles.skinEditor.outlineColor.container },
-        rc('text', { style: { fontSize: Styles.theme.textSizes.S[state.fontSizePreset] } }, 'Outline'),
+        rc('text', { style: { fontSize: Styles.theme.textSizes.S[state.settings.fontSize] } }, 'Outline'),
         rc('div', {
           style: {
             ...Styles.skinEditor.outlineColor.input,
@@ -719,7 +769,7 @@ class ComponentManager {
           style: {
             ...Styles.skinEditor.toolbarItem,
             ...Styles.alpha.container,
-            fontSize: Styles.theme.textSizes.S[state.fontSizePreset],
+            fontSize: Styles.theme.textSizes.S[state.settings.fontSize],
           },
         },
         rc('label', { for: 'alphaSlider' }, 'Transparency'),
@@ -756,7 +806,7 @@ class ComponentManager {
           style: {
             ...Styles.skinEditor.toolbarItem,
             ...Styles.dropdown.head,
-            fontSize: Styles.theme.textSizes.M[state.fontSizePreset],
+            fontSize: Styles.theme.textSizes.M[state.settings.fontSize],
           },
           value: index,
           onChange: (e) => root.onChangeSkinDropdown(e.target.value),

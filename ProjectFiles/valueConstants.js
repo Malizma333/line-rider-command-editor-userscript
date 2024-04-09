@@ -27,6 +27,14 @@ class CONSTANTS {
     };
   }
 
+  static get FONT_SIZES() {
+    return {
+      SMALL: 0,
+      MEDIUM: 1,
+      LARGE: 2,
+    };
+  }
+
   static get TYPES() {
     return {
       BOOL: 'BOOLEAN',
@@ -85,9 +93,6 @@ class CONSTANTS {
       },
       SKIN_ZOOM: {
         DEFAULT: 1, MIN: 1, MAX: 4, TYPE: CONSTANTS.TYPES.FLOAT,
-      },
-      TEXT_SIZE: {
-        DEFAULT: 1, MIN: 0, MAX: 2, TYPE: CONSTANTS.TYPES.INT,
       },
       ALPHA_SLIDER: {
         DEFAULT: 1, MIN: 0, MAX: 1, TYPE: CONSTANTS.TYPES.FLOAT,
@@ -152,6 +157,13 @@ class CONSTANTS {
         },
         FUNC: 'setCustomRiders({0});',
       },
+    };
+  }
+
+  static get INIT_SETTINGS() {
+    return {
+      fontSize: CONSTANTS.FONT_SIZES.MEDIUM,
+      resolution: CONSTANTS.VIEWPORTS.FHD,
     };
   }
 }

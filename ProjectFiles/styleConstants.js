@@ -79,6 +79,11 @@ class Styles {
         userSelect: 'none',
         width: '1.5em',
       },
+      settings: {
+        border: '2px solid black',
+        borderRadius: '5px',
+        margin: '5px',
+      },
     };
   }
 
@@ -144,16 +149,20 @@ class Styles {
         position: 'relative',
         width: '100%',
       },
-      title: {
-        ...Styles.theme.centerX,
-        marginTop: '10px',
+      header: {
+        alignItems: 'center',
+        display: 'flex',
+        justifyContent: 'center',
+        minHeight: '3em',
+        margin: '10px',
+        position: 'relative',
       },
       row: {
         alignItems: 'center',
         display: 'flex',
-        flex: 1,
         flexDirection: 'row',
         height: '1.5em',
+        minHeight: '3em',
         padding: '1em',
       },
       label: {
@@ -163,11 +172,6 @@ class Styles {
       parameter: {
         position: 'absolute',
         right: '5px',
-      },
-      button: {
-        border: '2px solid black',
-        borderRadius: '5px',
-        margin: '5px',
       },
     };
   }
