@@ -21,7 +21,7 @@ class ComponentManager {
           style: {
             ...Styles.buttons.embedded,
             position: 'absolute',
-            fontSize: '30px',
+            fontSize: '18px',
           },
           onClick: () => root.onActivate(),
         },
