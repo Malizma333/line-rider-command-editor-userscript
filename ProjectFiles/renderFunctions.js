@@ -1,5 +1,3 @@
-/* exported ComponentManager */
-
 class ComponentManager {
   constructor(rc, root) {
     this.rc = rc;

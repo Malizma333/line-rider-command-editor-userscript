@@ -24,6 +24,7 @@
     "Styles": "readonly",
     "Validator": "readonly",
     "Parser": "readonly",
-    "CommandEditor": "readonly"
+    "CommandEditor": "readonly",
+    "ComponentManager": "readonly"
   }
 }
