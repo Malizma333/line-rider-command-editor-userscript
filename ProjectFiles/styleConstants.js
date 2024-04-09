@@ -53,7 +53,7 @@ class Styles {
       flexDirection: 'column',
       justifyContent: 'center',
       padding: '2%',
-      width: '30vw',
+      width: '40vw',
     };
   }
 
@@ -377,12 +377,12 @@ class Styles {
       },
       flagSvg: {
         height: '18',
-        transform: 'scale(5)',
+        transform: `scale(${CONSTANTS.VIEWPORT_DIMENSIONS.WIDTH / 256})`,
         width: '15',
       },
       riderSvg: {
         height: '25',
-        transform: 'scale(5)',
+        transform: `scale(${CONSTANTS.VIEWPORT_DIMENSIONS.WIDTH / 256})`,
         width: '31',
       },
     };

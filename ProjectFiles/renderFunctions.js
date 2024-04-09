@@ -700,7 +700,7 @@ class ComponentManager {
           onWheel: (e) => root.onZoomSkinEditor(e, true),
         },
         this.flagSvg(data.triggers[dropdownIndex], dropdownIndex),
-        rc('svg', { width: '200' }),
+        rc('svg', { width: '10vw' }),
         this.riderSvg(data.triggers[dropdownIndex], dropdownIndex),
       ),
       rc(

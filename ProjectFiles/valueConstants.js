@@ -1,5 +1,12 @@
 // eslint-disable-next-line no-unused-vars
 class CONSTANTS {
+  static get VIEWPORT_DIMENSIONS() {
+    return {
+      WIDTH: Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0),
+      HEIGHT: Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0),
+    };
+  }
+
   static get LINKS() {
     return {
       HELP: 'https://github.com/Malizma333/line-rider-command-editor-userscript#readme',
