@@ -13,29 +13,27 @@ class ComponentManager {
     const { rc, root, state } = this;
     return rc(
       'div',
-      { style: textGlobal },
+      { style: Styles.theme.text },
       rc(
-        'div',
-        state.active && { style: expandedWindow },
-        rc(
-          'button',
-          {
-            style: squareButtonStyle,
-            onClick: () => root.onActivate(),
+        'button',
+        {
+          style: {
+            ...Styles.buttons.embedded,
+            position: 'absolute',
+            fontSize: '30px',
           },
-          rc(
-            'span',
-            { style: { fontSize: '32px' } },
-            state.active ? '-' : '+',
-          ),
-        ),
-        rc(
-          'div',
-          !state.active && { style: { display: 'none' } },
-          this.toolbar(),
-          this.activeArea(),
-          this.readWrite(),
-        ),
+          onClick: () => root.onActivate(),
+        },
+        state.active ? '-' : '+',
+      ),
+      state.active && rc(
+        'div',
+        { style: Styles.content },
+        this.toolbar(),
+        state.settingsActive && this.settingsContainer(),
+        !state.settingsActive && this.tabContainer(),
+        !state.settingsActive && this.windowContainer(),
+        !state.settingsActive && this.actionPanel(),
       ),
     );
   }
@@ -44,50 +42,48 @@ class ComponentManager {
     const { rc, root, state } = this;
     return rc(
       'div',
-      { style: toolbarStyle },
+      { style: Styles.toolbar.container },
       rc(
         'button',
         {
-          style: squareButtonStyle,
+          style: Styles.buttons.embedded,
           onClick: () => root.onToggleSettings(!state.settingsActive),
         },
-        rc('span', { style: toolbarButtonText }, '⚙'),
+        rc('span', { style: { position: 'relative' } }, '⚙'),
       ),
       rc(
         'button',
         {
-          style: squareButtonStyle,
+          style: Styles.buttons.embedded,
           onClick: () => window.open(reportLink),
         },
-        rc('span', { style: toolbarButtonText }, '⚑'),
+        rc('span', { style: { position: 'relative' } }, '⚑'),
       ),
       rc(
         'button',
         {
-          style: squareButtonStyle,
+          style: Styles.buttons.embedded,
           onClick: () => window.open(helpLink),
         },
-        rc('span', { style: toolbarButtonText }, '?'),
+        rc('span', { style: { position: 'relative' } }, '?'),
       ),
     );
   }
 
-  readWrite() {
+  actionPanel() {
     const { rc, root, state } = this;
     return rc(
       'div',
       {
         style: {
-          ...readWriteContainerStyle,
-          fontSize: textStyle.S[state.fontSizePreset],
+          ...Styles.actionPanel.container,
+          fontSize: Styles.theme.textSizes.S[state.fontSizePreset],
         },
       },
       rc(
         'button',
         {
-          style: {
-            ...readWriteButtonStyle,
-          },
+          style: Styles.actionPanel.button,
           onClick: () => root.onRead(),
         },
         rc('text', null, 'Load'),
@@ -95,9 +91,7 @@ class ComponentManager {
       rc(
         'button',
         {
-          style: {
-            ...readWriteButtonStyle,
-          },
+          style: Styles.actionPanel.button,
           onClick: () => root.onTest(),
         },
         rc('text', null, 'Run'),
@@ -105,38 +99,32 @@ class ComponentManager {
       rc(
         'button',
         {
-          style: {
-            ...readWriteButtonStyle,
-          },
+          style: Styles.actionPanel.button,
           onClick: () => root.onPrint(),
         },
         rc('text', null, 'Print Code'),
       ),
       rc(
         'div',
-        { style: dataContainerStyle },
-        rc('text', {
-          style: {
-            ...dataTextStyle,
-            color: state.hasError ? 'Red' : 'Black',
-          },
-        }, state.message),
+        { style: Styles.actionPanel.outputContainer },
+        rc(
+          'div',
+          { style: Styles.actionPanel.output },
+          rc('text', {
+            style: { color: state.hasError ? 'Red' : 'Black' },
+          }, state.message),
+        ),
         rc('button', {
-          style: { ...squareFilledButtonStyle, bottom: '17px' },
+          style: {
+            ...Styles.buttons.filled,
+            bottom: '0px',
+            left: '0px',
+            position: 'absolute',
+            fontSize: '20px',
+          },
           onClick: () => root.onCopyClipboard(),
         }, '🖶'),
       ),
-    );
-  }
-
-  activeArea() {
-    const { rc, state } = this;
-    return rc(
-      'div',
-      null,
-      !state.settingsActive && this.tabContainer(),
-      !state.settingsActive && this.activeWindow(),
-      state.settingsActive && this.settingsContainer(),
     );
   }
 
@@ -144,24 +132,25 @@ class ComponentManager {
     const { rc, root, state } = this;
     return rc(
       'div',
-      { style: settingsWindowStyle },
+      { style: Styles.settings.window },
       rc(
         'button',
         {
           style: {
-            ...squareButtonStyle,
+            ...Styles.buttons.embedded,
+            fontSize: '32px',
             margin: '5px',
             position: 'absolute',
             right: '0px',
           },
           onClick: () => root.onToggleSettings(false),
         },
-        rc('span', { style: { fontSize: '32px', fontWeight: 700 } }, 'X'),
+        rc('span', { style: { fontWeight: 700 } }, 'X'),
       ),
       rc('text', {
         style: {
-          ...settingsTitleStyle,
-          fontSize: textStyle.L[state.fontSizePreset],
+          ...Styles.settings.title,
+          fontSize: Styles.theme.textSizes.L[state.fontSizePreset],
         },
       }, 'Settings'),
       this.settings(),
@@ -172,15 +161,15 @@ class ComponentManager {
     const { rc, root, state } = this;
     return rc(
       'div',
-      { style: { fontSize: textStyle.M[state.fontSizePreset] } },
+      { style: { fontSize: Styles.theme.textSizes.M[state.fontSizePreset] } },
       rc(
         'div',
-        { style: settingsRowStyle },
-        rc('label', { for: 'fontSizePreset', style: settingsLabelStyle }, 'Font Sizes'),
+        { style: Styles.settings.row },
+        rc('label', { for: 'fontSizePreset', style: Styles.settings.label }, 'Font Sizes'),
         rc(
           'div',
-          { style: settingsParameterStyle },
-          rc('text', { style: { fontSize: textStyle.S[state.fontSizePreset] } }, 'Small'),
+          { style: Styles.settings.parameter },
+          rc('text', { style: { fontSize: Styles.theme.textSizes.S[state.fontSizePreset] } }, 'Small'),
           rc('input', {
             id: 'fontSizePreset',
             style: { margin: '5px' },
@@ -191,54 +180,54 @@ class ComponentManager {
             value: state.fontSizePreset,
             onChange: (e) => root.onChangeFontSizePreset(e.target.value),
           }),
-          rc('text', { style: { fontSize: textStyle.S[state.fontSizePreset] } }, 'Large'),
+          rc('text', { style: { fontSize: Styles.theme.textSizes.S[state.fontSizePreset] } }, 'Large'),
         ),
       ),
       rc(
         'div',
-        { style: settingsRowStyle },
-        rc('text', { style: settingsLabelStyle }, 'Viewport'),
+        { style: Styles.settings.row },
+        rc('text', { style: Styles.settings.label }, 'Viewport'),
         rc(
           'div',
           {
             style: {
-              ...settingsParameterStyle,
-              fontSize: textStyle.S[state.fontSizePreset],
+              ...Styles.settings.parameter,
+              fontSize: Styles.theme.textSizes.S[state.fontSizePreset],
             },
           },
           rc('button', {
             style: {
-              ...settingsButtonStyle,
+              ...Styles.settings.button,
               backgroundColor:
                 state.resolution === viewportSizes.HD
-                  ? colorTheme.lightgray1 : colorTheme.darkgray1,
+                  ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
             onClick: () => root.onChangeViewport(viewportSizes.HD),
           }, rc('text', null, viewportSizes.HD)),
           rc('button', {
             style: {
-              ...settingsButtonStyle,
+              ...Styles.settings.button,
               backgroundColor:
                 state.resolution === viewportSizes.FHD
-                  ? colorTheme.lightgray1 : colorTheme.darkgray1,
+                  ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
             onClick: () => root.onChangeViewport(viewportSizes.FHD),
           }, rc('text', null, viewportSizes.FHD)),
           rc('button', {
             style: {
-              ...settingsButtonStyle,
+              ...Styles.settings.button,
               backgroundColor:
                 state.resolution === viewportSizes.QHD
-                  ? colorTheme.lightgray1 : colorTheme.darkgray1,
+                  ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
             onClick: () => root.onChangeViewport(viewportSizes.QHD),
           }, rc('text', null, viewportSizes.QHD)),
           rc('button', {
             style: {
-              ...settingsButtonStyle,
+              ...Styles.settings.button,
               backgroundColor:
                 state.resolution === viewportSizes.UHD
-                  ? colorTheme.lightgray1 : colorTheme.darkgray1,
+                  ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
             onClick: () => root.onChangeViewport(viewportSizes.UHD),
           }, rc('text', null, viewportSizes.UHD)),
@@ -251,7 +240,7 @@ class ComponentManager {
     const { rc } = this;
     return rc(
       'div',
-      { style: tabHeaderStyle },
+      { style: Styles.tabs.container },
       Object.keys(
         commandDataTypes,
       ).map((command) => rc(
@@ -266,38 +255,43 @@ class ComponentManager {
     const { rc, root, state } = this;
     return rc('button', {
       style: {
-        ...tabButtonStyle,
+        ...Styles.tabs.button,
         backgroundColor:
           state.activeTab === tabID
-            ? colorTheme.lightgray1
-            : colorTheme.darkgray1,
+            ? Styles.theme.light_gray1
+            : Styles.theme.dark_gray1,
       },
       onClick: () => root.onChangeTab(tabID),
     }, rc(
       'text',
-      { style: { fontSize: textStyle.S[state.fontSizePreset] } },
+      { style: { fontSize: Styles.theme.textSizes.S[state.fontSizePreset] } },
       commandDataTypes[tabID].displayName,
     ));
   }
 
-  activeWindow() {
+  windowContainer() {
     const { state } = this;
     return this.window(state.triggerData[state.activeTab]);
   }
 
   window(data) {
-    const { rc } = this;
+    const { rc, state } = this;
     if (data.id === Triggers.CustomSkin) {
-      return this.skinEditor(data);
+      return rc(
+        'div',
+        { style: Styles.window },
+        this.skinEditorToolbar(data.triggers, state.skinDropdownIndex),
+        this.skinEditor(data),
+      );
     }
 
     return rc(
       'div',
-      null,
-      this.smoothTab(data),
+      { style: Styles.window },
+      this.smoothTab(state.triggerData[state.activeTab]),
       rc(
         'div',
-        { style: triggerWindowStyle },
+        null,
         Object.keys(data.triggers).map((i) => this.trigger(data, parseInt(i, 10))),
       ),
     );
@@ -307,16 +301,16 @@ class ComponentManager {
     const { rc, root, state } = this;
     return rc(
       'div',
-      { style: smoothTabStyle },
+      { style: Styles.smooth.container },
       rc('label', {
         for: 'smoothTextInput',
-        style: { fontSize: textStyle.S[state.fontSizePreset] },
+        style: { fontSize: Styles.theme.textSizes.S[state.fontSizePreset] },
       }, 'Smoothing'),
       data.id !== Triggers.TimeRemap && rc('input', {
         id: 'smoothTextInput',
         style: {
-          ...smoothTextInputStyle,
-          fontSize: textStyle.S[state.fontSizePreset],
+          ...Styles.smooth.input,
+          fontSize: Styles.theme.textSizes.S[state.fontSizePreset],
           marginLeft: '5px',
         },
         value: data.smoothing,
@@ -340,9 +334,9 @@ class ComponentManager {
       }),
       data.id === Triggers.TimeRemap && rc(
         'div',
-        { style: checkboxDivStyle },
+        { style: Styles.checkbox.container },
         rc('input', {
-          style: checkboxStyle,
+          style: Styles.checkbox.primary,
           type: 'checkbox',
           onChange: () => root.onUpdateTrigger(
             {
@@ -353,7 +347,7 @@ class ComponentManager {
             constraintProps.interpolateProps,
           ),
         }),
-        data.interpolate && rc('square', { style: checkboxFillStyle }),
+        data.interpolate && rc('square', { style: Styles.checkbox.fill }),
       ),
     );
   }
@@ -366,12 +360,30 @@ class ComponentManager {
       'div',
       {
         style: {
-          ...triggerStyle,
-          fontSize: textStyle.M[state.fontSizePreset],
-          backgroundColor: index === 0 ? colorTheme.gray : colorTheme.white,
+          ...Styles.trigger.container,
+          fontSize: Styles.theme.textSizes.M[state.fontSizePreset],
+          backgroundColor: index === 0 ? Styles.theme.gray : Styles.theme.white,
         },
       },
-      this.triggerHeader(triggerData, index),
+      rc(
+        'button',
+        {
+          style: {
+            ...Styles.buttons.embedded,
+            fontSize: '22px',
+            position: 'absolute',
+            right: '0px',
+          },
+          disabled: index === 0,
+          onClick: () => root.onDeleteTrigger(index),
+        },
+        rc('span', {
+          style: {
+            color: index === 0 ? Styles.theme.dark_gray2 : Styles.theme.black,
+          },
+        }, 'X'),
+      ),
+      this.timeStamp(triggerData[0], index),
       data.id === Triggers.Zoom && this.zoomTrigger(triggerData, index),
       data.id === Triggers.CameraPan && this.cameraPanTrigger(triggerData, index),
       data.id === Triggers.CameraFocus && this.cameraFocusTrigger(triggerData, index),
@@ -380,7 +392,7 @@ class ComponentManager {
       rc(
         'button',
         {
-          style: smallCenteredButton,
+          style: Styles.trigger.createButton,
           onClick: () => root.onCreateTrigger(index),
         },
         rc('span', {
@@ -389,40 +401,6 @@ class ComponentManager {
             fontWeight: 900,
           },
         }, '+'),
-      ),
-    );
-  }
-
-  triggerHeader(data, index) {
-    const { rc, root, state } = this;
-    return rc(
-      'div',
-      { style: triggerDivStyle },
-      rc('text', {
-        style: {
-          fontSize: textStyle.L[state.fontSizePreset],
-          paddingRight: '10px',
-        },
-      }, index + 1),
-      this.timeStamp(data[0], index),
-      rc(
-        'button',
-        {
-          style: {
-            ...squareButtonStyle,
-            position: 'absolute',
-            right: '10px',
-          },
-          disabled: index === 0,
-          onClick: () => root.onDeleteTrigger(index),
-        },
-        rc('span', {
-          style: {
-            fontSize: '22px',
-            color: index === 0 ? colorTheme.darkgray2 : colorTheme.black,
-            fontWeight: 900,
-          },
-        }, 'X'),
       ),
     );
   }
@@ -439,43 +417,47 @@ class ComponentManager {
       return false;
     }
 
-    return data.map((timeValue, timeIndex) => rc(
+    return rc(
       'div',
-      null,
-      rc(
-        'text',
-        { style: triggerTextStyle },
-        ['TIME', ':', ':'][timeIndex],
-      ),
-      rc('input', {
-        style: {
-          ...triggerTextStyle,
-          backgroundColor:
-              index === 0
-                ? colorTheme.darkgray2
-                : colorTheme.white,
-        },
-        disabled: index === 0,
-        value: timeValue,
-        onChange: (e) => root.onUpdateTrigger(
-          {
-            prev: timeValue,
-            new: e.target.value,
-          },
-          ['triggers', index, 0, timeIndex],
-          tProps[timeIndex],
+      { style: Styles.trigger.property },
+      data.map((timeValue, timeIndex) => rc(
+        'div',
+        null,
+        rc(
+          'text',
+          { style: Styles.trigger.text },
+          ['TIME', ':', ':'][timeIndex],
         ),
-        onBlur: (e) => root.onUpdateTrigger(
-          {
-            prev: timeValue,
-            new: e.target.value,
+        rc('input', {
+          style: {
+            ...Styles.trigger.input,
+            backgroundColor:
+                index === 0
+                  ? Styles.theme.dark_gray2
+                  : Styles.theme.white,
           },
-          ['triggers', index, 0, timeIndex],
-          tProps[timeIndex],
-          true,
-        ),
-      }),
-    ));
+          disabled: index === 0,
+          value: timeValue,
+          onChange: (e) => root.onUpdateTrigger(
+            {
+              prev: timeValue,
+              new: e.target.value,
+            },
+            ['triggers', index, 0, timeIndex],
+            tProps[timeIndex],
+          ),
+          onBlur: (e) => root.onUpdateTrigger(
+            {
+              prev: timeValue,
+              new: e.target.value,
+            },
+            ['triggers', index, 0, timeIndex],
+            tProps[timeIndex],
+            true,
+          ),
+        }),
+      )),
+    );
   }
 
   zoomTrigger(data, index) {
@@ -484,14 +466,14 @@ class ComponentManager {
 
     return rc(
       'div',
-      null,
+      { style: Styles.trigger.property },
       rc('label', {
         for: `triggerText_${labels[0]}_${index}`,
-        style: triggerTextStyle,
+        style: Styles.trigger.text,
       }, labels[0]),
       rc('input', {
         id: `triggerText_${labels[0]}_${index}`,
-        style: triggerTextStyle,
+        style: Styles.trigger.input,
         value: data[1],
         onChange: (e) => root.onUpdateTrigger(
           {
@@ -525,42 +507,35 @@ class ComponentManager {
     const labels = ['WIDTH', 'HEIGHT', 'X OFFSET', 'Y OFFSET'];
 
     return rc(
-      'div',
+      window.React.Fragment,
       null,
-      Object.keys(data[1]).map((prop, propIndex) => rc(
+      [['w', 'h'], ['x', 'y']].map((pair, pairIndex) => rc(
         'div',
-        {
-          style: {
-            alignItems: 'center',
-            display: 'inline-block',
-          },
-        },
-        rc('label', {
-          for: `triggerText_${labels[propIndex]}_${index}`,
-          style: triggerTextStyle,
-        }, labels[propIndex]),
-        rc('input', {
-          id: `triggerText_${labels[propIndex]}_${index}`,
-          style: triggerTextStyle,
-          value: data[1][prop],
-          onChange: (e) => root.onUpdateTrigger(
-            {
-              prev: data[1][prop],
-              new: e.target.value,
-            },
-            ['triggers', index, 1, prop],
-            cProps[propIndex],
-          ),
-          onBlur: (e) => root.onUpdateTrigger(
-            {
-              prev: data[1][prop],
-              new: e.target.value,
-            },
-            ['triggers', index, 1, prop],
-            cProps[propIndex],
-            true,
-          ),
-        }),
+        { style: { display: 'flex', flexDirection: 'row' } },
+        pair.map((prop, propIndex) => rc(
+          'div',
+          { style: Styles.trigger.property },
+          rc('label', {
+            for: `triggerText_${labels[propIndex + 2 * pairIndex]}_${index}`,
+            style: Styles.trigger.text,
+          }, labels[propIndex + 2 * pairIndex]),
+          rc('input', {
+            id: `triggerText_${labels[propIndex + 2 * pairIndex]}_${index}`,
+            style: Styles.trigger.input,
+            value: data[1][prop],
+            onChange: (e) => root.onUpdateTrigger(
+              { prev: data[1][prop], new: e.target.value },
+              ['triggers', index, 1, prop],
+              cProps[propIndex + 2 * pairIndex],
+            ),
+            onBlur: (e) => root.onUpdateTrigger(
+              { prev: data[1][prop], new: e.target.value },
+              ['triggers', index, 1, prop],
+              cProps[propIndex + 2 * pairIndex],
+              true,
+            ),
+          }),
+        )),
       )),
     );
   }
@@ -572,11 +547,11 @@ class ComponentManager {
 
     return rc(
       'div',
-      null,
+      { style: Styles.trigger.property },
       rc(
         'select',
         {
-          style: triggerDropdownHeaderStyle,
+          style: Styles.dropdown.head,
           value: dropdownIndex,
           onChange: (e) => root.onChangeFocuserDropdown(index, e.target.value),
         },
@@ -584,18 +559,18 @@ class ComponentManager {
           const riderNum = 1 + parseInt(riderIndex, 10);
 
           return rc('option', {
-            style: triggerDropdownOptionStyle,
+            style: Styles.dropdown.option,
             value: parseInt(riderIndex, 10),
           }, rc('text', null, `Rider ${riderNum}`));
         }),
       ),
       rc('label', {
         for: `triggerText_${labels[0]}_${dropdownIndex}_${index}`,
-        style: triggerTextStyle,
+        style: Styles.trigger.text,
       }, labels[0]),
       rc('input', {
         id: `triggerText_${labels[0]}_${dropdownIndex}_${index}`,
-        style: triggerTextStyle,
+        style: Styles.trigger.input,
         value: data[1][dropdownIndex],
         onChange: (e) => root.onUpdateTrigger(
           {
@@ -624,14 +599,14 @@ class ComponentManager {
 
     return rc(
       'div',
-      null,
+      { style: Styles.trigger.property },
       rc('label', {
         for: `triggerText_${labels[0]}_${index}`,
-        style: triggerTextStyle,
+        style: Styles.trigger.text,
       }, labels[0]),
       rc('input', {
         id: `triggerText_${labels[0]}_${index}`,
-        style: triggerTextStyle,
+        style: Styles.trigger.input,
         value: data[1],
         onChange: (e) => root.onUpdateTrigger(
           {
@@ -660,14 +635,14 @@ class ComponentManager {
 
     return rc(
       'div',
-      { style: customSkinWindowStyle },
-      rc('div', { style: customSkinBackgroundStyle }),
+      { style: Styles.skinEditor.container },
+      rc('div', { style: Styles.skinEditor.background }),
       rc(
         'div',
         {
           id: 'skinElementContainer',
           style: {
-            ...skinElementContainerStyle,
+            ...Styles.skinEditor.canvas,
             transform: `scale(${state.skinEditorZoomProps.scale})`,
             transformOrigin: `${state.skinEditorZoomProps.xOffset}px ${state.skinEditorZoomProps.yOffset}px`,
           },
@@ -679,9 +654,9 @@ class ComponentManager {
       ),
       rc(
         'div',
-        { style: skinZoomScrollContainerStyle },
+        { style: Styles.skinEditor.zoomContainer },
         rc('input', {
-          style: { appearance: 'slider-vertical' },
+          style: { appearance: 'slider-vertical', width: '10px' },
           type: 'range',
           orient: 'vertical',
           min: constraintProps.skinZoomProps.min,
@@ -692,16 +667,17 @@ class ComponentManager {
         }),
         rc(
           'text',
-          { style: { fontSize: textStyle.S[state.fontSizePreset] } },
+          { style: { fontSize: Styles.theme.textSizes.S[state.fontSizePreset] } },
           `x${Math.round(state.skinEditorZoomProps.scale * 10) / 10}`,
         ),
       ),
       rc(
         'div',
-        { style: outlineColorDivStyle },
+        { style: Styles.skinEditor.outlineColor.container },
+        rc('text', { style: { fontSize: Styles.theme.textSizes.S[state.fontSizePreset] } }, 'Outline'),
         rc('div', {
           style: {
-            ...outlineColorPickerStyle,
+            ...Styles.skinEditor.outlineColor.input,
             backgroundColor: data.triggers[dropdownIndex].outline.stroke,
           },
           onClick: () => root.onUpdateTrigger(
@@ -709,9 +685,7 @@ class ComponentManager {
             ['triggers', dropdownIndex, 'outline', 'stroke'],
           ),
         }),
-        rc('text', { style: { fontSize: textStyle.S[state.fontSizePreset] } }, 'Outline'),
       ),
-      this.skinEditorToolbar(data.triggers, dropdownIndex),
     );
   }
 
@@ -722,32 +696,39 @@ class ComponentManager {
 
     return rc(
       'div',
-      { style: customSkinToolbarStyle },
+      { style: Styles.skinEditor.toolbar },
       rc(
         'button',
         {
           style: {
-            ...squareButtonStyle,
+            ...Styles.buttons.embedded,
+            fontSize: '32px',
             position: 'absolute',
             right: '10px',
           },
           onClick: () => root.onResetSkin(index),
         },
         rc('span', {
-          style: { fontSize: '32px', color: 'red', fontWeight: 700 },
+          style: { color: 'red', fontWeight: 700 },
         }, 'X'),
       ),
       rc(
         'div',
-        { style: { ...alphaContainerStyle, fontSize: textStyle.S[state.fontSizePreset] } },
+        {
+          style: {
+            ...Styles.skinEditor.toolbarItem,
+            ...Styles.alpha.container,
+            fontSize: Styles.theme.textSizes.S[state.fontSizePreset],
+          },
+        },
         rc('label', { for: 'alphaSlider' }, 'Transparency'),
         rc(
           'div',
-          { style: alphaSliderContainerStyle },
-          rc('text', null, '100%'),
+          { style: Styles.alpha.sliderContainer },
+          rc('text', null, '0%'),
           rc('input', {
             id: 'alphaSlider',
-            style: alphaSliderStyle,
+            style: Styles.alpha.slider,
             type: 'range',
             min: 0,
             max: 1,
@@ -755,11 +736,15 @@ class ComponentManager {
             value: alphaValue,
             onChange: (e) => root.onChangeColor(null, e.target.value),
           }),
-          rc('text', null, '0%'),
+          rc('text', null, '100%'),
         ),
       ),
       rc('input', {
-        style: colorPickerStyle,
+        style: {
+          ...Styles.skinEditor.toolbarItem,
+          height: '40px',
+          width: '40px',
+        },
         type: 'color',
         value: colorValue,
         onChange: (e) => root.onChangeColor(e.target.value, null),
@@ -767,7 +752,11 @@ class ComponentManager {
       rc(
         'select',
         {
-          style: { ...triggerDropdownHeaderStyle, fontSize: textStyle.M[state.fontSizePreset] },
+          style: {
+            ...Styles.skinEditor.toolbarItem,
+            ...Styles.dropdown.head,
+            fontSize: Styles.theme.textSizes.M[state.fontSizePreset],
+          },
           value: index,
           onChange: (e) => root.onChangeSkinDropdown(e.target.value),
         },
@@ -775,7 +764,7 @@ class ComponentManager {
           const riderNum = 1 + parseInt(riderIndex, 10);
 
           return rc('option', {
-            style: triggerDropdownOptionStyle,
+            style: Styles.dropdown.option,
             value: parseInt(riderIndex, 10),
           }, rc('text', null, `Rider ${riderNum}`));
         }),
@@ -787,14 +776,14 @@ class ComponentManager {
     const { rc, root, state } = this;
     return rc(
       'svg',
-      { style: flagSVG },
+      { style: Styles.skinEditor.flagSvg },
       rc('path', {
-        ...riderStyle.flag,
+        ...Styles.riderProps.flag,
         fill: data.flag.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'flag', 'fill']),
       }),
       rc('path', {
-        ...riderStyle.flagOutline,
+        ...Styles.riderProps.flagOutline,
         fill: data.flag.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'flag', 'fill']),
       }),
@@ -805,171 +794,171 @@ class ComponentManager {
     const { rc, root, state } = this;
     return rc(
       'svg',
-      { style: riderSVG },
+      { style: Styles.skinEditor.riderSvg },
       rc('rect', {
-        ...riderStyle.skin,
+        ...Styles.riderProps.skin,
         fill: data.skin.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'skin', 'fill']),
       }),
       rc('path', {
-        ...riderStyle.outline,
-        ...riderStyle.nose,
+        ...Styles.riderProps.outline,
+        ...Styles.riderProps.nose,
         stroke: data.outline.stroke,
         fill: data.skin.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'skin', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.hair,
+        ...Styles.riderProps.hair,
         fill: data.hair.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'hair', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.faceOutline,
+        ...Styles.riderProps.faceOutline,
         fill: data.hair.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'hair', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.hairFill,
+        ...Styles.riderProps.hairFill,
         fill: data.fill.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'fill', 'fill']),
       }),
       rc('polygon', {
-        ...riderStyle.eye,
+        ...Styles.riderProps.eye,
         fill: data.eye.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'eye', 'fill']),
       }),
       rc('path', {
-        ...riderStyle.outline,
-        ...riderStyle.sled,
+        ...Styles.riderProps.outline,
+        ...Styles.riderProps.sled,
         stroke: data.outline.stroke,
         fill: data.sled.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'sled', 'fill']),
       }),
       rc('line', {
-        ...riderStyle.string,
+        ...Styles.riderProps.string,
         stroke: data.string.stroke,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'string', 'stroke']),
       }),
       rc('path', {
-        ...riderStyle.outline,
-        ...riderStyle.armHand,
+        ...Styles.riderProps.outline,
+        ...Styles.riderProps.armHand,
         stroke: data.outline.stroke,
         fill: data.armHand.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'armHand', 'fill']),
       }),
       rc('path', {
-        ...riderStyle.outline,
-        ...riderStyle.legPants,
+        ...Styles.riderProps.outline,
+        ...Styles.riderProps.legPants,
         stroke: data.outline.stroke,
         fill: data.legPants.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'legPants', 'fill']),
       }),
       rc('path', {
-        ...riderStyle.outline,
-        ...riderStyle.legFoot,
+        ...Styles.riderProps.outline,
+        ...Styles.riderProps.legFoot,
         stroke: data.outline.stroke,
         fill: data.legFoot.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'legFoot', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.id_scarfEven,
-        ...riderStyle.id_scarf0a,
+        ...Styles.riderProps.id_scarfEven,
+        ...Styles.riderProps.id_scarf0a,
         fill: data.id_scarf0.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'id_scarf0', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.id_scarfEven,
-        ...riderStyle.id_scarf0b,
+        ...Styles.riderProps.id_scarfEven,
+        ...Styles.riderProps.id_scarf0b,
         fill: data.id_scarf0.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'id_scarf0', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.id_scarfOdd,
-        ...riderStyle.id_scarf1,
+        ...Styles.riderProps.id_scarfOdd,
+        ...Styles.riderProps.id_scarf1,
         fill: data.id_scarf1.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'id_scarf1', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.id_scarfOdd,
-        ...riderStyle.id_scarf2,
+        ...Styles.riderProps.id_scarfOdd,
+        ...Styles.riderProps.id_scarf2,
         fill: data.id_scarf2.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'id_scarf2', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.id_scarfOdd,
-        ...riderStyle.id_scarf3,
+        ...Styles.riderProps.id_scarfOdd,
+        ...Styles.riderProps.id_scarf3,
         fill: data.id_scarf3.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'id_scarf3', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.id_scarfOdd,
-        ...riderStyle.id_scarf4,
+        ...Styles.riderProps.id_scarfOdd,
+        ...Styles.riderProps.id_scarf4,
         fill: data.id_scarf4.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'id_scarf4', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.id_scarfOdd,
-        ...riderStyle.id_scarf5,
+        ...Styles.riderProps.id_scarfOdd,
+        ...Styles.riderProps.id_scarf5,
         fill: data.id_scarf5.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'id_scarf5', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.outline,
-        ...riderStyle.torso,
+        ...Styles.riderProps.outline,
+        ...Styles.riderProps.torso,
         stroke: data.outline.stroke,
         fill: data.torso.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'torso', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.scarfOdd,
-        ...riderStyle.scarf1,
+        ...Styles.riderProps.scarfOdd,
+        ...Styles.riderProps.scarf1,
         fill: data.scarf1.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'scarf1', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.scarfOdd,
-        ...riderStyle.scarf2,
+        ...Styles.riderProps.scarfOdd,
+        ...Styles.riderProps.scarf2,
         fill: data.scarf2.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'scarf2', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.scarfOdd,
-        ...riderStyle.scarf3,
+        ...Styles.riderProps.scarfOdd,
+        ...Styles.riderProps.scarf3,
         fill: data.scarf3.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'scarf3', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.scarfOdd,
-        ...riderStyle.scarf4,
+        ...Styles.riderProps.scarfOdd,
+        ...Styles.riderProps.scarf4,
         fill: data.scarf4.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'scarf4', 'fill']),
       }),
       rc('rect', {
-        ...riderStyle.scarfOdd,
-        ...riderStyle.scarf5,
+        ...Styles.riderProps.scarfOdd,
+        ...Styles.riderProps.scarf5,
         fill: data.scarf5.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'scarf5', 'fill']),
       }),
       rc('path', {
-        ...riderStyle.outline,
-        ...riderStyle.hatTop,
+        ...Styles.riderProps.outline,
+        ...Styles.riderProps.hatTop,
         stroke: data.outline.stroke,
         fill: data.hatTop.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'hatTop', 'fill']),
       }),
       rc('path', {
-        ...riderStyle.hatBottom,
+        ...Styles.riderProps.hatBottom,
         stroke: data.hatBottom.stroke,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'hatBottom', 'stroke']),
       }),
       rc('circle', {
-        ...riderStyle.hatBall,
+        ...Styles.riderProps.hatBall,
         fill: data.hatBall.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'hatBall', 'fill']),
       }),
       rc('path', {
-        ...riderStyle.outline,
-        ...riderStyle.armSleeve,
+        ...Styles.riderProps.outline,
+        ...Styles.riderProps.armSleeve,
         stroke: data.outline.stroke,
         fill: data.armSleeve.fill,
         onClick: () => root.onUpdateTrigger({ new: state.selectedColor }, ['triggers', index, 'armSleeve', 'fill']),

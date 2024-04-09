@@ -11,7 +11,7 @@ function main() {
 
   let playerRunning = Selectors.getPlayerRunning(store.getState());
   let windowFocused = Selectors.getWindowFocused(store.getState());
-  const commandEditorParent = document.createElement('div');
+  const commandEditorRoot = document.createElement('div');
 
   // Listens for changes in window state to update UI accordingly
 
@@ -21,8 +21,8 @@ function main() {
 
     const shouldBeVisible = window.CMD_EDITOR_DEBUG || (!playerRunning && windowFocused);
 
-    commandEditorParent.style.opacity = shouldBeVisible ? 1 : 0;
-    commandEditorParent.style.pointerEvents = shouldBeVisible ? null : 'none';
+    commandEditorRoot.style.opacity = shouldBeVisible ? 1 : 0;
+    commandEditorRoot.style.pointerEvents = shouldBeVisible ? null : 'none';
   });
 
   // Entry point for the UI components
@@ -62,7 +62,7 @@ function main() {
     // Rendering events that handle the basic React component rendering
 
     componentDidMount() {
-      Object.assign(commandEditorParent.style, parentStyle);
+      Object.assign(commandEditorRoot.style, Styles.root);
       this.onInitializeState().then(() => {
         this.setState({ initialized: true });
         this.setState({ active: window.CMD_EDITOR_DEBUG });
@@ -348,11 +348,11 @@ function main() {
 
   // Adds the mod component to the root UI element
 
-  document.getElementById('content').appendChild(commandEditorParent);
+  document.getElementById('content').appendChild(commandEditorRoot);
 
   ReactDOM.render(
     React.createElement(CommandEditorComponent),
-    commandEditorParent,
+    commandEditorRoot,
   );
 }
 
