@@ -1,4 +1,4 @@
-/* Main function, entry point of the application */
+// Main function, entry point of the application
 
 function main() {
   window.V2 = window.V2 || Selectors.getWindowStart(window.store.getState());
@@ -43,8 +43,8 @@ function main() {
         skinDropdownIndex: 0,
         skinEditorZoomProps: {},
         selectedColor: '#000000ff',
-        fontSizePreset: CONSTS.CONSTRAINTS.TEXT_SIZE.DEFAULT,
-        resolution: CONSTS.VIEWPORTS.FHD,
+        fontSizePreset: CONSTANTS.CONSTRAINTS.TEXT_SIZE.DEFAULT,
+        resolution: CONSTANTS.VIEWPORTS.FHD,
       };
 
       this.componentManager = new ComponentManager(React.createElement, this);
@@ -85,7 +85,7 @@ function main() {
 
       this.setState({ triggerData });
 
-      if (activeTab === CONSTS.TRIGGERS.FOCUS) {
+      if (activeTab === CONSTANTS.TRIGGERS.FOCUS) {
         this.setState({
           focuserDropdownIndices: [...focuserDropdownIndices, 0],
         }, () => this.onAdjustFocuserDropdown());
@@ -172,7 +172,7 @@ function main() {
         const { triggerData } = this.state;
 
         triggerData.CustomSkin.triggers[index] = JSON.parse(JSON.stringify(
-          CONSTS.TRIGGER_PROPS[CONSTS.TRIGGERS.SKIN].TEMPLATE,
+          CONSTANTS.TRIGGER_PROPS[CONSTANTS.TRIGGERS.SKIN].TEMPLATE,
         ));
 
         this.setState({ triggerData });
@@ -238,7 +238,7 @@ function main() {
 
     onAdjustFocuserDropdown() {
       const { triggerData } = this.state;
-      const focusTriggers = triggerData[CONSTS.TRIGGERS.FOCUS].triggers;
+      const focusTriggers = triggerData[CONSTANTS.TRIGGERS.FOCUS].triggers;
       const clamp = this.commandEditor.RiderCount;
 
       focusTriggers.forEach((e, i) => {
@@ -251,7 +251,7 @@ function main() {
         }
       });
 
-      triggerData[CONSTS.TRIGGERS.FOCUS].triggers = focusTriggers;
+      triggerData[CONSTANTS.TRIGGERS.FOCUS].triggers = focusTriggers;
       this.setState({ triggerData });
 
       const { focuserDropdownIndices } = this.state;
@@ -267,12 +267,12 @@ function main() {
 
     onAdjustSkinDropdown() {
       const { triggerData } = this.state;
-      let skinTriggers = triggerData[CONSTS.TRIGGERS.SKIN].triggers;
+      let skinTriggers = triggerData[CONSTANTS.TRIGGERS.SKIN].triggers;
       const clamp = this.commandEditor.RiderCount;
 
       for (let j = skinTriggers.length; j < clamp; j += 1) {
         skinTriggers = [...skinTriggers, JSON.parse(JSON.stringify(
-          CONSTS.TRIGGER_PROPS[CONSTS.TRIGGERS.SKIN].TEMPLATE,
+          CONSTANTS.TRIGGER_PROPS[CONSTANTS.TRIGGERS.SKIN].TEMPLATE,
         ))];
       }
 
@@ -280,7 +280,7 @@ function main() {
         skinTriggers = skinTriggers.slice(0, -1);
       }
 
-      triggerData[CONSTS.TRIGGERS.SKIN].triggers = skinTriggers;
+      triggerData[CONSTANTS.TRIGGERS.SKIN].triggers = skinTriggers;
       this.setState({ triggerData });
 
       let { skinDropdownIndex } = this.state;
@@ -297,19 +297,19 @@ function main() {
       const { skinEditorZoomProps } = this.state;
 
       if (isMouseAction) {
-        if (skinEditorZoomProps.scale < CONSTS.CONSTRAINTS.SKIN_ZOOM.MAX) {
+        if (skinEditorZoomProps.scale < CONSTANTS.CONSTRAINTS.SKIN_ZOOM.MAX) {
           skinEditorZoomProps.xOffset = (event.clientX - rect.x) / skinEditorZoomProps.scale;
           skinEditorZoomProps.yOffset = (event.clientY - rect.y) / skinEditorZoomProps.scale;
         }
         skinEditorZoomProps.scale = Math.max(Math.min(
-          skinEditorZoomProps.scale - event.deltaY * CONSTS.SCROLL_DELTA,
-          CONSTS.CONSTRAINTS.SKIN_ZOOM.MAX,
-        ), CONSTS.CONSTRAINTS.SKIN_ZOOM.MIN);
+          skinEditorZoomProps.scale - event.deltaY * CONSTANTS.SCROLL_DELTA,
+          CONSTANTS.CONSTRAINTS.SKIN_ZOOM.MAX,
+        ), CONSTANTS.CONSTRAINTS.SKIN_ZOOM.MIN);
       } else {
         skinEditorZoomProps.scale = Math.max(Math.min(
           event.target.value,
-          CONSTS.CONSTRAINTS.SKIN_ZOOM.MAX,
-        ), CONSTS.CONSTRAINTS.SKIN_ZOOM.MIN);
+          CONSTANTS.CONSTRAINTS.SKIN_ZOOM.MAX,
+        ), CONSTANTS.CONSTRAINTS.SKIN_ZOOM.MIN);
       }
 
       this.setState({ skinEditorZoomProps });
@@ -326,7 +326,7 @@ function main() {
     // State initialization, populates the triggers with base data
 
     async onInitializeState() {
-      const commands = Object.keys(CONSTS.TRIGGER_PROPS);
+      const commands = Object.keys(CONSTANTS.TRIGGER_PROPS);
 
       if (commands.length === 0) {
         return;

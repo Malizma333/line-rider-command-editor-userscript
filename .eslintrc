@@ -6,18 +6,24 @@
     }
   },
   "rules": {
-    "no-undef": "warn",
     "no-unused-vars": "warn",
     "react/no-unused-class-component-methods": "warn",
-    "react/no-unused-state": "warn",
-    "no-eval": "warn"
+    "react/no-unused-state": "warn"
   },
   "ignorePatterns": [
     "node_modules",
     "*.user.js"
   ],
+  "env": {
+    "browser": true,
+    "es6": true
+  },
   "globals": {
-    "window": "readonly",
-    "document": "readonly"
+    "CONSTANTS": "readonly",
+    "Selectors": "readonly",
+    "Styles": "readonly",
+    "Validator": "readonly",
+    "Parser": "readonly",
+    "CommandEditor": "readonly"
   }
 }

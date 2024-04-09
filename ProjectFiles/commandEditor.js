@@ -25,6 +25,8 @@ class CommandEditor {
 
   test(command) {
     const script = this.generateScript(command);
+    // HACK: Already evaluated script, execute string instead of figuring out how to execute locally
+    // eslint-disable-next-line no-eval
     eval.call(window, script);
   }
 
@@ -63,20 +65,20 @@ class CommandEditor {
     let scriptResult = '';
 
     const currentData = this.state.triggerData[command];
-    let currentHeader = CONSTS.TRIGGER_PROPS[command].FUNC;
+    let currentHeader = CONSTANTS.TRIGGER_PROPS[command].FUNC;
 
     switch (command) {
-      case CONSTS.TRIGGERS.FOCUS:
-      case CONSTS.TRIGGERS.PAN:
-      case CONSTS.TRIGGERS.ZOOM:
+      case CONSTANTS.TRIGGERS.FOCUS:
+      case CONSTANTS.TRIGGERS.PAN:
+      case CONSTANTS.TRIGGERS.ZOOM:
         currentHeader = currentHeader.replace('{0}', JSON.stringify(currentData.triggers));
         currentHeader = currentHeader.replace('{1}', currentData.smoothing);
         break;
-      case CONSTS.TRIGGERS.TIME:
+      case CONSTANTS.TRIGGERS.TIME:
         currentHeader = currentHeader.replace('{0}', JSON.stringify(currentData.triggers));
         currentHeader = currentHeader.replace('{1}', currentData.interpolate);
         break;
-      case CONSTS.TRIGGERS.SKIN:
+      case CONSTANTS.TRIGGERS.SKIN:
         currentHeader = currentHeader.replace('{0}', Validator.formatSkins(currentData.triggers));
         break;
       default:

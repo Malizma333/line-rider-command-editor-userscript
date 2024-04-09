@@ -1,4 +1,4 @@
-class CONSTS {
+class CONSTANTS {
   static get LINKS() {
     return {
       HELP: 'https://github.com/Malizma333/line-rider-command-editor-userscript#readme',
@@ -47,78 +47,78 @@ class CONSTS {
   static get CONSTRAINTS() {
     return {
       INTERPOLATE: {
-        DEFAULT: true, TYPE: CONSTS.TYPES.BOOL,
+        DEFAULT: true, TYPE: CONSTANTS.TYPES.BOOL,
       },
       SMOOTH: {
-        DEFAULT: 20, MIN: 0, MAX: 40, TYPE: CONSTS.TYPES.INT,
+        DEFAULT: 20, MIN: 0, MAX: 40, TYPE: CONSTANTS.TYPES.INT,
       },
       FRAME: {
-        DEFAULT: 0, MIN: 0, MAX: 39, TYPE: CONSTS.TYPES.INT,
+        DEFAULT: 0, MIN: 0, MAX: 39, TYPE: CONSTANTS.TYPES.INT,
       },
       SECOND: {
-        DEFAULT: 0, MIN: 0, MAX: 59, TYPE: CONSTS.TYPES.INT,
+        DEFAULT: 0, MIN: 0, MAX: 59, TYPE: CONSTANTS.TYPES.INT,
       },
       MINUTE: {
-        DEFAULT: 0, MIN: 0, MAX: 99, TYPE: CONSTS.TYPES.INT,
+        DEFAULT: 0, MIN: 0, MAX: 99, TYPE: CONSTANTS.TYPES.INT,
       },
       ZOOM: {
-        DEFAULT: 1, MIN: -50, MAX: 50, TYPE: CONSTS.TYPES.FLOAT,
+        DEFAULT: 1, MIN: -50, MAX: 50, TYPE: CONSTANTS.TYPES.FLOAT,
       },
       PAN_X: {
-        DEFAULT: 0, MIN: -100, MAX: 100, TYPE: CONSTS.TYPES.FLOAT,
+        DEFAULT: 0, MIN: -100, MAX: 100, TYPE: CONSTANTS.TYPES.FLOAT,
       },
       PAN_Y: {
-        DEFAULT: 0, MIN: -100, MAX: 100, TYPE: CONSTS.TYPES.FLOAT,
+        DEFAULT: 0, MIN: -100, MAX: 100, TYPE: CONSTANTS.TYPES.FLOAT,
       },
       PAN_WIDTH: {
-        DEFAULT: 0.4, MIN: 0, MAX: 2, TYPE: CONSTS.TYPES.FLOAT,
+        DEFAULT: 0.4, MIN: 0, MAX: 2, TYPE: CONSTANTS.TYPES.FLOAT,
       },
       PAN_HEIGHT: {
-        DEFAULT: 0.4, MIN: 0, MAX: 2, TYPE: CONSTS.TYPES.FLOAT,
+        DEFAULT: 0.4, MIN: 0, MAX: 2, TYPE: CONSTANTS.TYPES.FLOAT,
       },
       FOCUS_WEIGHT: {
-        DEFAULT: 0, MIN: 0, MAX: 1, TYPE: CONSTS.TYPES.FLOAT,
+        DEFAULT: 0, MIN: 0, MAX: 1, TYPE: CONSTANTS.TYPES.FLOAT,
       },
       TIME_SPEED: {
-        DEFAULT: 1, MIN: 0.01, MAX: 10, TYPE: CONSTS.TYPES.FLOAT,
+        DEFAULT: 1, MIN: 0.01, MAX: 10, TYPE: CONSTANTS.TYPES.FLOAT,
       },
       SKIN_ZOOM: {
-        DEFAULT: 1, MIN: 1, MAX: 4, TYPE: CONSTS.TYPES.FLOAT,
+        DEFAULT: 1, MIN: 1, MAX: 4, TYPE: CONSTANTS.TYPES.FLOAT,
       },
       TEXT_SIZE: {
-        DEFAULT: 1, MIN: 0, MAX: 2, TYPE: CONSTS.TYPES.INT,
+        DEFAULT: 1, MIN: 0, MAX: 2, TYPE: CONSTANTS.TYPES.INT,
       },
       ALPHA_SLIDER: {
-        DEFAULT: 1, MIN: 0, MAX: 1, TYPE: CONSTS.TYPES.FLOAT,
+        DEFAULT: 1, MIN: 0, MAX: 1, TYPE: CONSTANTS.TYPES.FLOAT,
       },
     };
   }
 
   static get TRIGGER_PROPS() {
     return {
-      [CONSTS.TRIGGERS.ZOOM]: {
+      [CONSTANTS.TRIGGERS.ZOOM]: {
         DISPLAY_NAME: 'Zoom',
         TEMPLATE: [[0, 0, 0], 1],
         FUNC: 'getAutoZoom=createZoomer({0},{1});',
       },
-      [CONSTS.TRIGGERS.PAN]: {
+      [CONSTANTS.TRIGGERS.PAN]: {
         DISPLAY_NAME: 'Pan',
         TEMPLATE: [[0, 0, 0], {
           w: 0.4, h: 0.4, x: 0, y: 0,
         }],
         FUNC: 'getCamBounds=createBoundsPanner({0},{1});',
       },
-      [CONSTS.TRIGGERS.FOCUS]: {
+      [CONSTANTS.TRIGGERS.FOCUS]: {
         DISPLAY_NAME: 'Focus',
         TEMPLATE: [[0, 0, 0], [1]],
         FUNC: 'getCamFocus=createFocuser({0},{1});',
       },
-      [CONSTS.TRIGGERS.TIME]: {
+      [CONSTANTS.TRIGGERS.TIME]: {
         DISPLAY_NAME: 'Speed',
         TEMPLATE: [[0, 0, 0], 1],
         FUNC: 'timeRemapper=createTimeRemapper({0},{1});',
       },
-      [CONSTS.TRIGGERS.SKIN]: {
+      [CONSTANTS.TRIGGERS.SKIN]: {
         DISPLAY_NAME: 'Skin',
         TEMPLATE: {
           outline: { stroke: 'black' },
