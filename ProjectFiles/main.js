@@ -42,9 +42,9 @@ function main() {
         focuserDropdownIndices: [],
         skinDropdownIndex: 0,
         skinEditorZoomProps: {},
-        selectedColor: opaqueWhite,
-        fontSizePreset: constraintProps.textSizeProps.default,
-        resolution: viewportSizes.FHD,
+        selectedColor: '#000000ff',
+        fontSizePreset: CONSTS.CONSTRAINTS.TEXT_SIZE.DEFAULT,
+        resolution: CONSTS.VIEWPORTS.FHD,
       };
 
       this.componentManager = new ComponentManager(React.createElement, this);
@@ -85,7 +85,7 @@ function main() {
 
       this.setState({ triggerData });
 
-      if (activeTab === Triggers.CameraFocus) {
+      if (activeTab === CONSTS.TRIGGERS.FOCUS) {
         this.setState({
           focuserDropdownIndices: [...focuserDropdownIndices, 0],
         }, () => this.onAdjustFocuserDropdown());
@@ -172,7 +172,7 @@ function main() {
         const { triggerData } = this.state;
 
         triggerData.CustomSkin.triggers[index] = JSON.parse(JSON.stringify(
-          commandDataTypes.CustomSkin.template,
+          CONSTS.TRIGGER_PROPS[CONSTS.TRIGGERS.SKIN].TEMPLATE,
         ));
 
         this.setState({ triggerData });
@@ -238,7 +238,7 @@ function main() {
 
     onAdjustFocuserDropdown() {
       const { triggerData } = this.state;
-      const focusTriggers = triggerData[Triggers.CameraFocus].triggers;
+      const focusTriggers = triggerData[CONSTS.TRIGGERS.FOCUS].triggers;
       const clamp = this.commandEditor.RiderCount;
 
       focusTriggers.forEach((e, i) => {
@@ -251,7 +251,7 @@ function main() {
         }
       });
 
-      triggerData[Triggers.CameraFocus].triggers = focusTriggers;
+      triggerData[CONSTS.TRIGGERS.FOCUS].triggers = focusTriggers;
       this.setState({ triggerData });
 
       const { focuserDropdownIndices } = this.state;
@@ -267,12 +267,12 @@ function main() {
 
     onAdjustSkinDropdown() {
       const { triggerData } = this.state;
-      let skinTriggers = triggerData[Triggers.CustomSkin].triggers;
+      let skinTriggers = triggerData[CONSTS.TRIGGERS.SKIN].triggers;
       const clamp = this.commandEditor.RiderCount;
 
       for (let j = skinTriggers.length; j < clamp; j += 1) {
         skinTriggers = [...skinTriggers, JSON.parse(JSON.stringify(
-          commandDataTypes.CustomSkin.template,
+          CONSTS.TRIGGER_PROPS[CONSTS.TRIGGERS.SKIN].TEMPLATE,
         ))];
       }
 
@@ -280,7 +280,7 @@ function main() {
         skinTriggers = skinTriggers.slice(0, -1);
       }
 
-      triggerData[Triggers.CustomSkin].triggers = skinTriggers;
+      triggerData[CONSTS.TRIGGERS.SKIN].triggers = skinTriggers;
       this.setState({ triggerData });
 
       let { skinDropdownIndex } = this.state;
@@ -297,19 +297,19 @@ function main() {
       const { skinEditorZoomProps } = this.state;
 
       if (isMouseAction) {
-        if (skinEditorZoomProps.scale < constraintProps.skinZoomProps.max) {
+        if (skinEditorZoomProps.scale < CONSTS.CONSTRAINTS.SKIN_ZOOM.MAX) {
           skinEditorZoomProps.xOffset = (event.clientX - rect.x) / skinEditorZoomProps.scale;
           skinEditorZoomProps.yOffset = (event.clientY - rect.y) / skinEditorZoomProps.scale;
         }
         skinEditorZoomProps.scale = Math.max(Math.min(
-          skinEditorZoomProps.scale - event.deltaY * scrollMultiplier,
-          constraintProps.skinZoomProps.max,
-        ), constraintProps.skinZoomProps.min);
+          skinEditorZoomProps.scale - event.deltaY * CONSTS.SCROLL_DELTA,
+          CONSTS.CONSTRAINTS.SKIN_ZOOM.MAX,
+        ), CONSTS.CONSTRAINTS.SKIN_ZOOM.MIN);
       } else {
         skinEditorZoomProps.scale = Math.max(Math.min(
           event.target.value,
-          constraintProps.skinZoomProps.max,
-        ), constraintProps.skinZoomProps.min);
+          CONSTS.CONSTRAINTS.SKIN_ZOOM.MAX,
+        ), CONSTS.CONSTRAINTS.SKIN_ZOOM.MIN);
       }
 
       this.setState({ skinEditorZoomProps });
@@ -326,7 +326,7 @@ function main() {
     // State initialization, populates the triggers with base data
 
     async onInitializeState() {
-      const commands = Object.keys(commandDataTypes);
+      const commands = Object.keys(CONSTS.TRIGGER_PROPS);
 
       if (commands.length === 0) {
         return;

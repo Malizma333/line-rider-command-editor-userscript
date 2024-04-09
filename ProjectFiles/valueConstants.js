@@ -1,129 +1,156 @@
-const helpLink = 'https://github.com/Malizma333/line-rider-command-editor-userscript#readme';
-const reportLink = 'https://trello.com/invite/b/HQI4mr1y/ATTI88d27c72cf8ffcd70c6e2b424e4ffb548519EDDF/line-rider-command-editor';
+class CONSTS {
+  static get LINKS() {
+    return {
+      HELP: 'https://github.com/Malizma333/line-rider-command-editor-userscript#readme',
+      REPORT: 'https://trello.com/invite/b/HQI4mr1y/ATTI88d27c72cf8ffcd70c6e2b424e4ffb548519EDDF/line-rider-command-editor',
+    };
+  }
 
-const fps = 40;
-const secondsInMinute = 60;
-const scrollMultiplier = 0.001;
-const opaqueWhite = '#000000ff';
+  static get SCROLL_DELTA() {
+    return 0.001;
+  }
 
-const Triggers = {
-  Zoom: 'Zoom',
-  CameraPan: 'CameraPan',
-  CameraFocus: 'CameraFocus',
-  TimeRemap: 'TimeRemap',
-  CustomSkin: 'CustomSkin',
-};
+  static get TIMELINE() {
+    return {
+      FPS: 40,
+      SPM: 60,
+    };
+  }
 
-const constraintProps = {
-  interpolateProps: { default: true, type: 'Boolean' },
-  smoothProps: {
-    default: 20, min: 0, max: 40, type: 'Integer',
-  },
-  frameProps: {
-    default: 0, min: 0, max: 39, type: 'Integer',
-  },
-  secondProps: {
-    default: 0, min: 0, max: 59, type: 'Integer',
-  },
-  minuteProps: {
-    default: 0, min: 0, max: 99, type: 'Integer',
-  },
-  zoomProps: {
-    default: 1, min: -50, max: 50, type: 'Float',
-  },
-  xProps: {
-    default: 0, min: -100, max: 100, type: 'Float',
-  },
-  yProps: {
-    default: 0, min: -100, max: 100, type: 'Float',
-  },
-  wProps: {
-    default: 0.4, min: 0, max: 2, type: 'Float',
-  },
-  hProps: {
-    default: 0.4, min: 0, max: 2, type: 'Float',
-  },
-  fWeightProps: {
-    default: 0, min: 0, max: 1, type: 'Float',
-  },
-  timeProps: {
-    default: 1, min: 0.01, max: 10, type: 'Float',
-  },
-  skinZoomProps: {
-    default: 1, min: 1, max: 4, type: 'Float',
-  },
-  textSizeProps: {
-    default: 1, min: 0, max: 2, type: 'Integer',
-  },
-};
+  static get VIEWPORTS() {
+    return {
+      HD: '720p',
+      FHD: '1080p',
+      QHD: '1440p',
+      UHD: '4K',
+    };
+  }
 
-const constraintTypes = {
-  bool: 'Boolean',
-  int: 'Integer',
-  float: 'Float',
-};
+  static get TYPES() {
+    return {
+      BOOL: 'BOOLEAN',
+      INT: 'INTEGER',
+      FLOAT: 'FLOAT',
+    };
+  }
 
-const viewportSizes = {
-  HD: '720p',
-  FHD: '1080p',
-  QHD: '1440p',
-  UHD: '4K',
-};
+  static get TRIGGERS() {
+    return {
+      ZOOM: 'ZOOM',
+      PAN: 'CAMERA_PAN',
+      FOCUS: 'CAMERA_FOCUS',
+      TIME: 'TIME_REMAP',
+      SKIN: 'CUSTOM_SKIN',
+    };
+  }
 
-const commandDataTypes = {
-  Zoom: {
-    displayName: 'Zoom',
-    template: [[0, 0, 0], 1],
-    header: 'getAutoZoom=createZoomer({0},{1});',
-  },
-  CameraPan: {
-    displayName: 'Pan',
-    template: [[0, 0, 0], {
-      w: 0.4, h: 0.4, x: 0, y: 0,
-    }],
-    header: 'getCamBounds=createBoundsPanner({0},{1});',
-  },
-  CameraFocus: {
-    displayName: 'Focus',
-    template: [[0, 0, 0], [1]],
-    header: 'getCamFocus=createFocuser({0},{1});',
-  },
-  TimeRemap: {
-    displayName: 'Speed',
-    template: [[0, 0, 0], 1],
-    header: 'timeRemapper=createTimeRemapper({0},{1});',
-  },
-  CustomSkin: {
-    displayName: 'Skin',
-    template: {
-      outline: { stroke: 'black' },
-      flag: { fill: '#00000066' },
-      skin: { fill: 'white' },
-      hair: { fill: 'black' },
-      fill: { fill: 'black' },
-      eye: { fill: 'black' },
-      sled: { fill: 'white' },
-      string: { stroke: 'black' },
-      armSleeve: { fill: 'black' },
-      armHand: { fill: 'white' },
-      legPants: { fill: 'black' },
-      legFoot: { fill: 'white' },
-      torso: { fill: 'white' },
-      hatTop: { fill: 'white' },
-      hatBottom: { stroke: 'black' },
-      hatBall: { fill: 'black' },
-      scarf1: { fill: '#FD4F38' },
-      scarf2: { fill: 'white' },
-      scarf3: { fill: '#06A725' },
-      scarf4: { fill: 'white' },
-      scarf5: { fill: '#3995FD' },
-      id_scarf0: { fill: 'white' },
-      id_scarf1: { fill: '#FD4F38' },
-      id_scarf2: { fill: 'white' },
-      id_scarf3: { fill: '#06A725' },
-      id_scarf4: { fill: 'white' },
-      id_scarf5: { fill: '#3995FD' },
-    },
-    header: 'setCustomRiders({0});',
-  },
-};
+  static get CONSTRAINTS() {
+    return {
+      INTERPOLATE: {
+        DEFAULT: true, TYPE: CONSTS.TYPES.BOOL,
+      },
+      SMOOTH: {
+        DEFAULT: 20, MIN: 0, MAX: 40, TYPE: CONSTS.TYPES.INT,
+      },
+      FRAME: {
+        DEFAULT: 0, MIN: 0, MAX: 39, TYPE: CONSTS.TYPES.INT,
+      },
+      SECOND: {
+        DEFAULT: 0, MIN: 0, MAX: 59, TYPE: CONSTS.TYPES.INT,
+      },
+      MINUTE: {
+        DEFAULT: 0, MIN: 0, MAX: 99, TYPE: CONSTS.TYPES.INT,
+      },
+      ZOOM: {
+        DEFAULT: 1, MIN: -50, MAX: 50, TYPE: CONSTS.TYPES.FLOAT,
+      },
+      PAN_X: {
+        DEFAULT: 0, MIN: -100, MAX: 100, TYPE: CONSTS.TYPES.FLOAT,
+      },
+      PAN_Y: {
+        DEFAULT: 0, MIN: -100, MAX: 100, TYPE: CONSTS.TYPES.FLOAT,
+      },
+      PAN_WIDTH: {
+        DEFAULT: 0.4, MIN: 0, MAX: 2, TYPE: CONSTS.TYPES.FLOAT,
+      },
+      PAN_HEIGHT: {
+        DEFAULT: 0.4, MIN: 0, MAX: 2, TYPE: CONSTS.TYPES.FLOAT,
+      },
+      FOCUS_WEIGHT: {
+        DEFAULT: 0, MIN: 0, MAX: 1, TYPE: CONSTS.TYPES.FLOAT,
+      },
+      TIME_SPEED: {
+        DEFAULT: 1, MIN: 0.01, MAX: 10, TYPE: CONSTS.TYPES.FLOAT,
+      },
+      SKIN_ZOOM: {
+        DEFAULT: 1, MIN: 1, MAX: 4, TYPE: CONSTS.TYPES.FLOAT,
+      },
+      TEXT_SIZE: {
+        DEFAULT: 1, MIN: 0, MAX: 2, TYPE: CONSTS.TYPES.INT,
+      },
+      ALPHA_SLIDER: {
+        DEFAULT: 1, MIN: 0, MAX: 1, TYPE: CONSTS.TYPES.FLOAT,
+      },
+    };
+  }
+
+  static get TRIGGER_PROPS() {
+    return {
+      [CONSTS.TRIGGERS.ZOOM]: {
+        DISPLAY_NAME: 'Zoom',
+        TEMPLATE: [[0, 0, 0], 1],
+        FUNC: 'getAutoZoom=createZoomer({0},{1});',
+      },
+      [CONSTS.TRIGGERS.PAN]: {
+        DISPLAY_NAME: 'Pan',
+        TEMPLATE: [[0, 0, 0], {
+          w: 0.4, h: 0.4, x: 0, y: 0,
+        }],
+        FUNC: 'getCamBounds=createBoundsPanner({0},{1});',
+      },
+      [CONSTS.TRIGGERS.FOCUS]: {
+        DISPLAY_NAME: 'Focus',
+        TEMPLATE: [[0, 0, 0], [1]],
+        FUNC: 'getCamFocus=createFocuser({0},{1});',
+      },
+      [CONSTS.TRIGGERS.TIME]: {
+        DISPLAY_NAME: 'Speed',
+        TEMPLATE: [[0, 0, 0], 1],
+        FUNC: 'timeRemapper=createTimeRemapper({0},{1});',
+      },
+      [CONSTS.TRIGGERS.SKIN]: {
+        DISPLAY_NAME: 'Skin',
+        TEMPLATE: {
+          outline: { stroke: 'black' },
+          flag: { fill: '#00000066' },
+          skin: { fill: 'white' },
+          hair: { fill: 'black' },
+          fill: { fill: 'black' },
+          eye: { fill: 'black' },
+          sled: { fill: 'white' },
+          string: { stroke: 'black' },
+          armSleeve: { fill: 'black' },
+          armHand: { fill: 'white' },
+          legPants: { fill: 'black' },
+          legFoot: { fill: 'white' },
+          torso: { fill: 'white' },
+          hatTop: { fill: 'white' },
+          hatBottom: { stroke: 'black' },
+          hatBall: { fill: 'black' },
+          scarf1: { fill: '#FD4F38' },
+          scarf2: { fill: 'white' },
+          scarf3: { fill: '#06A725' },
+          scarf4: { fill: 'white' },
+          scarf5: { fill: '#3995FD' },
+          id_scarf0: { fill: 'white' },
+          id_scarf1: { fill: '#FD4F38' },
+          id_scarf2: { fill: 'white' },
+          id_scarf3: { fill: '#06A725' },
+          id_scarf4: { fill: 'white' },
+          id_scarf5: { fill: '#3995FD' },
+        },
+        FUNC: 'setCustomRiders({0});',
+      },
+    };
+  }
+}

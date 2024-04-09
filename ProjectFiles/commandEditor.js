@@ -63,20 +63,20 @@ class CommandEditor {
     let scriptResult = '';
 
     const currentData = this.state.triggerData[command];
-    let currentHeader = commandDataTypes[command].header;
+    let currentHeader = CONSTS.TRIGGER_PROPS[command].FUNC;
 
     switch (command) {
-      case Triggers.CameraFocus:
-      case Triggers.CameraPan:
-      case Triggers.Zoom:
+      case CONSTS.TRIGGERS.FOCUS:
+      case CONSTS.TRIGGERS.PAN:
+      case CONSTS.TRIGGERS.ZOOM:
         currentHeader = currentHeader.replace('{0}', JSON.stringify(currentData.triggers));
         currentHeader = currentHeader.replace('{1}', currentData.smoothing);
         break;
-      case Triggers.TimeRemap:
+      case CONSTS.TRIGGERS.TIME:
         currentHeader = currentHeader.replace('{0}', JSON.stringify(currentData.triggers));
         currentHeader = currentHeader.replace('{1}', currentData.interpolate);
         break;
-      case Triggers.CustomSkin:
+      case CONSTS.TRIGGERS.SKIN:
         currentHeader = currentHeader.replace('{0}', Validator.formatSkins(currentData.triggers));
         break;
       default:

@@ -4,16 +4,16 @@ class Validator {
   static validateData(valueChange, constraints, bounded) {
     if (!constraints) return valueChange.new;
 
-    switch (constraints.type) {
-      case constraintTypes.bool: {
+    switch (constraints.TYPE) {
+      case CONSTS.TYPES.BOOL: {
         return valueChange.new;
       }
 
-      case constraintTypes.int: {
+      case CONSTS.TYPES.INT: {
         return this.validateInteger(valueChange, constraints, bounded);
       }
 
-      case constraintTypes.float: {
+      case CONSTS.TYPES.FLOAT: {
         return this.validateFloat(valueChange, constraints, bounded);
       }
 
@@ -43,12 +43,12 @@ class Validator {
       return parsedValue;
     }
 
-    if (parsedValue < constraints.min) {
-      return constraints.min;
+    if (parsedValue < constraints.MIN) {
+      return constraints.MIN;
     }
 
-    if (parsedValue > constraints.max) {
-      return constraints.max;
+    if (parsedValue > constraints.MAX) {
+      return constraints.MAX;
     }
 
     return parsedValue;
@@ -76,12 +76,12 @@ class Validator {
       return parsedValue;
     }
 
-    if (parsedValue < constraints.min) {
-      return constraints.min;
+    if (parsedValue < constraints.MIN) {
+      return constraints.MIN;
     }
 
-    if (parsedValue > constraints.max) {
-      return constraints.max;
+    if (parsedValue > constraints.MAX) {
+      return constraints.MAX;
     }
 
     return parsedValue;
@@ -93,8 +93,8 @@ class Validator {
     for (let i = 0; i < triggers.length - 1; i += 1) {
       const time1 = triggers[i][0];
       const time2 = triggers[i + 1][0];
-      const index1 = (time1[0] * secondsInMinute + time1[1]) * fps + time1[2];
-      const index2 = (time2[0] * secondsInMinute + time2[1]) * fps + time2[2];
+      const index1 = (time1[0] * CONSTS.TIMELINE.SPM + time1[1]) * CONSTS.TIMELINE.FPS + time1[2];
+      const index2 = (time2[0] * CONSTS.TIMELINE.SPM + time2[1]) * CONSTS.TIMELINE.FPS + time2[2];
 
       if (index1 >= index2) {
         const [minute, second, frame] = time1;
@@ -102,12 +102,12 @@ class Validator {
         time2[1] = second;
         time2[2] = frame + 1;
 
-        if (time2[2] === fps) {
+        if (time2[2] === CONSTS.TIMELINE.FPS) {
           time2[2] = 0;
           time2[1] += 1;
         }
 
-        if (time2[1] === secondsInMinute) {
+        if (time2[1] === CONSTS.TIMELINE.SPM) {
           time2[1] = 0;
           time2[0] += 1;
         }
