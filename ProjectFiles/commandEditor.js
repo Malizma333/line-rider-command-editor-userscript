@@ -69,17 +69,17 @@ class CommandEditor {
     let currentHeader = CONSTANTS.TRIGGER_PROPS[command].FUNC;
 
     switch (command) {
-      case CONSTANTS.TRIGGERS.FOCUS:
-      case CONSTANTS.TRIGGERS.PAN:
-      case CONSTANTS.TRIGGERS.ZOOM:
+      case CONSTANTS.TRIGGER_TYPES.FOCUS:
+      case CONSTANTS.TRIGGER_TYPES.PAN:
+      case CONSTANTS.TRIGGER_TYPES.ZOOM:
         currentHeader = currentHeader.replace('{0}', JSON.stringify(currentData.triggers));
         currentHeader = currentHeader.replace('{1}', currentData.smoothing);
         break;
-      case CONSTANTS.TRIGGERS.TIME:
+      case CONSTANTS.TRIGGER_TYPES.TIME:
         currentHeader = currentHeader.replace('{0}', JSON.stringify(currentData.triggers));
         currentHeader = currentHeader.replace('{1}', currentData.interpolate);
         break;
-      case CONSTANTS.TRIGGERS.SKIN:
+      case CONSTANTS.TRIGGER_TYPES.SKIN:
         currentHeader = currentHeader.replace('{0}', Validator.formatSkins(currentData.triggers));
         break;
       default:

@@ -17,12 +17,12 @@ class Parser {
     };
 
     switch (command) {
-      case CONSTANTS.TRIGGERS.FOCUS:
-      case CONSTANTS.TRIGGERS.PAN:
-      case CONSTANTS.TRIGGERS.ZOOM:
+      case CONSTANTS.TRIGGER_TYPES.FOCUS:
+      case CONSTANTS.TRIGGER_TYPES.PAN:
+      case CONSTANTS.TRIGGER_TYPES.ZOOM:
         this.commandData[command].smoothing = CONSTANTS.CONSTRAINTS.SMOOTH.DEFAULT;
         break;
-      case CONSTANTS.TRIGGERS.TIME:
+      case CONSTANTS.TRIGGER_TYPES.TIME:
         this.commandData[command].interpolate = CONSTANTS.CONSTRAINTS.INTERPOLATE.DEFAULT;
         break;
       default:
@@ -61,14 +61,14 @@ class Parser {
     const [keyframes, smoothing] = parameterArray;
 
     switch (command) {
-      case CONSTANTS.TRIGGERS.ZOOM:
-      case CONSTANTS.TRIGGERS.PAN:
-      case CONSTANTS.TRIGGERS.FOCUS:
-      case CONSTANTS.TRIGGERS.TIME:
+      case CONSTANTS.TRIGGER_TYPES.ZOOM:
+      case CONSTANTS.TRIGGER_TYPES.PAN:
+      case CONSTANTS.TRIGGER_TYPES.FOCUS:
+      case CONSTANTS.TRIGGER_TYPES.TIME:
         this.addTriggers(command, keyframes);
         this.parseSmoothing(command, smoothing);
         break;
-      case CONSTANTS.TRIGGERS.SKIN:
+      case CONSTANTS.TRIGGER_TYPES.SKIN:
         this.parseSkinCss(keyframes);
         break;
       default:
@@ -79,7 +79,7 @@ class Parser {
   // Parses smoothing specifically by checking if the value exists and type
 
   parseSmoothing(command, smoothingValue) {
-    if (command === CONSTANTS.TRIGGERS.TIME) {
+    if (command === CONSTANTS.TRIGGER_TYPES.TIME) {
       const constraints = CONSTANTS.CONSTRAINTS.INTERPOLATE;
 
       if (!smoothingValue) {
@@ -135,8 +135,8 @@ class Parser {
 
   parseSkinCss(skinCSSArray) {
     skinCSSArray.forEach((skinCSS, skinIndex) => {
-      this.commandData[CONSTANTS.TRIGGERS.SKIN].triggers.push(
-        Object.assign(CONSTANTS.TRIGGER_PROPS[CONSTANTS.TRIGGERS.SKIN].TEMPLATE, {}),
+      this.commandData[CONSTANTS.TRIGGER_TYPES.SKIN].triggers.push(
+        Object.assign(CONSTANTS.TRIGGER_PROPS[CONSTANTS.TRIGGER_TYPES.SKIN].TEMPLATE, {}),
       );
       let depth = 0;
       let zeroIndex = 0;
@@ -156,8 +156,8 @@ class Parser {
       }
     });
 
-    this.commandData[CONSTANTS.TRIGGERS.SKIN].triggers.push(
-      this.commandData[CONSTANTS.TRIGGERS.SKIN].triggers.shift(),
+    this.commandData[CONSTANTS.TRIGGER_TYPES.SKIN].triggers.push(
+      this.commandData[CONSTANTS.TRIGGER_TYPES.SKIN].triggers.shift(),
     );
   }
 
@@ -202,12 +202,12 @@ class Parser {
         const propName = cssPropKeywords[key];
 
         if ('fill' in skinDataJSON) {
-          this.commandData[CONSTANTS.TRIGGERS.SKIN]
+          this.commandData[CONSTANTS.TRIGGER_TYPES.SKIN]
             .triggers[skinIndex][propName].fill = skinDataJSON.fill;
         }
 
         if ('stroke' in skinDataJSON) {
-          this.commandData[CONSTANTS.TRIGGERS.SKIN]
+          this.commandData[CONSTANTS.TRIGGER_TYPES.SKIN]
             .triggers[skinIndex][propName].stroke = skinDataJSON.stroke;
         }
       }

@@ -25,20 +25,19 @@ class CONSTANTS {
     };
   }
 
-  static get VIEWPORTS() {
+  static get SETTINGS() {
     return {
-      HD: '720p',
-      FHD: '1080p',
-      QHD: '1440p',
-      UHD: '4K',
-    };
-  }
-
-  static get FONT_SIZES() {
-    return {
-      SMALL: 0,
-      MEDIUM: 1,
-      LARGE: 2,
+      VIEWPORT: {
+        HD: '720p',
+        FHD: '1080p',
+        QHD: '1440p',
+        UHD: '4K',
+      },
+      FONT_SIZES: {
+        SMALL: 0,
+        MEDIUM: 1,
+        LARGE: 2,
+      },
     };
   }
 
@@ -50,7 +49,7 @@ class CONSTANTS {
     };
   }
 
-  static get TRIGGERS() {
+  static get TRIGGER_TYPES() {
     return {
       ZOOM: 'ZOOM',
       PAN: 'CAMERA_PAN',
@@ -109,29 +108,29 @@ class CONSTANTS {
 
   static get TRIGGER_PROPS() {
     return {
-      [CONSTANTS.TRIGGERS.ZOOM]: {
+      [CONSTANTS.TRIGGER_TYPES.ZOOM]: {
         DISPLAY_NAME: 'Zoom',
         TEMPLATE: [[0, 0, 0], 1],
         FUNC: 'getAutoZoom=createZoomer({0},{1});',
       },
-      [CONSTANTS.TRIGGERS.PAN]: {
+      [CONSTANTS.TRIGGER_TYPES.PAN]: {
         DISPLAY_NAME: 'Pan',
         TEMPLATE: [[0, 0, 0], {
           w: 0.4, h: 0.4, x: 0, y: 0,
         }],
         FUNC: 'getCamBounds=createBoundsPanner({0},{1});',
       },
-      [CONSTANTS.TRIGGERS.FOCUS]: {
+      [CONSTANTS.TRIGGER_TYPES.FOCUS]: {
         DISPLAY_NAME: 'Focus',
         TEMPLATE: [[0, 0, 0], [1]],
         FUNC: 'getCamFocus=createFocuser({0},{1});',
       },
-      [CONSTANTS.TRIGGERS.TIME]: {
+      [CONSTANTS.TRIGGER_TYPES.TIME]: {
         DISPLAY_NAME: 'Speed',
         TEMPLATE: [[0, 0, 0], 1],
         FUNC: 'timeRemapper=createTimeRemapper({0},{1});',
       },
-      [CONSTANTS.TRIGGERS.SKIN]: {
+      [CONSTANTS.TRIGGER_TYPES.SKIN]: {
         DISPLAY_NAME: 'Skin',
         TEMPLATE: {
           outline: { stroke: 'black' },
@@ -169,8 +168,8 @@ class CONSTANTS {
 
   static get INIT_SETTINGS() {
     return {
-      fontSize: CONSTANTS.FONT_SIZES.MEDIUM,
-      resolution: CONSTANTS.VIEWPORTS.FHD,
+      fontSize: CONSTANTS.SETTINGS.FONT_SIZES.MEDIUM,
+      resolution: CONSTANTS.SETTINGS.VIEWPORT.FHD,
     };
   }
 }

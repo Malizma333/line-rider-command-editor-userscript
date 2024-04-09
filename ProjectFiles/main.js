@@ -85,7 +85,7 @@ function main() {
 
       this.setState({ triggerData });
 
-      if (activeTab === CONSTANTS.TRIGGERS.FOCUS) {
+      if (activeTab === CONSTANTS.TRIGGER_TYPES.FOCUS) {
         this.setState({
           focuserDropdownIndices: [...focuserDropdownIndices, 0],
         }, () => this.onAdjustFocuserDropdown());
@@ -172,7 +172,7 @@ function main() {
         const { triggerData } = this.state;
 
         triggerData.CustomSkin.triggers[index] = JSON.parse(JSON.stringify(
-          CONSTANTS.TRIGGER_PROPS[CONSTANTS.TRIGGERS.SKIN].TEMPLATE,
+          CONSTANTS.TRIGGER_PROPS[CONSTANTS.TRIGGER_TYPES.SKIN].TEMPLATE,
         ));
 
         this.setState({ triggerData });
@@ -286,7 +286,7 @@ function main() {
 
     onAdjustFocuserDropdown() {
       const { triggerData } = this.state;
-      const focusTriggers = triggerData[CONSTANTS.TRIGGERS.FOCUS].triggers;
+      const focusTriggers = triggerData[CONSTANTS.TRIGGER_TYPES.FOCUS].triggers;
       const clamp = this.commandEditor.RiderCount;
 
       focusTriggers.forEach((e, i) => {
@@ -299,7 +299,7 @@ function main() {
         }
       });
 
-      triggerData[CONSTANTS.TRIGGERS.FOCUS].triggers = focusTriggers;
+      triggerData[CONSTANTS.TRIGGER_TYPES.FOCUS].triggers = focusTriggers;
       this.setState({ triggerData });
 
       const { focuserDropdownIndices } = this.state;
@@ -315,12 +315,12 @@ function main() {
 
     onAdjustSkinDropdown() {
       const { triggerData } = this.state;
-      let skinTriggers = triggerData[CONSTANTS.TRIGGERS.SKIN].triggers;
+      let skinTriggers = triggerData[CONSTANTS.TRIGGER_TYPES.SKIN].triggers;
       const clamp = this.commandEditor.RiderCount;
 
       for (let j = skinTriggers.length; j < clamp; j += 1) {
         skinTriggers = [...skinTriggers, JSON.parse(JSON.stringify(
-          CONSTANTS.TRIGGER_PROPS[CONSTANTS.TRIGGERS.SKIN].TEMPLATE,
+          CONSTANTS.TRIGGER_PROPS[CONSTANTS.TRIGGER_TYPES.SKIN].TEMPLATE,
         ))];
       }
 
@@ -328,7 +328,7 @@ function main() {
         skinTriggers = skinTriggers.slice(0, -1);
       }
 
-      triggerData[CONSTANTS.TRIGGERS.SKIN].triggers = skinTriggers;
+      triggerData[CONSTANTS.TRIGGER_TYPES.SKIN].triggers = skinTriggers;
       this.setState({ triggerData });
 
       let { skinDropdownIndex } = this.state;

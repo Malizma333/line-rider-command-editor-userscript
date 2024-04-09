@@ -204,28 +204,28 @@ class ComponentManager {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.fontSize === CONSTANTS.FONT_SIZES.SMALL
+                state.unsavedSettings.fontSize === CONSTANTS.SETTINGS.FONT_SIZES.SMALL
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeFontSize(CONSTANTS.FONT_SIZES.SMALL),
+            onClick: () => root.onChangeFontSize(CONSTANTS.SETTINGS.FONT_SIZES.SMALL),
           }, rc('text', null, 'Small')),
           rc('button', {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.fontSize === CONSTANTS.FONT_SIZES.MEDIUM
+                state.unsavedSettings.fontSize === CONSTANTS.SETTINGS.FONT_SIZES.MEDIUM
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeFontSize(CONSTANTS.FONT_SIZES.MEDIUM),
+            onClick: () => root.onChangeFontSize(CONSTANTS.SETTINGS.FONT_SIZES.MEDIUM),
           }, rc('text', null, 'Medium')),
           rc('button', {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.fontSize === CONSTANTS.FONT_SIZES.LARGE
+                state.unsavedSettings.fontSize === CONSTANTS.SETTINGS.FONT_SIZES.LARGE
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeFontSize(CONSTANTS.FONT_SIZES.LARGE),
+            onClick: () => root.onChangeFontSize(CONSTANTS.SETTINGS.FONT_SIZES.LARGE),
           }, rc('text', null, 'Large')),
         ),
       ),
@@ -250,38 +250,38 @@ class ComponentManager {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === CONSTANTS.VIEWPORTS.HD
+                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.HD
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeViewport(CONSTANTS.VIEWPORTS.HD),
-          }, rc('text', null, CONSTANTS.VIEWPORTS.HD)),
+            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.HD),
+          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.HD)),
           rc('button', {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === CONSTANTS.VIEWPORTS.FHD
+                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.FHD
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeViewport(CONSTANTS.VIEWPORTS.FHD),
-          }, rc('text', null, CONSTANTS.VIEWPORTS.FHD)),
+            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.FHD),
+          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.FHD)),
           rc('button', {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === CONSTANTS.VIEWPORTS.QHD
+                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.QHD
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeViewport(CONSTANTS.VIEWPORTS.QHD),
-          }, rc('text', null, CONSTANTS.VIEWPORTS.QHD)),
+            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.QHD),
+          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.QHD)),
           rc('button', {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === CONSTANTS.VIEWPORTS.UHD
+                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.UHD
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeViewport(CONSTANTS.VIEWPORTS.UHD),
-          }, rc('text', null, CONSTANTS.VIEWPORTS.UHD)),
+            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.UHD),
+          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.UHD)),
         ),
       ),
     );
@@ -327,7 +327,7 @@ class ComponentManager {
 
   window(data) {
     const { rc, state } = this;
-    if (data.id === CONSTANTS.TRIGGERS.SKIN) {
+    if (data.id === CONSTANTS.TRIGGER_TYPES.SKIN) {
       return rc(
         'div',
         { style: Styles.window },
@@ -357,7 +357,7 @@ class ComponentManager {
         for: 'smoothTextInput',
         style: { fontSize: Styles.theme.textSizes.S[state.settings.fontSize] },
       }, 'Smoothing'),
-      data.id !== CONSTANTS.TRIGGERS.TIME && rc('input', {
+      data.id !== CONSTANTS.TRIGGER_TYPES.TIME && rc('input', {
         id: 'smoothTextInput',
         style: {
           ...Styles.smooth.input,
@@ -383,7 +383,7 @@ class ComponentManager {
           true,
         ),
       }),
-      data.id === CONSTANTS.TRIGGERS.TIME && rc(
+      data.id === CONSTANTS.TRIGGER_TYPES.TIME && rc(
         'div',
         { style: Styles.checkbox.container },
         rc('input', {
@@ -435,11 +435,11 @@ class ComponentManager {
         }, 'X'),
       ),
       this.timeStamp(triggerData[0], index),
-      data.id === CONSTANTS.TRIGGERS.ZOOM && this.zoomTrigger(triggerData, index),
-      data.id === CONSTANTS.TRIGGERS.PAN && this.cameraPanTrigger(triggerData, index),
-      data.id === CONSTANTS.TRIGGERS.FOCUS && this.cameraFocusTrigger(triggerData, index),
-      data.id === CONSTANTS.TRIGGERS.TIME && this.timeRemapTrigger(triggerData, index),
-      data.id === CONSTANTS.TRIGGERS.SKIN && false,
+      data.id === CONSTANTS.TRIGGER_TYPES.ZOOM && this.zoomTrigger(triggerData, index),
+      data.id === CONSTANTS.TRIGGER_TYPES.PAN && this.cameraPanTrigger(triggerData, index),
+      data.id === CONSTANTS.TRIGGER_TYPES.FOCUS && this.cameraFocusTrigger(triggerData, index),
+      data.id === CONSTANTS.TRIGGER_TYPES.TIME && this.timeRemapTrigger(triggerData, index),
+      data.id === CONSTANTS.TRIGGER_TYPES.SKIN && false,
       rc(
         'button',
         {
