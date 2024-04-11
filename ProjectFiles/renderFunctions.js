@@ -250,38 +250,38 @@ class ComponentManager {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.HD
+                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.HD.ID
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.HD),
-          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.HD)),
+            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.HD.ID),
+          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.HD.NAME)),
           rc('button', {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.FHD
+                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.FHD.ID
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.FHD),
-          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.FHD)),
+            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.FHD.ID),
+          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.FHD.NAME)),
           rc('button', {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.QHD
+                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.QHD.ID
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.QHD),
-          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.QHD)),
+            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.QHD.ID),
+          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.QHD.NAME)),
           rc('button', {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.UHD
+                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.UHD.ID
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.UHD),
-          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.UHD)),
+            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.UHD.ID),
+          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.UHD.NAME)),
         ),
       ),
     );

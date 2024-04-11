@@ -35,31 +35,30 @@ class CommandEditor {
     return this.generateScript(command);
   }
 
-  onUpdate(nextState = this.state) {
-    let shouldUpdate = false;
+  changeViewport(nextViewport) {
+    // TODO: Create actions file when reorganizing directory
+    this.store.dispatch({
+      type: 'SET_PLAYBACK_DIMENSIONS',
+      payload: nextViewport,
+    });
+  }
 
+  onUpdate(nextState = this.state) {
     if (this.state !== nextState) {
       this.state = nextState;
-      shouldUpdate = true;
     }
 
     const script = Selectors.getCurrentScript(this.store.getState());
 
     if (this.script !== script) {
       this.script = script;
-      shouldUpdate = true;
     }
 
     const riderCount = Selectors.getNumRiders(this.store.getState());
 
     if (this.riderCount !== riderCount) {
       this.riderCount = riderCount;
-      shouldUpdate = true;
     }
-
-    if (!shouldUpdate || !this.state.active) return;
-
-    this.changed = true;
   }
 
   generateScript(command) {

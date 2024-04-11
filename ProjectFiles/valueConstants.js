@@ -28,10 +28,10 @@ class CONSTANTS {
   static get SETTINGS() {
     return {
       VIEWPORT: {
-        HD: '720p',
-        FHD: '1080p',
-        QHD: '1440p',
-        UHD: '4K',
+        HD: { ID: 'HD', NAME: '720p', SIZE: [1280, 720] },
+        FHD: { ID: 'FHD', NAME: '1080p', SIZE: [1920, 1080] },
+        QHD: { ID: 'QHD', NAME: '1440p', SIZE: [2560, 1440] },
+        UHD: { ID: 'UHD', NAME: '4K', SIZE: [3840, 2160] },
       },
       FONT_SIZES: {
         SMALL: 0,
@@ -169,7 +169,7 @@ class CONSTANTS {
   static get INIT_SETTINGS() {
     return {
       fontSize: CONSTANTS.SETTINGS.FONT_SIZES.MEDIUM,
-      resolution: CONSTANTS.SETTINGS.VIEWPORT.FHD,
+      resolution: CONSTANTS.SETTINGS.VIEWPORT.HD.ID,
     };
   }
 }

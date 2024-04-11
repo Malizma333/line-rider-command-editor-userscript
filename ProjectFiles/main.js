@@ -260,6 +260,12 @@ function main() {
       this.setState({ resolution });
     }
 
+    onSaveViewport() {
+      const { settings } = this.state;
+      const size = CONSTANTS.SETTINGS.VIEWPORT[settings.resolution].SIZE;
+      this.commandEditor.changeViewport({ width: size[0], height: size[1] });
+    }
+
     onApplySettings() {
       const { unsavedSettings, settings } = this.state;
 
@@ -267,7 +273,7 @@ function main() {
         settings[setting] = unsavedSettings[setting];
       });
 
-      this.setState({ settings });
+      this.setState({ settings }, this.onSaveViewport);
 
       unsavedSettings.dirty = false;
 
@@ -376,7 +382,7 @@ function main() {
       this.setState({ triggerData: this.commandEditor.parser.commandData });
       this.setState({ focuserDropdownIndices: [0] });
       this.setState({ skinEditorZoomProps: { scale: 1 } });
-      this.setState({ settings: { ...CONSTANTS.INIT_SETTINGS } });
+      this.setState({ settings: { ...CONSTANTS.INIT_SETTINGS } }, this.onSaveViewport);
       this.setState({
         unsavedSettings: {
           ...CONSTANTS.INIT_SETTINGS,
