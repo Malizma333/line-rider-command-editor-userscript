@@ -67,7 +67,7 @@ else
   echo "// @author       Malizma" >> "$USER_SCRIPT_FILE"
   echo "// @description  Adds UI to API commands in linerider.com" >> "$USER_SCRIPT_FILE"
   echo "// @namespace    https://www.linerider.com/" >> "$USER_SCRIPT_FILE"
-  echo "// @version      1.0.0" >> "$USER_SCRIPT_FILE"
+  echo "// @version      2.0.0" >> "$USER_SCRIPT_FILE"
   echo "// @icon         https://www.linerider.com/favicon.ico" >> "$USER_SCRIPT_FILE"
   echo "// @match        https://www.linerider.com/*" >> "$USER_SCRIPT_FILE"
   echo "// @match        https://*.official-linerider.com/*" >> "$USER_SCRIPT_FILE"
