@@ -320,9 +320,8 @@ class Styles {
         width: '100%',
       },
       background: {
-        background: `
-        linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),
-        linear-gradient(-45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%)`,
+        background: 'linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%), '
+        + 'linear-gradient(-45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%)',
         backgroundSize: '10px 10px',
         height: '100vh',
         position: 'absolute',
@@ -377,12 +376,12 @@ class Styles {
       },
       flagSvg: {
         height: '18',
-        transform: `scale(${CONSTANTS.VIEWPORT_DIMENSIONS.WIDTH / 256})`,
+        transform: `scale(${Constants.VIEWPORT_DIMENSIONS.WIDTH / 256})`,
         width: '15',
       },
       riderSvg: {
         height: '25',
-        transform: `scale(${CONSTANTS.VIEWPORT_DIMENSIONS.WIDTH / 256})`,
+        transform: `scale(${Constants.VIEWPORT_DIMENSIONS.WIDTH / 256})`,
         width: '31',
       },
     };

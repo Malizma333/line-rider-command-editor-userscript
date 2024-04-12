@@ -36,11 +36,7 @@ class CommandEditor {
   }
 
   changeViewport(nextViewport) {
-    // TODO: Create actions file when reorganizing directory
-    this.store.dispatch({
-      type: 'SET_PLAYBACK_DIMENSIONS',
-      payload: nextViewport,
-    });
+    this.store.dispatch(Actions.setPlaybackDimensions(nextViewport));
   }
 
   onUpdate(nextState = this.state) {
@@ -65,20 +61,20 @@ class CommandEditor {
     let scriptResult = '';
 
     const currentData = this.state.triggerData[command];
-    let currentHeader = CONSTANTS.TRIGGER_PROPS[command].FUNC;
+    let currentHeader = Constants.TRIGGER_PROPS[command].FUNC;
 
     switch (command) {
-      case CONSTANTS.TRIGGER_TYPES.FOCUS:
-      case CONSTANTS.TRIGGER_TYPES.PAN:
-      case CONSTANTS.TRIGGER_TYPES.ZOOM:
+      case Constants.TRIGGER_TYPES.FOCUS:
+      case Constants.TRIGGER_TYPES.PAN:
+      case Constants.TRIGGER_TYPES.ZOOM:
         currentHeader = currentHeader.replace('{0}', JSON.stringify(currentData.triggers));
         currentHeader = currentHeader.replace('{1}', currentData.smoothing);
         break;
-      case CONSTANTS.TRIGGER_TYPES.TIME:
+      case Constants.TRIGGER_TYPES.TIME:
         currentHeader = currentHeader.replace('{0}', JSON.stringify(currentData.triggers));
         currentHeader = currentHeader.replace('{1}', currentData.interpolate);
         break;
-      case CONSTANTS.TRIGGER_TYPES.SKIN:
+      case Constants.TRIGGER_TYPES.SKIN:
         currentHeader = currentHeader.replace('{0}', Validator.formatSkins(currentData.triggers));
         break;
       default:

@@ -3,7 +3,7 @@
 class Parser {
   constructor() {
     this.commandData = {};
-    Object.keys(CONSTANTS.TRIGGER_PROPS).forEach((command) => {
+    Object.keys(Constants.TRIGGER_PROPS).forEach((command) => {
       this.initCommand(command, false);
     });
   }
@@ -12,18 +12,18 @@ class Parser {
     this.commandData[command] = {
       id: command,
       triggers: !empty
-        ? [Object.assign(CONSTANTS.TRIGGER_PROPS[command].TEMPLATE, {})]
+        ? [Object.assign(Constants.TRIGGER_PROPS[command].TEMPLATE, {})]
         : [],
     };
 
     switch (command) {
-      case CONSTANTS.TRIGGER_TYPES.FOCUS:
-      case CONSTANTS.TRIGGER_TYPES.PAN:
-      case CONSTANTS.TRIGGER_TYPES.ZOOM:
-        this.commandData[command].smoothing = CONSTANTS.CONSTRAINTS.SMOOTH.DEFAULT;
+      case Constants.TRIGGER_TYPES.FOCUS:
+      case Constants.TRIGGER_TYPES.PAN:
+      case Constants.TRIGGER_TYPES.ZOOM:
+        this.commandData[command].smoothing = Constants.CONSTRAINTS.SMOOTH.DEFAULT;
         break;
-      case CONSTANTS.TRIGGER_TYPES.TIME:
-        this.commandData[command].interpolate = CONSTANTS.CONSTRAINTS.INTERPOLATE.DEFAULT;
+      case Constants.TRIGGER_TYPES.TIME:
+        this.commandData[command].interpolate = Constants.CONSTRAINTS.INTERPOLATE.DEFAULT;
         break;
       default:
         break;
@@ -33,7 +33,7 @@ class Parser {
   parseScript(scriptText) {
     this.script = scriptText.replace(/\s/g, '');
 
-    Object.keys(CONSTANTS.TRIGGER_PROPS).forEach((command) => {
+    Object.keys(Constants.TRIGGER_PROPS).forEach((command) => {
       this.parseCommand(command);
     });
   }
@@ -41,7 +41,7 @@ class Parser {
   // Parses the script by checking for the command's FUNC and verifying it's in a valid format
 
   parseCommand(command) {
-    const currentHeader = CONSTANTS.TRIGGER_PROPS[command].FUNC.split('(')[0];
+    const currentHeader = Constants.TRIGGER_PROPS[command].FUNC.split('(')[0];
     const currentHeaderIndex = this.script.indexOf(currentHeader);
 
     if (currentHeaderIndex === -1) return;
@@ -61,14 +61,14 @@ class Parser {
     const [keyframes, smoothing] = parameterArray;
 
     switch (command) {
-      case CONSTANTS.TRIGGER_TYPES.ZOOM:
-      case CONSTANTS.TRIGGER_TYPES.PAN:
-      case CONSTANTS.TRIGGER_TYPES.FOCUS:
-      case CONSTANTS.TRIGGER_TYPES.TIME:
+      case Constants.TRIGGER_TYPES.ZOOM:
+      case Constants.TRIGGER_TYPES.PAN:
+      case Constants.TRIGGER_TYPES.FOCUS:
+      case Constants.TRIGGER_TYPES.TIME:
         this.addTriggers(command, keyframes);
         this.parseSmoothing(command, smoothing);
         break;
-      case CONSTANTS.TRIGGER_TYPES.SKIN:
+      case Constants.TRIGGER_TYPES.SKIN:
         this.parseSkinCss(keyframes);
         break;
       default:
@@ -79,8 +79,8 @@ class Parser {
   // Parses smoothing specifically by checking if the value exists and type
 
   parseSmoothing(command, smoothingValue) {
-    if (command === CONSTANTS.TRIGGER_TYPES.TIME) {
-      const constraints = CONSTANTS.CONSTRAINTS.INTERPOLATE;
+    if (command === Constants.TRIGGER_TYPES.TIME) {
+      const constraints = Constants.CONSTRAINTS.INTERPOLATE;
 
       if (!smoothingValue) {
         this.commandData[command].interpolate = constraints.DEFAULT;
@@ -93,7 +93,7 @@ class Parser {
         throw new Error('Invalid boolean!');
       }
     } else {
-      const constraints = CONSTANTS.CONSTRAINTS.SMOOTH;
+      const constraints = Constants.CONSTRAINTS.SMOOTH;
 
       if (!smoothingValue) {
         this.commandData[command].interpolate = constraints.DEFAULT;
@@ -135,8 +135,8 @@ class Parser {
 
   parseSkinCss(skinCSSArray) {
     skinCSSArray.forEach((skinCSS, skinIndex) => {
-      this.commandData[CONSTANTS.TRIGGER_TYPES.SKIN].triggers.push(
-        Object.assign(CONSTANTS.TRIGGER_PROPS[CONSTANTS.TRIGGER_TYPES.SKIN].TEMPLATE, {}),
+      this.commandData[Constants.TRIGGER_TYPES.SKIN].triggers.push(
+        Object.assign(Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE, {}),
       );
       let depth = 0;
       let zeroIndex = 0;
@@ -156,8 +156,8 @@ class Parser {
       }
     });
 
-    this.commandData[CONSTANTS.TRIGGER_TYPES.SKIN].triggers.push(
-      this.commandData[CONSTANTS.TRIGGER_TYPES.SKIN].triggers.shift(),
+    this.commandData[Constants.TRIGGER_TYPES.SKIN].triggers.push(
+      this.commandData[Constants.TRIGGER_TYPES.SKIN].triggers.shift(),
     );
   }
 
@@ -202,12 +202,12 @@ class Parser {
         const propName = cssPropKeywords[key];
 
         if ('fill' in skinDataJSON) {
-          this.commandData[CONSTANTS.TRIGGER_TYPES.SKIN]
+          this.commandData[Constants.TRIGGER_TYPES.SKIN]
             .triggers[skinIndex][propName].fill = skinDataJSON.fill;
         }
 
         if ('stroke' in skinDataJSON) {
-          this.commandData[CONSTANTS.TRIGGER_TYPES.SKIN]
+          this.commandData[Constants.TRIGGER_TYPES.SKIN]
             .triggers[skinIndex][propName].stroke = skinDataJSON.stroke;
         }
       }

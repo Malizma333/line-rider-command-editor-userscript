@@ -11,19 +11,22 @@
   },
   "ignorePatterns": [
     "node_modules",
-    "*.user.js"
+    "*.user.js",
+    "*.min.js"
   ],
   "env": {
     "browser": true,
     "es6": true
   },
   "globals": {
-    "CONSTANTS": "readonly",
+    "Actions": "readonly",
+    "CommandEditor": "readonly",
+    "CommandEditorComponent": "readonly",
+    "ComponentManager": "readonly",
+    "Constants": "readonly",
+    "Parser": "readonly",
     "Selectors": "readonly",
     "Styles": "readonly",
-    "Validator": "readonly",
-    "Parser": "readonly",
-    "CommandEditor": "readonly",
-    "ComponentManager": "readonly"
+    "Validator": "readonly"
   }
 }
