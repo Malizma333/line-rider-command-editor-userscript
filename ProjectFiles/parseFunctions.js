@@ -1,178 +1,216 @@
-/* Group of functions for custom data validation */
-
-// Parses the script by checking for a command header keyword and verifying it's in a valid format
-
-function parseCommand (command, currentData, scriptCopy) {
-  const currentHeader = commandDataTypes[command].header.split('(')[0]
-  const currentHeaderIndex = scriptCopy.indexOf(currentHeader)
-
-  if (currentHeaderIndex === -1) return
-
-  const startIndex = currentHeaderIndex + currentHeader.length + 1
-  let endIndex = startIndex
-
-  for (let i = 1; i > 0 || endIndex >= scriptCopy.length; endIndex++) {
-    if (scriptCopy.charAt(endIndex + 1) === '(') i++
-    if (scriptCopy.charAt(endIndex + 1) === ')') i--
+// Group of functions for parsing script data
+// eslint-disable-next-line no-unused-vars
+class Parser {
+  constructor() {
+    this.commandData = {};
+    Object.keys(CONSTANTS.TRIGGER_PROPS).forEach((command) => {
+      this.initCommand(command, false);
+    });
   }
 
-  const parameterText = '[' + scriptCopy.substring(startIndex, endIndex) + ']'
-  // eslint-disable-next-line no-eval
-  const parameterArray = eval(parameterText)
+  initCommand(command, empty) {
+    this.commandData[command] = {
+      id: command,
+      triggers: !empty
+        ? [Object.assign(CONSTANTS.TRIGGER_PROPS[command].TEMPLATE, {})]
+        : [],
+    };
 
-  switch (command) {
-    case Triggers.Zoom:
-    case Triggers.CameraPan:
-    case Triggers.CameraFocus:
-    case Triggers.TimeRemap:
-      adjustTimestamps(parameterArray[0])
-      currentData[command].triggers = parameterArray[0]
-      parseSmoothing(command, currentData, parameterArray[1])
-      break
-    case Triggers.CustomSkin:
-      currentData[command].triggers = parseSkinCss(parameterArray[0])
-      break
-    default:
-      break
+    switch (command) {
+      case CONSTANTS.TRIGGER_TYPES.FOCUS:
+      case CONSTANTS.TRIGGER_TYPES.PAN:
+      case CONSTANTS.TRIGGER_TYPES.ZOOM:
+        this.commandData[command].smoothing = CONSTANTS.CONSTRAINTS.SMOOTH.DEFAULT;
+        break;
+      case CONSTANTS.TRIGGER_TYPES.TIME:
+        this.commandData[command].interpolate = CONSTANTS.CONSTRAINTS.INTERPOLATE.DEFAULT;
+        break;
+      default:
+        break;
+    }
   }
-}
 
-// Parses smoothing specifically by checking if the value exists and type
+  parseScript(scriptText) {
+    this.script = scriptText.replace(/\s/g, '');
 
-function parseSmoothing (command, currentData, smoothingValue) {
-  if (command === Triggers.TimeRemap) {
-    const constraints = constraintProps.interpolateProps
+    Object.keys(CONSTANTS.TRIGGER_PROPS).forEach((command) => {
+      this.parseCommand(command);
+    });
+  }
 
-    if (!smoothingValue) {
-      currentData[command].interpolate = constraints.default
-      return
+  // Parses the script by checking for the command's FUNC and verifying it's in a valid format
+
+  parseCommand(command) {
+    const currentHeader = CONSTANTS.TRIGGER_PROPS[command].FUNC.split('(')[0];
+    const currentHeaderIndex = this.script.indexOf(currentHeader);
+
+    if (currentHeaderIndex === -1) return;
+
+    this.initCommand(command, true);
+
+    const startIndex = currentHeaderIndex + currentHeader.length + 1;
+    let endIndex = startIndex;
+
+    for (let i = 1; i > 0 || endIndex >= this.script.length; endIndex += 1) {
+      if (this.script.charAt(endIndex + 1) === '(') i += 1;
+      if (this.script.charAt(endIndex + 1) === ')') i -= 1;
     }
 
-    if (smoothingValue === true || smoothingValue === false) {
-      currentData[command].interpolate = smoothingValue
+    const parameterText = `[${this.script.substring(startIndex, endIndex)}]`;
+    const parameterArray = JSON.parse(parameterText);
+    const [keyframes, smoothing] = parameterArray;
+
+    switch (command) {
+      case CONSTANTS.TRIGGER_TYPES.ZOOM:
+      case CONSTANTS.TRIGGER_TYPES.PAN:
+      case CONSTANTS.TRIGGER_TYPES.FOCUS:
+      case CONSTANTS.TRIGGER_TYPES.TIME:
+        this.addTriggers(command, keyframes);
+        this.parseSmoothing(command, smoothing);
+        break;
+      case CONSTANTS.TRIGGER_TYPES.SKIN:
+        this.parseSkinCss(keyframes);
+        break;
+      default:
+        break;
+    }
+  }
+
+  // Parses smoothing specifically by checking if the value exists and type
+
+  parseSmoothing(command, smoothingValue) {
+    if (command === CONSTANTS.TRIGGER_TYPES.TIME) {
+      const constraints = CONSTANTS.CONSTRAINTS.INTERPOLATE;
+
+      if (!smoothingValue) {
+        this.commandData[command].interpolate = constraints.DEFAULT;
+        return;
+      }
+
+      if (smoothingValue === true || smoothingValue === false) {
+        this.commandData[command].interpolate = smoothingValue;
+      } else {
+        throw new Error('Invalid boolean!');
+      }
     } else {
-      throw new Error('Invalid boolean!')
-    }
-  } else {
-    const constraints = constraintProps.smoothProps
+      const constraints = CONSTANTS.CONSTRAINTS.SMOOTH;
 
-    if (!smoothingValue) {
-      currentData[command].interpolate = constraints.default
-      return
-    }
+      if (!smoothingValue) {
+        this.commandData[command].interpolate = constraints.DEFAULT;
+        return;
+      }
 
-    if (isNaN(smoothingValue)) {
-      throw new Error('Invalid integer!')
-    }
+      if (Number.isNaN(smoothingValue)) {
+        throw new Error('Invalid integer!');
+      }
 
-    if (smoothingValue > constraints.max) {
-      currentData[command].smoothing = constraints.max
-    } else if (smoothingValue < constraints.min) {
-      currentData[command].smoothing = constraints.min
-    } else {
-      currentData[command].smoothing = smoothingValue
+      if (smoothingValue > constraints.MAX) {
+        this.commandData[command].smoothing = constraints.MAX;
+      } else if (smoothingValue < constraints.MIN) {
+        this.commandData[command].smoothing = constraints.MIN;
+      } else {
+        this.commandData[command].smoothing = smoothingValue;
+      }
     }
   }
-}
 
-// Adjusts each of the time stamps to fit the [M,S,F] format
+  // Add triggers and adjusts each of the time stamps to fit the [M,S,F] format
 
-function adjustTimestamps (commandArray) {
-  for (let i = 0; i < commandArray.length; i++) {
-    const timeList = commandArray[i][0]
+  addTriggers(command, commandArray) {
+    for (let i = 0; i < commandArray.length; i += 1) {
+      this.commandData[command].triggers.push([...commandArray[i]]);
 
-    if (!isNaN(timeList)) {
-      commandArray[i][0] = [0, 0, timeList]
-    }
-
-    if (timeList.length === 1) {
-      commandArray[i][0] = [0, 0, timeList[0]]
-    }
-
-    if (timeList.length === 2) {
-      commandArray[i][0] = [0, timeList[0], timeList[1]]
+      const timeProp = commandArray[i][0];
+      if (timeProp.constructor === Number) {
+        this.commandData[command].triggers[i][0] = [0, 0, timeProp];
+      } else if (timeProp.length === 1) {
+        this.commandData[command].triggers[i][0] = [0, 0, timeProp[0]];
+      } else if (timeProp.length === 2) {
+        this.commandData[command].triggers[i][0] = [0, timeProp[0], timeProp[1]];
+      }
     }
   }
-}
 
-// Parses each of the skin css codes in a custom riders command
+  // Parses each of the skin css codes in a custom riders command
 
-function parseSkinCss (skinCSSArray) {
-  const skinJSONArray = []
+  parseSkinCss(skinCSSArray) {
+    skinCSSArray.forEach((skinCSS, skinIndex) => {
+      this.commandData[CONSTANTS.TRIGGER_TYPES.SKIN].triggers.push(
+        Object.assign(CONSTANTS.TRIGGER_PROPS[CONSTANTS.TRIGGER_TYPES.SKIN].TEMPLATE, {}),
+      );
+      let depth = 0;
+      let zeroIndex = 0;
 
-  skinCSSArray.forEach(skinCSS => {
-    const template = JSON.parse(JSON.stringify(commandDataTypes.CustomSkin.template))
-    let depth = 0
-    let zeroIndex = 0
-
-    for (let i = 0; i < skinCSS.length; i++) {
-      if (skinCSS.charAt(i) === '{') depth += 1
-      if (skinCSS.charAt(i) === '}') {
-        depth -= 1
-        if (depth === 0) {
-          parseProp(skinCSS.substring(zeroIndex, i + 1).replace(/\s/g, ''), template)
-          zeroIndex = i + 1
+      for (let i = 0; i < skinCSS.length; i += 1) {
+        if (skinCSS.charAt(i) === '{') depth += 1;
+        if (skinCSS.charAt(i) === '}') {
+          depth -= 1;
+          if (depth === 0) {
+            this.parseProp(
+              skinCSS.substring(zeroIndex, i + 1).replace(/\s/g, ''),
+              skinIndex,
+            );
+            zeroIndex = i + 1;
+          }
         }
       }
-    }
+    });
 
-    skinJSONArray.push(template)
-  })
-
-  skinJSONArray.push(skinJSONArray.shift())
-
-  return skinJSONArray
-}
-
-// Looks through each of the css property keywords and associates them with a JSON compatible keyword
-
-function parseProp (propString, object) {
-  const wordRegex = /(['"])?([#]?[a-z0-9A-Z_-]+)(['"])?/g
-  const cssPropKeywords = {
-    '.outline': 'outline',
-    '.skin': 'skin',
-    '.hair': 'hair',
-    '.fill': 'fill',
-    '#eye': 'eye',
-    '.sled': 'sled',
-    '#string': 'string',
-    '.arm.sleeve': 'armSleeve',
-    '.arm.hand': 'armHand',
-    '.leg.pants': 'legPants',
-    '.leg.foot': 'legFoot',
-    '.torso': 'torso',
-    '.scarf1': 'scarf1',
-    '.scarf2': 'scarf2',
-    '.scarf3': 'scarf3',
-    '.scarf4': 'scarf4',
-    '.scarf5': 'scarf5',
-    '#scarf0': '_scarf0',
-    '#scarf1': '_scarf1',
-    '#scarf2': '_scarf2',
-    '#scarf3': '_scarf3',
-    '#scarf4': '_scarf4',
-    '#scarf5': '_scarf5',
-    '.hat.top': 'hatTop',
-    '.hat.bottom': 'hatBottom',
-    '.hat.ball': 'hatBall',
-    '.flag': 'flag'
+    this.commandData[CONSTANTS.TRIGGER_TYPES.SKIN].triggers.push(
+      this.commandData[CONSTANTS.TRIGGER_TYPES.SKIN].triggers.shift(),
+    );
   }
 
-  for (const key in cssPropKeywords) {
-    if (propString.startsWith(key)) {
-      const skinDataString = propString.substring(key.length).replace(wordRegex, '"$2"').replace(';', ',')
-      const skinDataJSON = JSON.parse(skinDataString)
-      const propName = cssPropKeywords[key]
+  // Looks through each css property keyword and associates them with a JSON compatible keyword
 
-      if ('fill' in skinDataJSON) {
-        object[propName].fill = skinDataJSON.fill
+  parseProp(propString, skinIndex) {
+    const wordRegex = /(['"])?([#]?[a-z0-9A-Z_-]+)(['"])?/g;
+    const cssPropKeywords = {
+      '.outline': 'outline',
+      '.skin': 'skin',
+      '.hair': 'hair',
+      '.fill': 'fill',
+      '#eye': 'eye',
+      '.sled': 'sled',
+      '#string': 'string',
+      '.arm.sleeve': 'armSleeve',
+      '.arm.hand': 'armHand',
+      '.leg.pants': 'legPants',
+      '.leg.foot': 'legFoot',
+      '.torso': 'torso',
+      '.scarf1': 'scarf1',
+      '.scarf2': 'scarf2',
+      '.scarf3': 'scarf3',
+      '.scarf4': 'scarf4',
+      '.scarf5': 'scarf5',
+      '#scarf0': 'id_scarf0',
+      '#scarf1': 'id_scarf1',
+      '#scarf2': 'id_scarf2',
+      '#scarf3': 'id_scarf3',
+      '#scarf4': 'id_scarf4',
+      '#scarf5': 'id_scarf5',
+      '.hat.top': 'hatTop',
+      '.hat.bottom': 'hatBottom',
+      '.hat.ball': 'hatBall',
+      '.flag': 'flag',
+    };
+
+    Object.keys(cssPropKeywords).forEach((key) => {
+      if (propString.startsWith(key)) {
+        const skinDataString = propString.substring(key.length).replace(wordRegex, '"$2"').replace(';', ',');
+        const skinDataJSON = JSON.parse(skinDataString);
+        const propName = cssPropKeywords[key];
+
+        if ('fill' in skinDataJSON) {
+          this.commandData[CONSTANTS.TRIGGER_TYPES.SKIN]
+            .triggers[skinIndex][propName].fill = skinDataJSON.fill;
+        }
+
+        if ('stroke' in skinDataJSON) {
+          this.commandData[CONSTANTS.TRIGGER_TYPES.SKIN]
+            .triggers[skinIndex][propName].stroke = skinDataJSON.stroke;
+        }
       }
-
-      if ('stroke' in skinDataJSON) {
-        object[propName].stroke = skinDataJSON.stroke
-      }
-
-      return
-    }
+    });
   }
 }
