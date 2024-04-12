@@ -28,7 +28,7 @@ function main() {
       return React.createElement(
         'div',
         null,
-        'Outdated command editor userscript detected! Please update by following the link below.',
+        'Outdated command editor userscript build version detected! Please update by following the link below.',
         React.createElement('br'),
         React.createElement('a', { href: 'https://github.com/Malizma333/linerider-userscript-mods/raw/master/mods/line-rider-command-editor.user.js' }, 'Click Here'),
       );
