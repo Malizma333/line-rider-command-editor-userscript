@@ -6,7 +6,7 @@ function main() {
   const { React, ReactDOM } = window;
 
   const parent = document.createElement('div');
-  parent.setAttribute('id', CONSTANTS.ROOT_NODE_ID);
+  parent.setAttribute('id', Constants.ROOT_NODE_ID);
   document.getElementById('content').appendChild(parent);
 
   ReactDOM.render(React.createElement(CommandEditorComponent), parent);

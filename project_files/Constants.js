@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-class CONSTANTS {
+class Constants {
   static get ROOT_NODE_ID() {
     return 'COMMAND_EDITOR_ROOT_NODE';
   }
@@ -66,75 +66,75 @@ class CONSTANTS {
   static get CONSTRAINTS() {
     return {
       INTERPOLATE: {
-        DEFAULT: true, TYPE: CONSTANTS.TYPES.BOOL,
+        DEFAULT: true, TYPE: Constants.TYPES.BOOL,
       },
       SMOOTH: {
-        DEFAULT: 20, MIN: 0, MAX: 40, TYPE: CONSTANTS.TYPES.INT,
+        DEFAULT: 20, MIN: 0, MAX: 40, TYPE: Constants.TYPES.INT,
       },
       FRAME: {
-        DEFAULT: 0, MIN: 0, MAX: 39, TYPE: CONSTANTS.TYPES.INT,
+        DEFAULT: 0, MIN: 0, MAX: 39, TYPE: Constants.TYPES.INT,
       },
       SECOND: {
-        DEFAULT: 0, MIN: 0, MAX: 59, TYPE: CONSTANTS.TYPES.INT,
+        DEFAULT: 0, MIN: 0, MAX: 59, TYPE: Constants.TYPES.INT,
       },
       MINUTE: {
-        DEFAULT: 0, MIN: 0, MAX: 99, TYPE: CONSTANTS.TYPES.INT,
+        DEFAULT: 0, MIN: 0, MAX: 99, TYPE: Constants.TYPES.INT,
       },
       ZOOM: {
-        DEFAULT: 1, MIN: -50, MAX: 50, TYPE: CONSTANTS.TYPES.FLOAT,
+        DEFAULT: 1, MIN: -50, MAX: 50, TYPE: Constants.TYPES.FLOAT,
       },
       PAN_X: {
-        DEFAULT: 0, MIN: -100, MAX: 100, TYPE: CONSTANTS.TYPES.FLOAT,
+        DEFAULT: 0, MIN: -100, MAX: 100, TYPE: Constants.TYPES.FLOAT,
       },
       PAN_Y: {
-        DEFAULT: 0, MIN: -100, MAX: 100, TYPE: CONSTANTS.TYPES.FLOAT,
+        DEFAULT: 0, MIN: -100, MAX: 100, TYPE: Constants.TYPES.FLOAT,
       },
       PAN_WIDTH: {
-        DEFAULT: 0.4, MIN: 0, MAX: 2, TYPE: CONSTANTS.TYPES.FLOAT,
+        DEFAULT: 0.4, MIN: 0, MAX: 2, TYPE: Constants.TYPES.FLOAT,
       },
       PAN_HEIGHT: {
-        DEFAULT: 0.4, MIN: 0, MAX: 2, TYPE: CONSTANTS.TYPES.FLOAT,
+        DEFAULT: 0.4, MIN: 0, MAX: 2, TYPE: Constants.TYPES.FLOAT,
       },
       FOCUS_WEIGHT: {
-        DEFAULT: 0, MIN: 0, MAX: 1, TYPE: CONSTANTS.TYPES.FLOAT,
+        DEFAULT: 0, MIN: 0, MAX: 1, TYPE: Constants.TYPES.FLOAT,
       },
       TIME_SPEED: {
-        DEFAULT: 1, MIN: 0.01, MAX: 10, TYPE: CONSTANTS.TYPES.FLOAT,
+        DEFAULT: 1, MIN: 0.01, MAX: 10, TYPE: Constants.TYPES.FLOAT,
       },
       SKIN_ZOOM: {
-        DEFAULT: 1, MIN: 1, MAX: 4, TYPE: CONSTANTS.TYPES.FLOAT,
+        DEFAULT: 1, MIN: 1, MAX: 4, TYPE: Constants.TYPES.FLOAT,
       },
       ALPHA_SLIDER: {
-        DEFAULT: 1, MIN: 0, MAX: 1, TYPE: CONSTANTS.TYPES.FLOAT,
+        DEFAULT: 1, MIN: 0, MAX: 1, TYPE: Constants.TYPES.FLOAT,
       },
     };
   }
 
   static get TRIGGER_PROPS() {
     return {
-      [CONSTANTS.TRIGGER_TYPES.ZOOM]: {
+      [Constants.TRIGGER_TYPES.ZOOM]: {
         DISPLAY_NAME: 'Zoom',
         TEMPLATE: [[0, 0, 0], 1],
         FUNC: 'getAutoZoom=createZoomer({0},{1});',
       },
-      [CONSTANTS.TRIGGER_TYPES.PAN]: {
+      [Constants.TRIGGER_TYPES.PAN]: {
         DISPLAY_NAME: 'Pan',
         TEMPLATE: [[0, 0, 0], {
           w: 0.4, h: 0.4, x: 0, y: 0,
         }],
         FUNC: 'getCamBounds=createBoundsPanner({0},{1});',
       },
-      [CONSTANTS.TRIGGER_TYPES.FOCUS]: {
+      [Constants.TRIGGER_TYPES.FOCUS]: {
         DISPLAY_NAME: 'Focus',
         TEMPLATE: [[0, 0, 0], [1]],
         FUNC: 'getCamFocus=createFocuser({0},{1});',
       },
-      [CONSTANTS.TRIGGER_TYPES.TIME]: {
+      [Constants.TRIGGER_TYPES.TIME]: {
         DISPLAY_NAME: 'Speed',
         TEMPLATE: [[0, 0, 0], 1],
         FUNC: 'timeRemapper=createTimeRemapper({0},{1});',
       },
-      [CONSTANTS.TRIGGER_TYPES.SKIN]: {
+      [Constants.TRIGGER_TYPES.SKIN]: {
         DISPLAY_NAME: 'Skin',
         TEMPLATE: {
           outline: { stroke: 'black' },
@@ -172,8 +172,8 @@ class CONSTANTS {
 
   static get INIT_SETTINGS() {
     return {
-      fontSize: CONSTANTS.SETTINGS.FONT_SIZES.MEDIUM,
-      resolution: CONSTANTS.SETTINGS.VIEWPORT.HD.ID,
+      fontSize: Constants.SETTINGS.FONT_SIZES.MEDIUM,
+      resolution: Constants.SETTINGS.VIEWPORT.HD.ID,
     };
   }
 }

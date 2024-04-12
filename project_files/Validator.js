@@ -6,15 +6,15 @@ class Validator {
     if (!constraints) return valueChange.new;
 
     switch (constraints.TYPE) {
-      case CONSTANTS.TYPES.BOOL: {
+      case Constants.TYPES.BOOL: {
         return valueChange.new;
       }
 
-      case CONSTANTS.TYPES.INT: {
+      case Constants.TYPES.INT: {
         return this.validateInteger(valueChange, constraints, bounded);
       }
 
-      case CONSTANTS.TYPES.FLOAT: {
+      case Constants.TYPES.FLOAT: {
         return this.validateFloat(valueChange, constraints, bounded);
       }
 
@@ -95,11 +95,11 @@ class Validator {
       const time1 = triggers[i][0];
       const time2 = triggers[i + 1][0];
       const index1 = (
-        time1[0] * CONSTANTS.TIMELINE.SPM + time1[1]
-      ) * CONSTANTS.TIMELINE.FPS + time1[2];
+        time1[0] * Constants.TIMELINE.SPM + time1[1]
+      ) * Constants.TIMELINE.FPS + time1[2];
       const index2 = (
-        time2[0] * CONSTANTS.TIMELINE.SPM + time2[1]
-      ) * CONSTANTS.TIMELINE.FPS + time2[2];
+        time2[0] * Constants.TIMELINE.SPM + time2[1]
+      ) * Constants.TIMELINE.FPS + time2[2];
 
       if (index1 >= index2) {
         const [minute, second, frame] = time1;
@@ -107,12 +107,12 @@ class Validator {
         time2[1] = second;
         time2[2] = frame + 1;
 
-        if (time2[2] === CONSTANTS.TIMELINE.FPS) {
+        if (time2[2] === Constants.TIMELINE.FPS) {
           time2[2] = 0;
           time2[1] += 1;
         }
 
-        if (time2[1] === CONSTANTS.TIMELINE.SPM) {
+        if (time2[1] === Constants.TIMELINE.SPM) {
           time2[1] = 0;
           time2[0] += 1;
         }

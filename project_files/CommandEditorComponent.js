@@ -38,15 +38,15 @@ class CommandEditorComponent extends window.React.Component {
 
       const shouldBeVisible = window.CMD_EDITOR_DEBUG || (!playerRunning && windowFocused);
 
-      document.getElementById(CONSTANTS.ROOT_NODE_ID).style.opacity = shouldBeVisible ? 1 : 0;
-      document.getElementById(CONSTANTS.ROOT_NODE_ID).style.pointerEvents = shouldBeVisible ? null : 'none';
+      document.getElementById(Constants.ROOT_NODE_ID).style.opacity = shouldBeVisible ? 1 : 0;
+      document.getElementById(Constants.ROOT_NODE_ID).style.pointerEvents = shouldBeVisible ? null : 'none';
     });
   }
 
   // Rendering events that handle the basic React component rendering
 
   componentDidMount() {
-    Object.assign(document.getElementById(CONSTANTS.ROOT_NODE_ID).style, Styles.root);
+    Object.assign(document.getElementById(Constants.ROOT_NODE_ID).style, Styles.root);
     this.onInitializeState().then(() => {
       this.setState({ initialized: true });
       this.setState({ active: window.CMD_EDITOR_DEBUG });
@@ -69,7 +69,7 @@ class CommandEditorComponent extends window.React.Component {
 
     this.setState({ triggerData });
 
-    if (activeTab === CONSTANTS.TRIGGER_TYPES.FOCUS) {
+    if (activeTab === Constants.TRIGGER_TYPES.FOCUS) {
       this.setState({
         focuserDropdownIndices: [...focuserDropdownIndices, 0],
       }, () => this.onAdjustFocuserDropdown());
@@ -157,7 +157,7 @@ class CommandEditorComponent extends window.React.Component {
       const { triggerData } = this.state;
 
       triggerData.CustomSkin.triggers[index] = JSON.parse(JSON.stringify(
-        CONSTANTS.TRIGGER_PROPS[CONSTANTS.TRIGGER_TYPES.SKIN].TEMPLATE,
+        Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE,
       ));
 
       this.setState({ triggerData });
@@ -247,24 +247,24 @@ class CommandEditorComponent extends window.React.Component {
 
   onSaveViewport(factor = 0) {
     const { settings, triggerData } = this.state;
-    const size = CONSTANTS.SETTINGS.VIEWPORT[settings.resolution].SIZE;
+    const size = Constants.SETTINGS.VIEWPORT[settings.resolution].SIZE;
     this.commandEditor.changeViewport({ width: size[0], height: size[1] });
 
-    triggerData[CONSTANTS.TRIGGER_TYPES.ZOOM].triggers.forEach((_, i) => {
-      triggerData[CONSTANTS.TRIGGER_TYPES.ZOOM].triggers[i][1] = Math.round((
-        triggerData[CONSTANTS.TRIGGER_TYPES.ZOOM].triggers[i][1] + factor + Number.EPSILON
+    triggerData[Constants.TRIGGER_TYPES.ZOOM].triggers.forEach((_, i) => {
+      triggerData[Constants.TRIGGER_TYPES.ZOOM].triggers[i][1] = Math.round((
+        triggerData[Constants.TRIGGER_TYPES.ZOOM].triggers[i][1] + factor + Number.EPSILON
       ) * 10e6) / 10e6;
     });
 
-    this.onTest(CONSTANTS.TRIGGER_TYPES.ZOOM);
+    this.onTest(Constants.TRIGGER_TYPES.ZOOM);
   }
 
   onApplySettings() {
     const { unsavedSettings, settings } = this.state;
 
     const resFactor = Math.log2(
-      CONSTANTS.SETTINGS.VIEWPORT[unsavedSettings.resolution].SIZE[0]
-      / CONSTANTS.SETTINGS.VIEWPORT[settings.resolution].SIZE[0],
+      Constants.SETTINGS.VIEWPORT[unsavedSettings.resolution].SIZE[0]
+      / Constants.SETTINGS.VIEWPORT[settings.resolution].SIZE[0],
     );
 
     Object.keys(settings).forEach((setting) => {
@@ -290,7 +290,7 @@ class CommandEditorComponent extends window.React.Component {
 
   onAdjustFocuserDropdown() {
     const { triggerData } = this.state;
-    const focusTriggers = triggerData[CONSTANTS.TRIGGER_TYPES.FOCUS].triggers;
+    const focusTriggers = triggerData[Constants.TRIGGER_TYPES.FOCUS].triggers;
     const clamp = this.commandEditor.RiderCount;
 
     focusTriggers.forEach((e, i) => {
@@ -303,7 +303,7 @@ class CommandEditorComponent extends window.React.Component {
       }
     });
 
-    triggerData[CONSTANTS.TRIGGER_TYPES.FOCUS].triggers = focusTriggers;
+    triggerData[Constants.TRIGGER_TYPES.FOCUS].triggers = focusTriggers;
     this.setState({ triggerData });
 
     const { focuserDropdownIndices } = this.state;
@@ -319,12 +319,12 @@ class CommandEditorComponent extends window.React.Component {
 
   onAdjustSkinDropdown() {
     const { triggerData } = this.state;
-    let skinTriggers = triggerData[CONSTANTS.TRIGGER_TYPES.SKIN].triggers;
+    let skinTriggers = triggerData[Constants.TRIGGER_TYPES.SKIN].triggers;
     const clamp = this.commandEditor.RiderCount;
 
     for (let j = skinTriggers.length; j < clamp; j += 1) {
       skinTriggers = [...skinTriggers, JSON.parse(JSON.stringify(
-        CONSTANTS.TRIGGER_PROPS[CONSTANTS.TRIGGER_TYPES.SKIN].TEMPLATE,
+        Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE,
       ))];
     }
 
@@ -332,7 +332,7 @@ class CommandEditorComponent extends window.React.Component {
       skinTriggers = skinTriggers.slice(0, -1);
     }
 
-    triggerData[CONSTANTS.TRIGGER_TYPES.SKIN].triggers = skinTriggers;
+    triggerData[Constants.TRIGGER_TYPES.SKIN].triggers = skinTriggers;
     this.setState({ triggerData });
 
     let { skinDropdownIndex } = this.state;
@@ -349,19 +349,19 @@ class CommandEditorComponent extends window.React.Component {
     const { skinEditorZoomProps } = this.state;
 
     if (isMouseAction) {
-      if (skinEditorZoomProps.scale < CONSTANTS.CONSTRAINTS.SKIN_ZOOM.MAX) {
+      if (skinEditorZoomProps.scale < Constants.CONSTRAINTS.SKIN_ZOOM.MAX) {
         skinEditorZoomProps.xOffset = (event.clientX - rect.x) / skinEditorZoomProps.scale;
         skinEditorZoomProps.yOffset = (event.clientY - rect.y) / skinEditorZoomProps.scale;
       }
       skinEditorZoomProps.scale = Math.max(Math.min(
-        skinEditorZoomProps.scale - event.deltaY * CONSTANTS.SCROLL_DELTA,
-        CONSTANTS.CONSTRAINTS.SKIN_ZOOM.MAX,
-      ), CONSTANTS.CONSTRAINTS.SKIN_ZOOM.MIN);
+        skinEditorZoomProps.scale - event.deltaY * Constants.SCROLL_DELTA,
+        Constants.CONSTRAINTS.SKIN_ZOOM.MAX,
+      ), Constants.CONSTRAINTS.SKIN_ZOOM.MIN);
     } else {
       skinEditorZoomProps.scale = Math.max(Math.min(
         event.target.value,
-        CONSTANTS.CONSTRAINTS.SKIN_ZOOM.MAX,
-      ), CONSTANTS.CONSTRAINTS.SKIN_ZOOM.MIN);
+        Constants.CONSTRAINTS.SKIN_ZOOM.MAX,
+      ), Constants.CONSTRAINTS.SKIN_ZOOM.MIN);
     }
 
     this.setState({ skinEditorZoomProps });
@@ -370,7 +370,7 @@ class CommandEditorComponent extends window.React.Component {
   // State initialization, populates the triggers with base data
 
   async onInitializeState() {
-    const commands = Object.keys(CONSTANTS.TRIGGER_PROPS);
+    const commands = Object.keys(Constants.TRIGGER_PROPS);
 
     if (commands.length === 0) {
       return;
@@ -380,10 +380,10 @@ class CommandEditorComponent extends window.React.Component {
     this.setState({ triggerData: this.commandEditor.parser.commandData });
     this.setState({ focuserDropdownIndices: [0] });
     this.setState({ skinEditorZoomProps: { scale: 1 } });
-    this.setState({ settings: { ...CONSTANTS.INIT_SETTINGS } }, this.onSaveViewport);
+    this.setState({ settings: { ...Constants.INIT_SETTINGS } }, this.onSaveViewport);
     this.setState({
       unsavedSettings: {
-        ...CONSTANTS.INIT_SETTINGS,
+        ...Constants.INIT_SETTINGS,
         dirty: false,
       },
     });

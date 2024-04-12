@@ -22,7 +22,7 @@
     "CommandEditor": "readonly",
     "CommandEditorComponent": "readonly",
     "ComponentManager": "readonly",
-    "CONSTANTS": "readonly",
+    "Constants": "readonly",
     "Parser": "readonly",
     "Selectors": "readonly",
     "Styles": "readonly",

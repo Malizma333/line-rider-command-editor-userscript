@@ -56,7 +56,7 @@ class ComponentManager {
         'button',
         {
           style: Styles.buttons.embedded,
-          onClick: () => window.open(CONSTANTS.LINKS.REPORT),
+          onClick: () => window.open(Constants.LINKS.REPORT),
         },
         rc('span', { style: { position: 'relative' } }, '⚑'),
       ),
@@ -64,7 +64,7 @@ class ComponentManager {
         'button',
         {
           style: Styles.buttons.embedded,
-          onClick: () => window.open(CONSTANTS.LINKS.HELP),
+          onClick: () => window.open(Constants.LINKS.HELP),
         },
         rc('span', { style: { position: 'relative' } }, '?'),
       ),
@@ -204,28 +204,28 @@ class ComponentManager {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.fontSize === CONSTANTS.SETTINGS.FONT_SIZES.SMALL
+                state.unsavedSettings.fontSize === Constants.SETTINGS.FONT_SIZES.SMALL
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeFontSize(CONSTANTS.SETTINGS.FONT_SIZES.SMALL),
+            onClick: () => root.onChangeFontSize(Constants.SETTINGS.FONT_SIZES.SMALL),
           }, rc('text', null, 'Small')),
           rc('button', {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.fontSize === CONSTANTS.SETTINGS.FONT_SIZES.MEDIUM
+                state.unsavedSettings.fontSize === Constants.SETTINGS.FONT_SIZES.MEDIUM
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeFontSize(CONSTANTS.SETTINGS.FONT_SIZES.MEDIUM),
+            onClick: () => root.onChangeFontSize(Constants.SETTINGS.FONT_SIZES.MEDIUM),
           }, rc('text', null, 'Medium')),
           rc('button', {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.fontSize === CONSTANTS.SETTINGS.FONT_SIZES.LARGE
+                state.unsavedSettings.fontSize === Constants.SETTINGS.FONT_SIZES.LARGE
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeFontSize(CONSTANTS.SETTINGS.FONT_SIZES.LARGE),
+            onClick: () => root.onChangeFontSize(Constants.SETTINGS.FONT_SIZES.LARGE),
           }, rc('text', null, 'Large')),
         ),
       ),
@@ -250,38 +250,38 @@ class ComponentManager {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.HD.ID
+                state.unsavedSettings.resolution === Constants.SETTINGS.VIEWPORT.HD.ID
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.HD.ID),
-          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.HD.NAME)),
+            onClick: () => root.onChangeViewport(Constants.SETTINGS.VIEWPORT.HD.ID),
+          }, rc('text', null, Constants.SETTINGS.VIEWPORT.HD.NAME)),
           rc('button', {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.FHD.ID
+                state.unsavedSettings.resolution === Constants.SETTINGS.VIEWPORT.FHD.ID
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.FHD.ID),
-          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.FHD.NAME)),
+            onClick: () => root.onChangeViewport(Constants.SETTINGS.VIEWPORT.FHD.ID),
+          }, rc('text', null, Constants.SETTINGS.VIEWPORT.FHD.NAME)),
           rc('button', {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.QHD.ID
+                state.unsavedSettings.resolution === Constants.SETTINGS.VIEWPORT.QHD.ID
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.QHD.ID),
-          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.QHD.NAME)),
+            onClick: () => root.onChangeViewport(Constants.SETTINGS.VIEWPORT.QHD.ID),
+          }, rc('text', null, Constants.SETTINGS.VIEWPORT.QHD.NAME)),
           rc('button', {
             style: {
               ...Styles.buttons.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === CONSTANTS.SETTINGS.VIEWPORT.UHD.ID
+                state.unsavedSettings.resolution === Constants.SETTINGS.VIEWPORT.UHD.ID
                   ? Styles.theme.light_gray1 : Styles.theme.dark_gray1,
             },
-            onClick: () => root.onChangeViewport(CONSTANTS.SETTINGS.VIEWPORT.UHD.ID),
-          }, rc('text', null, CONSTANTS.SETTINGS.VIEWPORT.UHD.NAME)),
+            onClick: () => root.onChangeViewport(Constants.SETTINGS.VIEWPORT.UHD.ID),
+          }, rc('text', null, Constants.SETTINGS.VIEWPORT.UHD.NAME)),
         ),
       ),
     );
@@ -293,7 +293,7 @@ class ComponentManager {
       'div',
       { style: Styles.tabs.container },
       Object.keys(
-        CONSTANTS.TRIGGER_PROPS,
+        Constants.TRIGGER_PROPS,
       ).map((command) => rc(
         'div',
         null,
@@ -316,7 +316,7 @@ class ComponentManager {
     }, rc(
       'text',
       { style: { fontSize: Styles.theme.textSizes.S[state.settings.fontSize] } },
-      CONSTANTS.TRIGGER_PROPS[tabID].DISPLAY_NAME,
+      Constants.TRIGGER_PROPS[tabID].DISPLAY_NAME,
     ));
   }
 
@@ -327,7 +327,7 @@ class ComponentManager {
 
   window(data) {
     const { rc, state } = this;
-    if (data.id === CONSTANTS.TRIGGER_TYPES.SKIN) {
+    if (data.id === Constants.TRIGGER_TYPES.SKIN) {
       return rc(
         'div',
         { style: Styles.window },
@@ -357,7 +357,7 @@ class ComponentManager {
         for: 'smoothTextInput',
         style: { fontSize: Styles.theme.textSizes.S[state.settings.fontSize] },
       }, 'Smoothing'),
-      data.id !== CONSTANTS.TRIGGER_TYPES.TIME && rc('input', {
+      data.id !== Constants.TRIGGER_TYPES.TIME && rc('input', {
         id: 'smoothTextInput',
         style: {
           ...Styles.smooth.input,
@@ -371,7 +371,7 @@ class ComponentManager {
             new: e.target.value,
           },
           ['smoothing'],
-          CONSTANTS.CONSTRAINTS.SMOOTH,
+          Constants.CONSTRAINTS.SMOOTH,
         ),
         onBlur: (e) => root.onUpdateTrigger(
           {
@@ -379,11 +379,11 @@ class ComponentManager {
             new: e.target.value,
           },
           ['smoothing'],
-          CONSTANTS.CONSTRAINTS.SMOOTH,
+          Constants.CONSTRAINTS.SMOOTH,
           true,
         ),
       }),
-      data.id === CONSTANTS.TRIGGER_TYPES.TIME && rc(
+      data.id === Constants.TRIGGER_TYPES.TIME && rc(
         'div',
         { style: Styles.checkbox.container },
         rc('input', {
@@ -395,7 +395,7 @@ class ComponentManager {
               new: !state.triggerData[state.activeTab].interpolate,
             },
             ['interpolate'],
-            CONSTANTS.CONSTRAINTS.INTERPOLATE,
+            Constants.CONSTRAINTS.INTERPOLATE,
           ),
         }),
         data.interpolate && rc('square', { style: Styles.checkbox.fill }),
@@ -435,11 +435,11 @@ class ComponentManager {
         }, 'X'),
       ),
       this.timeStamp(triggerData[0], index),
-      data.id === CONSTANTS.TRIGGER_TYPES.ZOOM && this.zoomTrigger(triggerData, index),
-      data.id === CONSTANTS.TRIGGER_TYPES.PAN && this.cameraPanTrigger(triggerData, index),
-      data.id === CONSTANTS.TRIGGER_TYPES.FOCUS && this.cameraFocusTrigger(triggerData, index),
-      data.id === CONSTANTS.TRIGGER_TYPES.TIME && this.timeRemapTrigger(triggerData, index),
-      data.id === CONSTANTS.TRIGGER_TYPES.SKIN && false,
+      data.id === Constants.TRIGGER_TYPES.ZOOM && this.zoomTrigger(triggerData, index),
+      data.id === Constants.TRIGGER_TYPES.PAN && this.cameraPanTrigger(triggerData, index),
+      data.id === Constants.TRIGGER_TYPES.FOCUS && this.cameraFocusTrigger(triggerData, index),
+      data.id === Constants.TRIGGER_TYPES.TIME && this.timeRemapTrigger(triggerData, index),
+      data.id === Constants.TRIGGER_TYPES.SKIN && false,
       rc(
         'button',
         {
@@ -459,9 +459,9 @@ class ComponentManager {
   timeStamp(data, index) {
     const { rc, root } = this;
     const tProps = [
-      CONSTANTS.CONSTRAINTS.MINUTE,
-      CONSTANTS.CONSTRAINTS.SECOND,
-      CONSTANTS.CONSTRAINTS.FRAME,
+      Constants.CONSTRAINTS.MINUTE,
+      Constants.CONSTRAINTS.SECOND,
+      Constants.CONSTRAINTS.FRAME,
     ];
 
     if (!Array.isArray(data)) {
@@ -532,7 +532,7 @@ class ComponentManager {
             new: e.target.value,
           },
           ['triggers', index, 1],
-          CONSTANTS.CONSTRAINTS.ZOOM,
+          Constants.CONSTRAINTS.ZOOM,
         ),
         onBlur: (e) => root.onUpdateTrigger(
           {
@@ -540,7 +540,7 @@ class ComponentManager {
             new: e.target.value,
           },
           ['triggers', index, 1],
-          CONSTANTS.CONSTRAINTS.ZOOM,
+          Constants.CONSTRAINTS.ZOOM,
           true,
         ),
       }),
@@ -550,10 +550,10 @@ class ComponentManager {
   cameraPanTrigger(data, index) {
     const { rc, root } = this;
     const cProps = [
-      CONSTANTS.CONSTRAINTS.PAN_WIDTH,
-      CONSTANTS.CONSTRAINTS.PAN_HEIGHT,
-      CONSTANTS.CONSTRAINTS.PAN_X,
-      CONSTANTS.CONSTRAINTS.PAN_Y,
+      Constants.CONSTRAINTS.PAN_WIDTH,
+      Constants.CONSTRAINTS.PAN_HEIGHT,
+      Constants.CONSTRAINTS.PAN_X,
+      Constants.CONSTRAINTS.PAN_Y,
     ];
     const labels = ['WIDTH', 'HEIGHT', 'X OFFSET', 'Y OFFSET'];
 
@@ -629,7 +629,7 @@ class ComponentManager {
             new: e.target.value,
           },
           ['triggers', index, 1, dropdownIndex],
-          CONSTANTS.CONSTRAINTS.FOCUS_WEIGHT,
+          Constants.CONSTRAINTS.FOCUS_WEIGHT,
         ),
         onBlur: (e) => root.onUpdateTrigger(
           {
@@ -637,7 +637,7 @@ class ComponentManager {
             new: e.target.value,
           },
           ['triggers', index, 1, dropdownIndex],
-          CONSTANTS.CONSTRAINTS.FOCUS_WEIGHT,
+          Constants.CONSTRAINTS.FOCUS_WEIGHT,
           true,
         ),
       }),
@@ -665,7 +665,7 @@ class ComponentManager {
             new: e.target.value,
           },
           ['triggers', index, 1],
-          CONSTANTS.CONSTRAINTS.TIME_SPEED,
+          Constants.CONSTRAINTS.TIME_SPEED,
         ),
         onBlur: (e) => root.onUpdateTrigger(
           {
@@ -673,7 +673,7 @@ class ComponentManager {
             new: e.target.value,
           },
           ['triggers', index, 1],
-          CONSTANTS.CONSTRAINTS.TIME_SPEED,
+          Constants.CONSTRAINTS.TIME_SPEED,
           true,
         ),
       }),
@@ -710,8 +710,8 @@ class ComponentManager {
           style: { appearance: 'slider-vertical', width: '10px' },
           type: 'range',
           orient: 'vertical',
-          min: CONSTANTS.CONSTRAINTS.SKIN_ZOOM.MIN,
-          max: CONSTANTS.CONSTRAINTS.SKIN_ZOOM.MAX,
+          min: Constants.CONSTRAINTS.SKIN_ZOOM.MIN,
+          max: Constants.CONSTRAINTS.SKIN_ZOOM.MAX,
           step: 0.1,
           value: state.skinEditorZoomProps.scale,
           onChange: (e) => root.onZoomSkinEditor(e, false),
@@ -781,8 +781,8 @@ class ComponentManager {
             id: 'alphaSlider',
             style: Styles.alpha.slider,
             type: 'range',
-            min: CONSTANTS.CONSTRAINTS.ALPHA_SLIDER.MIN,
-            max: CONSTANTS.CONSTRAINTS.ALPHA_SLIDER.MAX,
+            min: Constants.CONSTRAINTS.ALPHA_SLIDER.MIN,
+            max: Constants.CONSTRAINTS.ALPHA_SLIDER.MAX,
             step: 0.01,
             value: alphaValue,
             onChange: (e) => root.onChangeColor(null, e.target.value),
