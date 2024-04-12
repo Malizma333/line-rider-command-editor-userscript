@@ -1,5 +1,9 @@
 // eslint-disable-next-line no-unused-vars
 class CONSTANTS {
+  static get ROOT_NODE_ID() {
+    return 'COMMAND_EDITOR_ROOT_NODE';
+  }
+
   static get VIEWPORT_DIMENSIONS() {
     return {
       WIDTH: Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0),
