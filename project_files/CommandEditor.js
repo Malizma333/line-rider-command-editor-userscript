@@ -36,11 +36,7 @@ class CommandEditor {
   }
 
   changeViewport(nextViewport) {
-    // TODO: Create actions file when reorganizing directory
-    this.store.dispatch({
-      type: 'SET_PLAYBACK_DIMENSIONS',
-      payload: nextViewport,
-    });
+    this.store.dispatch(Actions.setPlaybackDimensions(nextViewport));
   }
 
   onUpdate(nextState = this.state) {
