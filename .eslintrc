@@ -18,13 +18,14 @@
     "es6": true
   },
   "globals": {
+    "Actions": "readonly",
+    "CommandEditor": "readonly",
+    "CommandEditorComponent": "readonly",
+    "ComponentManager": "readonly",
     "CONSTANTS": "readonly",
+    "Parser": "readonly",
     "Selectors": "readonly",
     "Styles": "readonly",
-    "Validator": "readonly",
-    "Parser": "readonly",
-    "CommandEditor": "readonly",
-    "ComponentManager": "readonly",
-    "CommandEditorComponent": "readonly"
+    "Validator": "readonly"
   }
 }
