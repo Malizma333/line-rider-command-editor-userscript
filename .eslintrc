@@ -11,7 +11,8 @@
   },
   "ignorePatterns": [
     "node_modules",
-    "*.user.js"
+    "*.user.js",
+    "*.min.js"
   ],
   "env": {
     "browser": true,
