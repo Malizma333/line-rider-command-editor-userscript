@@ -320,9 +320,8 @@ class Styles {
         width: '100%',
       },
       background: {
-        background: `
-        linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),
-        linear-gradient(-45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%)`,
+        background: 'linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%), '
+        + 'linear-gradient(-45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%)',
         backgroundSize: '10px 10px',
         height: '100vh',
         position: 'absolute',

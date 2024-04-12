@@ -36,6 +36,21 @@ if $DEVELOP; then
   
   echo "}, false);" >> "$BUILD_FILE"
 else
+  echo "window.CMD_EDITOR_DEBUG=$DEVELOP;" >> "$BUILD_FILE"
+  echo "window.addEventListener('load', () => {" >> "$BUILD_FILE"
+
+  for i in project_files/*.js; do
+    cat $i >> "$BUILD_FILE"
+  done
+
+  cat ./main.js >> "$BUILD_FILE"
+
+  echo "}, false);" >> "$BUILD_FILE"
+
+  MINI=$(uglifyjs -c -m -- "$BUILD_FILE")
+
+  > "$BUILD_FILE"
+
   echo "// ==UserScript==" >> "$BUILD_FILE"
   echo "// @name         Command Editor" >> "$BUILD_FILE"
   echo "// @author       Malizma" >> "$BUILD_FILE"
@@ -49,16 +64,5 @@ else
   echo "// @match        https://*.surge.sh/*" >> "$BUILD_FILE"
   echo "// @grant        none" >> "$BUILD_FILE"
   echo "// ==/UserScript==" >> "$BUILD_FILE"
-  echo "" >> "$BUILD_FILE"
-
-  echo "window.CMD_EDITOR_DEBUG=$DEVELOP;" >> "$BUILD_FILE"
-  echo "window.addEventListener('load', () => {" >> "$BUILD_FILE"
-
-  for i in project_files/*.js; do
-    cat $i >> "$BUILD_FILE"
-  done
-
-  cat ./main.js >> "$BUILD_FILE"
-
-  echo "}, false);" >> "$BUILD_FILE"
+  echo "$MINI" >> "$BUILD_FILE"
 fi
