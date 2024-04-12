@@ -142,10 +142,11 @@ function main() {
       }
     }
 
-    onTest() {
+    onTest(overrideTab = null) {
       const { activeTab } = this.state;
+      const targetTab = overrideTab || activeTab;
       try {
-        this.commandEditor.test(activeTab);
+        this.commandEditor.test(targetTab);
         this.setState({ hasError: false });
       } catch (error) {
         this.setState({ message: `Error: ${error.message}` });
@@ -260,20 +261,33 @@ function main() {
       this.setState({ resolution });
     }
 
-    onSaveViewport() {
-      const { settings } = this.state;
+    onSaveViewport(factor = 0) {
+      const { settings, triggerData } = this.state;
       const size = CONSTANTS.SETTINGS.VIEWPORT[settings.resolution].SIZE;
       this.commandEditor.changeViewport({ width: size[0], height: size[1] });
+
+      triggerData[CONSTANTS.TRIGGER_TYPES.ZOOM].triggers.forEach((_, i) => {
+        triggerData[CONSTANTS.TRIGGER_TYPES.ZOOM].triggers[i][1] = Math.round((
+          triggerData[CONSTANTS.TRIGGER_TYPES.ZOOM].triggers[i][1] + factor + Number.EPSILON
+        ) * 10e6) / 10e6;
+      });
+
+      this.onTest(CONSTANTS.TRIGGER_TYPES.ZOOM);
     }
 
     onApplySettings() {
       const { unsavedSettings, settings } = this.state;
 
+      const resFactor = Math.log2(
+        CONSTANTS.SETTINGS.VIEWPORT[unsavedSettings.resolution].SIZE[0]
+        / CONSTANTS.SETTINGS.VIEWPORT[settings.resolution].SIZE[0],
+      );
+
       Object.keys(settings).forEach((setting) => {
         settings[setting] = unsavedSettings[setting];
       });
 
-      this.setState({ settings }, this.onSaveViewport);
+      this.setState({ settings }, () => this.onSaveViewport(resFactor));
 
       unsavedSettings.dirty = false;
 
