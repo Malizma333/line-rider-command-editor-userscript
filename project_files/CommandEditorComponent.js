@@ -8,15 +8,11 @@ class CommandEditorComponent extends window.React.Component {
     this.state = {
       active: false,
       initialized: false,
-      hasError: false,
-      message: '',
+      actionPanelState: {},
       activeTab: null,
-      settingsActive: false,
       triggerData: {},
       focuserDropdownIndices: [],
-      skinDropdownIndex: 0,
-      skinEditorZoomProps: {},
-      selectedColor: '#000000ff',
+      skinEditorState: {},
       settings: {},
       unsavedSettings: {},
     };
@@ -111,43 +107,48 @@ class CommandEditorComponent extends window.React.Component {
   // Interaction events, used when a UI component needs to change the state
 
   onRead() {
-    const { hasError } = this.state;
+    const { actionPanelState } = this.state;
     try {
-      if (hasError) {
-        this.setState({ message: '' });
+      if (actionPanelState.hasError) {
+        actionPanelState.message = '';
       }
 
       const readInformation = this.commandEditor.load();
       this.setState({ triggerData: readInformation });
-      this.setState({ hasError: false });
+      actionPanelState.hasError = false;
     } catch (error) {
-      this.setState({ message: `Error: ${error.message}` });
-      this.setState({ hasError: true });
+      actionPanelState.message = `Error: ${error.message}`;
+      actionPanelState.hasError = true;
     }
+
+    this.setState({ actionPanelState });
   }
 
   onTest(overrideTab = null) {
-    const { activeTab } = this.state;
+    const { activeTab, actionPanelState } = this.state;
     const targetTab = overrideTab || activeTab;
     try {
       this.commandEditor.test(targetTab);
-      this.setState({ hasError: false });
+      actionPanelState.hasError = false;
     } catch (error) {
-      this.setState({ message: `Error: ${error.message}` });
-      this.setState({ hasError: true });
+      actionPanelState.message = `Error: ${error.message}`;
+      actionPanelState.hasError = true;
     }
+
+    this.setState({ actionPanelState });
   }
 
   onPrint() {
-    const { activeTab } = this.state;
+    const { activeTab, actionPanelState } = this.state;
     try {
-      const printInformation = this.commandEditor.print(activeTab);
-      this.setState({ message: printInformation });
-      this.setState({ hasError: false });
+      actionPanelState.message = this.commandEditor.print(activeTab);
+      actionPanelState.hasError = false;
     } catch (error) {
-      this.setState({ message: `Error: ${error.message}` });
-      this.setState({ hasError: true });
+      actionPanelState.message = `Error: ${error.message}`;
+      actionPanelState.hasError = true;
     }
+
+    this.setState({ actionPanelState });
   }
 
   onResetSkin(index) {
@@ -165,27 +166,30 @@ class CommandEditorComponent extends window.React.Component {
   }
 
   onChangeColor(color, alpha) {
-    const { selectedColor } = this.state;
+    const { skinEditorState } = this.state;
+
     const hexAlpha = alpha
       ? Math.round(Math.min(Math.max(parseFloat(alpha), 0), 1) * 255)
         .toString(16).padStart(2, '0')
-      : selectedColor.substring(7);
+      : skinEditorState.color.substring(7);
 
     const hexColor = color
       ? color + hexAlpha
-      : selectedColor.substring(0, 7) + hexAlpha;
+      : skinEditorState.color.substring(0, 7) + hexAlpha;
 
-    this.setState({ selectedColor: hexColor });
+    skinEditorState.color = hexColor;
+
+    this.setState({ skinEditorState });
   }
 
   onCopyClipboard() {
-    const { message, hasError } = this.state;
+    const { actionPanelState } = this.state;
 
-    if (hasError) {
-      console.error('Error copying text to clipboard: ', message);
+    if (actionPanelState.hasError) {
+      console.error('Error copying text to clipboard: ', actionPanelState.message);
     }
 
-    window.navigator.clipboard.writeText(message)
+    window.navigator.clipboard.writeText(actionPanelState.message)
       .then(() => {
         console.log('Text copied to clipboard successfully');
       })
@@ -207,10 +211,10 @@ class CommandEditorComponent extends window.React.Component {
     this.setState({ activeTab: tabName });
   }
 
-  onToggleSettings(settingsActive) {
+  onToggleSettings(active) {
     const { unsavedSettings, settings } = this.state;
 
-    if (!settingsActive && unsavedSettings.dirty) {
+    if (!active && unsavedSettings.dirty) {
       if (!window.confirm('Discard changes?')) {
         return;
       }
@@ -219,7 +223,9 @@ class CommandEditorComponent extends window.React.Component {
       this.setState({ unsavedSettings });
     }
 
-    this.setState({ settingsActive });
+    settings.active = active;
+
+    this.setState({ settings });
   }
 
   onChangeFontSize(fontSize) {
@@ -267,7 +273,7 @@ class CommandEditorComponent extends window.React.Component {
       / Constants.SETTINGS.VIEWPORT[settings.resolution].SIZE[0],
     );
 
-    Object.keys(settings).forEach((setting) => {
+    Object.keys(Constants.INIT_SETTINGS).forEach((setting) => {
       settings[setting] = unsavedSettings[setting];
     });
 
@@ -285,7 +291,9 @@ class CommandEditorComponent extends window.React.Component {
   }
 
   onChangeSkinDropdown(value) {
-    this.setState({ skinDropdownIndex: parseInt(value, 10) });
+    const { skinEditorState } = this.state;
+    skinEditorState.dropdownIndex = parseInt(value, 10);
+    this.setState({ skinEditorState });
   }
 
   onAdjustFocuserDropdown() {
@@ -335,36 +343,36 @@ class CommandEditorComponent extends window.React.Component {
     triggerData[Constants.TRIGGER_TYPES.SKIN].triggers = skinTriggers;
     this.setState({ triggerData });
 
-    let { skinDropdownIndex } = this.state;
+    const { skinEditorState } = this.state;
 
-    if (skinDropdownIndex >= clamp) {
-      skinDropdownIndex = clamp - 1;
+    if (skinEditorState.dropdownIndex >= clamp) {
+      skinEditorState.dropdownIndex = clamp - 1;
     }
 
-    this.setState({ skinDropdownIndex });
+    this.setState({ skinEditorState });
   }
 
   onZoomSkinEditor(event, isMouseAction) {
     const rect = document.getElementById('skinElementContainer').getBoundingClientRect();
-    const { skinEditorZoomProps } = this.state;
+    const { skinEditorState } = this.state;
 
     if (isMouseAction) {
-      if (skinEditorZoomProps.scale < Constants.CONSTRAINTS.SKIN_ZOOM.MAX) {
-        skinEditorZoomProps.xOffset = (event.clientX - rect.x) / skinEditorZoomProps.scale;
-        skinEditorZoomProps.yOffset = (event.clientY - rect.y) / skinEditorZoomProps.scale;
+      if (skinEditorState.zoom.scale < Constants.CONSTRAINTS.SKIN_ZOOM.MAX) {
+        skinEditorState.zoom.xOffset = (event.clientX - rect.x) / skinEditorState.zoom.scale;
+        skinEditorState.zoom.yOffset = (event.clientY - rect.y) / skinEditorState.zoom.scale;
       }
-      skinEditorZoomProps.scale = Math.max(Math.min(
-        skinEditorZoomProps.scale - event.deltaY * Constants.SCROLL_DELTA,
+      skinEditorState.zoom.scale = Math.max(Math.min(
+        skinEditorState.zoom.scale - event.deltaY * Constants.SCROLL_DELTA,
         Constants.CONSTRAINTS.SKIN_ZOOM.MAX,
       ), Constants.CONSTRAINTS.SKIN_ZOOM.MIN);
     } else {
-      skinEditorZoomProps.scale = Math.max(Math.min(
+      skinEditorState.zoom.scale = Math.max(Math.min(
         event.target.value,
         Constants.CONSTRAINTS.SKIN_ZOOM.MAX,
       ), Constants.CONSTRAINTS.SKIN_ZOOM.MIN);
     }
 
-    this.setState({ skinEditorZoomProps });
+    this.setState({ skinEditorState });
   }
 
   // State initialization, populates the triggers with base data
@@ -379,8 +387,25 @@ class CommandEditorComponent extends window.React.Component {
     this.onChangeTab(commands[0]);
     this.setState({ triggerData: this.commandEditor.parser.commandData });
     this.setState({ focuserDropdownIndices: [0] });
-    this.setState({ skinEditorZoomProps: { scale: 1 } });
-    this.setState({ settings: { ...Constants.INIT_SETTINGS } }, this.onSaveViewport);
+    this.setState({
+      actionPanel: {
+        hasError: false,
+        message: '',
+      },
+    });
+    this.setState({
+      skinEditorState: {
+        dropdownIndex: 0,
+        zoom: { scale: 1 },
+        color: '#000000ff',
+      },
+    });
+    this.setState({
+      settings: {
+        ...Constants.INIT_SETTINGS,
+        active: false,
+      },
+    }, this.onSaveViewport);
     this.setState({
       unsavedSettings: {
         ...Constants.INIT_SETTINGS,
