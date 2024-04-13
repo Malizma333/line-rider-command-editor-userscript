@@ -31,10 +31,10 @@ class ComponentManager {
         'div',
         { style: Styles.content },
         this.toolbar(),
-        state.settingsActive && this.settingsContainer(),
-        !state.settingsActive && this.tabContainer(),
-        !state.settingsActive && this.windowContainer(),
-        !state.settingsActive && this.actionPanel(),
+        state.settings.active && this.settingsContainer(),
+        !state.settings.active && this.tabContainer(),
+        !state.settings.active && this.windowContainer(),
+        !state.settings.active && this.actionPanel(),
       ),
     );
   }
@@ -48,7 +48,7 @@ class ComponentManager {
         'button',
         {
           style: Styles.buttons.embedded,
-          onClick: () => root.onToggleSettings(!state.settingsActive),
+          onClick: () => root.onToggleSettings(!state.settings.active),
         },
         rc('span', { style: { position: 'relative' } }, '⚙'),
       ),

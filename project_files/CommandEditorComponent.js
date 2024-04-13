@@ -10,7 +10,6 @@ class CommandEditorComponent extends window.React.Component {
       initialized: false,
       actionPanelState: {},
       activeTab: null,
-      settingsActive: false, // Active tab?
       triggerData: {},
       focuserDropdownIndices: [],
       skinEditorState: {},
@@ -212,10 +211,10 @@ class CommandEditorComponent extends window.React.Component {
     this.setState({ activeTab: tabName });
   }
 
-  onToggleSettings(settingsActive) {
+  onToggleSettings(active) {
     const { unsavedSettings, settings } = this.state;
 
-    if (!settingsActive && unsavedSettings.dirty) {
+    if (!active && unsavedSettings.dirty) {
       if (!window.confirm('Discard changes?')) {
         return;
       }
@@ -224,7 +223,9 @@ class CommandEditorComponent extends window.React.Component {
       this.setState({ unsavedSettings });
     }
 
-    this.setState({ settingsActive });
+    settings.active = active;
+
+    this.setState({ settings });
   }
 
   onChangeFontSize(fontSize) {
@@ -272,7 +273,7 @@ class CommandEditorComponent extends window.React.Component {
       / Constants.SETTINGS.VIEWPORT[settings.resolution].SIZE[0],
     );
 
-    Object.keys(settings).forEach((setting) => {
+    Object.keys(Constants.INIT_SETTINGS).forEach((setting) => {
       settings[setting] = unsavedSettings[setting];
     });
 
@@ -399,7 +400,12 @@ class CommandEditorComponent extends window.React.Component {
         color: '#000000ff',
       },
     });
-    this.setState({ settings: { ...Constants.INIT_SETTINGS } }, this.onSaveViewport);
+    this.setState({
+      settings: {
+        ...Constants.INIT_SETTINGS,
+        active: false,
+      },
+    }, this.onSaveViewport);
     this.setState({
       unsavedSettings: {
         ...Constants.INIT_SETTINGS,
