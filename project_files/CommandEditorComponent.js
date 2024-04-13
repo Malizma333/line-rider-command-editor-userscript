@@ -14,9 +14,7 @@ class CommandEditorComponent extends window.React.Component {
       settingsActive: false, // Active tab?
       triggerData: {},
       focuserDropdownIndices: [],
-      skinDropdownIndex: 0, // Skin editor
-      skinEditorZoomProps: {}, // Skin editor
-      selectedColor: '#000000ff', // Skin editor
+      skinEditorState: {},
       settings: {},
       unsavedSettings: {},
     };
@@ -165,17 +163,20 @@ class CommandEditorComponent extends window.React.Component {
   }
 
   onChangeColor(color, alpha) {
-    const { selectedColor } = this.state;
+    const { skinEditorState } = this.state;
+
     const hexAlpha = alpha
       ? Math.round(Math.min(Math.max(parseFloat(alpha), 0), 1) * 255)
         .toString(16).padStart(2, '0')
-      : selectedColor.substring(7);
+      : skinEditorState.color.substring(7);
 
     const hexColor = color
       ? color + hexAlpha
-      : selectedColor.substring(0, 7) + hexAlpha;
+      : skinEditorState.color.substring(0, 7) + hexAlpha;
 
-    this.setState({ selectedColor: hexColor });
+    skinEditorState.color = hexColor;
+
+    this.setState({ skinEditorState });
   }
 
   onCopyClipboard() {
@@ -285,7 +286,9 @@ class CommandEditorComponent extends window.React.Component {
   }
 
   onChangeSkinDropdown(value) {
-    this.setState({ skinDropdownIndex: parseInt(value, 10) });
+    const { skinEditorState } = this.state;
+    skinEditorState.dropdownIndex = parseInt(value, 10);
+    this.setState({ skinEditorState });
   }
 
   onAdjustFocuserDropdown() {
@@ -335,36 +338,36 @@ class CommandEditorComponent extends window.React.Component {
     triggerData[Constants.TRIGGER_TYPES.SKIN].triggers = skinTriggers;
     this.setState({ triggerData });
 
-    let { skinDropdownIndex } = this.state;
+    const { skinEditorState } = this.state;
 
-    if (skinDropdownIndex >= clamp) {
-      skinDropdownIndex = clamp - 1;
+    if (skinEditorState.dropdownIndex >= clamp) {
+      skinEditorState.dropdownIndex = clamp - 1;
     }
 
-    this.setState({ skinDropdownIndex });
+    this.setState({ skinEditorState });
   }
 
   onZoomSkinEditor(event, isMouseAction) {
     const rect = document.getElementById('skinElementContainer').getBoundingClientRect();
-    const { skinEditorZoomProps } = this.state;
+    const { skinEditorState } = this.state;
 
     if (isMouseAction) {
-      if (skinEditorZoomProps.scale < Constants.CONSTRAINTS.SKIN_ZOOM.MAX) {
-        skinEditorZoomProps.xOffset = (event.clientX - rect.x) / skinEditorZoomProps.scale;
-        skinEditorZoomProps.yOffset = (event.clientY - rect.y) / skinEditorZoomProps.scale;
+      if (skinEditorState.zoom.scale < Constants.CONSTRAINTS.SKIN_ZOOM.MAX) {
+        skinEditorState.zoom.xOffset = (event.clientX - rect.x) / skinEditorState.zoom.scale;
+        skinEditorState.zoom.yOffset = (event.clientY - rect.y) / skinEditorState.zoom.scale;
       }
-      skinEditorZoomProps.scale = Math.max(Math.min(
-        skinEditorZoomProps.scale - event.deltaY * Constants.SCROLL_DELTA,
+      skinEditorState.zoom.scale = Math.max(Math.min(
+        skinEditorState.zoom.scale - event.deltaY * Constants.SCROLL_DELTA,
         Constants.CONSTRAINTS.SKIN_ZOOM.MAX,
       ), Constants.CONSTRAINTS.SKIN_ZOOM.MIN);
     } else {
-      skinEditorZoomProps.scale = Math.max(Math.min(
+      skinEditorState.zoom.scale = Math.max(Math.min(
         event.target.value,
         Constants.CONSTRAINTS.SKIN_ZOOM.MAX,
       ), Constants.CONSTRAINTS.SKIN_ZOOM.MIN);
     }
 
-    this.setState({ skinEditorZoomProps });
+    this.setState({ skinEditorState });
   }
 
   // State initialization, populates the triggers with base data
@@ -379,7 +382,13 @@ class CommandEditorComponent extends window.React.Component {
     this.onChangeTab(commands[0]);
     this.setState({ triggerData: this.commandEditor.parser.commandData });
     this.setState({ focuserDropdownIndices: [0] });
-    this.setState({ skinEditorZoomProps: { scale: 1 } });
+    this.setState({
+      skinEditorState: {
+        dropdownIndex: 0,
+        zoom: { scale: 1 },
+        color: '#000000ff',
+      },
+    });
     this.setState({ settings: { ...Constants.INIT_SETTINGS } }, this.onSaveViewport);
     this.setState({
       unsavedSettings: {
