@@ -8,15 +8,15 @@ class CommandEditorComponent extends window.React.Component {
     this.state = {
       active: false,
       initialized: false,
-      hasError: false,
-      message: '',
+      hasError: false, // Action panel
+      message: '', // Action panel
       activeTab: null,
-      settingsActive: false,
+      settingsActive: false, // Active tab?
       triggerData: {},
       focuserDropdownIndices: [],
-      skinDropdownIndex: 0,
-      skinEditorZoomProps: {},
-      selectedColor: '#000000ff',
+      skinDropdownIndex: 0, // Skin editor
+      skinEditorZoomProps: {}, // Skin editor
+      selectedColor: '#000000ff', // Skin editor
       settings: {},
       unsavedSettings: {},
     };
