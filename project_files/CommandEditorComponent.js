@@ -8,8 +8,7 @@ class CommandEditorComponent extends window.React.Component {
     this.state = {
       active: false,
       initialized: false,
-      hasError: false, // Action panel
-      message: '', // Action panel
+      actionPanelState: {},
       activeTab: null,
       settingsActive: false, // Active tab?
       triggerData: {},
@@ -109,43 +108,48 @@ class CommandEditorComponent extends window.React.Component {
   // Interaction events, used when a UI component needs to change the state
 
   onRead() {
-    const { hasError } = this.state;
+    const { actionPanelState } = this.state;
     try {
-      if (hasError) {
-        this.setState({ message: '' });
+      if (actionPanelState.hasError) {
+        actionPanelState.message = '';
       }
 
       const readInformation = this.commandEditor.load();
       this.setState({ triggerData: readInformation });
-      this.setState({ hasError: false });
+      actionPanelState.hasError = false;
     } catch (error) {
-      this.setState({ message: `Error: ${error.message}` });
-      this.setState({ hasError: true });
+      actionPanelState.message = `Error: ${error.message}`;
+      actionPanelState.hasError = true;
     }
+
+    this.setState({ actionPanelState });
   }
 
   onTest(overrideTab = null) {
-    const { activeTab } = this.state;
+    const { activeTab, actionPanelState } = this.state;
     const targetTab = overrideTab || activeTab;
     try {
       this.commandEditor.test(targetTab);
-      this.setState({ hasError: false });
+      actionPanelState.hasError = false;
     } catch (error) {
-      this.setState({ message: `Error: ${error.message}` });
-      this.setState({ hasError: true });
+      actionPanelState.message = `Error: ${error.message}`;
+      actionPanelState.hasError = true;
     }
+
+    this.setState({ actionPanelState });
   }
 
   onPrint() {
-    const { activeTab } = this.state;
+    const { activeTab, actionPanelState } = this.state;
     try {
-      const printInformation = this.commandEditor.print(activeTab);
-      this.setState({ message: printInformation });
-      this.setState({ hasError: false });
+      actionPanelState.message = this.commandEditor.print(activeTab);
+      actionPanelState.hasError = false;
     } catch (error) {
-      this.setState({ message: `Error: ${error.message}` });
-      this.setState({ hasError: true });
+      actionPanelState.message = `Error: ${error.message}`;
+      actionPanelState.hasError = true;
     }
+
+    this.setState({ actionPanelState });
   }
 
   onResetSkin(index) {
@@ -180,13 +184,13 @@ class CommandEditorComponent extends window.React.Component {
   }
 
   onCopyClipboard() {
-    const { message, hasError } = this.state;
+    const { actionPanelState } = this.state;
 
-    if (hasError) {
-      console.error('Error copying text to clipboard: ', message);
+    if (actionPanelState.hasError) {
+      console.error('Error copying text to clipboard: ', actionPanelState.message);
     }
 
-    window.navigator.clipboard.writeText(message)
+    window.navigator.clipboard.writeText(actionPanelState.message)
       .then(() => {
         console.log('Text copied to clipboard successfully');
       })
@@ -382,6 +386,12 @@ class CommandEditorComponent extends window.React.Component {
     this.onChangeTab(commands[0]);
     this.setState({ triggerData: this.commandEditor.parser.commandData });
     this.setState({ focuserDropdownIndices: [0] });
+    this.setState({
+      actionPanel: {
+        hasError: false,
+        message: '',
+      },
+    });
     this.setState({
       skinEditorState: {
         dropdownIndex: 0,

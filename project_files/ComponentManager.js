@@ -112,8 +112,8 @@ class ComponentManager {
           'div',
           { style: Styles.actionPanel.output },
           rc('text', {
-            style: { color: state.hasError ? 'Red' : 'Black' },
-          }, state.message),
+            style: { color: state.actionPanelState.hasError ? 'Red' : 'Black' },
+          }, state.actionPanelState.message),
         ),
         rc('button', {
           style: {
