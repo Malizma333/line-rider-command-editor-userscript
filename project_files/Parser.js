@@ -57,7 +57,9 @@ class Parser {
     }
 
     const parameterText = `[${this.script.substring(startIndex, endIndex)}]`;
-    const parameterArray = JSON.parse(parameterText);
+    // HACK: Using eval is easier than json.parse, which has stricter syntax
+    // eslint-disable-next-line no-eval
+    const parameterArray = eval(parameterText);
     const [keyframes, smoothing] = parameterArray;
 
     switch (command) {
