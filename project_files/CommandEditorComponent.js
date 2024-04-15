@@ -61,7 +61,14 @@ function InitComponentClass() {
       const commandData = triggerData[activeTab];
       const newTrigger = structuredClone(commandData.triggers[index]);
 
-      commandData.triggers.splice(index, 0, newTrigger);
+      const currentIndex = Selectors.getPlayerIndex(window.store.getState());
+      newTrigger[0] = [
+        Math.floor(currentIndex / 2400),
+        Math.floor((currentIndex % 2400) / 40),
+        Math.floor(currentIndex % 40),
+      ];
+
+      commandData.triggers.splice(index + 1, 0, newTrigger);
       commandData.triggers = Validator.validateTimes(commandData);
 
       this.setState({ triggerData }, this.onAdjustFocuserDropdown());
