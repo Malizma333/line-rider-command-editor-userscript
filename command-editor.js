@@ -9,11 +9,18 @@ function main() {
   parent.setAttribute('id', Constants.ROOT_NODE_ID);
   document.getElementById('content').appendChild(parent);
 
+  const CommandEditorComponent = InitComponentClass();
   ReactDOM.render(React.createElement(CommandEditorComponent), parent);
 }
 
-if (window.store) {
-  main();
-} else {
-  window.onAppReady = main;
+function checkReady() {
+  if (!window.React) {
+    console.log('UNREADY');
+    window.setTimeout(checkReady, 10);
+  } else {
+    console.log('READY');
+    main();
+  }
 }
+
+checkReady();
