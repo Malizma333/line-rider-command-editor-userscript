@@ -59,7 +59,7 @@ function InitComponentClass() {
     onCreateTrigger(index) {
       const { triggerData, activeTab } = this.state;
       const commandData = triggerData[activeTab];
-      const newTrigger = JSON.parse(JSON.stringify(commandData.triggers[index]));
+      const newTrigger = structuredClone(commandData.triggers[index]);
 
       commandData.triggers.splice(index, 0, newTrigger);
       commandData.triggers = Validator.validateTimes(commandData);
@@ -152,9 +152,9 @@ function InitComponentClass() {
       if (confirmReset) {
         const { triggerData } = this.state;
 
-        triggerData.CustomSkin.triggers[index] = JSON.parse(JSON.stringify(
+        triggerData.CustomSkin.triggers[index] = structuredClone(
           Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE,
-        ));
+        );
 
         this.setState({ triggerData });
       }
@@ -334,9 +334,9 @@ function InitComponentClass() {
       const clamp = this.commandEditor.RiderCount;
 
       for (let j = skinTriggers.length; j < clamp; j += 1) {
-        skinTriggers = [...skinTriggers, JSON.parse(JSON.stringify(
+        skinTriggers = [...skinTriggers, structuredClone(
           Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE,
-        ))];
+        )];
       }
 
       for (let j = skinTriggers.length; j > clamp; j -= 1) {
