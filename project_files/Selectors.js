@@ -17,4 +17,6 @@ class Selectors {
   static getNumRiders(state) { return Selectors.getRiders(state).length; }
 
   static getPlayerIndex(state) { return state.player.index; }
+
+  static getSidebarOpen(state) { return !!state.views.Sidebar; }
 }

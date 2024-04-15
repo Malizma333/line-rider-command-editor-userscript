@@ -30,6 +30,9 @@ function InitComponentClass() {
       });
 
       window.store.subscribe(() => {
+        const sidebarOpen = Selectors.getSidebarOpen(window.store.getState());
+        if (sidebarOpen) this.setState({ active: false });
+
         const playerRunning = Selectors.getPlayerRunning(window.store.getState());
         const windowFocused = Selectors.getWindowFocused(window.store.getState());
 
@@ -202,9 +205,10 @@ function InitComponentClass() {
 
     onActivate() {
       const { active } = this.state;
+      const sidebarOpen = Selectors.getSidebarOpen(window.store.getState());
       if (active) {
         this.setState({ active: false });
-      } else {
+      } else if (!sidebarOpen) {
         this.setState({ active: true });
       }
     }
