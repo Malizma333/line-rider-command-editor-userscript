@@ -56,20 +56,14 @@ class CommandEditorComponent extends window.React.Component {
   // Trigger editing actions, follows a Create-Update-Delete structure
 
   onCreateTrigger(index) {
-    const { triggerData, activeTab, focuserDropdownIndices } = this.state;
+    const { triggerData, activeTab } = this.state;
     const commandData = triggerData[activeTab];
     const newTrigger = JSON.parse(JSON.stringify(commandData.triggers[index]));
 
     commandData.triggers.splice(index, 0, newTrigger);
     commandData.triggers = Validator.validateTimes(commandData);
 
-    this.setState({ triggerData });
-
-    if (activeTab === Constants.TRIGGER_TYPES.FOCUS) {
-      this.setState({
-        focuserDropdownIndices: [...focuserDropdownIndices, 0],
-      }, () => this.onAdjustFocuserDropdown());
-    }
+    this.setState({ triggerData }, this.onAdjustFocuserDropdown());
   }
 
   onUpdateTrigger(valueChange, path, constraints, bounded = false) {
@@ -101,7 +95,7 @@ class CommandEditorComponent extends window.React.Component {
       (_, i) => index !== i,
     );
 
-    this.setState({ triggerData });
+    this.setState({ triggerData }, this.onAdjustFocuserDropdown());
   }
 
   // Interaction events, used when a UI component needs to change the state
@@ -114,7 +108,7 @@ class CommandEditorComponent extends window.React.Component {
       }
 
       const readInformation = this.commandEditor.load();
-      this.setState({ triggerData: readInformation });
+      this.setState({ triggerData: readInformation }, this.onAdjustFocuserDropdown());
       actionPanelState.hasError = false;
     } catch (error) {
       actionPanelState.message = `Error: ${error.message}`;
@@ -315,6 +309,14 @@ class CommandEditorComponent extends window.React.Component {
     this.setState({ triggerData });
 
     const { focuserDropdownIndices } = this.state;
+
+    for (let i = focuserDropdownIndices.length; i < focusTriggers.length; i += 1) {
+      focuserDropdownIndices.push(0);
+    }
+
+    if (focuserDropdownIndices.length > focusTriggers.length) {
+      focuserDropdownIndices.length = focusTriggers.length;
+    }
 
     focuserDropdownIndices.forEach((e, i) => {
       if (focuserDropdownIndices[i] >= clamp) {
