@@ -11,6 +11,7 @@ function InitComponentClass() {
         initialized: false,
         actionPanelState: {},
         activeTab: null,
+        invalidTimes: [],
         triggerData: {},
         focuserDropdownIndices: [],
         skinEditorState: {},
@@ -72,9 +73,11 @@ function InitComponentClass() {
       ];
 
       commandData.triggers.splice(index + 1, 0, newTrigger);
-      commandData.triggers = Validator.validateTimes(commandData);
 
       this.setState({ triggerData }, this.onAdjustFocuserDropdown());
+
+      const invalidTimes = Validator.validateTimes(commandData);
+      this.setState({ invalidTimes });
     }
 
     onUpdateTrigger(valueChange, path, constraints, bounded = false) {
@@ -92,21 +95,24 @@ function InitComponentClass() {
         bounded,
       );
 
-      if (bounded) {
-        commandData.triggers = Validator.validateTimes(commandData);
-      }
-
       this.setState({ triggerData });
+
+      const invalidTimes = Validator.validateTimes(commandData);
+      this.setState({ invalidTimes });
     }
 
     onDeleteTrigger(index) {
       const { triggerData, activeTab } = this.state;
+      const commandData = triggerData[activeTab];
 
       triggerData[activeTab].triggers = triggerData[activeTab].triggers.filter(
         (_, i) => index !== i,
       );
 
       this.setState({ triggerData }, this.onAdjustFocuserDropdown());
+
+      const invalidTimes = Validator.validateTimes(commandData);
+      this.setState({ invalidTimes });
     }
 
     // Interaction events, used when a UI component needs to change the state
@@ -121,6 +127,12 @@ function InitComponentClass() {
         const readInformation = this.commandEditor.load();
         this.setState({ triggerData: readInformation }, this.onAdjustFocuserDropdown());
         actionPanelState.hasError = false;
+
+        const commandData = readInformation[this.state.activeTab];
+        if (commandData) {
+          const invalidTimes = Validator.validateTimes(commandData);
+          this.setState({ invalidTimes });
+        }
       } catch (error) {
         actionPanelState.message = `Error: ${error.message}`;
         actionPanelState.hasError = true;
@@ -218,6 +230,11 @@ function InitComponentClass() {
 
     onChangeTab(tabName) {
       this.setState({ activeTab: tabName });
+      const commandData = this.state.triggerData[tabName];
+      if (commandData) {
+        const invalidTimes = Validator.validateTimes(commandData);
+        this.setState({ invalidTimes });
+      }
     }
 
     onToggleSettings(active) {

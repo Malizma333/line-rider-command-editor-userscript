@@ -457,7 +457,7 @@ class ComponentManager {
   }
 
   timeStamp(data, index) {
-    const { rc, root } = this;
+    const { rc, root, state } = this;
     const tProps = [
       Constants.CONSTRAINTS.MINUTE,
       Constants.CONSTRAINTS.SECOND,
@@ -482,12 +482,8 @@ class ComponentManager {
         rc('input', {
           style: {
             ...Styles.trigger.input,
-            backgroundColor:
-                index === 0
-                  ? Styles.theme.dark_gray2
-                  : Styles.theme.white,
+            color: state.invalidTimes[index] ? 'red' : 'black',
           },
-          disabled: index === 0,
           value: timeValue,
           onChange: (e) => root.onUpdateTrigger(
             {
