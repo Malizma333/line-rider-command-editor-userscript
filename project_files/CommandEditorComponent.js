@@ -11,6 +11,7 @@ function InitComponentClass() {
         initialized: false,
         actionPanelState: {},
         activeTab: null,
+        invalidTimes: [],
         triggerData: {},
         focuserDropdownIndices: [],
         skinEditorState: {},
@@ -30,6 +31,9 @@ function InitComponentClass() {
       });
 
       window.store.subscribe(() => {
+        const sidebarOpen = Selectors.getSidebarOpen(window.store.getState());
+        if (sidebarOpen) this.setState({ active: false });
+
         const playerRunning = Selectors.getPlayerRunning(window.store.getState());
         const windowFocused = Selectors.getWindowFocused(window.store.getState());
 
@@ -59,12 +63,21 @@ function InitComponentClass() {
     onCreateTrigger(index) {
       const { triggerData, activeTab } = this.state;
       const commandData = triggerData[activeTab];
-      const newTrigger = JSON.parse(JSON.stringify(commandData.triggers[index]));
+      const newTrigger = structuredClone(commandData.triggers[index]);
 
-      commandData.triggers.splice(index, 0, newTrigger);
-      commandData.triggers = Validator.validateTimes(commandData);
+      const currentIndex = Selectors.getPlayerIndex(window.store.getState());
+      newTrigger[0] = [
+        Math.floor(currentIndex / 2400),
+        Math.floor((currentIndex % 2400) / 40),
+        Math.floor(currentIndex % 40),
+      ];
+
+      commandData.triggers.splice(index + 1, 0, newTrigger);
 
       this.setState({ triggerData }, this.onAdjustFocuserDropdown());
+
+      const invalidTimes = Validator.validateTimes(commandData);
+      this.setState({ invalidTimes });
     }
 
     onUpdateTrigger(valueChange, path, constraints, bounded = false) {
@@ -82,21 +95,24 @@ function InitComponentClass() {
         bounded,
       );
 
-      if (bounded) {
-        commandData.triggers = Validator.validateTimes(commandData);
-      }
-
       this.setState({ triggerData });
+
+      const invalidTimes = Validator.validateTimes(commandData);
+      this.setState({ invalidTimes });
     }
 
     onDeleteTrigger(index) {
       const { triggerData, activeTab } = this.state;
+      const commandData = triggerData[activeTab];
 
       triggerData[activeTab].triggers = triggerData[activeTab].triggers.filter(
         (_, i) => index !== i,
       );
 
       this.setState({ triggerData }, this.onAdjustFocuserDropdown());
+
+      const invalidTimes = Validator.validateTimes(commandData);
+      this.setState({ invalidTimes });
     }
 
     // Interaction events, used when a UI component needs to change the state
@@ -111,6 +127,12 @@ function InitComponentClass() {
         const readInformation = this.commandEditor.load();
         this.setState({ triggerData: readInformation }, this.onAdjustFocuserDropdown());
         actionPanelState.hasError = false;
+
+        const commandData = readInformation[this.state.activeTab];
+        if (commandData) {
+          const invalidTimes = Validator.validateTimes(commandData);
+          this.setState({ invalidTimes });
+        }
       } catch (error) {
         actionPanelState.message = `Error: ${error.message}`;
         actionPanelState.hasError = true;
@@ -152,9 +174,9 @@ function InitComponentClass() {
       if (confirmReset) {
         const { triggerData } = this.state;
 
-        triggerData.CustomSkin.triggers[index] = JSON.parse(JSON.stringify(
+        triggerData.CustomSkin.triggers[index] = structuredClone(
           Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE,
-        ));
+        );
 
         this.setState({ triggerData });
       }
@@ -195,15 +217,24 @@ function InitComponentClass() {
 
     onActivate() {
       const { active } = this.state;
+      const sidebarOpen = Selectors.getSidebarOpen(window.store.getState());
       if (active) {
         this.setState({ active: false });
       } else {
+        if (sidebarOpen) {
+          window.store.dispatch(Actions.closeSidebar());
+        }
         this.setState({ active: true });
       }
     }
 
     onChangeTab(tabName) {
       this.setState({ activeTab: tabName });
+      const commandData = this.state.triggerData[tabName];
+      if (commandData) {
+        const invalidTimes = Validator.validateTimes(commandData);
+        this.setState({ invalidTimes });
+      }
     }
 
     onToggleSettings(active) {
@@ -334,9 +365,9 @@ function InitComponentClass() {
       const clamp = this.commandEditor.RiderCount;
 
       for (let j = skinTriggers.length; j < clamp; j += 1) {
-        skinTriggers = [...skinTriggers, JSON.parse(JSON.stringify(
+        skinTriggers = [...skinTriggers, structuredClone(
           Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE,
-        ))];
+        )];
       }
 
       for (let j = skinTriggers.length; j > clamp; j -= 1) {

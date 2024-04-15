@@ -90,6 +90,12 @@ class Validator {
 
   static validateTimes(commandData) {
     const { triggers } = commandData;
+    const invalidIndices = Array(triggers.length).map(() => false);
+
+    const firstTime = triggers[0][0];
+    if (firstTime[0] !== 0 || firstTime[1] !== 0 || firstTime[2] !== 0) {
+      invalidIndices[0] = true;
+    }
 
     for (let i = 0; i < triggers.length - 1; i += 1) {
       const time1 = triggers[i][0];
@@ -102,26 +108,11 @@ class Validator {
       ) * Constants.TIMELINE.FPS + time2[2];
 
       if (index1 >= index2) {
-        const [minute, second, frame] = time1;
-        time2[0] = minute;
-        time2[1] = second;
-        time2[2] = frame + 1;
-
-        if (time2[2] === Constants.TIMELINE.FPS) {
-          time2[2] = 0;
-          time2[1] += 1;
-        }
-
-        if (time2[1] === Constants.TIMELINE.SPM) {
-          time2[1] = 0;
-          time2[0] += 1;
-        }
-
-        triggers[i + 1][0] = time2;
+        invalidIndices[i + 1] = true;
       }
     }
 
-    return triggers;
+    return invalidIndices;
   }
 
   static formatSkins(customSkinData) {
