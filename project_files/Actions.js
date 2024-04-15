@@ -6,4 +6,12 @@ class Actions {
       payload: dimension,
     };
   }
+
+  static closeSidebar() {
+    return {
+      type: 'SET_VIEWS',
+      payload: { Sidebar: null },
+      meta: { name: 'SET_SIDEBAR_PAGE', auto: false },
+    };
+  }
 }

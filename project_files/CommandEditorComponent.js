@@ -208,7 +208,10 @@ function InitComponentClass() {
       const sidebarOpen = Selectors.getSidebarOpen(window.store.getState());
       if (active) {
         this.setState({ active: false });
-      } else if (!sidebarOpen) {
+      } else {
+        if (sidebarOpen) {
+          window.store.dispatch(Actions.closeSidebar());
+        }
         this.setState({ active: true });
       }
     }
