@@ -89,6 +89,8 @@ class Validator {
   }
 
   static validateTimes(commandData) {
+    if (!commandData) return [];
+
     const { triggers } = commandData;
     const invalidIndices = Array(triggers.length).map(() => false);
 

@@ -11,7 +11,6 @@ function InitComponentClass() {
         initialized: false,
         actionPanelState: {},
         activeTab: null,
-        invalidTimes: [],
         triggerData: {},
         focuserDropdownIndices: [],
         skinEditorState: {},
@@ -21,6 +20,7 @@ function InitComponentClass() {
 
       this.componentManager = new ComponentManager(window.React.createElement, this);
       this.commandEditor = new CommandEditor(window.store, this.state);
+      this.invalidTimes = [];
 
       window.store.subscribeImmediate(() => {
         const { initialized } = this.state;
@@ -75,14 +75,10 @@ function InitComponentClass() {
       commandData.triggers.splice(index + 1, 0, newTrigger);
 
       this.setState({ triggerData }, this.onAdjustFocuserDropdown());
-
-      const invalidTimes = Validator.validateTimes(commandData);
-      this.setState({ invalidTimes });
     }
 
     onUpdateTrigger(valueChange, path, constraints, bounded = false) {
       const { triggerData, activeTab } = this.state;
-      const commandData = triggerData[activeTab];
       let pathPointer = triggerData[activeTab];
 
       for (let i = 0; i < path.length - 1; i += 1) {
@@ -96,23 +92,16 @@ function InitComponentClass() {
       );
 
       this.setState({ triggerData });
-
-      const invalidTimes = Validator.validateTimes(commandData);
-      this.setState({ invalidTimes });
     }
 
     onDeleteTrigger(index) {
       const { triggerData, activeTab } = this.state;
-      const commandData = triggerData[activeTab];
 
       triggerData[activeTab].triggers = triggerData[activeTab].triggers.filter(
         (_, i) => index !== i,
       );
 
       this.setState({ triggerData }, this.onAdjustFocuserDropdown());
-
-      const invalidTimes = Validator.validateTimes(commandData);
-      this.setState({ invalidTimes });
     }
 
     // Interaction events, used when a UI component needs to change the state
@@ -127,12 +116,6 @@ function InitComponentClass() {
         const readInformation = this.commandEditor.load();
         this.setState({ triggerData: readInformation }, this.onAdjustFocuserDropdown());
         actionPanelState.hasError = false;
-
-        const commandData = readInformation[this.state.activeTab];
-        if (commandData) {
-          const invalidTimes = Validator.validateTimes(commandData);
-          this.setState({ invalidTimes });
-        }
       } catch (error) {
         actionPanelState.message = `Error: ${error.message}`;
         actionPanelState.hasError = true;
@@ -230,11 +213,6 @@ function InitComponentClass() {
 
     onChangeTab(tabName) {
       this.setState({ activeTab: tabName });
-      const commandData = this.state.triggerData[tabName];
-      if (commandData) {
-        const invalidTimes = Validator.validateTimes(commandData);
-        this.setState({ invalidTimes });
-      }
     }
 
     onToggleSettings(active) {
@@ -273,13 +251,19 @@ function InitComponentClass() {
       }
 
       unsavedSettings.resolution = resolution;
+
       this.setState({ unsavedSettings });
-      this.setState({ resolution });
     }
 
-    onSaveViewport(factor = 0) {
-      const { settings, triggerData } = this.state;
-      const size = Constants.SETTINGS.VIEWPORT[settings.resolution].SIZE;
+    onSaveViewport(oldResolution, newResolution) {
+      const { triggerData } = this.state;
+
+      const factor = Math.log2(
+        Constants.SETTINGS.VIEWPORT[newResolution].SIZE[0]
+        / Constants.SETTINGS.VIEWPORT[oldResolution].SIZE[0],
+      );
+
+      const size = Constants.SETTINGS.VIEWPORT[oldResolution].SIZE;
       this.commandEditor.changeViewport({ width: size[0], height: size[1] });
 
       triggerData[Constants.TRIGGER_TYPES.ZOOM].triggers.forEach((_, i) => {
@@ -288,25 +272,21 @@ function InitComponentClass() {
         ) * 10e6) / 10e6;
       });
 
-      this.onTest(Constants.TRIGGER_TYPES.ZOOM);
+      this.setState({ triggerData });
     }
 
     onApplySettings() {
       const { unsavedSettings, settings } = this.state;
 
-      const resFactor = Math.log2(
-        Constants.SETTINGS.VIEWPORT[unsavedSettings.resolution].SIZE[0]
-        / Constants.SETTINGS.VIEWPORT[settings.resolution].SIZE[0],
-      );
+      this.onSaveViewport(settings.resolution, unsavedSettings.resolution);
 
       Object.keys(Constants.INIT_SETTINGS).forEach((setting) => {
         settings[setting] = unsavedSettings[setting];
       });
 
-      this.setState({ settings }, () => this.onSaveViewport(resFactor));
-
       unsavedSettings.dirty = false;
 
+      this.setState({ settings });
       this.setState({ unsavedSettings });
     }
 
@@ -439,7 +419,7 @@ function InitComponentClass() {
           ...Constants.INIT_SETTINGS,
           active: false,
         },
-      }, this.onSaveViewport);
+      });
       this.setState({
         unsavedSettings: {
           ...Constants.INIT_SETTINGS,
@@ -449,6 +429,8 @@ function InitComponentClass() {
     }
 
     render() {
+      this.invalidTimes = Validator.validateTimes(this.state.triggerData[this.state.activeTab]);
+
       const { initialized } = this.state;
       if (!initialized) return false;
       this.componentManager.updateState(this.state);
