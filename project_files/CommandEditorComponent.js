@@ -395,13 +395,7 @@ function InitComponentClass() {
     // State initialization, populates the triggers with base data
 
     async onInitializeState() {
-      const commands = Object.keys(Constants.TRIGGER_PROPS);
-
-      if (commands.length === 0) {
-        return;
-      }
-
-      this.onChangeTab(commands[0]);
+      this.setState({ activeTab: Constants.TRIGGER_TYPES.ZOOM });
       this.setState({ triggerData: this.commandEditor.parser.commandData });
       this.setState({ focuserDropdownIndices: [0] });
       this.setState({
