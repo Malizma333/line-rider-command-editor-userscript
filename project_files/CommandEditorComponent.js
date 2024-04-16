@@ -18,9 +18,12 @@ function InitComponentClass() {
         unsavedSettings: {},
       };
 
+      this.computed = {
+        invalidTimes: [],
+      };
+
       this.componentManager = new ComponentManager(window.React.createElement, this);
       this.commandEditor = new CommandEditor(window.store, this.state);
-      this.invalidTimes = [];
 
       window.store.subscribeImmediate(() => {
         const { initialized } = this.state;
@@ -428,12 +431,21 @@ function InitComponentClass() {
       });
     }
 
-    render() {
-      this.invalidTimes = Validator.validateTimes(this.state.triggerData[this.state.activeTab]);
+    updateComputed() {
+      this.computed.invalidTimes = Validator.validateTimes(
+        this.state.triggerData[this.state.activeTab],
+      );
+    }
 
+    render() {
       const { initialized } = this.state;
       if (!initialized) return false;
+
+      this.updateComputed();
+
       this.componentManager.updateState(this.state);
+      this.componentManager.updateComputed(this.computed);
+
       return this.componentManager.main();
     }
   };

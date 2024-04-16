@@ -4,10 +4,15 @@ class ComponentManager {
     this.rc = rc;
     this.root = root;
     this.state = root.state;
+    this.computed = root.computed;
   }
 
   updateState(nextState) {
     this.state = nextState;
+  }
+
+  updateComputed(nextComputed) {
+    this.computed = nextComputed;
   }
 
   main() {
@@ -457,7 +462,7 @@ class ComponentManager {
   }
 
   timeStamp(data, index) {
-    const { rc, root } = this;
+    const { rc, root, computed } = this;
     const tProps = [
       Constants.CONSTRAINTS.MINUTE,
       Constants.CONSTRAINTS.SECOND,
@@ -482,7 +487,7 @@ class ComponentManager {
         rc('input', {
           style: {
             ...Styles.trigger.input,
-            color: root.invalidTimes[index] ? 'red' : 'black',
+            color: computed.invalidTimes[index] ? 'red' : 'black',
           },
           value: timeValue,
           onChange: (e) => root.onUpdateTrigger(
