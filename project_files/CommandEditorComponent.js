@@ -189,17 +189,14 @@ function InitComponentClass() {
     }
 
     onResetSkin(index) {
-      const confirmReset = window.confirm('Are you sure you want to reset the current rider\'s skin?');
+      const { triggerData } = this.state;
+      if (!window.confirm('Are you sure you want to reset the current rider\'s skin?')) return;
 
-      if (confirmReset) {
-        const { triggerData } = this.state;
+      triggerData.CustomSkin.triggers[index] = structuredClone(
+        Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE,
+      );
 
-        triggerData.CustomSkin.triggers[index] = structuredClone(
-          Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE,
-        );
-
-        this.setState({ triggerData });
-      }
+      this.setState({ triggerData });
     }
 
     onChangeColor(color, alpha) {
@@ -226,13 +223,17 @@ function InitComponentClass() {
         return;
       }
 
-      window.navigator.clipboard.writeText(actionPanelState.message)
-        .then(() => {
-          actionPanelState.copiedNotify = true;
-          this.setState({ actionPanelState });
-          if (this.computed.timer) clearTimeout(this.computed.timer);
-          this.computed.timer = window.setTimeout(() => this.onDisableCopyNotification(), 1000);
-        }).catch(() => {});
+      window.navigator.clipboard.writeText(actionPanelState.message);
+
+      actionPanelState.copiedNotify = true;
+
+      if (this.computed.timer) {
+        clearTimeout(this.computed.timer);
+      }
+
+      this.computed.timer = window.setTimeout(() => this.onDisableCopyNotification(), 1000);
+
+      this.setState({ actionPanelState });
     }
 
     onDisableCopyNotification() {
@@ -244,14 +245,12 @@ function InitComponentClass() {
     onActivate() {
       const { active } = this.state;
       const sidebarOpen = Selectors.getSidebarOpen(store.getState());
-      if (active) {
-        this.setState({ active: false });
-      } else {
-        if (sidebarOpen) {
-          store.dispatch(Actions.closeSidebar());
-        }
-        this.setState({ active: true });
+
+      if (!active && sidebarOpen) {
+        store.dispatch(Actions.closeSidebar());
       }
+
+      this.setState({ active: !active });
     }
 
     onChangeTab(tabName) {
@@ -262,16 +261,14 @@ function InitComponentClass() {
       const { unsavedSettings, settings } = this.state;
 
       if (!active && unsavedSettings.dirty) {
-        if (!window.confirm('Discard changes?')) {
-          return;
-        }
+        if (!window.confirm('Discard changes?')) return;
         Object.assign(unsavedSettings, settings);
         unsavedSettings.dirty = false;
-        this.setState({ unsavedSettings });
       }
 
       settings.active = active;
 
+      this.setState({ unsavedSettings });
       this.setState({ settings });
     }
 
@@ -418,8 +415,8 @@ function InitComponentClass() {
     }
 
     onZoomSkinEditor(event, isMouseAction) {
-      const rect = document.getElementById('skinElementContainer').getBoundingClientRect();
       const { skinEditorState } = this.state;
+      const rect = document.getElementById('skinElementContainer').getBoundingClientRect();
 
       if (isMouseAction) {
         if (skinEditorState.zoom.scale < Constants.CONSTRAINTS.SKIN_ZOOM.MAX) {
