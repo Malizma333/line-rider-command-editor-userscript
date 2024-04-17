@@ -28,19 +28,15 @@ function InitComponentClass() {
       this.componentManager = new ComponentManager(React.createElement, this);
       this.commandEditor = new CommandEditor(store, this.state);
 
-      store.subscribeImmediate(() => {
-        const { initialized } = this.state;
-        if (initialized) {
-          this.onAdjustFocuserDropdown();
-          this.onAdjustSkinDropdown();
-        }
-      });
-
       store.subscribe(() => {
         const riderCount = Selectors.getNumRiders(store.getState());
 
         if (this.computed.riderCount !== riderCount) {
           this.computed.riderCount = riderCount;
+          this.onAdjustFocuserWeightArrays(riderCount);
+          this.onAdjustFocuserDropdownLengths(riderCount);
+          this.onAdjustSkinArray(riderCount);
+          this.onAdjustSkinDropdownLength(riderCount);
         }
 
         const sidebarOpen = Selectors.getSidebarOpen(store.getState());
@@ -87,9 +83,13 @@ function InitComponentClass() {
         Math.floor(currentIndex % 40),
       ];
 
-      commandData.triggers.splice(index + 1, 0, newTrigger);
+      triggerData[activeTab].triggers.splice(index + 1, 0, newTrigger);
 
-      this.setState({ triggerData }, this.onAdjustFocuserDropdown());
+      if (activeTab === Constants.TRIGGER_TYPES.FOCUS) {
+        this.onAdjustDropdownArrayIndexLength(triggerData[activeTab].triggers.length);
+      }
+
+      this.setState({ triggerData });
     }
 
     onUpdateTrigger(valueChange, path, constraints, bounded = false) {
@@ -116,7 +116,11 @@ function InitComponentClass() {
         (_, i) => index !== i,
       );
 
-      this.setState({ triggerData }, this.onAdjustFocuserDropdown());
+      if (activeTab === Constants.TRIGGER_TYPES.FOCUS) {
+        this.onAdjustDropdownArrayIndexLength(triggerData[activeTab].triggers.length);
+      }
+
+      this.setState({ triggerData });
     }
 
     // Interaction events, used when a UI component needs to change the state
@@ -128,8 +132,11 @@ function InitComponentClass() {
           actionPanelState.message = '';
         }
 
-        const readInformation = this.commandEditor.load();
-        this.setState({ triggerData: readInformation }, this.onAdjustFocuserDropdown());
+        const triggerData = this.commandEditor.load();
+        this.onAdjustDropdownArrayIndexLength(
+          triggerData[Constants.TRIGGER_TYPES.FOCUS].triggers.length,
+        );
+        this.setState({ triggerData });
         actionPanelState.hasError = false;
       } catch (error) {
         actionPanelState.message = `Error: ${error.message}`;
@@ -317,65 +324,75 @@ function InitComponentClass() {
       this.setState({ skinEditorState });
     }
 
-    onAdjustFocuserDropdown() {
+    onAdjustFocuserWeightArrays(riderCount) {
       const { triggerData } = this.state;
       const focusTriggers = triggerData[Constants.TRIGGER_TYPES.FOCUS].triggers;
-      const clamp = this.computed.riderCount;
 
-      focusTriggers.forEach((e, i) => {
-        for (let j = focusTriggers[i][1].length; j < clamp; j += 1) {
-          focusTriggers[i][1] = [...focusTriggers[i][1], 0];
+      focusTriggers.forEach((_, i) => {
+        const oldLength = focusTriggers[i][1].length;
+
+        if (oldLength < riderCount) {
+          focusTriggers[i][1].push(...Array(riderCount - oldLength).fill(0));
         }
-
-        for (let j = focusTriggers[i][1].length; j > clamp; j -= 1) {
-          focusTriggers[i][1] = focusTriggers[i][1].slice(0, -1);
+        if (oldLength > riderCount) {
+          focusTriggers[i][1].splice(riderCount, oldLength - riderCount);
         }
       });
 
       triggerData[Constants.TRIGGER_TYPES.FOCUS].triggers = focusTriggers;
       this.setState({ triggerData });
+    }
 
+    onAdjustFocuserDropdownLengths(riderCount) {
       const { focuserDropdownIndices } = this.state;
 
-      for (let i = focuserDropdownIndices.length; i < focusTriggers.length; i += 1) {
-        focuserDropdownIndices.push(0);
-      }
-
-      if (focuserDropdownIndices.length > focusTriggers.length) {
-        focuserDropdownIndices.length = focusTriggers.length;
-      }
-
-      focuserDropdownIndices.forEach((e, i) => {
-        if (focuserDropdownIndices[i] >= clamp) {
-          focuserDropdownIndices[i] = clamp - 1;
+      focuserDropdownIndices.forEach((_, i) => {
+        if (focuserDropdownIndices[i] >= riderCount) {
+          focuserDropdownIndices[i] = riderCount - 1;
         }
       });
 
       this.setState({ focuserDropdownIndices });
     }
 
-    onAdjustSkinDropdown() {
-      const { triggerData } = this.state;
-      let skinTriggers = triggerData[Constants.TRIGGER_TYPES.SKIN].triggers;
-      const clamp = this.computed.riderCount;
+    onAdjustDropdownArrayIndexLength(triggerLength) {
+      const { focuserDropdownIndices } = this.state;
+      const oldLength = focuserDropdownIndices.length;
 
-      for (let j = skinTriggers.length; j < clamp; j += 1) {
-        skinTriggers = [...skinTriggers, structuredClone(
-          Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE,
-        )];
+      if (oldLength < triggerLength) {
+        focuserDropdownIndices.push(...Array(triggerLength - oldLength).fill(0));
+      }
+      if (oldLength > triggerLength) {
+        focuserDropdownIndices.splice(triggerLength, oldLength - triggerLength);
       }
 
-      for (let j = skinTriggers.length; j > clamp; j -= 1) {
-        skinTriggers = skinTriggers.slice(0, -1);
+      this.setState({ focuserDropdownIndices });
+    }
+
+    onAdjustSkinArray(riderCount) {
+      const { triggerData } = this.state;
+      const skinTriggers = triggerData[Constants.TRIGGER_TYPES.SKIN].triggers;
+      const oldLength = skinTriggers.length;
+
+      if (oldLength < riderCount) {
+        skinTriggers.push(...Array(riderCount - oldLength).fill(structuredClone(
+          Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE,
+        )));
+      }
+
+      if (oldLength > riderCount) {
+        skinTriggers.splice(riderCount, oldLength - riderCount);
       }
 
       triggerData[Constants.TRIGGER_TYPES.SKIN].triggers = skinTriggers;
       this.setState({ triggerData });
+    }
 
+    onAdjustSkinDropdownLength(riderCount) {
       const { skinEditorState } = this.state;
 
-      if (skinEditorState.dropdownIndex >= clamp) {
-        skinEditorState.dropdownIndex = clamp - 1;
+      if (skinEditorState.dropdownIndex >= riderCount) {
+        skinEditorState.dropdownIndex = riderCount - 1;
       }
 
       this.setState({ skinEditorState });
