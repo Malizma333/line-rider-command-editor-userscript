@@ -1,5 +1,3 @@
-// Entry point for the UI components
-
 // eslint-disable-next-line no-unused-vars
 function InitComponentClass() {
   const { store, React } = window;
@@ -70,8 +68,6 @@ function InitComponentClass() {
         document.getElementById(Constants.ROOT_NODE_ID).style.pointerEvents = shouldBeVisible ? null : 'none';
       });
     }
-
-    // Rendering events that handle the basic React component rendering
 
     componentDidMount() {
       Object.assign(document.getElementById(Constants.ROOT_NODE_ID).style, Styles.root);

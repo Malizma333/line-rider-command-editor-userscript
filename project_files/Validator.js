@@ -1,5 +1,3 @@
-// Utility class to validate various forms of data
-
 // eslint-disable-next-line no-unused-vars
 class Validator {
   static validateData(valueChange, constraints, bounded) {

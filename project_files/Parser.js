@@ -1,4 +1,3 @@
-// Group of functions for parsing script data
 // eslint-disable-next-line no-unused-vars
 class Parser {
   constructor() {
@@ -38,8 +37,6 @@ class Parser {
     });
   }
 
-  // Parses the script by checking for the command's FUNC and verifying it's in a valid format
-
   parseCommand(command) {
     const currentHeader = Constants.TRIGGER_PROPS[command].FUNC.split('(')[0];
     const currentHeaderIndex = this.script.indexOf(currentHeader);
@@ -78,8 +75,6 @@ class Parser {
     }
   }
 
-  // Parses smoothing specifically by checking if the value exists and type
-
   parseSmoothing(command, smoothingValue) {
     if (command === Constants.TRIGGER_TYPES.TIME) {
       const constraints = Constants.CONSTRAINTS.INTERPOLATE;
@@ -116,8 +111,6 @@ class Parser {
     }
   }
 
-  // Add triggers and adjusts each of the time stamps to fit the [M,S,F] format
-
   addTriggers(command, commandArray) {
     for (let i = 0; i < commandArray.length; i += 1) {
       this.commandData[command].triggers.push([...commandArray[i]]);
@@ -132,8 +125,6 @@ class Parser {
       }
     }
   }
-
-  // Parses each of the skin css codes in a custom riders command
 
   parseSkinCss(skinCSSArray) {
     skinCSSArray.forEach((skinCSS, skinIndex) => {
@@ -162,8 +153,6 @@ class Parser {
       this.commandData[Constants.TRIGGER_TYPES.SKIN].triggers.shift(),
     );
   }
-
-  // Looks through each css property keyword and associates them with a JSON compatible keyword
 
   parseProp(propString, skinIndex) {
     const wordRegex = /(['"])?([#]?[a-z0-9A-Z_-]+)(['"])?/g;

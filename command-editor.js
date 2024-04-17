@@ -1,5 +1,3 @@
-// Main function, entry point of the application
-
 function main() {
   window.V2 = window.V2 || Selectors.getWindowStart(window.store.getState());
 
