@@ -11,13 +11,28 @@ function InitComponentClass() {
       this.state = {
         active: false,
         initialized: false,
-        actionPanelState: {},
-        activeTab: null,
+        actionPanelState: {
+          hasError: false,
+          message: '',
+        },
+        activeTab: Constants.TRIGGER_TYPES.ZOOM,
         triggerData: {},
-        focuserDropdownIndices: [],
-        skinEditorState: {},
-        settings: {},
-        unsavedSettings: {},
+        focuserDropdownIndices: [0],
+        skinEditorState: {
+          dropdownIndex: 0,
+          zoom: { scale: 1 },
+          color: '#000000ff',
+        },
+        settings: {
+          fontSize: Constants.SETTINGS.FONT_SIZES.MEDIUM,
+          resolution: Constants.SETTINGS.VIEWPORT.HD.ID,
+          active: false,
+        },
+        unsavedSettings: {
+          fontSize: Constants.SETTINGS.FONT_SIZES.MEDIUM,
+          resolution: Constants.SETTINGS.VIEWPORT.HD.ID,
+          dirty: false,
+        },
       };
 
       this.computed = {
@@ -61,7 +76,6 @@ function InitComponentClass() {
       Object.assign(document.getElementById(Constants.ROOT_NODE_ID).style, Styles.root);
       this.onInitializeState().then(() => {
         this.setState({ initialized: true });
-        this.setState({ active: window.CMD_EDITOR_DEBUG });
       });
     }
 
@@ -69,7 +83,9 @@ function InitComponentClass() {
       this.commandEditor.onUpdate(nextState);
     }
 
-    // Trigger editing actions, follows a Create-Update-Delete structure
+    async onInitializeState() {
+      this.setState({ triggerData: this.commandEditor.parser.commandData });
+    }
 
     onCreateTrigger(index) {
       const { triggerData, activeTab } = this.state;
@@ -122,8 +138,6 @@ function InitComponentClass() {
 
       this.setState({ triggerData });
     }
-
-    // Interaction events, used when a UI component needs to change the state
 
     onRead() {
       const { actionPanelState } = this.state;
@@ -302,10 +316,8 @@ function InitComponentClass() {
 
       this.onSaveViewport(settings.resolution, unsavedSettings.resolution);
 
-      Object.keys(Constants.INIT_SETTINGS).forEach((setting) => {
-        settings[setting] = unsavedSettings[setting];
-      });
-
+      settings.fontSize = unsavedSettings.fontSize;
+      settings.resolution = unsavedSettings.resolution;
       unsavedSettings.dirty = false;
 
       this.setState({ settings });
@@ -419,39 +431,6 @@ function InitComponentClass() {
       }
 
       this.setState({ skinEditorState });
-    }
-
-    // State initialization, populates the triggers with base data
-
-    async onInitializeState() {
-      this.setState({ activeTab: Constants.TRIGGER_TYPES.ZOOM });
-      this.setState({ triggerData: this.commandEditor.parser.commandData });
-      this.setState({ focuserDropdownIndices: [0] });
-      this.setState({
-        actionPanel: {
-          hasError: false,
-          message: '',
-        },
-      });
-      this.setState({
-        skinEditorState: {
-          dropdownIndex: 0,
-          zoom: { scale: 1 },
-          color: '#000000ff',
-        },
-      });
-      this.setState({
-        settings: {
-          ...Constants.INIT_SETTINGS,
-          active: false,
-        },
-      });
-      this.setState({
-        unsavedSettings: {
-          ...Constants.INIT_SETTINGS,
-          dirty: false,
-        },
-      });
     }
 
     updateComputed() {

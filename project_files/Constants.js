@@ -53,16 +53,6 @@ class Constants {
     };
   }
 
-  static get TRIGGER_TYPES() {
-    return {
-      ZOOM: 'ZOOM',
-      PAN: 'CAMERA_PAN',
-      FOCUS: 'CAMERA_FOCUS',
-      TIME: 'TIME_REMAP',
-      SKIN: 'CUSTOM_SKIN',
-    };
-  }
-
   static get CONSTRAINTS() {
     return {
       INTERPOLATE: {
@@ -107,6 +97,16 @@ class Constants {
       ALPHA_SLIDER: {
         DEFAULT: 1, MIN: 0, MAX: 1, TYPE: Constants.TYPES.FLOAT,
       },
+    };
+  }
+
+  static get TRIGGER_TYPES() {
+    return {
+      ZOOM: 'ZOOM',
+      PAN: 'CAMERA_PAN',
+      FOCUS: 'CAMERA_FOCUS',
+      TIME: 'TIME_REMAP',
+      SKIN: 'CUSTOM_SKIN',
     };
   }
 
@@ -167,13 +167,6 @@ class Constants {
         },
         FUNC: 'setCustomRiders({0});',
       },
-    };
-  }
-
-  static get INIT_SETTINGS() {
-    return {
-      fontSize: Constants.SETTINGS.FONT_SIZES.MEDIUM,
-      resolution: Constants.SETTINGS.VIEWPORT.HD.ID,
     };
   }
 }

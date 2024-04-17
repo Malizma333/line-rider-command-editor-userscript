@@ -12,7 +12,7 @@ class Parser {
     this.commandData[command] = {
       id: command,
       triggers: !empty
-        ? [Object.assign(Constants.TRIGGER_PROPS[command].TEMPLATE, {})]
+        ? [structuredClone(Constants.TRIGGER_PROPS[command].TEMPLATE)]
         : [],
     };
 
@@ -138,7 +138,7 @@ class Parser {
   parseSkinCss(skinCSSArray) {
     skinCSSArray.forEach((skinCSS, skinIndex) => {
       this.commandData[Constants.TRIGGER_TYPES.SKIN].triggers.push(
-        Object.assign(Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE, {}),
+        structuredClone(Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE),
       );
       let depth = 0;
       let zeroIndex = 0;
