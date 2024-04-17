@@ -2,7 +2,9 @@
 
 // eslint-disable-next-line no-unused-vars
 function InitComponentClass() {
-  return class CommandEditorComponent extends window.React.Component {
+  const { store, React } = window;
+
+  return class CommandEditorComponent extends React.Component {
     constructor() {
       super();
 
@@ -20,12 +22,13 @@ function InitComponentClass() {
 
       this.computed = {
         invalidTimes: [],
+        riderCount: 1,
       };
 
-      this.componentManager = new ComponentManager(window.React.createElement, this);
-      this.commandEditor = new CommandEditor(window.store, this.state);
+      this.componentManager = new ComponentManager(React.createElement, this);
+      this.commandEditor = new CommandEditor(store, this.state);
 
-      window.store.subscribeImmediate(() => {
+      store.subscribeImmediate(() => {
         const { initialized } = this.state;
         if (initialized) {
           this.onAdjustFocuserDropdown();
@@ -33,12 +36,21 @@ function InitComponentClass() {
         }
       });
 
-      window.store.subscribe(() => {
-        const sidebarOpen = Selectors.getSidebarOpen(window.store.getState());
-        if (sidebarOpen) this.setState({ active: false });
+      store.subscribe(() => {
+        const riderCount = Selectors.getNumRiders(store.getState());
 
-        const playerRunning = Selectors.getPlayerRunning(window.store.getState());
-        const windowFocused = Selectors.getWindowFocused(window.store.getState());
+        if (this.computed.riderCount !== riderCount) {
+          this.computed.riderCount = riderCount;
+        }
+
+        const sidebarOpen = Selectors.getSidebarOpen(store.getState());
+
+        if (sidebarOpen) {
+          this.setState({ active: false });
+        }
+
+        const playerRunning = Selectors.getPlayerRunning(store.getState());
+        const windowFocused = Selectors.getWindowFocused(store.getState());
 
         const shouldBeVisible = window.CMD_EDITOR_DEBUG || (!playerRunning && windowFocused);
 
@@ -68,7 +80,7 @@ function InitComponentClass() {
       const commandData = triggerData[activeTab];
       const newTrigger = structuredClone(commandData.triggers[index]);
 
-      const currentIndex = Selectors.getPlayerIndex(window.store.getState());
+      const currentIndex = Selectors.getPlayerIndex(store.getState());
       newTrigger[0] = [
         Math.floor(currentIndex / 2400),
         Math.floor((currentIndex % 2400) / 40),
@@ -203,12 +215,12 @@ function InitComponentClass() {
 
     onActivate() {
       const { active } = this.state;
-      const sidebarOpen = Selectors.getSidebarOpen(window.store.getState());
+      const sidebarOpen = Selectors.getSidebarOpen(store.getState());
       if (active) {
         this.setState({ active: false });
       } else {
         if (sidebarOpen) {
-          window.store.dispatch(Actions.closeSidebar());
+          store.dispatch(Actions.closeSidebar());
         }
         this.setState({ active: true });
       }
@@ -308,7 +320,7 @@ function InitComponentClass() {
     onAdjustFocuserDropdown() {
       const { triggerData } = this.state;
       const focusTriggers = triggerData[Constants.TRIGGER_TYPES.FOCUS].triggers;
-      const clamp = this.commandEditor.RiderCount;
+      const clamp = this.computed.riderCount;
 
       focusTriggers.forEach((e, i) => {
         for (let j = focusTriggers[i][1].length; j < clamp; j += 1) {
@@ -345,7 +357,7 @@ function InitComponentClass() {
     onAdjustSkinDropdown() {
       const { triggerData } = this.state;
       let skinTriggers = triggerData[Constants.TRIGGER_TYPES.SKIN].triggers;
-      const clamp = this.commandEditor.RiderCount;
+      const clamp = this.computed.riderCount;
 
       for (let j = skinTriggers.length; j < clamp; j += 1) {
         skinTriggers = [...skinTriggers, structuredClone(
@@ -426,9 +438,10 @@ function InitComponentClass() {
     }
 
     updateComputed() {
-      this.computed.invalidTimes = Validator.validateTimes(
-        this.state.triggerData[this.state.activeTab],
-      );
+      const { triggerData, activeTab } = this.state;
+      if (activeTab !== Constants.TRIGGER_TYPES.SKIN) {
+        this.computed.invalidTimes = Validator.validateTimes(triggerData[activeTab]);
+      }
     }
 
     render() {

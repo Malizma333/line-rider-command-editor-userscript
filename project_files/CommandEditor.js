@@ -7,15 +7,10 @@ class CommandEditor {
     this.parser = new Parser();
 
     this.script = Selectors.getCurrentScript(this.store.getState());
-    this.riderCount = Selectors.getNumRiders(this.store.getState());
 
     store.subscribeImmediate(() => {
       this.onUpdate();
     });
-  }
-
-  get RiderCount() {
-    return this.riderCount;
   }
 
   load() {
@@ -48,12 +43,6 @@ class CommandEditor {
 
     if (this.script !== script) {
       this.script = script;
-    }
-
-    const riderCount = Selectors.getNumRiders(this.store.getState());
-
-    if (this.riderCount !== riderCount) {
-      this.riderCount = riderCount;
     }
   }
 
