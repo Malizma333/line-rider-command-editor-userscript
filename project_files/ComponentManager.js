@@ -708,7 +708,7 @@ class ComponentManager {
         'div',
         { style: Styles.skinEditor.zoomContainer },
         rc('input', {
-          style: { appearance: 'slider-vertical', width: '10px' },
+          style: { height: '10px' },
           type: 'range',
           orient: 'vertical',
           min: Constants.CONSTRAINTS.SKIN_ZOOM.MIN,
