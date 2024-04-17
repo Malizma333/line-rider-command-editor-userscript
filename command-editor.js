@@ -15,10 +15,8 @@ function main() {
 
 function checkReady() {
   if (!window.React) {
-    console.log('UNREADY');
     window.setTimeout(checkReady, 10);
   } else {
-    console.log('READY');
     main();
   }
 }

@@ -130,6 +130,8 @@ class ComponentManager {
           },
           onClick: () => root.onCopyClipboard(),
         }, '🖶'),
+        state.actionPanelState.copiedNotify
+          && rc('div', { style: Styles.actionPanel.notification }, 'Copied!'),
       ),
     );
   }

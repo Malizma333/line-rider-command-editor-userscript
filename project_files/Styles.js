@@ -133,6 +133,13 @@ class Styles {
         wordBreak: 'break-all',
         userSelect: 'text',
       },
+      notification: {
+        backgroundColor: 'white',
+        border: '2px solid black',
+        left: '0px',
+        position: 'absolute',
+        top: '0px',
+      },
     };
   }
 

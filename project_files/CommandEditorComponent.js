@@ -14,6 +14,7 @@ function InitComponentClass() {
         actionPanelState: {
           hasError: false,
           message: '',
+          copiedNotify: false,
         },
         activeTab: Constants.TRIGGER_TYPES.ZOOM,
         triggerData: {},
@@ -222,16 +223,22 @@ function InitComponentClass() {
       const { actionPanelState } = this.state;
 
       if (actionPanelState.hasError) {
-        console.error('Error copying text to clipboard: ', actionPanelState.message);
+        return;
       }
 
       window.navigator.clipboard.writeText(actionPanelState.message)
         .then(() => {
-          console.log('Text copied to clipboard successfully');
-        })
-        .catch((error) => {
-          console.error('Error copying text to clipboard: ', error);
-        });
+          actionPanelState.copiedNotify = true;
+          this.setState({ actionPanelState });
+          if (this.computed.timer) clearTimeout(this.computed.timer);
+          this.computed.timer = window.setTimeout(() => this.onDisableCopyNotification(), 1000);
+        }).catch(() => {});
+    }
+
+    onDisableCopyNotification() {
+      const { actionPanelState } = this.state;
+      actionPanelState.copiedNotify = false;
+      this.setState({ actionPanelState });
     }
 
     onActivate() {
