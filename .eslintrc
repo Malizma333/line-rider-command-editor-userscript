@@ -20,7 +20,7 @@
   },
   "globals": {
     "Actions": "readonly",
-    "CommandEditor": "readonly",
+    "ScriptGenerator": "readonly",
     "InitComponentClass": "readonly",
     "ComponentManager": "readonly",
     "Constants": "readonly",

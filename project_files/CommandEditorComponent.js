@@ -37,10 +37,11 @@ function InitComponentClass() {
       this.computed = {
         invalidTimes: [],
         riderCount: 1,
+        script: '',
       };
 
       this.componentManager = new ComponentManager(React.createElement, this);
-      this.commandEditor = new CommandEditor(store, this.state);
+      this.parser = new Parser();
 
       store.subscribe(() => {
         const riderCount = Selectors.getNumRiders(store.getState());
@@ -51,6 +52,12 @@ function InitComponentClass() {
           this.onAdjustFocuserDropdownLengths(riderCount);
           this.onAdjustSkinArray(riderCount);
           this.onAdjustSkinDropdownLength(riderCount);
+        }
+
+        const script = Selectors.getCurrentScript(store.getState());
+
+        if (this.computed.script !== script) {
+          this.computed.script = script;
         }
 
         const sidebarOpen = Selectors.getSidebarOpen(store.getState());
@@ -76,12 +83,8 @@ function InitComponentClass() {
       });
     }
 
-    componentWillUpdate(_, nextState) {
-      this.commandEditor.onUpdate(nextState);
-    }
-
     async onInitializeState() {
-      this.setState({ triggerData: this.commandEditor.parser.commandData });
+      this.setState({ triggerData: this.parser.commandData });
     }
 
     onCreateTrigger(index) {
@@ -143,7 +146,8 @@ function InitComponentClass() {
           actionPanelState.message = '';
         }
 
-        const triggerData = this.commandEditor.load();
+        this.parser.parseScript(this.computed.script);
+        const triggerData = this.parser.commandData;
         this.onAdjustDropdownArrayIndexLength(
           triggerData[Constants.TRIGGER_TYPES.FOCUS].triggers.length,
         );
@@ -157,11 +161,13 @@ function InitComponentClass() {
       this.setState({ actionPanelState });
     }
 
-    onTest(overrideTab = null) {
-      const { activeTab, actionPanelState } = this.state;
-      const targetTab = overrideTab || activeTab;
+    onTest() {
+      const { activeTab, triggerData, actionPanelState } = this.state;
       try {
-        this.commandEditor.test(targetTab);
+        const script = ScriptGenerator.generateScript(activeTab, triggerData);
+        // HACK: Already evaluated script, execute it directly
+        // eslint-disable-next-line no-eval
+        eval.call(window, script);
         actionPanelState.hasError = false;
       } catch (error) {
         actionPanelState.message = `Error: ${error.message}`;
@@ -172,9 +178,9 @@ function InitComponentClass() {
     }
 
     onPrint() {
-      const { activeTab, actionPanelState } = this.state;
+      const { activeTab, triggerData, actionPanelState } = this.state;
       try {
-        actionPanelState.message = this.commandEditor.print(activeTab);
+        actionPanelState.message = ScriptGenerator.generateScript(activeTab, triggerData);
         actionPanelState.hasError = false;
       } catch (error) {
         actionPanelState.message = `Error: ${error.message}`;
@@ -299,8 +305,8 @@ function InitComponentClass() {
         / Constants.SETTINGS.VIEWPORT[oldResolution].SIZE[0],
       );
 
-      const size = Constants.SETTINGS.VIEWPORT[oldResolution].SIZE;
-      this.commandEditor.changeViewport({ width: size[0], height: size[1] });
+      const size = Constants.SETTINGS.VIEWPORT[newResolution].SIZE;
+      store.dispatch(Actions.setPlaybackDimensions({ width: size[0], height: size[1] }));
 
       triggerData[Constants.TRIGGER_TYPES.ZOOM].triggers.forEach((_, i) => {
         triggerData[Constants.TRIGGER_TYPES.ZOOM].triggers[i][1] = Math.round((
