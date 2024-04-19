@@ -154,53 +154,25 @@ class ScriptParser {
     );
   }
 
-  static parseSkinProp(propString, skinIndex) {
+  static parseSkinProp(cssString, skinIndex) {
     const wordRegex = /(['"])?([#]?[a-z0-9A-Z_-]+)(['"])?/g;
-    const cssPropKeywords = { // TODO: Refactor?
-      '.outline': 'outline',
-      '.skin': 'skin',
-      '.hair': 'hair',
-      '.fill': 'fill',
-      '#eye': 'eye',
-      '.sled': 'sled',
-      '#string': 'string',
-      '.arm.sleeve': 'armSleeve',
-      '.arm.hand': 'armHand',
-      '.leg.pants': 'legPants',
-      '.leg.foot': 'legFoot',
-      '.torso': 'torso',
-      '.scarf1': 'scarf1',
-      '.scarf2': 'scarf2',
-      '.scarf3': 'scarf3',
-      '.scarf4': 'scarf4',
-      '.scarf5': 'scarf5',
-      '#scarf0': 'id_scarf0',
-      '#scarf1': 'id_scarf1',
-      '#scarf2': 'id_scarf2',
-      '#scarf3': 'id_scarf3',
-      '#scarf4': 'id_scarf4',
-      '#scarf5': 'id_scarf5',
-      '.hat.top': 'hatTop',
-      '.hat.bottom': 'hatBottom',
-      '.hat.ball': 'hatBall',
-      '.flag': 'flag',
-    };
+    const cssPropKeywords = Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].STYLE_MAP;
 
-    Object.keys(cssPropKeywords).forEach((key) => {
-      if (propString.startsWith(key)) {
-        const skinDataString = propString.substring(key.length).replace(wordRegex, '"$2"').replace(';', ',');
-        const skinDataJSON = JSON.parse(skinDataString);
-        const propName = cssPropKeywords[key];
+    Object.entries(cssPropKeywords).forEach(([propName, cssSelector]) => {
+      if (!cssString.startsWith(cssSelector)) return;
+      const styleData = JSON.parse(cssString
+        .substring(cssSelector.length)
+        .replace(wordRegex, '"$2"')
+        .replace(';', ','));
 
-        if ('fill' in skinDataJSON) {
-          ScriptParser.triggerData[Constants.TRIGGER_TYPES.SKIN]
-            .triggers[skinIndex][propName].fill = skinDataJSON.fill;
-        }
+      if (styleData.fill !== undefined) {
+        ScriptParser.triggerData[Constants.TRIGGER_TYPES.SKIN]
+          .triggers[skinIndex][propName].fill = styleData.fill;
+      }
 
-        if ('stroke' in skinDataJSON) {
-          ScriptParser.triggerData[Constants.TRIGGER_TYPES.SKIN]
-            .triggers[skinIndex][propName].stroke = skinDataJSON.stroke;
-        }
+      if (styleData.stroke !== undefined) {
+        ScriptParser.triggerData[Constants.TRIGGER_TYPES.SKIN]
+          .triggers[skinIndex][propName].stroke = styleData.stroke;
       }
     });
   }
