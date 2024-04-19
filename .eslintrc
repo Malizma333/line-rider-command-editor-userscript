@@ -24,7 +24,7 @@
     "InitComponentClass": "readonly",
     "ComponentManager": "readonly",
     "Constants": "readonly",
-    "Parser": "readonly",
+    "ScriptParser": "readonly",
     "Selectors": "readonly",
     "Styles": "readonly",
     "Validator": "readonly"

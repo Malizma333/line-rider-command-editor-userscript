@@ -41,7 +41,6 @@ function InitComponentClass() {
       };
 
       this.componentManager = new ComponentManager(React.createElement, this);
-      this.parser = new Parser();
 
       store.subscribe(() => {
         const riderCount = Selectors.getNumRiders(store.getState());
@@ -84,7 +83,29 @@ function InitComponentClass() {
     }
 
     async onInitializeState() {
-      this.setState({ triggerData: this.parser.commandData });
+      const triggerData = {};
+
+      Object.keys(Constants.TRIGGER_PROPS).forEach((command) => {
+        triggerData[command] = {
+          id: command,
+          triggers: [structuredClone(Constants.TRIGGER_PROPS[command].TEMPLATE)],
+        };
+
+        switch (command) {
+          case Constants.TRIGGER_TYPES.FOCUS:
+          case Constants.TRIGGER_TYPES.PAN:
+          case Constants.TRIGGER_TYPES.ZOOM:
+            triggerData[command].smoothing = Constants.CONSTRAINTS.SMOOTH.DEFAULT;
+            break;
+          case Constants.TRIGGER_TYPES.TIME:
+            triggerData[command].interpolate = Constants.CONSTRAINTS.INTERPOLATE.DEFAULT;
+            break;
+          default:
+            break;
+        }
+      });
+
+      this.setState({ triggerData });
     }
 
     onCreateTrigger(index) {
@@ -140,18 +161,28 @@ function InitComponentClass() {
     }
 
     onRead() {
-      const { actionPanelState } = this.state;
+      const { actionPanelState, triggerData } = this.state;
       try {
         if (actionPanelState.hasError) {
           actionPanelState.message = '';
         }
 
-        this.parser.parseScript(this.computed.script);
-        const triggerData = this.parser.commandData;
-        this.onAdjustDropdownArrayIndexLength(
-          triggerData[Constants.TRIGGER_TYPES.FOCUS].triggers.length,
-        );
-        this.setState({ triggerData });
+        const nextTriggerData = ScriptParser.parseScript(this.computed.script);
+
+        Object.keys(triggerData).forEach((command) => {
+          if (nextTriggerData[command] === undefined) {
+            nextTriggerData[command] = triggerData[command];
+            return;
+          }
+
+          if (command === Constants.TRIGGER_TYPES.FOCUS) {
+            this.onAdjustDropdownArrayIndexLength(
+              nextTriggerData[command].triggers.length,
+            );
+          }
+        });
+
+        this.setState({ triggerData: nextTriggerData });
         actionPanelState.hasError = false;
       } catch (error) {
         actionPanelState.message = `Error: ${error.message}`;
@@ -165,9 +196,8 @@ function InitComponentClass() {
       const { activeTab, triggerData, actionPanelState } = this.state;
       try {
         const script = ScriptGenerator.generateScript(activeTab, triggerData);
-        // HACK: Already evaluated script, execute it directly
         // eslint-disable-next-line no-eval
-        eval.call(window, script);
+        eval.call(window, script); // HACK: Already evaluated script, execute it directly
         actionPanelState.hasError = false;
       } catch (error) {
         actionPanelState.message = `Error: ${error.message}`;
