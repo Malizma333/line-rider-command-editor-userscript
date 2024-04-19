@@ -14,7 +14,7 @@ class Constants {
   static get LINKS() {
     return {
       HELP: 'https://github.com/Malizma333/line-rider-command-editor-userscript#readme',
-      REPORT: 'https://trello.com/invite/b/HQI4mr1y/ATTI88d27c72cf8ffcd70c6e2b424e4ffb548519EDDF/line-rider-command-editor',
+      REPORT: 'https://forms.gle/7MeZ7NpjJVggmaHL7',
     };
   }
 
