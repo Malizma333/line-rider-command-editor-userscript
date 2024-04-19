@@ -53,16 +53,6 @@ class Constants {
     };
   }
 
-  static get TRIGGER_TYPES() {
-    return {
-      ZOOM: 'ZOOM',
-      PAN: 'CAMERA_PAN',
-      FOCUS: 'CAMERA_FOCUS',
-      TIME: 'TIME_REMAP',
-      SKIN: 'CUSTOM_SKIN',
-    };
-  }
-
   static get CONSTRAINTS() {
     return {
       INTERPOLATE: {
@@ -107,6 +97,16 @@ class Constants {
       ALPHA_SLIDER: {
         DEFAULT: 1, MIN: 0, MAX: 1, TYPE: Constants.TYPES.FLOAT,
       },
+    };
+  }
+
+  static get TRIGGER_TYPES() {
+    return {
+      ZOOM: 'ZOOM',
+      PAN: 'CAMERA_PAN',
+      FOCUS: 'CAMERA_FOCUS',
+      TIME: 'TIME_REMAP',
+      SKIN: 'CUSTOM_SKIN',
     };
   }
 
@@ -166,14 +166,36 @@ class Constants {
           id_scarf5: { fill: '#3995FD' },
         },
         FUNC: 'setCustomRiders({0});',
+        STYLE_MAP: {
+          outline: '.outline',
+          flag: '.flag',
+          skin: '.skin',
+          hair: '.hair',
+          fill: '.fill',
+          eye: '#eye',
+          sled: '.sled',
+          string: '#string',
+          armSleeve: '.arm.sleeve',
+          armHand: '.arm.hand',
+          legPants: '.leg.pants',
+          legFoot: '.leg.foot',
+          torso: '.torso',
+          hatTop: '.hat.top',
+          hatBottom: '.hat.bottom',
+          hatBall: '.hat.ball',
+          scarf1: '.scarf1',
+          scarf2: '.scarf2',
+          scarf3: '.scarf3',
+          scarf4: '.scarf4',
+          scarf5: '.scarf5',
+          id_scarf0: '#scarf0',
+          id_scarf1: '#scarf1',
+          id_scarf2: '#scarf2',
+          id_scarf3: '#scarf3',
+          id_scarf4: '#scarf4',
+          id_scarf5: '#scarf5',
+        },
       },
-    };
-  }
-
-  static get INIT_SETTINGS() {
-    return {
-      fontSize: Constants.SETTINGS.FONT_SIZES.MEDIUM,
-      resolution: Constants.SETTINGS.VIEWPORT.HD.ID,
     };
   }
 }

@@ -133,6 +133,13 @@ class Styles {
         wordBreak: 'break-all',
         userSelect: 'text',
       },
+      notification: {
+        backgroundColor: 'white',
+        border: '2px solid black',
+        left: '0px',
+        position: 'absolute',
+        top: '0px',
+      },
     };
   }
 
@@ -368,11 +375,12 @@ class Styles {
       zoomContainer: {
         alignItems: 'center',
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
         justifyContent: 'center',
+        left: '20px',
         position: 'absolute',
-        right: '20px',
-        width: '0px',
+        top: '20px',
+        height: '0px',
       },
       flagSvg: {
         height: '18',

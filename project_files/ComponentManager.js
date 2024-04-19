@@ -4,10 +4,15 @@ class ComponentManager {
     this.rc = rc;
     this.root = root;
     this.state = root.state;
+    this.computed = root.computed;
   }
 
   updateState(nextState) {
     this.state = nextState;
+  }
+
+  updateComputed(nextComputed) {
+    this.computed = nextComputed;
   }
 
   main() {
@@ -125,6 +130,8 @@ class ComponentManager {
           },
           onClick: () => root.onCopyClipboard(),
         }, '🖶'),
+        state.actionPanelState.copiedNotify
+          && rc('div', { style: Styles.actionPanel.notification }, 'Copied!'),
       ),
     );
   }
@@ -457,7 +464,7 @@ class ComponentManager {
   }
 
   timeStamp(data, index) {
-    const { rc, root, state } = this;
+    const { rc, root, computed } = this;
     const tProps = [
       Constants.CONSTRAINTS.MINUTE,
       Constants.CONSTRAINTS.SECOND,
@@ -482,7 +489,7 @@ class ComponentManager {
         rc('input', {
           style: {
             ...Styles.trigger.input,
-            color: state.invalidTimes[index] ? 'red' : 'black',
+            color: computed.invalidTimes[index] ? 'red' : 'black',
           },
           value: timeValue,
           onChange: (e) => root.onUpdateTrigger(
@@ -703,7 +710,7 @@ class ComponentManager {
         'div',
         { style: Styles.skinEditor.zoomContainer },
         rc('input', {
-          style: { appearance: 'slider-vertical', width: '10px' },
+          style: { height: '10px' },
           type: 'range',
           orient: 'vertical',
           min: Constants.CONSTRAINTS.SKIN_ZOOM.MIN,
