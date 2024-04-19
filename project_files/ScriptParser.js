@@ -64,7 +64,7 @@ class ScriptParser {
       case Constants.TRIGGER_TYPES.PAN:
       case Constants.TRIGGER_TYPES.FOCUS:
       case Constants.TRIGGER_TYPES.TIME:
-        ScriptParser.addTriggers(command, keyframes);
+        ScriptParser.parseTriggers(command, keyframes);
         ScriptParser.parseSmoothing(command, smoothing);
         break;
       case Constants.TRIGGER_TYPES.SKIN:
@@ -72,6 +72,35 @@ class ScriptParser {
         break;
       default:
         break;
+    }
+  }
+
+  static retrieveTimestamp(index) {
+    const frames = index % Constants.TIMELINE.FPS;
+    const seconds = Math.floor(index / Constants.TIMELINE.FPS) % Constants.TIMELINE.SPM;
+    const minutes = Math.floor(index / (Constants.TIMELINE.SPM * Constants.TIMELINE.FPS));
+    return [minutes, seconds, frames];
+  }
+
+  static parseTriggers(command, commandArray) {
+    for (let i = 0; i < commandArray.length; i += 1) {
+      ScriptParser.triggerData[command].triggers.push([...commandArray[i]]);
+
+      const timeProp = commandArray[i][0];
+      if (timeProp.constructor === Number) {
+        const index = timeProp;
+        ScriptParser.triggerData[command].triggers[i][0] = ScriptParser.retrieveTimestamp(index);
+      } else if (timeProp.length === 1) {
+        const index = timeProp[0];
+        ScriptParser.triggerData[command].triggers[i][0] = ScriptParser.retrieveTimestamp(index);
+      } else if (timeProp.length === 2) {
+        const index = timeProp[0] * Constants.TIMELINE.FPS + timeProp[1];
+        ScriptParser.triggerData[command].triggers[i][0] = ScriptParser.retrieveTimestamp(index);
+      } else {
+        const index = timeProp[0] * Constants.TIMELINE.FPS * Constants.TIMELINE.SPM
+         + timeProp[1] * Constants.TIMELINE.FPS + timeProp[2];
+        ScriptParser.triggerData[command].triggers[i][0] = ScriptParser.retrieveTimestamp(index);
+      }
     }
   }
 
@@ -107,21 +136,6 @@ class ScriptParser {
         ScriptParser.triggerData[command].smoothing = constraints.MIN;
       } else {
         ScriptParser.triggerData[command].smoothing = smoothingValue;
-      }
-    }
-  }
-
-  static addTriggers(command, commandArray) {
-    for (let i = 0; i < commandArray.length; i += 1) {
-      ScriptParser.triggerData[command].triggers.push([...commandArray[i]]);
-
-      const timeProp = commandArray[i][0];
-      if (timeProp.constructor === Number) {
-        ScriptParser.triggerData[command].triggers[i][0] = [0, 0, timeProp];
-      } else if (timeProp.length === 1) {
-        ScriptParser.triggerData[command].triggers[i][0] = [0, 0, timeProp[0]];
-      } else if (timeProp.length === 2) {
-        ScriptParser.triggerData[command].triggers[i][0] = [0, timeProp[0], timeProp[1]];
       }
     }
   }
