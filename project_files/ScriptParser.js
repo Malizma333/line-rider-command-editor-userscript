@@ -1,35 +1,47 @@
 // eslint-disable-next-line no-unused-vars
 class ScriptParser {
-  static initCommand(command) {
-    ScriptParser.triggerData[command] = {
-      id: command,
+  static initCommand(commandId) {
+    ScriptParser.triggerData[commandId] = {
+      id: commandId,
       triggers: [],
     };
 
-    switch (command) {
+    switch (commandId) {
       case Constants.TRIGGER_TYPES.FOCUS:
       case Constants.TRIGGER_TYPES.PAN:
       case Constants.TRIGGER_TYPES.ZOOM:
-        ScriptParser.triggerData[command].smoothing = Constants.CONSTRAINTS.SMOOTH.DEFAULT;
+        ScriptParser.triggerData[commandId].smoothing = Constants.CONSTRAINTS.SMOOTH.DEFAULT;
         break;
       case Constants.TRIGGER_TYPES.TIME:
-        ScriptParser.triggerData[command].interpolate = Constants.CONSTRAINTS.INTERPOLATE.DEFAULT;
+        ScriptParser.triggerData[commandId].interpolate = Constants.CONSTRAINTS.INTERPOLATE.DEFAULT;
         break;
       default:
         break;
     }
   }
 
+  static retrieveTimestamp(index) {
+    const frames = index % Constants.TIMELINE.FPS;
+    const seconds = Math.floor(index / Constants.TIMELINE.FPS) % Constants.TIMELINE.SPM;
+    const minutes = Math.floor(index / (Constants.TIMELINE.SPM * Constants.TIMELINE.FPS));
+    return [minutes, seconds, frames];
+  }
+
+  static removeLeadingZeroes(script, commandId) {
+    if (commandId === Constants.TRIGGER_TYPES.SKIN) return script;
+    return script.replace(/([^\d.+-])0+(\d+)/g, '$1$2');
+  }
+
   static parseScript(scriptText) {
     ScriptParser.triggerData = {};
     const trimmedScript = scriptText.replace(/\s/g, '');
 
-    Object.keys(Constants.TRIGGER_PROPS).forEach((command) => {
+    Object.keys(Constants.TRIGGER_PROPS).forEach((commandId) => {
       try {
-        ScriptParser.parseCommand(command, trimmedScript);
+        ScriptParser.parseCommand(commandId, trimmedScript);
       } catch (e) {
-        if (ScriptParser.triggerData[command] !== undefined) {
-          delete ScriptParser.triggerData[command];
+        if (ScriptParser.triggerData[commandId] !== undefined) {
+          delete ScriptParser.triggerData[commandId];
         }
       }
     });
@@ -37,13 +49,13 @@ class ScriptParser {
     return ScriptParser.triggerData;
   }
 
-  static parseCommand(command, script) {
-    const currentHeader = Constants.TRIGGER_PROPS[command].FUNC.split('(')[0];
+  static parseCommand(commandId, script) {
+    const currentHeader = Constants.TRIGGER_PROPS[commandId].FUNC.split('(')[0];
     const currentHeaderIndex = script.indexOf(currentHeader);
 
     if (currentHeaderIndex === -1) return;
 
-    ScriptParser.initCommand(command);
+    ScriptParser.initCommand(commandId);
 
     const startIndex = currentHeaderIndex + currentHeader.length + 1;
     let endIndex = startIndex;
@@ -53,19 +65,23 @@ class ScriptParser {
       if (script.charAt(endIndex + 1) === ')') i -= 1;
     }
 
-    const parameterText = `[${script.substring(startIndex, endIndex)}]`;
+    const parameterText = `[${ScriptParser.removeLeadingZeroes(
+      script.substring(startIndex, endIndex),
+      commandId,
+    )}]`;
+
     // HACK: Using eval is easier than json.parse, which has stricter syntax
     // eslint-disable-next-line no-eval
     const parameterArray = eval(parameterText);
     const [keyframes, smoothing] = parameterArray;
 
-    switch (command) {
+    switch (commandId) {
       case Constants.TRIGGER_TYPES.ZOOM:
       case Constants.TRIGGER_TYPES.PAN:
       case Constants.TRIGGER_TYPES.FOCUS:
       case Constants.TRIGGER_TYPES.TIME:
-        ScriptParser.addTriggers(command, keyframes);
-        ScriptParser.parseSmoothing(command, smoothing);
+        ScriptParser.parseTriggers(commandId, keyframes);
+        ScriptParser.parseSmoothing(commandId, smoothing);
         break;
       case Constants.TRIGGER_TYPES.SKIN:
         ScriptParser.parseSkinCss(keyframes);
@@ -75,17 +91,39 @@ class ScriptParser {
     }
   }
 
-  static parseSmoothing(command, smoothingValue) {
-    if (command === Constants.TRIGGER_TYPES.TIME) {
+  static parseTriggers(commandId, commandArray) {
+    for (let i = 0; i < commandArray.length; i += 1) {
+      ScriptParser.triggerData[commandId].triggers.push([...commandArray[i]]);
+
+      const timeProp = commandArray[i][0];
+      if (timeProp.constructor === Number) {
+        const index = timeProp;
+        ScriptParser.triggerData[commandId].triggers[i][0] = ScriptParser.retrieveTimestamp(index);
+      } else if (timeProp.length === 1) {
+        const index = timeProp[0];
+        ScriptParser.triggerData[commandId].triggers[i][0] = ScriptParser.retrieveTimestamp(index);
+      } else if (timeProp.length === 2) {
+        const index = timeProp[0] * Constants.TIMELINE.FPS + timeProp[1];
+        ScriptParser.triggerData[commandId].triggers[i][0] = ScriptParser.retrieveTimestamp(index);
+      } else {
+        const index = timeProp[0] * Constants.TIMELINE.FPS * Constants.TIMELINE.SPM
+         + timeProp[1] * Constants.TIMELINE.FPS + timeProp[2];
+        ScriptParser.triggerData[commandId].triggers[i][0] = ScriptParser.retrieveTimestamp(index);
+      }
+    }
+  }
+
+  static parseSmoothing(commandId, smoothingValue) {
+    if (commandId === Constants.TRIGGER_TYPES.TIME) {
       const constraints = Constants.CONSTRAINTS.INTERPOLATE;
 
       if (!smoothingValue) {
-        ScriptParser.triggerData[command].interpolate = constraints.DEFAULT;
+        ScriptParser.triggerData[commandId].interpolate = constraints.DEFAULT;
         return;
       }
 
       if (smoothingValue === true || smoothingValue === false) {
-        ScriptParser.triggerData[command].interpolate = smoothingValue;
+        ScriptParser.triggerData[commandId].interpolate = smoothingValue;
       } else {
         throw new Error('Invalid boolean!');
       }
@@ -93,7 +131,7 @@ class ScriptParser {
       const constraints = Constants.CONSTRAINTS.SMOOTH;
 
       if (!smoothingValue) {
-        ScriptParser.triggerData[command].interpolate = constraints.DEFAULT;
+        ScriptParser.triggerData[commandId].interpolate = constraints.DEFAULT;
         return;
       }
 
@@ -102,26 +140,11 @@ class ScriptParser {
       }
 
       if (smoothingValue > constraints.MAX) {
-        ScriptParser.triggerData[command].smoothing = constraints.MAX;
+        ScriptParser.triggerData[commandId].smoothing = constraints.MAX;
       } else if (smoothingValue < constraints.MIN) {
-        ScriptParser.triggerData[command].smoothing = constraints.MIN;
+        ScriptParser.triggerData[commandId].smoothing = constraints.MIN;
       } else {
-        ScriptParser.triggerData[command].smoothing = smoothingValue;
-      }
-    }
-  }
-
-  static addTriggers(command, commandArray) {
-    for (let i = 0; i < commandArray.length; i += 1) {
-      ScriptParser.triggerData[command].triggers.push([...commandArray[i]]);
-
-      const timeProp = commandArray[i][0];
-      if (timeProp.constructor === Number) {
-        ScriptParser.triggerData[command].triggers[i][0] = [0, 0, timeProp];
-      } else if (timeProp.length === 1) {
-        ScriptParser.triggerData[command].triggers[i][0] = [0, 0, timeProp[0]];
-      } else if (timeProp.length === 2) {
-        ScriptParser.triggerData[command].triggers[i][0] = [0, timeProp[0], timeProp[1]];
+        ScriptParser.triggerData[commandId].smoothing = smoothingValue;
       }
     }
   }
