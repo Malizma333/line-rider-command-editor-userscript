@@ -1,8 +1,8 @@
 // eslint-disable-next-line no-unused-vars
-function InitComponentClass() {
+function InitRoot() {
   const { store, React } = window;
 
-  return class CommandEditorComponent extends React.Component {
+  return class RootComponent extends React.Component {
     constructor() {
       super();
 

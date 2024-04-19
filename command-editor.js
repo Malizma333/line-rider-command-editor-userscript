@@ -7,8 +7,7 @@ function main() {
   parent.setAttribute('id', Constants.ROOT_NODE_ID);
   document.getElementById('content').appendChild(parent);
 
-  const CommandEditorComponent = InitComponentClass();
-  ReactDOM.render(React.createElement(CommandEditorComponent), parent);
+  ReactDOM.render(React.createElement(InitRoot()), parent);
 }
 
 function checkReady() {
