@@ -338,7 +338,7 @@ class ComponentManager {
       return rc(
         'div',
         { style: Styles.window },
-        this.skinEditorToolbar(data.triggers, state.skinEditorState.dropdownIndex),
+        this.skinEditorToolbar(data.triggers, state.skinEditorState.ddIndex),
         this.skinEditor(data),
       );
     }
@@ -394,6 +394,7 @@ class ComponentManager {
         'div',
         { style: Styles.checkbox.container },
         rc('input', {
+          id: 'smoothTextInput',
           style: Styles.checkbox.primary,
           type: 'checkbox',
           onChange: () => root.onUpdateTrigger(
@@ -596,7 +597,7 @@ class ComponentManager {
 
   cameraFocusTrigger(data, index) {
     const { rc, root, state } = this;
-    const dropdownIndex = state.focuserDropdownIndices[index];
+    const ddIndex = state.focusDDIndices[index];
     const labels = ['WEIGHT'];
 
     return rc(
@@ -606,8 +607,8 @@ class ComponentManager {
         'select',
         {
           style: Styles.dropdown.head,
-          value: dropdownIndex,
-          onChange: (e) => root.onChangeFocuserDropdown(index, e.target.value),
+          value: ddIndex,
+          onChange: (e) => root.onChangeFocusDD(index, e.target.value),
         },
         Object.keys(data[1]).map((riderIndex) => {
           const riderNum = 1 + parseInt(riderIndex, 10);
@@ -619,27 +620,27 @@ class ComponentManager {
         }),
       ),
       rc('label', {
-        for: `triggerText_${labels[0]}_${dropdownIndex}_${index}`,
+        for: `triggerText_${labels[0]}_${ddIndex}_${index}`,
         style: Styles.trigger.text,
       }, labels[0]),
       rc('input', {
-        id: `triggerText_${labels[0]}_${dropdownIndex}_${index}`,
+        id: `triggerText_${labels[0]}_${ddIndex}_${index}`,
         style: Styles.trigger.input,
-        value: data[1][dropdownIndex],
+        value: data[1][ddIndex],
         onChange: (e) => root.onUpdateTrigger(
           {
-            prev: data[1][dropdownIndex],
+            prev: data[1][ddIndex],
             new: e.target.value,
           },
-          ['triggers', index, 1, dropdownIndex],
+          ['triggers', index, 1, ddIndex],
           Constants.CONSTRAINTS.FOCUS_WEIGHT,
         ),
         onBlur: (e) => root.onUpdateTrigger(
           {
-            prev: data[1][dropdownIndex],
+            prev: data[1][ddIndex],
             new: e.target.value,
           },
-          ['triggers', index, 1, dropdownIndex],
+          ['triggers', index, 1, ddIndex],
           Constants.CONSTRAINTS.FOCUS_WEIGHT,
           true,
         ),
@@ -685,7 +686,7 @@ class ComponentManager {
 
   skinEditor(data) {
     const { rc, root, state } = this;
-    const { dropdownIndex } = state.skinEditorState;
+    const { ddIndex } = state.skinEditorState;
 
     return rc(
       'div',
@@ -702,9 +703,9 @@ class ComponentManager {
           },
           onWheel: (e) => root.onZoomSkinEditor(e, true),
         },
-        this.flagSvg(data.triggers[dropdownIndex], dropdownIndex),
+        this.flagSvg(data.triggers[ddIndex], ddIndex),
         rc('svg', { width: '10vw' }),
-        this.riderSvg(data.triggers[dropdownIndex], dropdownIndex),
+        this.riderSvg(data.triggers[ddIndex], ddIndex),
       ),
       rc(
         'div',
@@ -732,11 +733,11 @@ class ComponentManager {
         rc('div', {
           style: {
             ...Styles.skinEditor.outlineColor.input,
-            backgroundColor: data.triggers[dropdownIndex].outline.stroke,
+            backgroundColor: data.triggers[ddIndex].outline.stroke,
           },
           onClick: () => root.onUpdateTrigger(
             { new: state.skinEditorState.color },
-            ['triggers', dropdownIndex, 'outline', 'stroke'],
+            ['triggers', ddIndex, 'outline', 'stroke'],
           ),
         }),
       ),
@@ -812,7 +813,7 @@ class ComponentManager {
             fontSize: Styles.theme.textSizes.M[state.settings.fontSize],
           },
           value: index,
-          onChange: (e) => root.onChangeSkinDropdown(e.target.value),
+          onChange: (e) => root.onChangeSkinDD(e.target.value),
         },
         Object.keys(data).map((riderIndex) => {
           const riderNum = 1 + parseInt(riderIndex, 10);
