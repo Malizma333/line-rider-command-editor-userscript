@@ -136,46 +136,7 @@ function InitRoot() {
 
       this.componentManager = new ComponentManager(React.createElement, this);
 
-      store.subscribe(() => {
-        const riderCount = Selectors.getNumRiders(store.getState());
-
-        if (this.computed.riderCount !== riderCount) {
-          this.computed.riderCount = riderCount;
-          const { triggerData, skinEditorState, focusDDIndices } = this.state;
-          let nextTriggerData = triggerData;
-          let nextSkinEditorState = skinEditorState;
-          let nextFocusDDIndices = focusDDIndices;
-
-          nextTriggerData = RootComponent.adjustedFocusWeightArrays(riderCount, nextTriggerData);
-          nextTriggerData = RootComponent.adjustedSkinArray(riderCount, nextTriggerData);
-          nextSkinEditorState = RootComponent.adjustedSkinDDLength(riderCount, nextSkinEditorState);
-          nextFocusDDIndices = RootComponent.adjustedFocusDDLengths(riderCount, nextFocusDDIndices);
-
-          this.setState({ triggerData: nextTriggerData });
-          this.setState({ skinEditorState: nextSkinEditorState });
-          this.setState({ focusDDIndices: nextFocusDDIndices });
-        }
-
-        const script = Selectors.getCurrentScript(store.getState());
-
-        if (this.computed.script !== script) {
-          this.computed.script = script;
-        }
-
-        const sidebarOpen = Selectors.getSidebarOpen(store.getState());
-
-        if (sidebarOpen) {
-          this.setState({ active: false });
-        }
-
-        const playerRunning = Selectors.getPlayerRunning(store.getState());
-        const windowFocused = Selectors.getWindowFocused(store.getState());
-
-        const shouldBeVisible = window.CMD_EDITOR_DEBUG || (!playerRunning && windowFocused);
-
-        document.getElementById(Constants.ROOT_NODE_ID).style.opacity = shouldBeVisible ? 1 : 0;
-        document.getElementById(Constants.ROOT_NODE_ID).style.pointerEvents = shouldBeVisible ? null : 'none';
-      });
+      store.subscribe(() => this.updateStore(store.getState()));
     }
 
     componentDidMount() {
@@ -504,6 +465,47 @@ function InitRoot() {
       if (activeTab !== Constants.TRIGGER_TYPES.SKIN) {
         this.computed.invalidTimes = Validator.validateTimes(triggerData[activeTab]);
       }
+    }
+
+    updateStore(nextState) {
+      const riderCount = Selectors.getNumRiders(nextState);
+
+      if (this.computed.riderCount !== riderCount) {
+        this.computed.riderCount = riderCount;
+        const { triggerData, skinEditorState, focusDDIndices } = this.state;
+        let nextTriggerData = triggerData;
+        let nextSkinEditorState = skinEditorState;
+        let nextFocusDDIndices = focusDDIndices;
+
+        nextTriggerData = RootComponent.adjustedFocusWeightArrays(riderCount, nextTriggerData);
+        nextTriggerData = RootComponent.adjustedSkinArray(riderCount, nextTriggerData);
+        nextSkinEditorState = RootComponent.adjustedSkinDDLength(riderCount, nextSkinEditorState);
+        nextFocusDDIndices = RootComponent.adjustedFocusDDLengths(riderCount, nextFocusDDIndices);
+
+        this.setState({ triggerData: nextTriggerData });
+        this.setState({ skinEditorState: nextSkinEditorState });
+        this.setState({ focusDDIndices: nextFocusDDIndices });
+      }
+
+      const script = Selectors.getCurrentScript(nextState);
+
+      if (this.computed.script !== script) {
+        this.computed.script = script;
+      }
+
+      const sidebarOpen = Selectors.getSidebarOpen(nextState);
+
+      if (sidebarOpen) {
+        this.setState({ active: false });
+      }
+
+      const playerRunning = Selectors.getPlayerRunning(nextState);
+      const windowFocused = Selectors.getWindowFocused(nextState);
+
+      const shouldBeVisible = window.CMD_EDITOR_DEBUG || (!playerRunning && windowFocused);
+
+      document.getElementById(Constants.ROOT_NODE_ID).style.opacity = shouldBeVisible ? 1 : 0;
+      document.getElementById(Constants.ROOT_NODE_ID).style.pointerEvents = shouldBeVisible ? null : 'none';
     }
 
     render() {
