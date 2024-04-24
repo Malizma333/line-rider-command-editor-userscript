@@ -3,6 +3,100 @@ function InitRoot() {
   const { store, React } = window;
 
   return class RootComponent extends React.Component {
+    static adjustedSkinDDLength(riderCount, skinEditorState) {
+      const nextSkinEditorState = skinEditorState;
+
+      if (skinEditorState.ddIndex >= riderCount) {
+        nextSkinEditorState.ddIndex = riderCount - 1;
+      }
+
+      return nextSkinEditorState;
+    }
+
+    static adjustedSkinArray(riderCount, triggerData) {
+      const nextTriggerData = triggerData;
+      const skinTriggers = nextTriggerData[Constants.TRIGGER_TYPES.SKIN].triggers;
+      const oldLength = skinTriggers.length;
+
+      if (oldLength < riderCount) {
+        skinTriggers.push(...Array(riderCount - oldLength).fill(structuredClone(
+          Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE,
+        )));
+      }
+
+      if (oldLength > riderCount) {
+        skinTriggers.splice(riderCount, oldLength - riderCount);
+      }
+
+      nextTriggerData[Constants.TRIGGER_TYPES.SKIN].triggers = skinTriggers;
+      return nextTriggerData;
+    }
+
+    static adjustedFocusWeightArrays(riderCount, triggerData) {
+      const nextTriggerData = triggerData;
+      const focusTriggers = nextTriggerData[Constants.TRIGGER_TYPES.FOCUS].triggers;
+
+      focusTriggers.forEach((_, i) => {
+        const oldLength = focusTriggers[i][1].length;
+
+        if (oldLength < riderCount) {
+          focusTriggers[i][1].push(...Array(riderCount - oldLength).fill(0));
+        }
+        if (oldLength > riderCount) {
+          focusTriggers[i][1].splice(riderCount, oldLength - riderCount);
+        }
+      });
+
+      nextTriggerData[Constants.TRIGGER_TYPES.FOCUS].triggers = focusTriggers;
+      return nextTriggerData;
+    }
+
+    static adjustedFocusDDLengths(riderCount, focusDDIndices) {
+      const nextFocusDDIndices = focusDDIndices;
+
+      nextFocusDDIndices.forEach((_, i) => {
+        if (nextFocusDDIndices[i] >= riderCount) {
+          nextFocusDDIndices[i] = riderCount - 1;
+        }
+      });
+
+      return nextFocusDDIndices;
+    }
+
+    static adjustedDDArrayIndexLength(triggerLength, focusDDIndices) {
+      const nextFocusDDIndices = focusDDIndices;
+      const oldLength = nextFocusDDIndices.length;
+
+      if (oldLength < triggerLength) {
+        nextFocusDDIndices.push(...Array(triggerLength - oldLength).fill(0));
+      }
+      if (oldLength > triggerLength) {
+        nextFocusDDIndices.splice(triggerLength, oldLength - triggerLength);
+      }
+
+      return nextFocusDDIndices;
+    }
+
+    static savedViewport(oldResolution, newResolution, triggerData) {
+      const nextTriggerData = triggerData;
+
+      const factor = Math.log2(
+        Constants.SETTINGS.VIEWPORT[newResolution].SIZE[0]
+        / Constants.SETTINGS.VIEWPORT[oldResolution].SIZE[0],
+      );
+
+      const size = Constants.SETTINGS.VIEWPORT[newResolution].SIZE;
+      store.dispatch(Actions.setPlaybackDimensions({ width: size[0], height: size[1] }));
+
+      nextTriggerData[Constants.TRIGGER_TYPES.ZOOM].triggers.forEach((_, i) => {
+        nextTriggerData[Constants.TRIGGER_TYPES.ZOOM].triggers[i][1] = Math.round((
+          nextTriggerData[Constants.TRIGGER_TYPES.ZOOM].triggers[i][1] + factor + Number.EPSILON
+        ) * 10e6) / 10e6;
+      });
+
+      return nextTriggerData;
+    }
+
     constructor() {
       super();
 
@@ -16,9 +110,9 @@ function InitRoot() {
         },
         activeTab: Constants.TRIGGER_TYPES.ZOOM,
         triggerData: {},
-        focuserDropdownIndices: [0],
+        focusDDIndices: [0],
         skinEditorState: {
-          dropdownIndex: 0,
+          ddIndex: 0,
           zoom: { scale: 1 },
           color: '#000000ff',
         },
@@ -47,10 +141,19 @@ function InitRoot() {
 
         if (this.computed.riderCount !== riderCount) {
           this.computed.riderCount = riderCount;
-          this.onAdjustFocuserWeightArrays(riderCount);
-          this.onAdjustFocuserDropdownLengths(riderCount);
-          this.onAdjustSkinArray(riderCount);
-          this.onAdjustSkinDropdownLength(riderCount);
+          const { triggerData, skinEditorState, focusDDIndices } = this.state;
+          let nextTriggerData = triggerData;
+          let nextSkinEditorState = skinEditorState;
+          let nextFocusDDIndices = focusDDIndices;
+
+          nextTriggerData = RootComponent.adjustedFocusWeightArrays(riderCount, nextTriggerData);
+          nextTriggerData = RootComponent.adjustedSkinArray(riderCount, nextTriggerData);
+          nextSkinEditorState = RootComponent.adjustedSkinDDLength(riderCount, nextSkinEditorState);
+          nextFocusDDIndices = RootComponent.adjustedFocusDDLengths(riderCount, nextFocusDDIndices);
+
+          this.setState({ triggerData: nextTriggerData });
+          this.setState({ skinEditorState: nextSkinEditorState });
+          this.setState({ focusDDIndices: nextFocusDDIndices });
         }
 
         const script = Selectors.getCurrentScript(store.getState());
@@ -77,12 +180,12 @@ function InitRoot() {
 
     componentDidMount() {
       Object.assign(document.getElementById(Constants.ROOT_NODE_ID).style, Styles.root);
-      this.onInitializeState().then(() => {
+      this.onInit().then(() => {
         this.setState({ initialized: true });
       });
     }
 
-    async onInitializeState() {
+    async onInit() {
       const triggerData = {};
 
       Object.keys(Constants.TRIGGER_PROPS).forEach((command) => {
@@ -109,9 +212,10 @@ function InitRoot() {
     }
 
     onCreateTrigger(index) {
-      const { triggerData, activeTab } = this.state;
+      const { triggerData, activeTab, focusDDIndices } = this.state;
       const commandData = triggerData[activeTab];
       const newTrigger = structuredClone(commandData.triggers[index]);
+      let nextFocusDDIndices = focusDDIndices;
 
       const currentIndex = Selectors.getPlayerIndex(store.getState());
       newTrigger[0] = [
@@ -123,10 +227,14 @@ function InitRoot() {
       triggerData[activeTab].triggers.splice(index + 1, 0, newTrigger);
 
       if (activeTab === Constants.TRIGGER_TYPES.FOCUS) {
-        this.onAdjustDropdownArrayIndexLength(triggerData[activeTab].triggers.length);
+        nextFocusDDIndices = RootComponent.adjustedDDArrayIndexLength(
+          triggerData[activeTab].triggers.length,
+          nextFocusDDIndices,
+        );
       }
 
       this.setState({ triggerData });
+      this.setState({ focusDDIndices: nextFocusDDIndices });
     }
 
     onUpdateTrigger(valueChange, path, constraints, bounded = false) {
@@ -147,27 +255,35 @@ function InitRoot() {
     }
 
     onDeleteTrigger(index) {
-      const { triggerData, activeTab } = this.state;
+      const { triggerData, activeTab, focusDDIndices } = this.state;
+      let nextFocusDDIndices = focusDDIndices;
 
       triggerData[activeTab].triggers = triggerData[activeTab].triggers.filter(
         (_, i) => index !== i,
       );
 
       if (activeTab === Constants.TRIGGER_TYPES.FOCUS) {
-        this.onAdjustDropdownArrayIndexLength(triggerData[activeTab].triggers.length);
+        nextFocusDDIndices = RootComponent.adjustedDDArrayIndexLength(
+          triggerData[activeTab].triggers.length,
+          nextFocusDDIndices,
+        );
       }
 
       this.setState({ triggerData });
+      this.setState({ focusDDIndices: nextFocusDDIndices });
     }
 
     onRead() {
-      const { actionPanelState, triggerData } = this.state;
+      const { actionPanelState, triggerData, focusDDIndices } = this.state;
+      let nextFocusDDIndices = focusDDIndices;
+      let nextTriggerData = triggerData;
+
       try {
         if (actionPanelState.hasError) {
           actionPanelState.message = '';
         }
 
-        const nextTriggerData = ScriptParser.parseScript(this.computed.script);
+        nextTriggerData = ScriptParser.parseScript(this.computed.script);
 
         Object.keys(triggerData).forEach((command) => {
           if (nextTriggerData[command] === undefined) {
@@ -176,8 +292,9 @@ function InitRoot() {
           }
 
           if (command === Constants.TRIGGER_TYPES.FOCUS) {
-            this.onAdjustDropdownArrayIndexLength(
+            nextFocusDDIndices = RootComponent.adjustedDDArrayIndexLength(
               nextTriggerData[command].triggers.length,
+              nextFocusDDIndices,
             );
           }
         });
@@ -189,6 +306,8 @@ function InitRoot() {
         actionPanelState.hasError = true;
       }
 
+      this.setState({ focusDDIndices: nextFocusDDIndices });
+      this.setState({ triggerData: nextTriggerData });
       this.setState({ actionPanelState });
     }
 
@@ -263,12 +382,12 @@ function InitRoot() {
         clearTimeout(this.computed.timer);
       }
 
-      this.computed.timer = window.setTimeout(() => this.onDisableCopyNotification(), 1000);
+      this.computed.timer = window.setTimeout(() => this.onDisableCopyNotify(), 1000);
 
       this.setState({ actionPanelState });
     }
 
-    onDisableCopyNotification() {
+    onDisableCopyNotify() {
       const { actionPanelState } = this.state;
       actionPanelState.copiedNotify = false;
       this.setState({ actionPanelState });
@@ -327,122 +446,33 @@ function InitRoot() {
       this.setState({ unsavedSettings });
     }
 
-    onSaveViewport(oldResolution, newResolution) {
-      const { triggerData } = this.state;
-
-      const factor = Math.log2(
-        Constants.SETTINGS.VIEWPORT[newResolution].SIZE[0]
-        / Constants.SETTINGS.VIEWPORT[oldResolution].SIZE[0],
-      );
-
-      const size = Constants.SETTINGS.VIEWPORT[newResolution].SIZE;
-      store.dispatch(Actions.setPlaybackDimensions({ width: size[0], height: size[1] }));
-
-      triggerData[Constants.TRIGGER_TYPES.ZOOM].triggers.forEach((_, i) => {
-        triggerData[Constants.TRIGGER_TYPES.ZOOM].triggers[i][1] = Math.round((
-          triggerData[Constants.TRIGGER_TYPES.ZOOM].triggers[i][1] + factor + Number.EPSILON
-        ) * 10e6) / 10e6;
-      });
-
-      this.setState({ triggerData });
-    }
-
     onApplySettings() {
-      const { unsavedSettings, settings } = this.state;
+      const { triggerData, settings, unsavedSettings } = this.state;
 
-      this.onSaveViewport(settings.resolution, unsavedSettings.resolution);
+      const nextTriggerData = RootComponent.savedViewport(
+        settings.resolution,
+        unsavedSettings.resolution,
+        triggerData,
+      );
 
       settings.fontSize = unsavedSettings.fontSize;
       settings.resolution = unsavedSettings.resolution;
       unsavedSettings.dirty = false;
 
+      this.setState({ triggerData: nextTriggerData });
       this.setState({ settings });
       this.setState({ unsavedSettings });
     }
 
-    onChangeFocuserDropdown(index, value) {
-      const { focuserDropdownIndices } = this.state;
-      focuserDropdownIndices[index] = parseInt(value, 10);
-      this.setState({ focuserDropdownIndices });
+    onChangeFocusDD(index, value) {
+      const { focusDDIndices } = this.state;
+      focusDDIndices[index] = parseInt(value, 10);
+      this.setState({ focusDDIndices });
     }
 
-    onChangeSkinDropdown(value) {
+    onChangeSkinDD(value) {
       const { skinEditorState } = this.state;
-      skinEditorState.dropdownIndex = parseInt(value, 10);
-      this.setState({ skinEditorState });
-    }
-
-    onAdjustFocuserWeightArrays(riderCount) {
-      const { triggerData } = this.state;
-      const focusTriggers = triggerData[Constants.TRIGGER_TYPES.FOCUS].triggers;
-
-      focusTriggers.forEach((_, i) => {
-        const oldLength = focusTriggers[i][1].length;
-
-        if (oldLength < riderCount) {
-          focusTriggers[i][1].push(...Array(riderCount - oldLength).fill(0));
-        }
-        if (oldLength > riderCount) {
-          focusTriggers[i][1].splice(riderCount, oldLength - riderCount);
-        }
-      });
-
-      triggerData[Constants.TRIGGER_TYPES.FOCUS].triggers = focusTriggers;
-      this.setState({ triggerData });
-    }
-
-    onAdjustFocuserDropdownLengths(riderCount) {
-      const { focuserDropdownIndices } = this.state;
-
-      focuserDropdownIndices.forEach((_, i) => {
-        if (focuserDropdownIndices[i] >= riderCount) {
-          focuserDropdownIndices[i] = riderCount - 1;
-        }
-      });
-
-      this.setState({ focuserDropdownIndices });
-    }
-
-    onAdjustDropdownArrayIndexLength(triggerLength) {
-      const { focuserDropdownIndices } = this.state;
-      const oldLength = focuserDropdownIndices.length;
-
-      if (oldLength < triggerLength) {
-        focuserDropdownIndices.push(...Array(triggerLength - oldLength).fill(0));
-      }
-      if (oldLength > triggerLength) {
-        focuserDropdownIndices.splice(triggerLength, oldLength - triggerLength);
-      }
-
-      this.setState({ focuserDropdownIndices });
-    }
-
-    onAdjustSkinArray(riderCount) {
-      const { triggerData } = this.state;
-      const skinTriggers = triggerData[Constants.TRIGGER_TYPES.SKIN].triggers;
-      const oldLength = skinTriggers.length;
-
-      if (oldLength < riderCount) {
-        skinTriggers.push(...Array(riderCount - oldLength).fill(structuredClone(
-          Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE,
-        )));
-      }
-
-      if (oldLength > riderCount) {
-        skinTriggers.splice(riderCount, oldLength - riderCount);
-      }
-
-      triggerData[Constants.TRIGGER_TYPES.SKIN].triggers = skinTriggers;
-      this.setState({ triggerData });
-    }
-
-    onAdjustSkinDropdownLength(riderCount) {
-      const { skinEditorState } = this.state;
-
-      if (skinEditorState.dropdownIndex >= riderCount) {
-        skinEditorState.dropdownIndex = riderCount - 1;
-      }
-
+      skinEditorState.ddIndex = parseInt(value, 10);
       this.setState({ skinEditorState });
     }
 
