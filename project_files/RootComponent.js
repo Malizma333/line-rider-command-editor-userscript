@@ -92,6 +92,27 @@ function InitRoot() {
       return nextFocusDDIndices;
     }
 
+    /**
+     * Chooses first nonzero weight to be the index of the rider dropdown when loading triggers
+     */
+    static chosenFocusDDIndices(triggerData, focusDDIndices) {
+      const nextFocusDDIndices = focusDDIndices;
+      const focusTriggers = triggerData[Constants.TRIGGER_TYPES.FOCUS].triggers;
+
+      focusTriggers.forEach((trigger, triggerIndex) => {
+        let newIndex = 0;
+        for (let i = 0; i < trigger[1].length; i += 1) {
+          if (trigger[1][i] !== 0) {
+            newIndex = i;
+            break;
+          }
+        }
+        nextFocusDDIndices[triggerIndex] = newIndex;
+      });
+
+      return nextFocusDDIndices;
+    }
+
     static savedViewport(oldResolution, newResolution, triggerData) {
       const nextTriggerData = triggerData;
 
@@ -270,6 +291,10 @@ function InitRoot() {
           if (command === Constants.TRIGGER_TYPES.FOCUS) {
             nextFocusDDIndices = RootComponent.resizedFocusDDIndexArray(
               nextTriggerData[command].triggers.length,
+              nextFocusDDIndices,
+            );
+            nextFocusDDIndices = RootComponent.chosenFocusDDIndices(
+              nextTriggerData,
               nextFocusDDIndices,
             );
           }
