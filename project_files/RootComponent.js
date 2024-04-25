@@ -270,7 +270,7 @@ function InitRoot() {
       this.setState({ focusDDIndices: nextFocusDDIndices });
     }
 
-    onRead() {
+    onLoad() {
       const { actionPanelState, triggerData, focusDDIndices } = this.state;
       let nextFocusDDIndices = focusDDIndices;
       let nextTriggerData = triggerData;

@@ -40,6 +40,7 @@ class ScriptParser {
       try {
         ScriptParser.parseCommand(commandId, trimmedScript);
       } catch (e) {
+        console.error('[ScriptParser]', e.message);
         if (ScriptParser.triggerData[commandId] !== undefined) {
           delete ScriptParser.triggerData[commandId];
         }

@@ -90,7 +90,7 @@ class ComponentManager {
         'button',
         {
           style: Styles.actionPanel.button,
-          onClick: () => root.onRead(),
+          onClick: () => root.onLoad(),
         },
         rc('text', null, 'Load'),
       ),
