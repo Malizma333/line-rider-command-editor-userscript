@@ -344,7 +344,7 @@ function InitRoot() {
       const { triggerData } = this.state;
       if (!window.confirm('Are you sure you want to reset the current rider\'s skin?')) return;
 
-      triggerData.CustomSkin.triggers[index] = structuredClone(
+      triggerData[Constants.TRIGGER_TYPES.SKIN].triggers[index] = structuredClone(
         Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE,
       );
 
