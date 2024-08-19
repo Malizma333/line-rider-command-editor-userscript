@@ -10,12 +10,12 @@ function main() {
   ReactDOM.render(React.createElement(InitRoot()), parent);
 }
 
-function checkReady() {
-  if (!window.React) {
-    window.setTimeout(checkReady, 10);
-  } else {
+if (window.store) {
+  main();
+} else {
+  const prevInit = window.onAppReady;
+  window.onAppReady = () => {
+    if (prevInit) prevInit();
     main();
-  }
+  };
 }
-
-checkReady();
