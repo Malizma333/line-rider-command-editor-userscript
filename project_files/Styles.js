@@ -34,6 +34,7 @@ class Styles {
     left: '50px',
     opacity: 0,
     overflow: 'hidden',
+    padding: '1vh',
     pointerEvents: 'none',
     position: 'fixed',
     top: '12.5px'
@@ -45,7 +46,7 @@ class Styles {
     height: '60vh',
     flexDirection: 'column',
     justifyContent: 'center',
-    padding: '2%',
+    paddingTop: '1vh',
     width: '40vw'
   }
 

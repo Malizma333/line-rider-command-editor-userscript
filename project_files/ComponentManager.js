@@ -39,6 +39,7 @@ class ComponentManager {
       rc(
         'button',
         {
+          title: state.active ? 'Minimize' : 'Maximize',
           style: Styles.buttons.embedded,
           onClick: () => root.onActivate()
         },
