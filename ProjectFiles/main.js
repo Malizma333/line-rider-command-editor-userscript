@@ -1,43 +1,43 @@
-function main() {
-  window.V2 = window.V2 || Selectors.getWindowStart(window.store.getState());
+function main () {
+  window.V2 = window.V2 || Selectors.getWindowStart(window.store.getState())
 
-  const { React, ReactDOM } = window;
+  const { React, ReactDOM } = window
 
-  const parent = document.createElement('div');
-  document.getElementById('content').appendChild(parent);
+  const parent = document.createElement('div')
+  document.getElementById('content').appendChild(parent)
 
   class LegacyComponent extends React.Component {
-    constructor() {
-      super();
+    constructor () {
+      super()
 
-      this.state = {};
+      this.state = {}
     }
 
-    componentDidMount() {
+    componentDidMount () {
       Object.assign(parent.style, {
         border: '2px solid black',
         left: '50px',
         position: 'fixed',
-        top: '12.5px',
-      });
+        top: '12.5px'
+      })
     }
 
-    render() {
+    render () {
       return React.createElement(
         'div',
         null,
         'Outdated command editor userscript build version detected! Please update by following the link below.',
         React.createElement('br'),
-        React.createElement('a', { href: 'https://github.com/Malizma333/linerider-userscript-mods/raw/master/mods/line-rider-command-editor.user.js' }, 'Click Here'),
-      );
+        React.createElement('a', { href: 'https://github.com/Malizma333/linerider-userscript-mods/raw/master/mods/line-rider-command-editor.user.js' }, 'Click Here')
+      )
     }
   }
 
-  ReactDOM.render(React.createElement(LegacyComponent), parent);
+  ReactDOM.render(React.createElement(LegacyComponent), parent)
 }
 
 if (window.store) {
-  main();
+  main()
 } else {
-  window.onAppReady = main;
+  window.onAppReady = main
 }

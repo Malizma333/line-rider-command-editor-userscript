@@ -1,8 +1,8 @@
 // eslint-disable-next-line no-unused-vars
 class ScriptGenerator {
-  static generateScript(command, triggerData) {
-    const currentData = triggerData[command];
-    const currentHeader = Constants.TRIGGER_PROPS[command].FUNC;
+  static generateScript (command, triggerData) {
+    const currentData = triggerData[command]
+    const currentHeader = Constants.TRIGGER_PROPS[command].FUNC
 
     switch (command) {
       case Constants.TRIGGER_TYPES.FOCUS:
@@ -11,22 +11,22 @@ class ScriptGenerator {
         return currentHeader
           .replace('{0}', JSON.stringify(currentData.triggers))
           .replace('{1}', currentData.smoothing)
-          .replace(' ', '');
+          .replace(' ', '')
       case Constants.TRIGGER_TYPES.TIME:
         return currentHeader
           .replace('{0}', JSON.stringify(currentData.triggers))
           .replace('{1}', currentData.interpolate)
-          .replace(' ', '');
+          .replace(' ', '')
       case Constants.TRIGGER_TYPES.SKIN:
         return currentHeader
           .replace('{0}', ScriptGenerator.formatSkins(currentData.triggers))
-          .replace(' ', '');
+          .replace(' ', '')
       default:
-        return '';
+        return ''
     }
   }
 
-  static formatSkins(customSkinData) {
+  static formatSkins (customSkinData) {
     const customSkinStrings = customSkinData.map((customSkin) => [
       ` .outline {stroke: ${customSkin.outline.stroke}}`,
       ` .skin {fill: ${customSkin.skin.fill}}`,
@@ -54,11 +54,11 @@ class ScriptGenerator {
       ` .hat .top {fill: ${customSkin.hatTop.fill}}`,
       ` .hat .bottom {stroke: ${customSkin.hatBottom.stroke}}`,
       ` .hat .ball {fill: ${customSkin.hatBall.fill}}`,
-      ` .flag {fill: ${customSkin.flag.fill}}`,
-    ].join('').replace(/\n/g, ''));
+      ` .flag {fill: ${customSkin.flag.fill}}`
+    ].join('').replace(/\n/g, ''))
 
-    customSkinStrings.unshift(customSkinStrings.pop());
+    customSkinStrings.unshift(customSkinStrings.pop())
 
-    return JSON.stringify(customSkinStrings);
+    return JSON.stringify(customSkinStrings)
   }
 }
