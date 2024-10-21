@@ -14,7 +14,7 @@ class Constants {
   static get LINKS () {
     return {
       HELP: 'https://github.com/Malizma333/line-rider-command-editor-userscript#readme',
-      REPORT: 'https://forms.gle/7MeZ7NpjJVggmaHL7'
+      REPORT: 'https://github.com/Malizma333/line-rider-command-editor-userscript/issues/new'
     }
   }
 

@@ -52,6 +52,7 @@ class ComponentManager {
       rc(
         'button',
         {
+          title: "Settings",
           style: Styles.buttons.embedded,
           onClick: () => root.onToggleSettings(!state.settings.active)
         },
@@ -60,6 +61,7 @@ class ComponentManager {
       rc(
         'button',
         {
+          title: "Report Issue",
           style: Styles.buttons.embedded,
           onClick: () => window.open(Constants.LINKS.REPORT)
         },
@@ -68,6 +70,7 @@ class ComponentManager {
       rc(
         'button',
         {
+          title: "Help",
           style: Styles.buttons.embedded,
           onClick: () => window.open(Constants.LINKS.HELP)
         },
