@@ -94,51 +94,7 @@ class Styles {
         display: 'flex',
         flex: 1,
         fontSize: '20px',
-        justifyContent: 'end',
         width: '100%'
-      }
-    }
-  }
-
-  static get actionPanel () {
-    return {
-      container: {
-        alignItems: 'center',
-        display: 'flex',
-        flex: 1,
-        justifyContent: 'center',
-        width: '100%'
-      },
-      button: {
-        backgroundColor: Styles.theme.light_gray1,
-        border: '2px ridge black',
-        borderRadius: '5px',
-        flex: 1,
-        height: '50px',
-        margin: '10px'
-      },
-      outputContainer: {
-        backgroundColor: Styles.theme.white,
-        border: '2px solid black',
-        display: 'flex',
-        flex: 3,
-        height: '80px',
-        margin: '10px',
-        overflow: 'none',
-        position: 'relative'
-      },
-      output: {
-        overflowY: 'scroll',
-        textAlign: 'center',
-        wordBreak: 'break-all',
-        userSelect: 'text'
-      },
-      notification: {
-        backgroundColor: 'white',
-        border: '2px solid black',
-        left: '0px',
-        position: 'absolute',
-        top: '0px'
       }
     }
   }

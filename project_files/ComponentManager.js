@@ -38,8 +38,7 @@ class ComponentManager {
         this.toolbar(),
         state.settings.active && this.settingsContainer(),
         !state.settings.active && this.tabContainer(),
-        !state.settings.active && this.windowContainer(),
-        !state.settings.active && this.actionPanel()
+        !state.settings.active && this.windowContainer()
       )
     )
   }
@@ -50,92 +49,67 @@ class ComponentManager {
       'div',
       { style: Styles.toolbar.container },
       rc(
-        'button',
-        {
-          title: "Settings",
-          style: Styles.buttons.embedded,
-          onClick: () => root.onToggleSettings(!state.settings.active)
-        },
-        rc('span', { style: { position: 'relative' } }, '⚙')
-      ),
-      rc(
-        'button',
-        {
-          title: "Report Issue",
-          style: Styles.buttons.embedded,
-          onClick: () => window.open(Constants.LINKS.REPORT)
-        },
-        rc('span', { style: { position: 'relative' } }, '⚑')
-      ),
-      rc(
-        'button',
-        {
-          title: "Help",
-          style: Styles.buttons.embedded,
-          onClick: () => window.open(Constants.LINKS.HELP)
-        },
-        rc('span', { style: { position: 'relative' } }, '?')
-      )
-    )
-  }
-
-  actionPanel () {
-    const { rc, root, state } = this
-    return rc(
-      'div',
-      {
-        style: {
-          ...Styles.actionPanel.container,
-          fontSize: Styles.theme.textSizes.S[state.settings.fontSize]
-        }
-      },
-      rc(
-        'button',
-        {
-          style: Styles.actionPanel.button,
-          onClick: () => root.onLoad()
-        },
-        rc('text', null, 'Load')
-      ),
-      rc(
-        'button',
-        {
-          style: Styles.actionPanel.button,
-          onClick: () => root.onTest()
-        },
-        rc('text', null, 'Run')
-      ),
-      rc(
-        'button',
-        {
-          style: Styles.actionPanel.button,
-          onClick: () => root.onPrint()
-        },
-        rc('text', null, 'Print Code')
+        'div',
+        { style: {...Styles.toolbar.container, justifyContent: 'start' } },
+        rc(
+          'button',
+          {
+            title: "Load From Script",
+            style: Styles.buttons.embedded,
+            onClick: () => root.onLoad()
+          },
+          rc('span', { style: { position: 'relative' } }, '_')
+        ),
+        rc(
+          'button',
+          {
+            title: "Run",
+            style: Styles.buttons.embedded,
+            onClick: () => root.onTest()
+          },
+          rc('span', { style: { position: 'relative' } }, '▶')
+        ),
+        rc(
+          'button',
+          {
+            title: "Print to Console",
+            style: Styles.buttons.embedded,
+            onClick: () => root.onPrint()
+          },
+          rc('span', { style: { position: 'relative' } }, '🖶')
+        ),
       ),
       rc(
         'div',
-        { style: Styles.actionPanel.outputContainer },
+        { style: {...Styles.toolbar.container, justifyContent: 'end' } },
         rc(
-          'div',
-          { style: Styles.actionPanel.output },
-          rc('text', {
-            style: { color: state.actionPanelState.hasError ? 'Red' : 'Black' }
-          }, state.actionPanelState.message)
-        ),
-        rc('button', {
-          style: {
-            ...Styles.buttons.filled,
-            bottom: '0px',
-            left: '0px',
-            position: 'absolute',
-            fontSize: '20px'
+          'button',
+          {
+            title: "Settings",
+            style: Styles.buttons.embedded,
+            onClick: () => root.onToggleSettings(!state.settings.active)
           },
-          onClick: () => root.onCopyClipboard()
-        }, '🖶'),
-        state.actionPanelState.copiedNotify &&
-          rc('div', { style: Styles.actionPanel.notification }, 'Copied!')
-      )
+          rc('span', { style: { position: 'relative' } }, '⚙')
+        ),
+        rc(
+          'button',
+          {
+            title: "Report Issue",
+            style: Styles.buttons.embedded,
+            onClick: () => window.open(Constants.LINKS.REPORT)
+          },
+          rc('span', { style: { position: 'relative' } }, '⚑')
+        ),
+        rc(
+          'button',
+          {
+            title: "Help",
+            style: Styles.buttons.embedded,
+            onClick: () => window.open(Constants.LINKS.HELP)
+          },
+          rc('span', { style: { position: 'relative' } }, '?')
+        )
+      ),
     )
   }
 

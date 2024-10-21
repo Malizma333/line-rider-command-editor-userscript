@@ -139,11 +139,6 @@ function InitRoot () {
       this.state = {
         active: false,
         initialized: false,
-        actionPanelState: {
-          hasError: false,
-          message: '',
-          copiedNotify: false
-        },
         activeTab: Constants.TRIGGER_TYPES.ZOOM,
         triggerData: {},
         focusDDIndices: [0],
@@ -288,15 +283,11 @@ function InitRoot () {
     }
 
     onLoad () {
-      const { actionPanelState, triggerData, focusDDIndices } = this.state
+      const { triggerData, focusDDIndices } = this.state
       let nextFocusDDIndices = focusDDIndices
       let nextTriggerData = triggerData
 
       try {
-        if (actionPanelState.hasError) {
-          actionPanelState.message = ''
-        }
-
         nextTriggerData = ScriptParser.parseScript(this.computed.script)
 
         Object.keys(triggerData).forEach((command) => {
@@ -318,43 +309,32 @@ function InitRoot () {
         })
 
         this.setState({ triggerData: nextTriggerData })
-        actionPanelState.hasError = false
       } catch (error) {
-        actionPanelState.message = `Error: ${error.message}`
-        actionPanelState.hasError = true
+        console.error(error.message)
       }
 
       this.setState({ focusDDIndices: nextFocusDDIndices })
       this.setState({ triggerData: nextTriggerData })
-      this.setState({ actionPanelState })
     }
 
     onTest () {
-      const { activeTab, triggerData, actionPanelState } = this.state
+      const { activeTab, triggerData } = this.state
       try {
         const script = ScriptGenerator.generateScript(activeTab, triggerData)
         // eslint-disable-next-line no-eval
         eval.call(window, script) // HACK: Already evaluated script, execute it directly
-        actionPanelState.hasError = false
       } catch (error) {
-        actionPanelState.message = `Error: ${error.message}`
-        actionPanelState.hasError = true
+        console.error(error.message)
       }
-
-      this.setState({ actionPanelState })
     }
 
     onPrint () {
-      const { activeTab, triggerData, actionPanelState } = this.state
+      const { activeTab, triggerData } = this.state
       try {
-        actionPanelState.message = ScriptGenerator.generateScript(activeTab, triggerData)
-        actionPanelState.hasError = false
+        console.info(ScriptGenerator.generateScript(activeTab, triggerData))
       } catch (error) {
-        actionPanelState.message = `Error: ${error.message}`
-        actionPanelState.hasError = true
+        console.error(error.message)
       }
-
-      this.setState({ actionPanelState })
     }
 
     onResetSkin (index) {
@@ -383,32 +363,6 @@ function InitRoot () {
       skinEditorState.color = hexColor
 
       this.setState({ skinEditorState })
-    }
-
-    onCopyClipboard () {
-      const { actionPanelState } = this.state
-
-      if (actionPanelState.hasError) {
-        return
-      }
-
-      window.navigator.clipboard.writeText(actionPanelState.message)
-
-      actionPanelState.copiedNotify = true
-
-      if (this.computed.timer) {
-        clearTimeout(this.computed.timer)
-      }
-
-      this.computed.timer = window.setTimeout(() => this.onDisableCopyNotify(), 1000)
-
-      this.setState({ actionPanelState })
-    }
-
-    onDisableCopyNotify () {
-      const { actionPanelState } = this.state
-      actionPanelState.copiedNotify = false
-      this.setState({ actionPanelState })
     }
 
     onActivate () {
