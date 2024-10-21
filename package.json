@@ -2,10 +2,11 @@
   "standard": {
     "globals": [
       "Actions",
-      "ScriptGenerator",
-      "InitRoot",
       "ComponentManager",
       "Constants",
+      "Icons",
+      "InitRoot",
+      "ScriptGenerator",
       "ScriptParser",
       "Selectors",
       "Styles",
@@ -13,8 +14,8 @@
     ]
   },
   "scripts": {
-    "lint": "bash scripts/lint.sh",
-    "build": "bash scripts/build.sh -d",
-    "deploy": "bash scripts/build.sh"
+    "lint": "bash lint.sh",
+    "build": "bash build.sh -d",
+    "deploy": "bash build.sh"
   }
 }

@@ -20,22 +20,10 @@ class ComponentManager {
     return rc(
       'div',
       { style: Styles.theme.text },
-      rc(
-        'button',
-        {
-          style: {
-            ...Styles.buttons.embedded,
-            position: 'absolute',
-            fontSize: '18px'
-          },
-          onClick: () => root.onActivate()
-        },
-        state.active ? '-' : '+'
-      ),
+      this.toolbar(),
       state.active && rc(
         'div',
         { style: Styles.content },
-        this.toolbar(),
         state.settings.active && this.settingsContainer(),
         !state.settings.active && this.tabContainer(),
         !state.settings.active && this.windowContainer()
@@ -49,6 +37,14 @@ class ComponentManager {
       'div',
       { style: Styles.toolbar.container },
       rc(
+        'button',
+        {
+          style: Styles.buttons.embedded,
+          onClick: () => root.onActivate()
+        },
+        state.active ? rc('span', Icons.minimize) : rc('span', Icons.maximize)
+      ),
+      state.active && rc(
         'div',
         { style: {...Styles.toolbar.container, justifyContent: 'start' } },
         rc(
@@ -58,7 +54,7 @@ class ComponentManager {
             style: Styles.buttons.embedded,
             onClick: () => root.onLoad()
           },
-          rc('span', { style: { position: 'relative' } }, '_')
+          rc('span', Icons.download)
         ),
         rc(
           'button',
@@ -67,7 +63,7 @@ class ComponentManager {
             style: Styles.buttons.embedded,
             onClick: () => root.onTest()
           },
-          rc('span', { style: { position: 'relative' } }, '▶')
+          rc('span', Icons.play)
         ),
         rc(
           'button',
@@ -76,10 +72,10 @@ class ComponentManager {
             style: Styles.buttons.embedded,
             onClick: () => root.onPrint()
           },
-          rc('span', { style: { position: 'relative' } }, '🖶')
+          rc('span', Icons.print)
         ),
       ),
-      rc(
+      state.active && rc(
         'div',
         { style: {...Styles.toolbar.container, justifyContent: 'end' } },
         rc(
@@ -89,7 +85,7 @@ class ComponentManager {
             style: Styles.buttons.embedded,
             onClick: () => root.onToggleSettings(!state.settings.active)
           },
-          rc('span', { style: { position: 'relative' } }, '⚙')
+          rc('span', Icons.settings)
         ),
         rc(
           'button',
@@ -98,7 +94,7 @@ class ComponentManager {
             style: Styles.buttons.embedded,
             onClick: () => window.open(Constants.LINKS.REPORT)
           },
-          rc('span', { style: { position: 'relative' } }, '⚑')
+          rc('span', Icons.flag)
         ),
         rc(
           'button',
@@ -107,7 +103,7 @@ class ComponentManager {
             style: Styles.buttons.embedded,
             onClick: () => window.open(Constants.LINKS.HELP)
           },
-          rc('span', { style: { position: 'relative' } }, '?')
+          rc('span', Icons.help)
         )
       ),
     )
@@ -139,7 +135,7 @@ class ComponentManager {
           },
           onClick: () => root.onToggleSettings(false)
         },
-        rc('span', { style: { fontWeight: 700 } }, 'X')
+        rc('span', Icons.x)
       ),
       rc('text', {
         style: {
@@ -331,11 +327,7 @@ class ComponentManager {
       'div',
       { style: Styles.window },
       this.smoothTab(state.triggerData[state.activeTab]),
-      rc(
-        'div',
-        null,
-        Object.keys(data.triggers).map((i) => this.trigger(data, parseInt(i, 10)))
-      )
+      Object.keys(data.triggers).map((i) => this.trigger(data, parseInt(i, 10)))
     )
   }
 
@@ -421,10 +413,11 @@ class ComponentManager {
           onClick: () => root.onDeleteTrigger(index)
         },
         rc('span', {
+          ...Icons.x,
           style: {
             color: index === 0 ? Styles.theme.dark_gray2 : Styles.theme.black
           }
-        }, 'X')
+        })
       ),
       this.timeStamp(triggerData[0], index),
       data.id === Constants.TRIGGER_TYPES.ZOOM && this.zoomTrigger(triggerData, index),
@@ -438,12 +431,7 @@ class ComponentManager {
           style: Styles.trigger.createButton,
           onClick: () => root.onCreateTrigger(index)
         },
-        rc('span', {
-          style: {
-            fontSize: '22px',
-            fontWeight: 900
-          }
-        }, '+')
+        rc('span', Icons.plus)
       )
     )
   }
@@ -469,7 +457,7 @@ class ComponentManager {
         rc(
           'text',
           { style: Styles.trigger.text },
-          ['TIME', ':', ':'][timeIndex]
+          ['Time', ':', ':'][timeIndex]
         ),
         rc('input', {
           style: {
@@ -501,7 +489,7 @@ class ComponentManager {
 
   zoomTrigger (data, index) {
     const { rc, root } = this
-    const labels = ['ZOOM TO']
+    const labels = ['Zoom To']
 
     return rc(
       'div',
@@ -543,7 +531,7 @@ class ComponentManager {
       Constants.CONSTRAINTS.PAN_X,
       Constants.CONSTRAINTS.PAN_Y
     ]
-    const labels = ['WIDTH', 'HEIGHT', 'X OFFSET', 'Y OFFSET']
+    const labels = ['Width', 'Height', 'Offset X', 'Offset Y']
 
     return rc(
       window.React.Fragment,
@@ -582,7 +570,7 @@ class ComponentManager {
   cameraFocusTrigger (data, index) {
     const { rc, root, state } = this
     const ddIndex = state.focusDDIndices[index]
-    const labels = ['WEIGHT']
+    const labels = ['Weight']
 
     return rc(
       'div',
@@ -634,7 +622,7 @@ class ComponentManager {
 
   timeRemapTrigger (data, index) {
     const { rc, root } = this
-    const labels = ['SPEED']
+    const labels = ['Speed']
 
     return rc(
       'div',
@@ -748,8 +736,9 @@ class ComponentManager {
           onClick: () => root.onResetSkin(index)
         },
         rc('span', {
-          style: { color: 'red', fontWeight: 700 }
-        }, 'X')
+          ...Icons.x,
+          style: { color: 'red' }
+        })
       ),
       rc(
         'div',
