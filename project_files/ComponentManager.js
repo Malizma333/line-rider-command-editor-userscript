@@ -113,6 +113,26 @@ class ComponentManager {
         rc(
           'button',
           {
+            title: 'Undo',
+            style: Styles.buttons.embedded,
+            disabled: root.computed.undoStack.length === 0,
+            onClick: () => root.onUndo()
+          },
+          rc('span', { ...Icons.leftArrow, style: { color: root.computed.redoStack.length === 0 ? 'gray' : 'black' } })
+        ),
+        rc(
+          'button',
+          {
+            title: 'Redo',
+            style: Styles.buttons.embedded,
+            disabled: root.computed.undoStack.length === 0,
+            onClick: () => root.onRedo()
+          },
+          rc('span', { ...Icons.rightArrow, style: { color: root.computed.undoStack.length === 0 ? 'gray' : 'black' } })
+        ),
+        rc(
+          'button',
+          {
             title: 'Settings',
             style: Styles.buttons.embedded,
             onClick: () => root.onToggleSettings(!state.settings.active)

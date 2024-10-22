@@ -161,7 +161,9 @@ function InitRoot () {
 
       this.computed = {
         invalidTimes: [],
-        riderCount: 1
+        riderCount: 1,
+        undoStack: [],
+        redoStack: []
       }
 
       this.componentManager = new ComponentManager(React.createElement, this)
@@ -345,6 +347,14 @@ function InitRoot () {
       } catch (error) {
         console.error(error.message)
       }
+    }
+
+    onUndo () {
+      console.log('undo')
+    }
+
+    onRedo () {
+      console.log('redo')
     }
 
     onResetSkin (index) {
