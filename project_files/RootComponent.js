@@ -173,18 +173,7 @@ function InitRoot () {
       Object.assign(document.getElementById(Constants.ROOT_NODE_ID).style, Styles.root)
 
       window.save_commands = () => {
-        const { triggerData } = this.state
-        const r = document.createElement('a')
-        let script = ''
-        Object.keys(Constants.TRIGGER_PROPS).forEach((command) => {
-          script += `${ScriptGenerator.generateScript(command, triggerData)}\n\n`
-        })
-        const blob = new Blob([script], { type: 'text/javascript' })
-        r.setAttribute('href', URL.createObjectURL(blob))
-        r.setAttribute('target', '_blank')
-        r.setAttribute('download', 'my-commands.js')
-        r.click()
-        r.remove()
+        this.onDownload()
         return 'Downloaded commands!'
       }
 
