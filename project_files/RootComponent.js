@@ -7,13 +7,13 @@ function InitRoot () {
      * Clamps the skin editor dropdown index to be less than the number of riders
      */
     static clampedSkinDD (riderCount, skinEditorState) {
-      const nextSkinEditorState = skinEditorState
+      let { ddIndex } = skinEditorState
 
       if (skinEditorState.ddIndex >= riderCount) {
-        nextSkinEditorState.ddIndex = riderCount - 1
+        ddIndex = riderCount - 1
       }
 
-      return nextSkinEditorState
+      return { ...skinEditorState, ddIndex }
     }
 
     /**
@@ -64,12 +64,10 @@ function InitRoot () {
      * Clamps the focuser dropdown indices to be less than the number of riders
      */
     static clampedFocusDDs (riderCount, focusDDIndices) {
-      const nextFocusDDIndices = focusDDIndices
+      let nextFocusDDIndices = []
 
-      nextFocusDDIndices.forEach((_, i) => {
-        if (nextFocusDDIndices[i] >= riderCount) {
-          nextFocusDDIndices[i] = riderCount - 1
-        }
+      focusDDIndices.forEach((_, i) => {
+        nextFocusDDIndices.push(Math.min(riderCount - 1, focusDDIndices[i]))
       })
 
       return nextFocusDDIndices
@@ -79,12 +77,14 @@ function InitRoot () {
      * Resizes the focuser dropdown indices array to match the focus triggers length
      */
     static resizedFocusDDIndexArray (triggerLength, focusDDIndices) {
-      const nextFocusDDIndices = focusDDIndices
-      const oldLength = nextFocusDDIndices.length
+      let nextFocusDDIndices = [...focusDDIndices]
+
+      const oldLength = focusDDIndices.length
 
       if (oldLength < triggerLength) {
         nextFocusDDIndices.push(...Array(triggerLength - oldLength).fill(0))
       }
+
       if (oldLength > triggerLength) {
         nextFocusDDIndices.splice(triggerLength, oldLength - triggerLength)
       }
@@ -96,7 +96,7 @@ function InitRoot () {
      * Chooses first nonzero weight to be the index of the rider dropdown when loading triggers
      */
     static chosenFocusDDIndices (triggerData, focusDDIndices) {
-      const nextFocusDDIndices = focusDDIndices
+      let nextFocusDDIndices = [...focusDDIndices]
       const focusTriggers = triggerData[Constants.TRIGGER_TYPES.FOCUS].triggers
 
       focusTriggers.forEach((trigger, triggerIndex) => {
@@ -222,7 +222,6 @@ function InitRoot () {
       const { triggerData, activeTab, focusDDIndices } = this.state
       const commandData = triggerData[activeTab]
       const newTrigger = structuredClone(commandData.triggers[index])
-      let nextFocusDDIndices = focusDDIndices
 
       const currentIndex = Selectors.getPlayerIndex(store.getState())
       newTrigger[0] = [
@@ -234,15 +233,16 @@ function InitRoot () {
       triggerData[activeTab].triggers.splice(index + 1, 0, newTrigger)
 
       if (activeTab === Constants.TRIGGER_TYPES.FOCUS) {
-        nextFocusDDIndices = RootComponent.resizedFocusDDIndexArray(
-          triggerData[activeTab].triggers.length,
-          nextFocusDDIndices
-        )
+        this.setState({ focusDDIndices: 
+          RootComponent.resizedFocusDDIndexArray(
+            triggerData[activeTab].triggers.length,
+            focusDDIndices
+          )
+        })
       }
 
       this.pushAction(this.state.triggerData, triggerData)
       this.setState({ triggerData })
-      this.setState({ focusDDIndices: nextFocusDDIndices })
     }
 
     onUpdateTrigger (valueChange, path, constraints, bounded = false) {
@@ -265,22 +265,23 @@ function InitRoot () {
 
     onDeleteTrigger (index) {
       const { triggerData, activeTab, focusDDIndices } = this.state
-      let nextFocusDDIndices = focusDDIndices
 
       triggerData[activeTab].triggers = triggerData[activeTab].triggers.filter(
         (_, i) => index !== i
       )
 
       if (activeTab === Constants.TRIGGER_TYPES.FOCUS) {
-        nextFocusDDIndices = RootComponent.resizedFocusDDIndexArray(
-          triggerData[activeTab].triggers.length,
-          nextFocusDDIndices
-        )
+        this.setState({
+          focusDDIndices: RootComponent.resizedFocusDDIndexArray(
+            triggerData[activeTab].triggers.length,
+            focusDDIndices
+          )
+        })
       }
 
       this.pushAction(this.state.triggerData, triggerData)
       this.setState({ triggerData })
-      this.setState({ focusDDIndices: nextFocusDDIndices })
+      
     }
 
     onDownload () {
@@ -316,7 +317,7 @@ function InitRoot () {
           }
 
           if (command === Constants.TRIGGER_TYPES.FOCUS) {
-            let nextFocusDDIndices = this.state.focusDDIndices
+            let nextFocusDDIndices = [...this.state.focusDDIndices]
             nextFocusDDIndices = RootComponent.resizedFocusDDIndexArray(
               nextTriggerData[command].triggers.length,
               nextFocusDDIndices
@@ -381,20 +382,19 @@ function InitRoot () {
     }
 
     onChangeColor (color, alpha) {
-      const { skinEditorState } = this.state
-
       const hexAlpha = alpha
         ? Math.round(Math.min(Math.max(parseFloat(alpha), 0), 1) * 255)
           .toString(16).padStart(2, '0')
-        : skinEditorState.color.substring(7)
+        : this.state.skinEditorState.color.substring(7)
 
       const hexColor = color
         ? color + hexAlpha
-        : skinEditorState.color.substring(0, 7) + hexAlpha
+        : this.state.skinEditorState.color.substring(0, 7) + hexAlpha
 
-      skinEditorState.color = hexColor
-
-      this.setState({ skinEditorState })
+      this.setState({ skinEditorState: {
+        ...this.state.skinEditorState,
+        color: hexColor
+      } })
     }
 
     onActivate () {
@@ -469,38 +469,48 @@ function InitRoot () {
     }
 
     onChangeFocusDD (index, value) {
-      const { focusDDIndices } = this.state
-      focusDDIndices[index] = parseInt(value, 10)
-      this.setState({ focusDDIndices })
+      let nextFocusDDIndices = [...this.state.focusDDIndices]
+      nextFocusDDIndices[index] = parseInt(value, 10)
+      this.setState({ focusDDIndices: nextFocusDDIndices })
     }
 
     onChangeSkinDD (value) {
-      const { skinEditorState } = this.state
-      skinEditorState.ddIndex = parseInt(value, 10)
-      this.setState({ skinEditorState })
+      this.setState({ skinEditorState: {
+        ...this.state.skinEditorState,
+        ddIndex: parseInt(value, 10)
+      } })
     }
 
     onZoomSkinEditor (event, isMouseAction) {
       const { skinEditorState } = this.state
       const rect = document.getElementById('skinElementContainer').getBoundingClientRect()
+      let { scale, xOffset, yOffset } = skinEditorState.zoom
 
       if (isMouseAction) {
         if (skinEditorState.zoom.scale < Constants.CONSTRAINTS.SKIN_ZOOM.MAX) {
-          skinEditorState.zoom.xOffset = (event.clientX - rect.x) / skinEditorState.zoom.scale
-          skinEditorState.zoom.yOffset = (event.clientY - rect.y) / skinEditorState.zoom.scale
+          xOffset = (event.clientX - rect.x) / skinEditorState.zoom.scale
+          yOffset = (event.clientY - rect.y) / skinEditorState.zoom.scale
         }
-        skinEditorState.zoom.scale = Math.max(Math.min(
+        scale = Math.max(Math.min(
           skinEditorState.zoom.scale - event.deltaY * Constants.SCROLL_DELTA,
           Constants.CONSTRAINTS.SKIN_ZOOM.MAX
         ), Constants.CONSTRAINTS.SKIN_ZOOM.MIN)
       } else {
-        skinEditorState.zoom.scale = Math.max(Math.min(
+        scale = Math.max(Math.min(
           event.target.value,
           Constants.CONSTRAINTS.SKIN_ZOOM.MAX
         ), Constants.CONSTRAINTS.SKIN_ZOOM.MIN)
       }
 
-      this.setState({ skinEditorState })
+      this.setState({ skinEditorState: {
+        ...this.state.skinEditorState,
+        zoom: {
+          ...this.state.skinEditorState.zoom,
+          xOffset,
+          yOffset,
+          scale
+        }
+      } })
     }
 
     updateComputed () {
@@ -516,14 +526,11 @@ function InitRoot () {
       if (this.computed.riderCount !== riderCount) {
         this.computed.riderCount = riderCount
         const { triggerData, skinEditorState, focusDDIndices } = this.state
-        let nextTriggerData = triggerData
-        let nextSkinEditorState = skinEditorState
-        let nextFocusDDIndices = focusDDIndices
 
-        nextTriggerData = RootComponent.resizedFocusWeightArrays(riderCount, nextTriggerData)
+        let nextTriggerData = RootComponent.resizedFocusWeightArrays(riderCount, triggerData)
         nextTriggerData = RootComponent.resizedSkinArray(riderCount, nextTriggerData)
-        nextSkinEditorState = RootComponent.clampedSkinDD(riderCount, nextSkinEditorState)
-        nextFocusDDIndices = RootComponent.clampedFocusDDs(riderCount, nextFocusDDIndices)
+        let nextSkinEditorState = RootComponent.clampedSkinDD(riderCount, skinEditorState)
+        let nextFocusDDIndices = RootComponent.clampedFocusDDs(riderCount, focusDDIndices)
 
         this.pushAction(this.state.triggerData, nextTriggerData)
         this.setState({ triggerData: nextTriggerData })
