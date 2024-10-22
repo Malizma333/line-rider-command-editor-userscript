@@ -24,9 +24,9 @@ class ComponentManager {
       state.active && rc(
         'div',
         { style: Styles.content },
-        state.settings.active && this.settingsContainer(),
-        !state.settings.active && this.tabContainer(),
-        !state.settings.active && this.windowContainer()
+        state.settingsActive && this.settingsContainer(),
+        !state.settingsActive && this.tabContainer(),
+        !state.settingsActive && this.windowContainer()
       )
     )
   }
@@ -118,24 +118,24 @@ class ComponentManager {
             disabled: root.computed.undoStack.length === 0,
             onClick: () => root.onUndo()
           },
-          rc('span', { ...Icons.leftArrow, style: { color: root.computed.redoStack.length === 0 ? 'gray' : 'black' } })
+          rc('span', { ...Icons.leftArrow, style: { color: root.computed.undoStack.length === 0 ? 'gray' : 'black' } })
         ),
         rc(
           'button',
           {
             title: 'Redo',
             style: Styles.buttons.embedded,
-            disabled: root.computed.undoStack.length === 0,
+            disabled: root.computed.redoStack.length === 0,
             onClick: () => root.onRedo()
           },
-          rc('span', { ...Icons.rightArrow, style: { color: root.computed.undoStack.length === 0 ? 'gray' : 'black' } })
+          rc('span', { ...Icons.rightArrow, style: { color: root.computed.redoStack.length === 0 ? 'gray' : 'black' } })
         ),
         rc(
           'button',
           {
             title: 'Settings',
             style: Styles.buttons.embedded,
-            onClick: () => root.onToggleSettings(!state.settings.active)
+            onClick: () => root.onToggleSettings(!state.settingsActive)
           },
           rc('span', Icons.settings)
         ),
@@ -200,11 +200,11 @@ class ComponentManager {
           position: 'absolute',
           fontSize: Styles.theme.textSizes.M[state.settings.fontSize],
           left: '0px',
-          background: state.unsavedSettings.dirty
+          background: state.settingsDirty
             ? Styles.theme.light_gray3
             : Styles.theme.dark_gray1
         },
-        disabled: !state.unsavedSettings.dirty,
+        disabled: !state.settingsDirty,
         onClick: () => root.onApplySettings()
       }, 'Apply')
     )

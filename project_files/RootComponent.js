@@ -113,6 +113,9 @@ function InitRoot () {
       return nextFocusDDIndices
     }
 
+    /**
+     * Applies new resolution by converting zoom triggers and saving to playback dimensions
+     */
     static savedViewport (oldResolution, newResolution, triggerData) {
       const nextTriggerData = triggerData
 
@@ -147,15 +150,15 @@ function InitRoot () {
           zoom: { scale: 1 },
           color: '#000000ff'
         },
+        settingsActive: false,
+        settingsDirty: false,
         settings: {
           fontSize: Constants.SETTINGS.FONT_SIZES.MEDIUM,
-          resolution: Constants.SETTINGS.VIEWPORT.HD.ID,
-          active: false
+          resolution: Constants.SETTINGS.VIEWPORT.HD.ID
         },
         unsavedSettings: {
           fontSize: Constants.SETTINGS.FONT_SIZES.MEDIUM,
-          resolution: Constants.SETTINGS.VIEWPORT.HD.ID,
-          dirty: false
+          resolution: Constants.SETTINGS.VIEWPORT.HD.ID
         }
       }
 
@@ -182,6 +185,11 @@ function InitRoot () {
       this.onInit().then(() => {
         this.setState({ initialized: true })
       })
+    }
+
+    pushAction (oldData, newData) {
+      this.computed.undoStack.push(oldData)
+      this.computed.redoStack.length = 0
     }
 
     async onInit () {
@@ -232,6 +240,7 @@ function InitRoot () {
         )
       }
 
+      this.pushAction(this.state.triggerData, triggerData)
       this.setState({ triggerData })
       this.setState({ focusDDIndices: nextFocusDDIndices })
     }
@@ -250,6 +259,7 @@ function InitRoot () {
         bounded
       )
 
+      this.pushAction(this.state.triggerData, triggerData)
       this.setState({ triggerData })
     }
 
@@ -268,6 +278,7 @@ function InitRoot () {
         )
       }
 
+      this.pushAction(this.state.triggerData, triggerData)
       this.setState({ triggerData })
       this.setState({ focusDDIndices: nextFocusDDIndices })
     }
@@ -282,10 +293,10 @@ function InitRoot () {
     }
 
     onLoadFile (file) {
-      const reader = new FileReader()
-      reader.onload = () => { 
-          const triggerData = JSON.parse(reader.result)
-          this.onLoad(triggerData)
+      const reader = new window.FileReader()
+      reader.onload = () => {
+        const triggerData = JSON.parse(reader.result)
+        this.onLoad(triggerData)
       }
       reader.readAsText(file)
     }
@@ -295,12 +306,8 @@ function InitRoot () {
     }
 
     onLoad (data) {
-      const { triggerData, focusDDIndices } = this.state
-      let nextFocusDDIndices = focusDDIndices
-      let nextTriggerData = triggerData
-
       try {
-        nextTriggerData = data
+        let nextTriggerData = data
 
         Object.keys(triggerData).forEach((command) => {
           if (nextTriggerData[command] === undefined) {
@@ -309,6 +316,7 @@ function InitRoot () {
           }
 
           if (command === Constants.TRIGGER_TYPES.FOCUS) {
+            let nextFocusDDIndices = this.state.focusDDIndices
             nextFocusDDIndices = RootComponent.resizedFocusDDIndexArray(
               nextTriggerData[command].triggers.length,
               nextFocusDDIndices
@@ -317,16 +325,15 @@ function InitRoot () {
               nextTriggerData,
               nextFocusDDIndices
             )
+            this.setState({ focusDDIndices: nextFocusDDIndices })
           }
         })
 
+        this.pushAction(this.state.triggerData, nextTriggerData)
         this.setState({ triggerData: nextTriggerData })
       } catch (error) {
         console.error(error.message)
       }
-
-      this.setState({ focusDDIndices: nextFocusDDIndices })
-      this.setState({ triggerData: nextTriggerData })
     }
 
     onTest () {
@@ -350,11 +357,15 @@ function InitRoot () {
     }
 
     onUndo () {
-      console.log('undo')
+      const difference = this.computed.undoStack.pop()
+      this.computed.redoStack.push(difference)
+      this.setState({ triggerData: difference })
     }
 
     onRedo () {
-      console.log('redo')
+      const difference = this.computed.redoStack.pop()
+      this.computed.undoStack.push(difference)
+      this.setState({ triggerData: difference })
     }
 
     onResetSkin (index) {
@@ -365,6 +376,7 @@ function InitRoot () {
         Constants.TRIGGER_PROPS[Constants.TRIGGER_TYPES.SKIN].TEMPLATE
       )
 
+      this.pushAction(this.state.triggerData, triggerData)
       this.setState({ triggerData })
     }
 
@@ -406,11 +418,10 @@ function InitRoot () {
       if (!active && unsavedSettings.dirty) {
         if (!window.confirm('Discard changes?')) return
         Object.assign(unsavedSettings, settings)
-        unsavedSettings.dirty = false
+        this.setState({ settingsDirty: false })
       }
 
-      settings.active = active
-
+      this.setState({ settingsActive: active })
       this.setState({ unsavedSettings })
       this.setState({ settings })
     }
@@ -419,7 +430,7 @@ function InitRoot () {
       const { unsavedSettings, settings } = this.state
 
       if (fontSize !== settings.fontSize) {
-        unsavedSettings.dirty = true
+        this.setState({ settingsDirty: true })
       }
 
       unsavedSettings.fontSize = fontSize
@@ -430,7 +441,7 @@ function InitRoot () {
       const { unsavedSettings, settings } = this.state
 
       if (resolution !== settings.resolution) {
-        unsavedSettings.dirty = true
+        this.setState({ settingsDirty: true })
       }
 
       unsavedSettings.resolution = resolution
@@ -449,8 +460,9 @@ function InitRoot () {
 
       settings.fontSize = unsavedSettings.fontSize
       settings.resolution = unsavedSettings.resolution
-      unsavedSettings.dirty = false
-
+      
+      this.setState({ settingsDirty: false })
+      this.pushAction(this.state.triggerData, nextTriggerData)
       this.setState({ triggerData: nextTriggerData })
       this.setState({ settings })
       this.setState({ unsavedSettings })
@@ -513,6 +525,7 @@ function InitRoot () {
         nextSkinEditorState = RootComponent.clampedSkinDD(riderCount, nextSkinEditorState)
         nextFocusDDIndices = RootComponent.clampedFocusDDs(riderCount, nextFocusDDIndices)
 
+        this.pushAction(this.state.triggerData, nextTriggerData)
         this.setState({ triggerData: nextTriggerData })
         this.setState({ skinEditorState: nextSkinEditorState })
         this.setState({ focusDDIndices: nextFocusDDIndices })
