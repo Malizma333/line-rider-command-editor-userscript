@@ -19,4 +19,6 @@ class Selectors {
   static getPlayerIndex (state) { return state.player.index }
 
   static getSidebarOpen (state) { return !!state.views.Sidebar }
+
+  static getTrackTitle (state) { return state.trackData.label }
 }

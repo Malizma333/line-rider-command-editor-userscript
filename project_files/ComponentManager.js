@@ -16,7 +16,7 @@ class ComponentManager {
   }
 
   main () {
-    const { rc, root, state } = this
+    const { rc, state } = this
     return rc(
       'div',
       { style: Styles.theme.text },
@@ -47,29 +47,42 @@ class ComponentManager {
       ),
       state.active && rc(
         'div',
-        { style: {...Styles.toolbar.container, justifyContent: 'start' } },
+        { style: { ...Styles.toolbar.container, justifyContent: 'start' } },
         rc(
           'button',
           {
-            title: "Download",
+            title: 'Download',
             style: Styles.buttons.embedded,
-            onClick: () => root.onPrint()
+            onClick: () => root.onDownload()
           },
           rc('span', Icons.download)
         ),
         rc(
           'button',
           {
-            title: "Upload",
+            title: 'Upload',
             style: Styles.buttons.embedded,
-            onClick: () => root.onPrint()
+            onClick: () => {
+              document.getElementById('trigger-file-upload').value = ''
+              document.getElementById('trigger-file-upload').click()
+            }
           },
-          rc('span', Icons.upload)
+          rc('span', Icons.upload),
+          rc(
+            'input',
+            {
+              id: 'trigger-file-upload',
+              style: { display: 'none' },
+              type: 'file',
+              accept: '.json',
+              onChange: (e) => root.onLoadFile(e.target.files[0])
+            }
+          )
         ),
         rc(
           'button',
           {
-            title: "Load From Script",
+            title: 'Load From Script',
             style: Styles.buttons.embedded,
             onClick: () => root.onLoadScript()
           },
@@ -78,7 +91,7 @@ class ComponentManager {
         rc(
           'button',
           {
-            title: "Run",
+            title: 'Run',
             style: Styles.buttons.embedded,
             onClick: () => root.onTest()
           },
@@ -87,20 +100,20 @@ class ComponentManager {
         rc(
           'button',
           {
-            title: "Print to Console",
+            title: 'Print to Console',
             style: Styles.buttons.embedded,
             onClick: () => root.onPrint()
           },
           rc('span', Icons.print)
-        ),
+        )
       ),
       state.active && rc(
         'div',
-        { style: {...Styles.toolbar.container, justifyContent: 'end' } },
+        { style: { ...Styles.toolbar.container, justifyContent: 'end' } },
         rc(
           'button',
           {
-            title: "Settings",
+            title: 'Settings',
             style: Styles.buttons.embedded,
             onClick: () => root.onToggleSettings(!state.settings.active)
           },
@@ -109,7 +122,7 @@ class ComponentManager {
         rc(
           'button',
           {
-            title: "Report Issue",
+            title: 'Report Issue',
             style: Styles.buttons.embedded,
             onClick: () => window.open(Constants.LINKS.REPORT)
           },
@@ -118,13 +131,13 @@ class ComponentManager {
         rc(
           'button',
           {
-            title: "Help",
+            title: 'Help',
             style: Styles.buttons.embedded,
             onClick: () => window.open(Constants.LINKS.HELP)
           },
           rc('span', Icons.help)
         )
-      ),
+      )
     )
   }
 

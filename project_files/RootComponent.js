@@ -161,8 +161,7 @@ function InitRoot () {
 
       this.computed = {
         invalidTimes: [],
-        riderCount: 1,
-        script: ''
+        riderCount: 1
       }
 
       this.componentManager = new ComponentManager(React.createElement, this)
@@ -282,13 +281,35 @@ function InitRoot () {
       this.setState({ focusDDIndices: nextFocusDDIndices })
     }
 
+    onDownload () {
+      const a = document.createElement('a')
+      const data = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.state.triggerData))
+      a.setAttribute('href', data)
+      a.setAttribute('download', Selectors.getTrackTitle(store.getState()) + '.scriptData.json')
+      a.click()
+      a.remove()
+    }
+
+    onLoadFile (file) {
+      const reader = new FileReader()
+      reader.onload = () => { 
+          const triggerData = JSON.parse(reader.result)
+          this.onLoad(triggerData)
+      }
+      reader.readAsText(file)
+    }
+
     onLoadScript () {
+      this.onLoad(ScriptParser.parseScript(Selectors.getCurrentScript(store.getState())))
+    }
+
+    onLoad (data) {
       const { triggerData, focusDDIndices } = this.state
       let nextFocusDDIndices = focusDDIndices
       let nextTriggerData = triggerData
 
       try {
-        nextTriggerData = ScriptParser.parseScript(this.computed.script)
+        nextTriggerData = data
 
         Object.keys(triggerData).forEach((command) => {
           if (nextTriggerData[command] === undefined) {
@@ -496,12 +517,6 @@ function InitRoot () {
         this.setState({ triggerData: nextTriggerData })
         this.setState({ skinEditorState: nextSkinEditorState })
         this.setState({ focusDDIndices: nextFocusDDIndices })
-      }
-
-      const script = Selectors.getCurrentScript(nextState)
-
-      if (this.computed.script !== script) {
-        this.computed.script = script
       }
 
       const sidebarOpen = Selectors.getSidebarOpen(nextState)
