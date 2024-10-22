@@ -1,6 +1,4 @@
 function main () {
-  window.V2 = window.V2 || Selectors.getWindowStart(window.store.getState())
-
   const { React, ReactDOM } = window
 
   const parent = document.createElement('div')
