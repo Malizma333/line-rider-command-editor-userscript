@@ -413,17 +413,16 @@ function InitRoot () {
     }
 
     onToggleSettings (active) {
-      const { unsavedSettings, settings } = this.state
+      const { settingsDirty, settings } = this.state
 
-      if (!active && unsavedSettings.dirty) {
+      if (!active && settingsDirty) {
         if (!window.confirm('Discard changes?')) return
-        Object.assign(unsavedSettings, settings)
+        this.setState({ unsavedSettings: settings })
         this.setState({ settingsDirty: false })
       }
 
       this.setState({ settingsActive: active })
-      this.setState({ unsavedSettings })
-      this.setState({ settings })
+      
     }
 
     onChangeFontSize (fontSize) {
@@ -433,8 +432,10 @@ function InitRoot () {
         this.setState({ settingsDirty: true })
       }
 
-      unsavedSettings.fontSize = fontSize
-      this.setState({ unsavedSettings })
+      this.setState({ unsavedSettings: {
+        ...unsavedSettings,
+        fontSize
+      } })
     }
 
     onChangeViewport (resolution) {
@@ -444,9 +445,10 @@ function InitRoot () {
         this.setState({ settingsDirty: true })
       }
 
-      unsavedSettings.resolution = resolution
-
-      this.setState({ unsavedSettings })
+      this.setState({ unsavedSettings: {
+        ...unsavedSettings,
+        resolution
+      } })
     }
 
     onApplySettings () {
@@ -458,14 +460,13 @@ function InitRoot () {
         triggerData
       )
 
-      settings.fontSize = unsavedSettings.fontSize
-      settings.resolution = unsavedSettings.resolution
-      
-      this.setState({ settingsDirty: false })
       this.pushAction(this.state.triggerData, nextTriggerData)
       this.setState({ triggerData: nextTriggerData })
-      this.setState({ settings })
-      this.setState({ unsavedSettings })
+
+      this.setState({ settingsDirty: false })
+      this.setState({ settings: {
+        ...unsavedSettings
+      } })
     }
 
     onChangeFocusDD (index, value) {
