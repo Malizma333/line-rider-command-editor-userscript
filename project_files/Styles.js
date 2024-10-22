@@ -83,7 +83,7 @@ class Styles {
       alignItems: 'start',
       display: 'flex',
       flex: 1,
-      fontSize: '20px',
+      fontSize: '25px',
       width: '100%'
     }
   }
@@ -254,6 +254,7 @@ class Styles {
       justifyContent: 'center',
       overflow: 'hidden',
       position: 'relative',
+      userSelect: 'none',
       width: '100%'
     },
     background: {
@@ -272,8 +273,8 @@ class Styles {
       flex: 1,
       display: 'flex',
       justifyContent: 'left',
-      padding: '0.5em',
-      position: 'relative'
+      position: 'relative',
+      userSelect: 'none'
     },
     toolbarItem: {
       margin: '0px 5px'

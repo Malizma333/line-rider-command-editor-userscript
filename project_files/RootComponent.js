@@ -282,7 +282,7 @@ function InitRoot () {
       this.setState({ focusDDIndices: nextFocusDDIndices })
     }
 
-    onLoad () {
+    onLoadScript () {
       const { triggerData, focusDDIndices } = this.state
       let nextFocusDDIndices = focusDDIndices
       let nextTriggerData = triggerData

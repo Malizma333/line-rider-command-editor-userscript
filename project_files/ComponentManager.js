@@ -51,11 +51,29 @@ class ComponentManager {
         rc(
           'button',
           {
-            title: "Load From Script",
+            title: "Download",
             style: Styles.buttons.embedded,
-            onClick: () => root.onLoad()
+            onClick: () => root.onPrint()
           },
           rc('span', Icons.download)
+        ),
+        rc(
+          'button',
+          {
+            title: "Upload",
+            style: Styles.buttons.embedded,
+            onClick: () => root.onPrint()
+          },
+          rc('span', Icons.upload)
+        ),
+        rc(
+          'button',
+          {
+            title: "Load From Script",
+            style: Styles.buttons.embedded,
+            onClick: () => root.onLoadScript()
+          },
+          rc('span', Icons.upRightArrow)
         ),
         rc(
           'button',
@@ -736,10 +754,7 @@ class ComponentManager {
           },
           onClick: () => root.onResetSkin(index)
         },
-        rc('span', {
-          ...Icons.x,
-          style: { color: 'red' }
-        })
+        rc('span', Icons.trash)
       ),
       rc(
         'div',
@@ -754,7 +769,6 @@ class ComponentManager {
         rc(
           'div',
           { style: Styles.alpha.sliderContainer },
-          rc('text', null, '0%'),
           rc('input', {
             id: 'alphaSlider',
             style: Styles.alpha.slider,
@@ -764,8 +778,7 @@ class ComponentManager {
             step: 0.01,
             value: alphaValue,
             onChange: (e) => root.onChangeColor(null, e.target.value)
-          }),
-          rc('text', null, '100%')
+          })
         )
       ),
       rc('input', {
