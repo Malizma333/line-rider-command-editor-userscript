@@ -312,12 +312,12 @@ const STYLES = {
     },
     flagSvg: {
       height: '18',
-      transform: `scale(${VIEWPORT_DIMENSIONS.WIDTH / 256})`,
+      transform: `scale(${WINDOW_DIMENSIONS.WIDTH / 256})`,
       width: '15'
     },
     riderSvg: {
       height: '25',
-      transform: `scale(${VIEWPORT_DIMENSIONS.WIDTH / 256})`,
+      transform: `scale(${WINDOW_DIMENSIONS.WIDTH / 256})`,
       width: '31'
     }
   },

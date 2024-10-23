@@ -511,7 +511,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
           yOffset = (event.clientY - rect.y) / skinEditorState.zoom.scale
         }
         scale = Math.max(Math.min(
-          skinEditorState.zoom.scale - event.deltaY * SCROLL_DELTA,
+          skinEditorState.zoom.scale - event.deltaY * 1e-3,
           CONSTRAINTS.SKIN_ZOOM.MAX
         ), CONSTRAINTS.SKIN_ZOOM.MIN)
       } else {

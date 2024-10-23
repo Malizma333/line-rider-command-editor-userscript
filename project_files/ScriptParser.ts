@@ -95,11 +95,11 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
         const index = timeProp[0]
         this.triggerData[commandId].triggers[i][0] = this.retrieveTimestamp(index)
       } else if (timeProp.length === 2) {
-        const index = timeProp[0] * TIMELINE.FPS + timeProp[1]
+        const index = timeProp[0] * FPS + timeProp[1]
         this.triggerData[commandId].triggers[i][0] = this.retrieveTimestamp(index)
       } else {
-        const index = timeProp[0] * TIMELINE.FPS * TIMELINE.SPM +
-         timeProp[1] * TIMELINE.FPS + timeProp[2]
+        const index = timeProp[0] * FPS * 60 +
+         timeProp[1] * FPS + timeProp[2]
         this.triggerData[commandId].triggers[i][0] = this.retrieveTimestamp(index)
       }
     }
@@ -193,9 +193,9 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
   }
 
   retrieveTimestamp (index: number): number[] {
-    const frames = index % TIMELINE.FPS
-    const seconds = Math.floor(index / TIMELINE.FPS) % TIMELINE.SPM
-    const minutes = Math.floor(index / (TIMELINE.SPM * TIMELINE.FPS))
+    const frames = index % FPS
+    const seconds = Math.floor(index / FPS) % 60
+    const minutes = Math.floor(index / (60 * FPS))
     return [minutes, seconds, frames]
   }
 

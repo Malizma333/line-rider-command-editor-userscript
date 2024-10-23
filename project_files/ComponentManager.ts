@@ -161,7 +161,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           {
             title: 'Report Issue',
             style: STYLES.button.embedded,
-            onClick: () => window.open(LINKS.REPORT)
+            onClick: () => window.open(REPORT_LINK)
           },
           rc('span', flagIcon)
         ),
@@ -170,7 +170,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           {
             title: 'Help',
             style: STYLES.button.embedded,
-            onClick: () => window.open(LINKS.HELP)
+            onClick: () => window.open(HELP_LINK)
           },
           rc('span', helpIcon)
         )

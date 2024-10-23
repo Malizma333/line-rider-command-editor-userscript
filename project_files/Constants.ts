@@ -1,29 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 const ROOT_NODE_ID = 'COMMAND_EDITOR_ROOT_NODE'
+const HELP_LINK = 'https://github.com/Malizma333/line-rider-command-editor-userscript#readme'
+const REPORT_LINK = 'https://github.com/Malizma333/line-rider-command-editor-userscript/issues/new'
+const FPS = 40
 
-const VIEWPORT_DIMENSIONS = {
+const WINDOW_DIMENSIONS = {
   WIDTH: Math.max(document.documentElement.clientWidth ?? 0, window.innerWidth ?? 0),
   HEIGHT: Math.max(document.documentElement.clientHeight ?? 0, window.innerHeight ?? 0)
 } as const
-
-const LINKS = {
-  HELP: 'https://github.com/Malizma333/line-rider-command-editor-userscript#readme',
-  REPORT: 'https://github.com/Malizma333/line-rider-command-editor-userscript/issues/new'
-} as const
-
-const SCROLL_DELTA = 0.001
-
-const TIMELINE = {
-  FPS: 40,
-  SPM: 60
-} as const
-
-interface VIEWPORT_DATA {
-  ID: string
-  NAME: string
-  SIZE: [number, number]
-}
 
 type VIEWPORT_OPTION = keyof typeof SETTINGS.VIEWPORT
 
@@ -38,64 +23,6 @@ const SETTINGS = {
     SMALL: 0,
     MEDIUM: 1,
     LARGE: 2
-  }
-} as const
-
-enum TYPES {
-  BOOL = 'BOOLEAN',
-  INT = 'INTEGER',
-  FLOAT = 'FLOAT'
-}
-
-interface Constraint {
-  DEFAULT: boolean | number
-  TYPE: TYPES
-  MIN?: number
-  MAX?: number
-}
-
-const CONSTRAINTS = {
-  INTERPOLATE: {
-    DEFAULT: true, TYPE: TYPES.BOOL
-  },
-  SMOOTH: {
-    DEFAULT: 20, MIN: 0, MAX: 40, TYPE: TYPES.INT
-  },
-  FRAME: {
-    DEFAULT: 0, MIN: 0, MAX: 39, TYPE: TYPES.INT
-  },
-  SECOND: {
-    DEFAULT: 0, MIN: 0, MAX: 59, TYPE: TYPES.INT
-  },
-  MINUTE: {
-    DEFAULT: 0, MIN: 0, MAX: 99, TYPE: TYPES.INT
-  },
-  ZOOM: {
-    DEFAULT: 1, MIN: -50, MAX: 50, TYPE: TYPES.FLOAT
-  },
-  PAN_X: {
-    DEFAULT: 0, MIN: -100, MAX: 100, TYPE: TYPES.FLOAT
-  },
-  PAN_Y: {
-    DEFAULT: 0, MIN: -100, MAX: 100, TYPE: TYPES.FLOAT
-  },
-  PAN_WIDTH: {
-    DEFAULT: 0.4, MIN: 0, MAX: 2, TYPE: TYPES.FLOAT
-  },
-  PAN_HEIGHT: {
-    DEFAULT: 0.4, MIN: 0, MAX: 2, TYPE: TYPES.FLOAT
-  },
-  FOCUS_WEIGHT: {
-    DEFAULT: 0, MIN: 0, MAX: 1, TYPE: TYPES.FLOAT
-  },
-  TIME_SPEED: {
-    DEFAULT: 1, MIN: 0.01, MAX: 10, TYPE: TYPES.FLOAT
-  },
-  SKIN_ZOOM: {
-    DEFAULT: 1, MIN: 1, MAX: 4, TYPE: TYPES.FLOAT
-  },
-  ALPHA_SLIDER: {
-    DEFAULT: 1, MIN: 0, MAX: 1, TYPE: TYPES.FLOAT
   }
 } as const
 
