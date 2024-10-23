@@ -1,73 +1,78 @@
-// eslint-disable-next-line no-unused-vars
 class ComponentManager {
-  constructor (rc, root) {
+  rc: any
+  root: any
+  state: any
+  computed: any
+
+  constructor (rc: any, root: any) {
     this.rc = rc
     this.root = root
     this.state = root.state
     this.computed = root.computed
   }
 
-  updateState (nextState) {
+  updateState (nextState: any): void {
     this.state = nextState
   }
 
-  updateComputed (nextComputed) {
+  updateComputed (nextComputed: any): void {
     this.computed = nextComputed
   }
 
-  main () {
+  main (): ReactComponent {
     const { rc, state } = this
     return rc(
       'div',
-      { style: Styles.theme.text },
+      { style: GLOBAL_STYLES.text },
       this.toolbar(),
-      state.active && rc(
+      state.active as boolean && rc(
         'div',
-        { style: Styles.content },
-        state.settingsActive && this.settingsContainer(),
-        !state.settingsActive && this.tabContainer(),
-        !state.settingsActive && this.windowContainer()
+        { style: STYLES.content },
+        state.settingsActive as boolean && this.settingsContainer(),
+        !(state.settingsActive as boolean) && this.tabContainer(),
+        !(state.settingsActive as boolean) && this.windowContainer()
       )
     )
   }
 
-  toolbar () {
+  toolbar (): ReactComponent {
     const { rc, root, state } = this
     return rc(
       'div',
-      { style: Styles.toolbar.container },
+      { style: STYLES.toolbar.container },
       rc(
         'button',
         {
-          title: state.active ? 'Minimize' : 'Maximize',
-          style: Styles.buttons.embedded,
+          title: state.active as boolean ? 'Minimize' : 'Maximize',
+          style: STYLES.button.embedded,
           onClick: () => root.onActivate()
         },
-        state.active ? rc('span', Icons.minimize) : rc('span', Icons.maximize)
+        state.active as boolean ? rc('span', minimizeIcon) : rc('span', maximizeIcon)
       ),
-      state.active && rc(
+      state.active as boolean && rc(
         'div',
-        { style: { ...Styles.toolbar.container, justifyContent: 'start' } },
+        { style: { ...STYLES.toolbar.container, justifyContent: 'start' } },
         rc(
           'button',
           {
             title: 'Download',
-            style: Styles.buttons.embedded,
+            style: STYLES.button.embedded,
             onClick: () => root.onDownload()
           },
-          rc('span', Icons.download)
+          rc('span', downloadIcon)
         ),
         rc(
           'button',
           {
             title: 'Upload',
-            style: Styles.buttons.embedded,
+            style: STYLES.button.embedded,
             onClick: () => {
-              document.getElementById('trigger-file-upload').value = ''
-              document.getElementById('trigger-file-upload').click()
+              const triggerUploadInput = (document.getElementById('trigger-file-upload') as HTMLInputElement)
+              triggerUploadInput.value = ''
+              triggerUploadInput.click()
             }
           },
-          rc('span', Icons.upload),
+          rc('span', uploadIcon),
           rc(
             'input',
             {
@@ -75,7 +80,7 @@ class ComponentManager {
               style: { display: 'none' },
               type: 'file',
               accept: '.json',
-              onChange: (e) => root.onLoadFile(e.target.files[0])
+              onChange: (e: any) => root.onLoadFile(e.target.files[0])
             }
           )
         ),
@@ -83,293 +88,293 @@ class ComponentManager {
           'button',
           {
             title: 'Load From Script',
-            style: Styles.buttons.embedded,
+            style: STYLES.button.embedded,
             onClick: () => root.onLoadScript()
           },
-          rc('span', Icons.upRightArrow)
+          rc('span', upRightArrowIcon)
         ),
         rc(
           'button',
           {
             title: 'Run',
-            style: Styles.buttons.embedded,
+            style: STYLES.button.embedded,
             onClick: () => root.onTest()
           },
-          rc('span', Icons.play)
+          rc('span', playIcon)
         ),
         rc(
           'button',
           {
             title: 'Print to Console',
-            style: Styles.buttons.embedded,
+            style: STYLES.button.embedded,
             onClick: () => root.onPrint()
           },
-          rc('span', Icons.print)
+          rc('span', printIcon)
         )
       ),
-      state.active && rc(
+      state.active as boolean && rc(
         'div',
-        { style: { ...Styles.toolbar.container, justifyContent: 'end' } },
+        { style: { ...STYLES.toolbar.container, justifyContent: 'end' } },
         rc(
           'button',
           {
             title: 'Undo',
-            style: Styles.buttons.embedded,
+            style: STYLES.button.embedded,
             disabled: root.computed.undoStack.length === 0,
             onClick: () => root.onUndo()
           },
-          rc('span', { ...Icons.leftArrow, style: { color: root.computed.undoStack.length === 0 ? 'gray' : 'black' } })
+          rc('span', { ...leftArrowIcon, style: { color: root.computed.undoStack.length === 0 ? 'gray' : 'black' } })
         ),
         rc(
           'button',
           {
             title: 'Redo',
-            style: Styles.buttons.embedded,
+            style: STYLES.button.embedded,
             disabled: root.computed.redoStack.length === 0,
             onClick: () => root.onRedo()
           },
-          rc('span', { ...Icons.rightArrow, style: { color: root.computed.redoStack.length === 0 ? 'gray' : 'black' } })
+          rc('span', { ...rightArrowIcon, style: { color: root.computed.redoStack.length === 0 ? 'gray' : 'black' } })
         ),
         rc(
           'button',
           {
             title: 'Settings',
-            style: Styles.buttons.embedded,
-            onClick: () => root.onToggleSettings(!state.settingsActive)
+            style: STYLES.button.embedded,
+            onClick: () => root.onToggleSettings(!(state.settingsActive as boolean))
           },
-          rc('span', Icons.settings)
+          rc('span', settingsIcon)
         ),
         rc(
           'button',
           {
             title: 'Report Issue',
-            style: Styles.buttons.embedded,
-            onClick: () => window.open(Constants.LINKS.REPORT)
+            style: STYLES.button.embedded,
+            onClick: () => window.open(LINKS.REPORT)
           },
-          rc('span', Icons.flag)
+          rc('span', flagIcon)
         ),
         rc(
           'button',
           {
             title: 'Help',
-            style: Styles.buttons.embedded,
-            onClick: () => window.open(Constants.LINKS.HELP)
+            style: STYLES.button.embedded,
+            onClick: () => window.open(LINKS.HELP)
           },
-          rc('span', Icons.help)
+          rc('span', helpIcon)
         )
       )
     )
   }
 
-  settingsContainer () {
+  settingsContainer (): ReactComponent {
     const { rc } = this
     return rc(
       'div',
-      { style: Styles.settings.window },
+      { style: STYLES.settings.window },
       this.settingsHeader(),
       this.settings()
     )
   }
 
-  settingsHeader () {
+  settingsHeader (): ReactComponent {
     const { rc, root, state } = this
     return rc(
       'div',
-      { style: Styles.settings.header },
+      { style: STYLES.settings.header },
       rc(
         'button',
         {
           style: {
-            ...Styles.buttons.embedded,
+            ...STYLES.button.embedded,
             position: 'absolute',
             fontSize: '32px',
             right: '0px'
           },
           onClick: () => root.onToggleSettings(false)
         },
-        rc('span', Icons.x)
+        rc('span', xIcon)
       ),
       rc('text', {
         style: {
-          fontSize: Styles.theme.textSizes.L[state.settings.fontSize]
+          fontSize: GLOBAL_STYLES.textSizes.L[state.settings.fontSize]
         }
       }, 'Settings'),
       rc('button', {
         style: {
-          ...Styles.buttons.settings,
+          ...STYLES.button.settings,
           position: 'absolute',
-          fontSize: Styles.theme.textSizes.M[state.settings.fontSize],
+          fontSize: GLOBAL_STYLES.textSizes.M[state.settings.fontSize],
           left: '0px',
-          background: state.settingsDirty
-            ? Styles.theme.light_gray3
-            : Styles.theme.dark_gray1
+          background: state.settingsDirty as boolean
+            ? GLOBAL_STYLES.light_gray3
+            : GLOBAL_STYLES.dark_gray1
         },
-        disabled: !state.settingsDirty,
+        disabled: !(state.settingsDirty as boolean),
         onClick: () => root.onApplySettings()
       }, 'Apply')
     )
   }
 
-  settings () {
+  settings (): ReactComponent {
     const { rc, root, state } = this
     return rc(
       window.React.Fragment,
-      { style: { fontSize: Styles.theme.textSizes.M[state.settings.fontSize] } },
+      { style: { fontSize: GLOBAL_STYLES.textSizes.M[state.settings.fontSize] } },
       rc(
         'div',
-        { style: Styles.settings.row },
+        { style: STYLES.settings.row },
         rc('text', {
           style: {
-            ...Styles.settings.label,
-            fontSize: Styles.theme.textSizes.S[state.settings.fontSize]
+            ...STYLES.settings.label,
+            fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize]
           }
         }, 'Font Sizes'),
         rc(
           'div',
           {
             style: {
-              ...Styles.settings.parameter,
-              fontSize: Styles.theme.textSizes.S[state.settings.fontSize]
+              ...STYLES.settings.parameter,
+              fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize]
             }
           },
           rc('button', {
             style: {
-              ...Styles.buttons.settings,
+              ...STYLES.button.settings,
               backgroundColor:
-                state.unsavedSettings.fontSize === Constants.SETTINGS.FONT_SIZES.SMALL
-                  ? Styles.theme.light_gray1
-                  : Styles.theme.dark_gray1
+                state.unsavedSettings.fontSize === SETTINGS.FONT_SIZES.SMALL
+                  ? GLOBAL_STYLES.light_gray1
+                  : GLOBAL_STYLES.dark_gray1
             },
-            onClick: () => root.onChangeFontSize(Constants.SETTINGS.FONT_SIZES.SMALL)
+            onClick: () => root.onChangeFontSize(SETTINGS.FONT_SIZES.SMALL)
           }, rc('text', null, 'Small')),
           rc('button', {
             style: {
-              ...Styles.buttons.settings,
+              ...STYLES.button.settings,
               backgroundColor:
-                state.unsavedSettings.fontSize === Constants.SETTINGS.FONT_SIZES.MEDIUM
-                  ? Styles.theme.light_gray1
-                  : Styles.theme.dark_gray1
+                state.unsavedSettings.fontSize === SETTINGS.FONT_SIZES.MEDIUM
+                  ? GLOBAL_STYLES.light_gray1
+                  : GLOBAL_STYLES.dark_gray1
             },
-            onClick: () => root.onChangeFontSize(Constants.SETTINGS.FONT_SIZES.MEDIUM)
+            onClick: () => root.onChangeFontSize(SETTINGS.FONT_SIZES.MEDIUM)
           }, rc('text', null, 'Medium')),
           rc('button', {
             style: {
-              ...Styles.buttons.settings,
+              ...STYLES.button.settings,
               backgroundColor:
-                state.unsavedSettings.fontSize === Constants.SETTINGS.FONT_SIZES.LARGE
-                  ? Styles.theme.light_gray1
-                  : Styles.theme.dark_gray1
+                state.unsavedSettings.fontSize === SETTINGS.FONT_SIZES.LARGE
+                  ? GLOBAL_STYLES.light_gray1
+                  : GLOBAL_STYLES.dark_gray1
             },
-            onClick: () => root.onChangeFontSize(Constants.SETTINGS.FONT_SIZES.LARGE)
+            onClick: () => root.onChangeFontSize(SETTINGS.FONT_SIZES.LARGE)
           }, rc('text', null, 'Large'))
         )
       ),
       rc(
         'div',
-        { style: Styles.settings.row },
+        { style: STYLES.settings.row },
         rc('text', {
           style: {
-            ...Styles.settings.label,
-            fontSize: Styles.theme.textSizes.S[state.settings.fontSize]
+            ...STYLES.settings.label,
+            fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize]
           }
         }, 'Viewport'),
         rc(
           'div',
           {
             style: {
-              ...Styles.settings.parameter,
-              fontSize: Styles.theme.textSizes.S[state.settings.fontSize]
+              ...STYLES.settings.parameter,
+              fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize]
             }
           },
           rc('button', {
             style: {
-              ...Styles.buttons.settings,
+              ...STYLES.button.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === Constants.SETTINGS.VIEWPORT.HD.ID
-                  ? Styles.theme.light_gray1
-                  : Styles.theme.dark_gray1
+                state.unsavedSettings.resolution === SETTINGS.VIEWPORT.HD.ID
+                  ? GLOBAL_STYLES.light_gray1
+                  : GLOBAL_STYLES.dark_gray1
             },
-            onClick: () => root.onChangeViewport(Constants.SETTINGS.VIEWPORT.HD.ID)
-          }, rc('text', null, Constants.SETTINGS.VIEWPORT.HD.NAME)),
+            onClick: () => root.onChangeViewport(SETTINGS.VIEWPORT.HD.ID)
+          }, rc('text', null, SETTINGS.VIEWPORT.HD.NAME)),
           rc('button', {
             style: {
-              ...Styles.buttons.settings,
+              ...STYLES.button.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === Constants.SETTINGS.VIEWPORT.FHD.ID
-                  ? Styles.theme.light_gray1
-                  : Styles.theme.dark_gray1
+                state.unsavedSettings.resolution === SETTINGS.VIEWPORT.FHD.ID
+                  ? GLOBAL_STYLES.light_gray1
+                  : GLOBAL_STYLES.dark_gray1
             },
-            onClick: () => root.onChangeViewport(Constants.SETTINGS.VIEWPORT.FHD.ID)
-          }, rc('text', null, Constants.SETTINGS.VIEWPORT.FHD.NAME)),
+            onClick: () => root.onChangeViewport(SETTINGS.VIEWPORT.FHD.ID)
+          }, rc('text', null, SETTINGS.VIEWPORT.FHD.NAME)),
           rc('button', {
             style: {
-              ...Styles.buttons.settings,
+              ...STYLES.button.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === Constants.SETTINGS.VIEWPORT.QHD.ID
-                  ? Styles.theme.light_gray1
-                  : Styles.theme.dark_gray1
+                state.unsavedSettings.resolution === SETTINGS.VIEWPORT.QHD.ID
+                  ? GLOBAL_STYLES.light_gray1
+                  : GLOBAL_STYLES.dark_gray1
             },
-            onClick: () => root.onChangeViewport(Constants.SETTINGS.VIEWPORT.QHD.ID)
-          }, rc('text', null, Constants.SETTINGS.VIEWPORT.QHD.NAME)),
+            onClick: () => root.onChangeViewport(SETTINGS.VIEWPORT.QHD.ID)
+          }, rc('text', null, SETTINGS.VIEWPORT.QHD.NAME)),
           rc('button', {
             style: {
-              ...Styles.buttons.settings,
+              ...STYLES.button.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === Constants.SETTINGS.VIEWPORT.UHD.ID
-                  ? Styles.theme.light_gray1
-                  : Styles.theme.dark_gray1
+                state.unsavedSettings.resolution === SETTINGS.VIEWPORT.UHD.ID
+                  ? GLOBAL_STYLES.light_gray1
+                  : GLOBAL_STYLES.dark_gray1
             },
-            onClick: () => root.onChangeViewport(Constants.SETTINGS.VIEWPORT.UHD.ID)
-          }, rc('text', null, Constants.SETTINGS.VIEWPORT.UHD.NAME))
+            onClick: () => root.onChangeViewport(SETTINGS.VIEWPORT.UHD.ID)
+          }, rc('text', null, SETTINGS.VIEWPORT.UHD.NAME))
         )
       )
     )
   }
 
-  tabContainer () {
+  tabContainer (): ReactComponent {
     const { rc } = this
     return rc(
       'div',
-      { style: Styles.tabs.container },
+      { style: STYLES.tabs.container },
       Object.keys(
-        Constants.TRIGGER_PROPS
-      ).map((command) => rc(
+        TRIGGER_PROPS
+      ).map((command: string) => rc(
         'div',
         null,
-        this.tab(command)
+        this.tab(command as TRIGGER_TYPES)
       ))
     )
   }
 
-  tab (tabID) {
+  tab (tabID: TRIGGER_TYPES): ReactComponent {
     const { rc, root, state } = this
     return rc('button', {
       style: {
-        ...Styles.tabs.button,
+        ...STYLES.tabs.button,
         backgroundColor:
           state.activeTab === tabID
-            ? Styles.theme.light_gray1
-            : Styles.theme.dark_gray1
+            ? GLOBAL_STYLES.light_gray1
+            : GLOBAL_STYLES.dark_gray1
       },
       onClick: () => root.onChangeTab(tabID)
     }, rc(
       'text',
-      { style: { fontSize: Styles.theme.textSizes.S[state.settings.fontSize] } },
-      Constants.TRIGGER_PROPS[tabID].DISPLAY_NAME
+      { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize] } },
+      TRIGGER_PROPS[tabID].DISPLAY_NAME
     ))
   }
 
-  windowContainer () {
+  windowContainer (): ReactComponent {
     const { state } = this
     return this.window(state.triggerData[state.activeTab])
   }
 
-  window (data) {
+  window (data: any): ReactComponent {
     const { rc, state } = this
-    if (data.id === Constants.TRIGGER_TYPES.SKIN) {
+    if (data.id === TRIGGER_TYPES.SKIN) {
       return rc(
         'div',
-        { style: Styles.window },
+        { style: STYLES.window },
         this.skinEditorToolbar(data.triggers, state.skinEditorState.ddIndex),
         this.skinEditor(data)
       )
@@ -377,69 +382,69 @@ class ComponentManager {
 
     return rc(
       'div',
-      { style: Styles.window },
+      { style: STYLES.window },
       this.smoothTab(state.triggerData[state.activeTab]),
       Object.keys(data.triggers).map((i) => this.trigger(data, parseInt(i, 10)))
     )
   }
 
-  smoothTab (data) {
+  smoothTab (data: any): ReactComponent {
     const { rc, root, state } = this
     return rc(
       'div',
-      { style: Styles.smooth.container },
+      { style: STYLES.smooth.container },
       rc('label', {
         for: 'smoothTextInput',
-        style: { fontSize: Styles.theme.textSizes.S[state.settings.fontSize] }
+        style: { fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize] }
       }, 'Smoothing'),
-      data.id !== Constants.TRIGGER_TYPES.TIME && rc('input', {
+      data.id !== TRIGGER_TYPES.TIME && rc('input', {
         id: 'smoothTextInput',
         style: {
-          ...Styles.smooth.input,
-          fontSize: Styles.theme.textSizes.S[state.settings.fontSize],
+          ...STYLES.smooth.input,
+          fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize],
           marginLeft: '5px'
         },
         value: data.smoothing,
-        onChange: (e) => root.onUpdateTrigger(
+        onChange: (e: any) => root.onUpdateTrigger(
           {
             prev: data.smoothing,
             new: e.target.value
           },
           ['smoothing'],
-          Constants.CONSTRAINTS.SMOOTH
+          CONSTRAINTS.SMOOTH
         ),
-        onBlur: (e) => root.onUpdateTrigger(
+        onBlur: (e: any) => root.onUpdateTrigger(
           {
             prev: data.smoothing,
             new: e.target.value
           },
           ['smoothing'],
-          Constants.CONSTRAINTS.SMOOTH,
+          CONSTRAINTS.SMOOTH,
           true
         )
       }),
-      data.id === Constants.TRIGGER_TYPES.TIME && rc(
+      data.id === TRIGGER_TYPES.TIME && rc(
         'div',
-        { style: Styles.checkbox.container },
+        { style: STYLES.checkbox.container },
         rc('input', {
           id: 'smoothTextInput',
-          style: Styles.checkbox.primary,
+          style: STYLES.checkbox.primary,
           type: 'checkbox',
           onChange: () => root.onUpdateTrigger(
             {
               prev: state.triggerData[state.activeTab].interpolate,
-              new: !state.triggerData[state.activeTab].interpolate
+              new: !(state.triggerData[state.activeTab].interpolate as boolean)
             },
             ['interpolate'],
-            Constants.CONSTRAINTS.INTERPOLATE
+            CONSTRAINTS.INTERPOLATE
           )
         }),
-        data.interpolate && rc('square', { style: Styles.checkbox.fill })
+        data.interpolate as boolean && rc('square', { style: STYLES.checkbox.fill })
       )
     )
   }
 
-  trigger (data, index) {
+  trigger (data: any, index: number): ReactComponent {
     const { rc, root, state } = this
     const triggerData = data.triggers[index]
 
@@ -447,16 +452,16 @@ class ComponentManager {
       'div',
       {
         style: {
-          ...Styles.trigger.container,
-          fontSize: Styles.theme.textSizes.M[state.settings.fontSize],
-          backgroundColor: index === 0 ? Styles.theme.gray : Styles.theme.white
+          ...STYLES.trigger.container,
+          fontSize: GLOBAL_STYLES.textSizes.M[state.settings.fontSize],
+          backgroundColor: index === 0 ? GLOBAL_STYLES.gray : GLOBAL_STYLES.white
         }
       },
       rc(
         'button',
         {
           style: {
-            ...Styles.buttons.embedded,
+            ...STYLES.button.embedded,
             fontSize: '22px',
             position: 'absolute',
             right: '0px'
@@ -465,35 +470,35 @@ class ComponentManager {
           onClick: () => root.onDeleteTrigger(index)
         },
         rc('span', {
-          ...Icons.x,
+          ...xIcon,
           style: {
-            color: index === 0 ? Styles.theme.dark_gray2 : Styles.theme.black
+            color: index === 0 ? GLOBAL_STYLES.dark_gray2 : GLOBAL_STYLES.black
           }
         })
       ),
       this.timeStamp(triggerData[0], index),
-      data.id === Constants.TRIGGER_TYPES.ZOOM && this.zoomTrigger(triggerData, index),
-      data.id === Constants.TRIGGER_TYPES.PAN && this.cameraPanTrigger(triggerData, index),
-      data.id === Constants.TRIGGER_TYPES.FOCUS && this.cameraFocusTrigger(triggerData, index),
-      data.id === Constants.TRIGGER_TYPES.TIME && this.timeRemapTrigger(triggerData, index),
-      data.id === Constants.TRIGGER_TYPES.SKIN && false,
+      data.id === TRIGGER_TYPES.ZOOM && this.zoomTrigger(triggerData, index),
+      data.id === TRIGGER_TYPES.PAN && this.cameraPanTrigger(triggerData, index),
+      data.id === TRIGGER_TYPES.FOCUS && this.cameraFocusTrigger(triggerData, index),
+      data.id === TRIGGER_TYPES.TIME && this.timeRemapTrigger(triggerData, index),
+      data.id === TRIGGER_TYPES.SKIN && false,
       rc(
         'button',
         {
-          style: Styles.trigger.createButton,
+          style: STYLES.trigger.createButton,
           onClick: () => root.onCreateTrigger(index)
         },
-        rc('span', Icons.plus)
+        rc('span', plusIcon)
       )
     )
   }
 
-  timeStamp (data, index) {
+  timeStamp (data: any, index: number): ReactComponent {
     const { rc, root, computed } = this
     const tProps = [
-      Constants.CONSTRAINTS.MINUTE,
-      Constants.CONSTRAINTS.SECOND,
-      Constants.CONSTRAINTS.FRAME
+      CONSTRAINTS.MINUTE,
+      CONSTRAINTS.SECOND,
+      CONSTRAINTS.FRAME
     ]
 
     if (!Array.isArray(data)) {
@@ -502,22 +507,22 @@ class ComponentManager {
 
     return rc(
       'div',
-      { style: Styles.trigger.property },
+      { style: STYLES.trigger.property },
       data.map((timeValue, timeIndex) => rc(
         'div',
         null,
         rc(
           'text',
-          { style: Styles.trigger.text },
+          { style: STYLES.trigger.text },
           ['Time', ':', ':'][timeIndex]
         ),
         rc('input', {
           style: {
-            ...Styles.trigger.input,
-            color: computed.invalidTimes[index] ? 'red' : 'black'
+            ...STYLES.trigger.input,
+            color: computed.invalidTimes[index] as boolean ? 'red' : 'black'
           },
           value: timeValue,
-          onChange: (e) => root.onUpdateTrigger(
+          onChange: (e: any) => root.onUpdateTrigger(
             {
               prev: timeValue,
               new: e.target.value
@@ -525,7 +530,7 @@ class ComponentManager {
             ['triggers', index, 0, timeIndex],
             tProps[timeIndex]
           ),
-          onBlur: (e) => root.onUpdateTrigger(
+          onBlur: (e: any) => root.onUpdateTrigger(
             {
               prev: timeValue,
               new: e.target.value
@@ -539,49 +544,49 @@ class ComponentManager {
     )
   }
 
-  zoomTrigger (data, index) {
+  zoomTrigger (data: any, index: number): ReactComponent {
     const { rc, root } = this
     const labels = ['Zoom To']
 
     return rc(
       'div',
-      { style: Styles.trigger.property },
+      { style: STYLES.trigger.property },
       rc('label', {
         for: `triggerText_${labels[0]}_${index}`,
-        style: Styles.trigger.text
+        style: STYLES.trigger.text
       }, labels[0]),
       rc('input', {
         id: `triggerText_${labels[0]}_${index}`,
-        style: Styles.trigger.input,
+        style: STYLES.trigger.input,
         value: data[1],
-        onChange: (e) => root.onUpdateTrigger(
+        onChange: (e: any) => root.onUpdateTrigger(
           {
             prev: data[1],
             new: e.target.value
           },
           ['triggers', index, 1],
-          Constants.CONSTRAINTS.ZOOM
+          CONSTRAINTS.ZOOM
         ),
-        onBlur: (e) => root.onUpdateTrigger(
+        onBlur: (e: any) => root.onUpdateTrigger(
           {
             prev: data[1],
             new: e.target.value
           },
           ['triggers', index, 1],
-          Constants.CONSTRAINTS.ZOOM,
+          CONSTRAINTS.ZOOM,
           true
         )
       })
     )
   }
 
-  cameraPanTrigger (data, index) {
+  cameraPanTrigger (data: any, index: number): ReactComponent {
     const { rc, root } = this
     const cProps = [
-      Constants.CONSTRAINTS.PAN_WIDTH,
-      Constants.CONSTRAINTS.PAN_HEIGHT,
-      Constants.CONSTRAINTS.PAN_X,
-      Constants.CONSTRAINTS.PAN_Y
+      CONSTRAINTS.PAN_WIDTH,
+      CONSTRAINTS.PAN_HEIGHT,
+      CONSTRAINTS.PAN_X,
+      CONSTRAINTS.PAN_Y
     ]
     const labels = ['Width', 'Height', 'Offset X', 'Offset Y']
 
@@ -593,21 +598,21 @@ class ComponentManager {
         { style: { display: 'flex', flexDirection: 'row' } },
         pair.map((prop, propIndex) => rc(
           'div',
-          { style: Styles.trigger.property },
+          { style: STYLES.trigger.property },
           rc('label', {
             for: `triggerText_${labels[propIndex + 2 * pairIndex]}_${index}`,
-            style: Styles.trigger.text
+            style: STYLES.trigger.text
           }, labels[propIndex + 2 * pairIndex]),
           rc('input', {
             id: `triggerText_${labels[propIndex + 2 * pairIndex]}_${index}`,
-            style: Styles.trigger.input,
+            style: STYLES.trigger.input,
             value: data[1][prop],
-            onChange: (e) => root.onUpdateTrigger(
+            onChange: (e: any) => root.onUpdateTrigger(
               { prev: data[1][prop], new: e.target.value },
               ['triggers', index, 1, prop],
               cProps[propIndex + 2 * pairIndex]
             ),
-            onBlur: (e) => root.onUpdateTrigger(
+            onBlur: (e: any) => root.onUpdateTrigger(
               { prev: data[1][prop], new: e.target.value },
               ['triggers', index, 1, prop],
               cProps[propIndex + 2 * pairIndex],
@@ -619,113 +624,113 @@ class ComponentManager {
     )
   }
 
-  cameraFocusTrigger (data, index) {
+  cameraFocusTrigger (data: any, index: number): ReactComponent {
     const { rc, root, state } = this
-    const ddIndex = state.focusDDIndices[index]
+    const ddIndex = state.focusDDIndices[index] as number
     const labels = ['Weight']
 
     return rc(
       'div',
-      { style: Styles.trigger.property },
+      { style: STYLES.trigger.property },
       rc(
         'select',
         {
-          style: Styles.dropdown.head,
+          style: STYLES.dropdown.head,
           value: ddIndex,
-          onChange: (e) => root.onChangeFocusDD(index, e.target.value)
+          onChange: (e: any) => root.onChangeFocusDD(index, e.target.value)
         },
         Object.keys(data[1]).map((riderIndex) => {
           const riderNum = 1 + parseInt(riderIndex, 10)
 
           return rc('option', {
-            style: Styles.dropdown.option,
+            style: STYLES.dropdown.option,
             value: parseInt(riderIndex, 10)
           }, rc('text', null, `Rider ${riderNum}`))
         })
       ),
       rc('label', {
         for: `triggerText_${labels[0]}_${ddIndex}_${index}`,
-        style: Styles.trigger.text
+        style: STYLES.trigger.text
       }, labels[0]),
       rc('input', {
         id: `triggerText_${labels[0]}_${ddIndex}_${index}`,
-        style: Styles.trigger.input,
+        style: STYLES.trigger.input,
         value: data[1][ddIndex],
-        onChange: (e) => root.onUpdateTrigger(
+        onChange: (e: any) => root.onUpdateTrigger(
           {
             prev: data[1][ddIndex],
             new: e.target.value
           },
           ['triggers', index, 1, ddIndex],
-          Constants.CONSTRAINTS.FOCUS_WEIGHT
+          CONSTRAINTS.FOCUS_WEIGHT
         ),
-        onBlur: (e) => root.onUpdateTrigger(
+        onBlur: (e: any) => root.onUpdateTrigger(
           {
             prev: data[1][ddIndex],
             new: e.target.value
           },
           ['triggers', index, 1, ddIndex],
-          Constants.CONSTRAINTS.FOCUS_WEIGHT,
+          CONSTRAINTS.FOCUS_WEIGHT,
           true
         )
       })
     )
   }
 
-  timeRemapTrigger (data, index) {
+  timeRemapTrigger (data: any, index: number): ReactComponent {
     const { rc, root } = this
     const labels = ['Speed']
 
     return rc(
       'div',
-      { style: Styles.trigger.property },
+      { style: STYLES.trigger.property },
       rc('label', {
         for: `triggerText_${labels[0]}_${index}`,
-        style: Styles.trigger.text
+        style: STYLES.trigger.text
       }, labels[0]),
       rc('input', {
         id: `triggerText_${labels[0]}_${index}`,
-        style: Styles.trigger.input,
+        style: STYLES.trigger.input,
         value: data[1],
-        onChange: (e) => root.onUpdateTrigger(
+        onChange: (e: any) => root.onUpdateTrigger(
           {
             prev: data[1],
             new: e.target.value
           },
           ['triggers', index, 1],
-          Constants.CONSTRAINTS.TIME_SPEED
+          CONSTRAINTS.TIME_SPEED
         ),
-        onBlur: (e) => root.onUpdateTrigger(
+        onBlur: (e: any) => root.onUpdateTrigger(
           {
             prev: data[1],
             new: e.target.value
           },
           ['triggers', index, 1],
-          Constants.CONSTRAINTS.TIME_SPEED,
+          CONSTRAINTS.TIME_SPEED,
           true
         )
       })
     )
   }
 
-  skinEditor (data) {
+  skinEditor (data: any): ReactComponent {
     const { rc, root, state } = this
     const { ddIndex } = state.skinEditorState
 
     return rc(
       'div',
-      { style: Styles.skinEditor.container },
-      rc('div', { style: Styles.skinEditor.background }),
+      { style: STYLES.skinEditor.container },
+      rc('div', { style: STYLES.skinEditor.background }),
       rc(
         'div',
         {
           id: 'skinElementContainer',
           style: {
-            ...Styles.skinEditor.canvas,
-            transform: `scale(${state.skinEditorState.zoom.scale})`,
-            transformOrigin: `${state.skinEditorState.zoom.xOffset}px ${state.skinEditorState.zoom.yOffset}px`
+            ...STYLES.skinEditor.canvas,
+            transform: `scale(${state.skinEditorState.zoom.scale as number})`,
+            transformOrigin: `${state.skinEditorState.zoom.xOffset as number}px ${state.skinEditorState.zoom.yOffset as number}px`
           },
-          onWheel: (e) => root.onZoomSkinEditor(e, true)
+          onWheel: (e: any) => root.onZoomSkinEditor(e, true)
         },
         this.flagSvg(data.triggers[ddIndex], ddIndex),
         rc('svg', { width: '10vw' }),
@@ -733,30 +738,30 @@ class ComponentManager {
       ),
       rc(
         'div',
-        { style: Styles.skinEditor.zoomContainer },
+        { style: STYLES.skinEditor.zoomContainer },
         rc('input', {
           style: { height: '10px' },
           type: 'range',
           orient: 'vertical',
-          min: Constants.CONSTRAINTS.SKIN_ZOOM.MIN,
-          max: Constants.CONSTRAINTS.SKIN_ZOOM.MAX,
+          min: CONSTRAINTS.SKIN_ZOOM.MIN,
+          max: CONSTRAINTS.SKIN_ZOOM.MAX,
           step: 0.1,
           value: state.skinEditorState.zoom.scale,
-          onChange: (e) => root.onZoomSkinEditor(e, false)
+          onChange: (e: any) => root.onZoomSkinEditor(e, false)
         }),
         rc(
           'text',
-          { style: { fontSize: Styles.theme.textSizes.S[state.settings.fontSize] } },
+          { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize] } },
           `x${Math.round(state.skinEditorState.zoom.scale * 10) / 10}`
         )
       ),
       rc(
         'div',
-        { style: Styles.skinEditor.outlineColor.container },
-        rc('text', { style: { fontSize: Styles.theme.textSizes.S[state.settings.fontSize] } }, 'Outline'),
+        { style: STYLES.skinEditor.outlineColor.container },
+        rc('text', { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize] } }, 'Outline'),
         rc('div', {
           style: {
-            ...Styles.skinEditor.outlineColor.input,
+            ...STYLES.skinEditor.outlineColor.input,
             backgroundColor: data.triggers[ddIndex].outline.stroke
           },
           onClick: () => root.onUpdateTrigger(
@@ -768,78 +773,78 @@ class ComponentManager {
     )
   }
 
-  skinEditorToolbar (data, index) {
+  skinEditorToolbar (data: any, index: number): ReactComponent {
     const { rc, root, state } = this
     const colorValue = state.skinEditorState.color.substring(0, 7)
     const alphaValue = parseInt(state.skinEditorState.color.substring(7), 16) / 255
 
     return rc(
       'div',
-      { style: Styles.skinEditor.toolbar },
+      { style: STYLES.skinEditor.toolbar },
       rc(
         'button',
         {
           style: {
-            ...Styles.buttons.embedded,
+            ...STYLES.button.embedded,
             fontSize: '32px',
             position: 'absolute',
             right: '10px'
           },
           onClick: () => root.onResetSkin(index)
         },
-        rc('span', Icons.trash)
+        rc('span', trashIcon)
       ),
       rc(
         'div',
         {
           style: {
-            ...Styles.skinEditor.toolbarItem,
-            ...Styles.alpha.container,
-            fontSize: Styles.theme.textSizes.S[state.settings.fontSize]
+            ...STYLES.skinEditor.toolbarItem,
+            ...STYLES.alpha.container,
+            fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize]
           }
         },
         rc('label', { for: 'alphaSlider' }, 'Transparency'),
         rc(
           'div',
-          { style: Styles.alpha.sliderContainer },
+          { style: STYLES.alpha.sliderContainer },
           rc('input', {
             id: 'alphaSlider',
-            style: Styles.alpha.slider,
+            style: STYLES.alpha.slider,
             type: 'range',
-            min: Constants.CONSTRAINTS.ALPHA_SLIDER.MIN,
-            max: Constants.CONSTRAINTS.ALPHA_SLIDER.MAX,
+            min: CONSTRAINTS.ALPHA_SLIDER.MIN,
+            max: CONSTRAINTS.ALPHA_SLIDER.MAX,
             step: 0.01,
             value: alphaValue,
-            onChange: (e) => root.onChangeColor(null, e.target.value)
+            onChange: (e: any) => root.onChangeColor(null, e.target.value)
           })
         )
       ),
       rc('input', {
         style: {
-          ...Styles.skinEditor.toolbarItem,
+          ...STYLES.skinEditor.toolbarItem,
           height: '40px',
           width: '40px'
         },
         type: 'color',
         value: colorValue,
-        onChange: (e) => root.onChangeColor(e.target.value, null)
+        onChange: (e: any) => root.onChangeColor(e.target.value, null)
       }),
       rc(
         'select',
         {
           style: {
-            ...Styles.skinEditor.toolbarItem,
-            ...Styles.dropdown.head,
-            fontSize: Styles.theme.textSizes.M[state.settings.fontSize]
+            ...STYLES.skinEditor.toolbarItem,
+            ...STYLES.dropdown.head,
+            fontSize: GLOBAL_STYLES.textSizes.M[state.settings.fontSize]
           },
           value: index,
-          onChange: (e) => root.onChangeSkinDD(e.target.value)
+          onChange: (e: any) => root.onChangeSkinDD(e.target.value)
         },
         Object.keys(data).map((riderIndex) => {
           const riderNum = 1 + parseInt(riderIndex, 10)
 
           return rc('option', {
-            style: Styles.dropdown.option,
+            style: STYLES.dropdown.option,
             value: parseInt(riderIndex, 10)
           }, rc('text', null, `Rider ${riderNum}`))
         })
@@ -847,193 +852,193 @@ class ComponentManager {
     )
   }
 
-  flagSvg (data, index) {
+  flagSvg (data: any, index: any): ReactComponent {
     const { rc, root, state } = this
     return rc(
       'svg',
-      { style: Styles.skinEditor.flagSvg },
+      { style: STYLES.skinEditor.flagSvg },
       rc('path', {
-        ...Styles.riderProps.flag,
+        ...STYLES.riderProps.flag,
         fill: data.flag.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'flag', 'fill'])
       }),
       rc('path', {
-        ...Styles.riderProps.flagOutline,
+        ...STYLES.riderProps.flagOutline,
         fill: data.flag.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'flag', 'fill'])
       })
     )
   }
 
-  riderSvg (data, index) {
+  riderSvg (data: any, index: any): ReactComponent {
     const { rc, root, state } = this
     return rc(
       'svg',
-      { style: Styles.skinEditor.riderSvg },
+      { style: STYLES.skinEditor.riderSvg },
       rc('rect', {
-        ...Styles.riderProps.skin,
+        ...STYLES.riderProps.skin,
         fill: data.skin.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'skin', 'fill'])
       }),
       rc('path', {
-        ...Styles.riderProps.outline,
-        ...Styles.riderProps.nose,
+        ...STYLES.riderProps.outline,
+        ...STYLES.riderProps.nose,
         stroke: data.outline.stroke,
         fill: data.skin.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'skin', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.hair,
+        ...STYLES.riderProps.hair,
         fill: data.hair.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'hair', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.faceOutline,
+        ...STYLES.riderProps.faceOutline,
         fill: data.hair.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'hair', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.hairFill,
+        ...STYLES.riderProps.hairFill,
         fill: data.fill.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'fill', 'fill'])
       }),
       rc('polygon', {
-        ...Styles.riderProps.eye,
+        ...STYLES.riderProps.eye,
         fill: data.eye.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'eye', 'fill'])
       }),
       rc('path', {
-        ...Styles.riderProps.outline,
-        ...Styles.riderProps.sled,
+        ...STYLES.riderProps.outline,
+        ...STYLES.riderProps.sled,
         stroke: data.outline.stroke,
         fill: data.sled.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'sled', 'fill'])
       }),
       rc('line', {
-        ...Styles.riderProps.string,
+        ...STYLES.riderProps.string,
         stroke: data.string.stroke,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'string', 'stroke'])
       }),
       rc('path', {
-        ...Styles.riderProps.outline,
-        ...Styles.riderProps.armHand,
+        ...STYLES.riderProps.outline,
+        ...STYLES.riderProps.armHand,
         stroke: data.outline.stroke,
         fill: data.armHand.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'armHand', 'fill'])
       }),
       rc('path', {
-        ...Styles.riderProps.outline,
-        ...Styles.riderProps.legPants,
+        ...STYLES.riderProps.outline,
+        ...STYLES.riderProps.legPants,
         stroke: data.outline.stroke,
         fill: data.legPants.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'legPants', 'fill'])
       }),
       rc('path', {
-        ...Styles.riderProps.outline,
-        ...Styles.riderProps.legFoot,
+        ...STYLES.riderProps.outline,
+        ...STYLES.riderProps.legFoot,
         stroke: data.outline.stroke,
         fill: data.legFoot.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'legFoot', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.id_scarfEven,
-        ...Styles.riderProps.id_scarf0a,
+        ...STYLES.riderProps.id_scarfEven,
+        ...STYLES.riderProps.id_scarf0a,
         fill: data.id_scarf0.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'id_scarf0', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.id_scarfEven,
-        ...Styles.riderProps.id_scarf0b,
+        ...STYLES.riderProps.id_scarfEven,
+        ...STYLES.riderProps.id_scarf0b,
         fill: data.id_scarf0.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'id_scarf0', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.id_scarfOdd,
-        ...Styles.riderProps.id_scarf1,
+        ...STYLES.riderProps.id_scarfOdd,
+        ...STYLES.riderProps.id_scarf1,
         fill: data.id_scarf1.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'id_scarf1', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.id_scarfOdd,
-        ...Styles.riderProps.id_scarf2,
+        ...STYLES.riderProps.id_scarfOdd,
+        ...STYLES.riderProps.id_scarf2,
         fill: data.id_scarf2.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'id_scarf2', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.id_scarfOdd,
-        ...Styles.riderProps.id_scarf3,
+        ...STYLES.riderProps.id_scarfOdd,
+        ...STYLES.riderProps.id_scarf3,
         fill: data.id_scarf3.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'id_scarf3', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.id_scarfOdd,
-        ...Styles.riderProps.id_scarf4,
+        ...STYLES.riderProps.id_scarfOdd,
+        ...STYLES.riderProps.id_scarf4,
         fill: data.id_scarf4.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'id_scarf4', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.id_scarfOdd,
-        ...Styles.riderProps.id_scarf5,
+        ...STYLES.riderProps.id_scarfOdd,
+        ...STYLES.riderProps.id_scarf5,
         fill: data.id_scarf5.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'id_scarf5', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.outline,
-        ...Styles.riderProps.torso,
+        ...STYLES.riderProps.outline,
+        ...STYLES.riderProps.torso,
         stroke: data.outline.stroke,
         fill: data.torso.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'torso', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.scarfOdd,
-        ...Styles.riderProps.scarf1,
+        ...STYLES.riderProps.scarfOdd,
+        ...STYLES.riderProps.scarf1,
         fill: data.scarf1.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'scarf1', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.scarfOdd,
-        ...Styles.riderProps.scarf2,
+        ...STYLES.riderProps.scarfOdd,
+        ...STYLES.riderProps.scarf2,
         fill: data.scarf2.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'scarf2', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.scarfOdd,
-        ...Styles.riderProps.scarf3,
+        ...STYLES.riderProps.scarfOdd,
+        ...STYLES.riderProps.scarf3,
         fill: data.scarf3.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'scarf3', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.scarfOdd,
-        ...Styles.riderProps.scarf4,
+        ...STYLES.riderProps.scarfOdd,
+        ...STYLES.riderProps.scarf4,
         fill: data.scarf4.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'scarf4', 'fill'])
       }),
       rc('rect', {
-        ...Styles.riderProps.scarfOdd,
-        ...Styles.riderProps.scarf5,
+        ...STYLES.riderProps.scarfOdd,
+        ...STYLES.riderProps.scarf5,
         fill: data.scarf5.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'scarf5', 'fill'])
       }),
       rc('path', {
-        ...Styles.riderProps.outline,
-        ...Styles.riderProps.hatTop,
+        ...STYLES.riderProps.outline,
+        ...STYLES.riderProps.hatTop,
         stroke: data.outline.stroke,
         fill: data.hatTop.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'hatTop', 'fill'])
       }),
       rc('path', {
-        ...Styles.riderProps.hatBottom,
+        ...STYLES.riderProps.hatBottom,
         stroke: data.hatBottom.stroke,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'hatBottom', 'stroke'])
       }),
       rc('circle', {
-        ...Styles.riderProps.hatBall,
+        ...STYLES.riderProps.hatBall,
         fill: data.hatBall.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'hatBall', 'fill'])
       }),
       rc('path', {
-        ...Styles.riderProps.outline,
-        ...Styles.riderProps.armSleeve,
+        ...STYLES.riderProps.outline,
+        ...STYLES.riderProps.armSleeve,
         stroke: data.outline.stroke,
         fill: data.armSleeve.fill,
         onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'armSleeve', 'fill'])

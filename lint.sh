@@ -1,7 +1,7 @@
-if ! command -v standard &> /dev/null
+if ! command -v ts-standard &> /dev/null
 then
-  echo "standardjs not found, installing..."
-  npm install standard -g
+  echo "standardts not found, installing..."
+  npm install ts-standard -g
 fi
 
-standard --fix ./project_files/ command-editor.js
+ts-standard --fix ./project_files/*

@@ -1,18 +1,4 @@
 {
-  "standard": {
-    "globals": [
-      "Actions",
-      "ComponentManager",
-      "Constants",
-      "Icons",
-      "InitRoot",
-      "ScriptGenerator",
-      "ScriptParser",
-      "Selectors",
-      "Styles",
-      "Validator"
-    ]
-  },
   "scripts": {
     "lint": "bash lint.sh",
     "build": "bash build.sh -d",

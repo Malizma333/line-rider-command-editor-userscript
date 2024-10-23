@@ -1,35 +1,34 @@
-// eslint-disable-next-line no-unused-vars
-class Styles {
-  static theme = {
-    black: '#000000',
-    dark_gray1: '#b7b7b7',
-    dark_gray2: '#999999',
-    dark_gray3: '#666666',
-    dark_gray4: '#434343',
-    gray: '#cccccc',
-    light_gray1: '#d9d9d9',
-    light_gray2: '#efefef',
-    light_gray3: '#f3f3f3',
-    white: '#ffffff',
-    text: {
-      fontFamily: 'Helvetica',
-      fontWeight: 'bold'
-    },
-    textSizes: {
-      S: ['12px', '14px', '18px'],
-      M: ['18px', '22px', '24px'],
-      L: ['28px', '32px', '36px']
-    },
-    centerX: {
-      left: '0px',
-      right: '0px',
-      marginLeft: 'auto',
-      marginRight: 'auto'
-    }
+const GLOBAL_STYLES = {
+  black: '#000000',
+  dark_gray1: '#b7b7b7',
+  dark_gray2: '#999999',
+  dark_gray3: '#666666',
+  dark_gray4: '#434343',
+  gray: '#cccccc',
+  light_gray1: '#d9d9d9',
+  light_gray2: '#efefef',
+  light_gray3: '#f3f3f3',
+  white: '#ffffff',
+  text: {
+    fontFamily: 'Helvetica',
+    fontWeight: 'bold'
+  },
+  textSizes: {
+    S: ['12px', '14px', '18px'],
+    M: ['18px', '22px', '24px'],
+    L: ['28px', '32px', '36px']
+  },
+  centerX: {
+    left: '0px',
+    right: '0px',
+    marginLeft: 'auto',
+    marginRight: 'auto'
   }
+} as const
 
-  static root = {
-    backgroundColor: Styles.theme.light_gray3,
+const STYLES = {
+  root: {
+    backgroundColor: GLOBAL_STYLES.light_gray3,
     border: '2px solid black',
     left: '50px',
     opacity: 0,
@@ -38,9 +37,8 @@ class Styles {
     pointerEvents: 'none',
     position: 'fixed',
     top: '12.5px'
-  }
-
-  static content = {
+  },
+  content: {
     alignItems: 'center',
     display: 'flex',
     height: '60vh',
@@ -48,9 +46,8 @@ class Styles {
     justifyContent: 'center',
     paddingTop: '1vh',
     width: '40vw'
-  }
-
-  static buttons = {
+  },
+  button: {
     embedded: {
       alignItems: 'center',
       background: 'none',
@@ -63,7 +60,7 @@ class Styles {
     },
     filled: {
       alignItems: 'center',
-      backgroundColor: Styles.theme.white,
+      backgroundColor: GLOBAL_STYLES.white,
       border: '2px solid black',
       display: 'flex',
       height: '1.5em',
@@ -76,9 +73,8 @@ class Styles {
       borderRadius: '5px',
       margin: '5px'
     }
-  }
-
-  static toolbar = {
+  },
+  toolbar: {
     container: {
       alignItems: 'start',
       display: 'flex',
@@ -86,11 +82,10 @@ class Styles {
       fontSize: '25px',
       width: '100%'
     }
-  }
-
-  static settings = {
+  },
+  settings: {
     window: {
-      backgroundColor: Styles.theme.white,
+      backgroundColor: GLOBAL_STYLES.white,
       border: '2px solid black',
       display: 'flex',
       flexDirection: 'column',
@@ -123,9 +118,8 @@ class Styles {
       position: 'absolute',
       right: '5px'
     }
-  }
-
-  static tabs = {
+  },
+  tabs: {
     container: {
       alignItems: 'end',
       display: 'flex',
@@ -140,12 +134,11 @@ class Styles {
       borderTopLeftRadius: '8px',
       borderTopRightRadius: '8px'
     }
-  }
-
-  static smooth = {
+  },
+  smooth: {
     container: {
       alignItems: 'center',
-      backgroundColor: Styles.theme.white,
+      backgroundColor: GLOBAL_STYLES.white,
       borderBottom: '1px solid black',
       display: 'flex',
       height: '3em',
@@ -153,14 +146,13 @@ class Styles {
       padding: '.5em'
     },
     input: {
-      backgroundColor: Styles.theme.white,
+      backgroundColor: GLOBAL_STYLES.white,
       overflow: 'hidden',
       textAlign: 'center',
       width: '3em'
     }
-  }
-
-  static checkbox = {
+  },
+  checkbox: {
     container: {
       alignItems: 'center',
       display: 'flex',
@@ -185,19 +177,17 @@ class Styles {
       position: 'absolute',
       width: '60%'
     }
-  }
-
-  static window = {
-    backgroundColor: Styles.theme.white,
+  },
+  window: {
+    backgroundColor: GLOBAL_STYLES.white,
     border: '2px solid black',
     display: 'flex',
     flexDirection: 'column',
     flex: 9,
     overflowY: 'scroll',
     width: '100%'
-  }
-
-  static trigger = {
+  },
+  trigger: {
     container: {
       alignItems: 'start',
       border: '1px solid black',
@@ -225,16 +215,22 @@ class Styles {
       margin: '0em .5em'
     },
     createButton: {
-      ...Styles.buttons.filled,
-      ...Styles.theme.centerX,
+      ...GLOBAL_STYLES.centerX,
+      alignItems: 'center',
+      backgroundColor: GLOBAL_STYLES.white,
       bottom: '-0.75em',
+      border: '2px solid black',
+      display: 'flex',
       fontSize: '18px',
+      height: '1.5em',
+      justifyContent: 'center',
       position: 'absolute',
+      userSelect: 'none',
+      width: '1.5em',
       zIndex: 1
     }
-  }
-
-  static dropdown = {
+  },
+  dropdown: {
     head: {
       height: '3ch',
       marginRight: '10px',
@@ -244,9 +240,8 @@ class Styles {
       height: '2ch',
       textAlign: 'center'
     }
-  }
-
-  static skinEditor = {
+  },
+  skinEditor: {
     container: {
       alignItems: 'center',
       display: 'flex',
@@ -268,7 +263,7 @@ class Styles {
     },
     toolbar: {
       alignItems: 'center',
-      backgroundColor: Styles.theme.light_gray1,
+      backgroundColor: GLOBAL_STYLES.light_gray1,
       borderBottom: '3px solid black',
       flex: 1,
       display: 'flex',
@@ -315,17 +310,16 @@ class Styles {
     },
     flagSvg: {
       height: '18',
-      transform: `scale(${Constants.VIEWPORT_DIMENSIONS.WIDTH / 256})`,
+      transform: `scale(${VIEWPORT_DIMENSIONS.WIDTH / 256})`,
       width: '15'
     },
     riderSvg: {
       height: '25',
-      transform: `scale(${Constants.VIEWPORT_DIMENSIONS.WIDTH / 256})`,
+      transform: `scale(${VIEWPORT_DIMENSIONS.WIDTH / 256})`,
       width: '31'
     }
-  }
-
-  static alpha = {
+  },
+  alpha: {
     container: {
       alignItems: 'center',
       display: 'flex',
@@ -349,9 +343,8 @@ class Styles {
       opacity: 0.7,
       width: '100px'
     }
-  }
-
-  static riderProps = {
+  },
+  riderProps: {
     outline: { strokeWidth: 0.3 },
     flag: { transform: 'translate(-5, -3)', d: 'M6,3A1,1 0 0,1 7,4V4.88C8.06,4.44 9.5,4 11,4C14,4 14,6 16,6C19,6 20,4 20,4V12C20,12 19,14 16,14C13,14 13,12 11,12C8,12 7,14 7,14V21H5V4A1,1 0 0,1 6,3Z' },
     flagOutline: { transform: 'translate(-5, -3)', d: 'M6,3A1,1 0 0,1 7,4V4.88C8.06,4.44 9.5,4 11,4C14,4 14,6 16,6C19,6 20,4 20,4V12C20,12 19,14 16,14C13,14 13,12 11,12C8,12 7,14 7,14V21H5V4A1,1 0 0,1 6,3M7,7.25V11.5C7,11.5 9,10 11,10C13,10 14,12 16,12C18,12 18,11 18,11V7.5C18,7.5 17,8 16,8C14,8 13,6 11,6C9,6 7,7.25 7,7.25Z' },
@@ -418,4 +411,4 @@ class Styles {
       strokeWidth: '0', x: '-10', width: '2', height: '2'
     }
   }
-}
+} as const
