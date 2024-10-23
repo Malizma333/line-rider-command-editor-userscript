@@ -38,17 +38,21 @@ echo "$MINI" > "$BUILD_FILE"
 
 if $DEVELOP; then
   LOCATION="$DIRECTORY"
+  NAME="Command Editor Debug"
+  VERSION="0.0.0"
 else
   LOCATION="$REPOSITORY"
+  NAME="Command Editor"
+  VERSION="2.0.0"
 fi
 
 echo "window.CMD_EDITOR_DEBUG=$DEVELOP
 // ==UserScript==
-// @name         Command Editor
+// @name         $NAME
 // @author       Malizma
 // @description  Adds UI to API commands in linerider.com
 // @namespace    https://www.linerider.com/
-// @version      2.0.0
+// @version      $VERSION
 // @icon         https://www.linerider.com/favicon.ico
 // @match        https://www.linerider.com/*
 // @match        https://*.official-linerider.com/*

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 const GLOBAL_STYLES = {
   black: '#000000',
   dark_gray1: '#b7b7b7',

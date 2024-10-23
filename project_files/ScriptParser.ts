@@ -1,4 +1,4 @@
-class ScriptParser {
+class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
   triggerData: any
 
   parseScript (scriptText: any): any {
@@ -35,7 +35,12 @@ class ScriptParser {
       if (scriptSection.charAt(endIndex + 1) === ')') i -= 1
     }
 
-    const parameterText = `[${this.removeLeadingZeroes(scriptSection.substring(startIndex, endIndex), commandId)}]`
+    const parameterText = `[${
+      this.removeLeadingZeroes(
+        scriptSection.substring(startIndex, endIndex),
+        commandId
+      )
+    }]`
 
     // HACK: Using eval is easier than json.parse, which has stricter syntax
     // eslint-disable-next-line no-eval

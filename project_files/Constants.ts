@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 const ROOT_NODE_ID = 'COMMAND_EDITOR_ROOT_NODE'
 
 const VIEWPORT_DIMENSIONS = {
@@ -197,4 +199,34 @@ const TRIGGER_PROPS = {
       id_scarf5: '#scarf5'
     }
   }
+}
+
+interface SKIN_MAP_STRUCT {
+  outline: { stroke: string }
+  flag: { fill: string }
+  skin: { fill: string }
+  hair: { fill: string }
+  fill: { fill: string }
+  eye: { fill: string }
+  sled: { fill: string }
+  string: { stroke: string }
+  armSleeve: { fill: string }
+  armHand: { fill: string }
+  legPants: { fill: string }
+  legFoot: { fill: string }
+  torso: { fill: string }
+  hatTop: { fill: string }
+  hatBottom: { stroke: string }
+  hatBall: { fill: string }
+  scarf1: { fill: string }
+  scarf2: { fill: string }
+  scarf3: { fill: string }
+  scarf4: { fill: string }
+  scarf5: { fill: string }
+  id_scarf0: { fill: string }
+  id_scarf1: { fill: string }
+  id_scarf2: { fill: string }
+  id_scarf3: { fill: string }
+  id_scarf4: { fill: string }
+  id_scarf5: { fill: string }
 }

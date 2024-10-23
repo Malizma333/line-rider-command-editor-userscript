@@ -1,4 +1,4 @@
-class ComponentManager {
+class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-vars
   rc: any
   root: any
   state: any
@@ -123,7 +123,13 @@ class ComponentManager {
             disabled: root.computed.undoStack.length === 0,
             onClick: () => root.onUndo()
           },
-          rc('span', { ...leftArrowIcon, style: { color: root.computed.undoStack.length === 0 ? 'gray' : 'black' } })
+          rc(
+            'span',
+            {
+              ...leftArrowIcon,
+              style: { color: root.computed.undoStack.length === 0 ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black }
+            }
+          )
         ),
         rc(
           'button',
@@ -133,7 +139,13 @@ class ComponentManager {
             disabled: root.computed.redoStack.length === 0,
             onClick: () => root.onRedo()
           },
-          rc('span', { ...rightArrowIcon, style: { color: root.computed.redoStack.length === 0 ? 'gray' : 'black' } })
+          rc(
+            'span',
+            {
+              ...rightArrowIcon,
+              style: { color: root.computed.redoStack.length === 0 ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black }
+            }
+          )
         ),
         rc(
           'button',
@@ -728,7 +740,11 @@ class ComponentManager {
           style: {
             ...STYLES.skinEditor.canvas,
             transform: `scale(${state.skinEditorState.zoom.scale as number})`,
-            transformOrigin: `${state.skinEditorState.zoom.xOffset as number}px ${state.skinEditorState.zoom.yOffset as number}px`
+            transformOrigin: `${
+              state.skinEditorState.zoom.xOffset as number
+            }px ${
+              state.skinEditorState.zoom.yOffset as number
+            }px`
           },
           onWheel: (e: any) => root.onZoomSkinEditor(e, true)
         },
@@ -854,194 +870,196 @@ class ComponentManager {
 
   flagSvg (data: any, index: any): ReactComponent {
     const { rc, root, state } = this
+    const { color } = state.skinEditorState
     return rc(
       'svg',
       { style: STYLES.skinEditor.flagSvg },
       rc('path', {
         ...STYLES.riderProps.flag,
         fill: data.flag.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'flag', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'flag', 'fill'])
       }),
       rc('path', {
         ...STYLES.riderProps.flagOutline,
         fill: data.flag.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'flag', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'flag', 'fill'])
       })
     )
   }
 
   riderSvg (data: any, index: any): ReactComponent {
     const { rc, root, state } = this
+    const { color } = state.skinEditorState
     return rc(
       'svg',
       { style: STYLES.skinEditor.riderSvg },
       rc('rect', {
         ...STYLES.riderProps.skin,
         fill: data.skin.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'skin', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'skin', 'fill'])
       }),
       rc('path', {
         ...STYLES.riderProps.outline,
         ...STYLES.riderProps.nose,
         stroke: data.outline.stroke,
         fill: data.skin.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'skin', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'skin', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.hair,
         fill: data.hair.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'hair', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'hair', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.faceOutline,
         fill: data.hair.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'hair', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'hair', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.hairFill,
         fill: data.fill.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'fill', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'fill', 'fill'])
       }),
       rc('polygon', {
         ...STYLES.riderProps.eye,
         fill: data.eye.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'eye', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'eye', 'fill'])
       }),
       rc('path', {
         ...STYLES.riderProps.outline,
         ...STYLES.riderProps.sled,
         stroke: data.outline.stroke,
         fill: data.sled.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'sled', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'sled', 'fill'])
       }),
       rc('line', {
         ...STYLES.riderProps.string,
         stroke: data.string.stroke,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'string', 'stroke'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'string', 'stroke'])
       }),
       rc('path', {
         ...STYLES.riderProps.outline,
         ...STYLES.riderProps.armHand,
         stroke: data.outline.stroke,
         fill: data.armHand.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'armHand', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'armHand', 'fill'])
       }),
       rc('path', {
         ...STYLES.riderProps.outline,
         ...STYLES.riderProps.legPants,
         stroke: data.outline.stroke,
         fill: data.legPants.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'legPants', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'legPants', 'fill'])
       }),
       rc('path', {
         ...STYLES.riderProps.outline,
         ...STYLES.riderProps.legFoot,
         stroke: data.outline.stroke,
         fill: data.legFoot.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'legFoot', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'legFoot', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.id_scarfEven,
         ...STYLES.riderProps.id_scarf0a,
         fill: data.id_scarf0.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'id_scarf0', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'id_scarf0', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.id_scarfEven,
         ...STYLES.riderProps.id_scarf0b,
         fill: data.id_scarf0.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'id_scarf0', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'id_scarf0', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.id_scarfOdd,
         ...STYLES.riderProps.id_scarf1,
         fill: data.id_scarf1.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'id_scarf1', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'id_scarf1', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.id_scarfOdd,
         ...STYLES.riderProps.id_scarf2,
         fill: data.id_scarf2.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'id_scarf2', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'id_scarf2', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.id_scarfOdd,
         ...STYLES.riderProps.id_scarf3,
         fill: data.id_scarf3.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'id_scarf3', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'id_scarf3', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.id_scarfOdd,
         ...STYLES.riderProps.id_scarf4,
         fill: data.id_scarf4.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'id_scarf4', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'id_scarf4', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.id_scarfOdd,
         ...STYLES.riderProps.id_scarf5,
         fill: data.id_scarf5.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'id_scarf5', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'id_scarf5', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.outline,
         ...STYLES.riderProps.torso,
         stroke: data.outline.stroke,
         fill: data.torso.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'torso', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'torso', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.scarfOdd,
         ...STYLES.riderProps.scarf1,
         fill: data.scarf1.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'scarf1', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'scarf1', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.scarfOdd,
         ...STYLES.riderProps.scarf2,
         fill: data.scarf2.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'scarf2', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'scarf2', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.scarfOdd,
         ...STYLES.riderProps.scarf3,
         fill: data.scarf3.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'scarf3', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'scarf3', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.scarfOdd,
         ...STYLES.riderProps.scarf4,
         fill: data.scarf4.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'scarf4', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'scarf4', 'fill'])
       }),
       rc('rect', {
         ...STYLES.riderProps.scarfOdd,
         ...STYLES.riderProps.scarf5,
         fill: data.scarf5.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'scarf5', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'scarf5', 'fill'])
       }),
       rc('path', {
         ...STYLES.riderProps.outline,
         ...STYLES.riderProps.hatTop,
         stroke: data.outline.stroke,
         fill: data.hatTop.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'hatTop', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'hatTop', 'fill'])
       }),
       rc('path', {
         ...STYLES.riderProps.hatBottom,
         stroke: data.hatBottom.stroke,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'hatBottom', 'stroke'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'hatBottom', 'stroke'])
       }),
       rc('circle', {
         ...STYLES.riderProps.hatBall,
         fill: data.hatBall.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'hatBall', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'hatBall', 'fill'])
       }),
       rc('path', {
         ...STYLES.riderProps.outline,
         ...STYLES.riderProps.armSleeve,
         stroke: data.outline.stroke,
         fill: data.armSleeve.fill,
-        onClick: () => root.onUpdateTrigger({ new: state.skinEditorState.color }, ['triggers', index, 'armSleeve', 'fill'])
+        onClick: () => root.onUpdateTrigger({ new: color }, ['triggers', index, 'armSleeve', 'fill'])
       })
     )
   }

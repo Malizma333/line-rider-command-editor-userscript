@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 function getSimulatorTrack (state: any): any { return state.simulator.engine }
 
 function getWindowFocused (state: any): boolean { return (state.views.Main as boolean) }

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 interface ValueChange {
   prev: any
   new: any
@@ -101,8 +103,8 @@ function validateTimes (commandData: any): boolean[] {
   }
 
   for (let i = 0; i < triggers.length - 1; i += 1) {
-    const time1 = triggers[i][0]
-    const time2 = triggers[i + 1][0]
+    const time1 = triggers[i][0] as number[]
+    const time2 = triggers[i + 1][0] as number[]
     const index1 = (
       time1[0] * TIMELINE.SPM + time1[1]
     ) * TIMELINE.FPS + time1[2]

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 interface InlineIcon {
   dangerouslySetInnerHTML: {
     __html: string

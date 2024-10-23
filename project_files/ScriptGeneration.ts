@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 function generateScript (command: TRIGGER_TYPES, triggerData: any): string {
   const currentData = triggerData[command]
   const currentHeader = (TRIGGER_PROPS[command]).FUNC
@@ -24,8 +26,8 @@ function generateScript (command: TRIGGER_TYPES, triggerData: any): string {
   }
 }
 
-function formatSkins (customSkinData: any): string {
-  const customSkinStrings = customSkinData.map((customSkin: any) => [
+function formatSkins (customSkinData: SKIN_MAP_STRUCT[]): string {
+  const customSkinStrings = customSkinData.map((customSkin: SKIN_MAP_STRUCT) => [
     ` .outline {stroke: ${customSkin.outline.stroke}}`,
     ` .skin {fill: ${customSkin.skin.fill}}`,
     ` .hair {fill: ${customSkin.hair.fill}}`,
@@ -55,7 +57,7 @@ function formatSkins (customSkinData: any): string {
     ` .flag {fill: ${customSkin.flag.fill}}`
   ].join('').replace(/\n/g, ''))
 
-  customSkinStrings.unshift(customSkinStrings.pop())
+  customSkinStrings.unshift(customSkinStrings.pop() ?? '')
 
   return JSON.stringify(customSkinStrings)
 }

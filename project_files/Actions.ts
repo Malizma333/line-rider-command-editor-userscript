@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 interface DispatchAction {
   type: string
   payload: any
