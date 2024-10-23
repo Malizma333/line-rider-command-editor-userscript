@@ -43,11 +43,11 @@ const STYLES = {
   content: {
     alignItems: 'center',
     display: 'flex',
-    height: '60vh',
+    height: 'clamp(250px, 60vh, 450px)',
     flexDirection: 'column',
     justifyContent: 'center',
     paddingTop: '1vh',
-    width: '40vw'
+    width: 'clamp(425px, 40vw, 650px)'
   },
   button: {
     embedded: {

@@ -191,8 +191,8 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
 
       this.onInit().then(() => {
         this.setState({ initialized: true })
-      }).catch((e) => {
-        console.error(e.message)
+      }).catch((error: any) => {
+        console.error(error.message)
       })
     }
 

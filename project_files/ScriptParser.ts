@@ -8,8 +8,8 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
     Object.keys(TRIGGER_PROPS).forEach((commandId: string) => {
       try {
         this.parseCommand(commandId as TRIGGER_TYPES, trimmedScript)
-      } catch (e: any) {
-        console.error('[ScriptParser]', e.message)
+      } catch (error: any) {
+        console.error('[ScriptParser]', error.message)
         this.triggerData[commandId] = undefined
       }
     })
