@@ -312,16 +312,18 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onLoadScript (): void {
-      this.onLoad(this.parser.parseScript(getCurrentScript(store.getState())))
+      this.onLoad(
+        this.parser.parseScript(getCurrentScript(store.getState()))
+      )
     }
 
     onLoad (data: any): void {
       try {
         const nextTriggerData = data
 
-        Object.keys(data).forEach((command) => {
+        Object.keys(TRIGGER_PROPS).forEach((command) => {
           if (nextTriggerData[command] === undefined) {
-            nextTriggerData[command] = data[command]
+            nextTriggerData[command] = this.state.triggerData[command]
             return
           }
 

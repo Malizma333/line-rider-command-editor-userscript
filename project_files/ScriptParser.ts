@@ -10,9 +10,7 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
         this.parseCommand(commandId as TRIGGER_TYPES, trimmedScript)
       } catch (e: any) {
         console.error('[ScriptParser]', e.message)
-        if (this.triggerData[commandId] !== undefined) {
-          this.triggerData[commandId] = undefined
-        }
+        this.triggerData[commandId] = undefined
       }
     })
 
