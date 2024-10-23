@@ -5,11 +5,6 @@ const HELP_LINK = 'https://github.com/Malizma333/line-rider-command-editor-users
 const REPORT_LINK = 'https://github.com/Malizma333/line-rider-command-editor-userscript/issues/new'
 const FPS = 40
 
-const WINDOW_DIMENSIONS = {
-  WIDTH: Math.max(document.documentElement.clientWidth ?? 0, window.innerWidth ?? 0),
-  HEIGHT: Math.max(document.documentElement.clientHeight ?? 0, window.innerHeight ?? 0)
-} as const
-
 type VIEWPORT_OPTION = keyof typeof SETTINGS.VIEWPORT
 
 const SETTINGS = {
