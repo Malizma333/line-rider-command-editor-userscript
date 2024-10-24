@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+type Payload = any
+
 interface DispatchAction {
   type: string
-  payload: any
+  payload: Payload
   meta?: Object
 }
 
-function setPlaybackDimensions (dimension: { width: any, height: any }): DispatchAction {
+function setPlaybackDimensions (dimension: { width: number, height: number }): DispatchAction {
   return {
     type: 'SET_PLAYBACK_DIMENSIONS',
     payload: dimension

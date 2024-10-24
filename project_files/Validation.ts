@@ -1,91 +1,87 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-enum TYPES {
-  BOOL = 'BOOLEAN',
-  INT = 'INTEGER',
-  FLOAT = 'FLOAT'
-}
-
 interface ValueChange {
-  prev: any
-  new: any
+  prev?: number | boolean
+  new: string | boolean
 }
 
 interface Constraint {
   DEFAULT: boolean | number
-  TYPE: TYPES
+  INT?: boolean
   MIN?: number
   MAX?: number
 }
 
 const CONSTRAINTS = {
   INTERPOLATE: {
-    DEFAULT: true, TYPE: TYPES.BOOL
+    DEFAULT: true
   },
   SMOOTH: {
-    DEFAULT: 20, MIN: 0, MAX: 40, TYPE: TYPES.INT
+    DEFAULT: 20, MIN: 0, MAX: 40, INT: true
   },
   FRAME: {
-    DEFAULT: 0, MIN: 0, MAX: 39, TYPE: TYPES.INT
+    DEFAULT: 0, MIN: 0, MAX: 39, INT: true
   },
   SECOND: {
-    DEFAULT: 0, MIN: 0, MAX: 59, TYPE: TYPES.INT
+    DEFAULT: 0, MIN: 0, MAX: 59, INT: true
   },
   MINUTE: {
-    DEFAULT: 0, MIN: 0, MAX: 99, TYPE: TYPES.INT
+    DEFAULT: 0, MIN: 0, MAX: 99, INT: true
   },
   ZOOM: {
-    DEFAULT: 1, MIN: -50, MAX: 50, TYPE: TYPES.FLOAT
+    DEFAULT: 1, MIN: -50, MAX: 50, INT: false
   },
   PAN_X: {
-    DEFAULT: 0, MIN: -100, MAX: 100, TYPE: TYPES.FLOAT
+    DEFAULT: 0, MIN: -100, MAX: 100, INT: false
   },
   PAN_Y: {
-    DEFAULT: 0, MIN: -100, MAX: 100, TYPE: TYPES.FLOAT
+    DEFAULT: 0, MIN: -100, MAX: 100, INT: false
   },
   PAN_WIDTH: {
-    DEFAULT: 0.4, MIN: 0, MAX: 2, TYPE: TYPES.FLOAT
+    DEFAULT: 0.4, MIN: 0, MAX: 2, INT: false
   },
   PAN_HEIGHT: {
-    DEFAULT: 0.4, MIN: 0, MAX: 2, TYPE: TYPES.FLOAT
+    DEFAULT: 0.4, MIN: 0, MAX: 2, INT: false
   },
   FOCUS_WEIGHT: {
-    DEFAULT: 0, MIN: 0, MAX: 1, TYPE: TYPES.FLOAT
+    DEFAULT: 0, MIN: 0, MAX: 1, INT: false
   },
   TIME_SPEED: {
-    DEFAULT: 1, MIN: 0.01, MAX: 10, TYPE: TYPES.FLOAT
+    DEFAULT: 1, MIN: 0.01, MAX: 10, INT: false
   },
   SKIN_ZOOM: {
-    DEFAULT: 1, MIN: 1, MAX: 4, TYPE: TYPES.FLOAT
+    DEFAULT: 1, MIN: 1, MAX: 4, INT: false
   },
   ALPHA_SLIDER: {
-    DEFAULT: 1, MIN: 0, MAX: 1, TYPE: TYPES.FLOAT
+    DEFAULT: 1, MIN: 0, MAX: 1, INT: false
   }
 } as const
 
-function validateData (valueChange: ValueChange, constraints: Constraint, bounded: boolean): any {
-  if (constraints == null) return valueChange.new
-
-  switch (constraints.TYPE) {
-    case TYPES.BOOL: {
-      return valueChange.new
-    }
-
-    case TYPES.INT: {
-      return validateInteger(valueChange, constraints, bounded)
-    }
-
-    case TYPES.FLOAT: {
-      return validateFloat(valueChange, constraints, bounded)
-    }
-
-    default: return valueChange.prev
+function validateData (
+  valueChange: ValueChange, bounded: boolean, constraints?: Constraint
+): typeof valueChange.prev | typeof valueChange.new {
+  if (constraints == null) {
+    return valueChange.new
   }
+
+  if (typeof constraints.DEFAULT === 'boolean') {
+    return valueChange.new
+  }
+
+  if (typeof constraints.DEFAULT === 'number' && (constraints.INT ?? false)) {
+    return validateInteger(valueChange, constraints, bounded)
+  }
+
+  if (typeof constraints.DEFAULT === 'number' && !(constraints.INT ?? false)) {
+    return validateFloat(valueChange, constraints, bounded)
+  }
+
+  return valueChange.prev
 }
 
 function validateInteger (valueChange: ValueChange, constraints: Constraint, bounded: boolean): number {
-  const prevValue = valueChange.prev
-  const newValue = valueChange.new
+  const prevValue = valueChange.prev as number
+  const newValue = valueChange.new as string
 
   if (newValue.trim() === '') {
     return 0
@@ -97,7 +93,7 @@ function validateInteger (valueChange: ValueChange, constraints: Constraint, bou
     return prevValue
   }
 
-  if ((newValue as string).includes('.')) {
+  if (newValue.includes('.')) {
     return prevValue
   }
 
@@ -116,9 +112,9 @@ function validateInteger (valueChange: ValueChange, constraints: Constraint, bou
   return parsedValue
 }
 
-function validateFloat (valueChange: ValueChange, constraints: Constraint, bounded: boolean): number {
-  const prevValue = valueChange.prev
-  const newValue = valueChange.new
+function validateFloat (valueChange: ValueChange, constraints: Constraint, bounded: boolean): number | string {
+  const prevValue = valueChange.prev as number
+  const newValue = valueChange.new as string
 
   if (newValue.trim() === '') {
     return 0.0
@@ -131,7 +127,8 @@ function validateFloat (valueChange: ValueChange, constraints: Constraint, bound
   }
 
   if (!bounded) {
-    if ((newValue as string).includes('.')) {
+    // HACK: Include partially inputted floats (eg 1.)
+    if (newValue.includes('.')) {
       return newValue
     }
 
@@ -149,10 +146,7 @@ function validateFloat (valueChange: ValueChange, constraints: Constraint, bound
   return parsedValue
 }
 
-function validateTimes (commandData: any): boolean[] {
-  if (commandData == null) return []
-
-  const { triggers } = commandData
+function validateTimes (triggers: TimedTrigger[]): boolean[] {
   const invalidIndices = Array(triggers.length).map(() => false)
 
   const firstTime = triggers[0][0]

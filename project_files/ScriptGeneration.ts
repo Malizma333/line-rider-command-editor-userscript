@@ -1,33 +1,33 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-function generateScript (command: TRIGGER_TYPES, triggerData: any): string {
+function generateScript (command: TRIGGER_ID, triggerData: TriggerData): string {
   const currentData = triggerData[command]
   const currentHeader = (TRIGGER_PROPS[command]).FUNC
 
   switch (command) {
-    case TRIGGER_TYPES.FOCUS:
-    case TRIGGER_TYPES.PAN:
-    case TRIGGER_TYPES.ZOOM:
+    case TRIGGER_ID.FOCUS:
+    case TRIGGER_ID.PAN:
+    case TRIGGER_ID.ZOOM:
       return currentHeader
         .replace('{0}', JSON.stringify(currentData.triggers))
-        .replace('{1}', currentData.smoothing)
+        .replace('{1}', String(currentData.smoothing))
         .replace(' ', '')
-    case TRIGGER_TYPES.TIME:
+    case TRIGGER_ID.TIME:
       return currentHeader
         .replace('{0}', JSON.stringify(currentData.triggers))
-        .replace('{1}', currentData.interpolate)
+        .replace('{1}', String(currentData.interpolate))
         .replace(' ', '')
-    case TRIGGER_TYPES.SKIN:
+    case TRIGGER_ID.SKIN:
       return currentHeader
-        .replace('{0}', formatSkins(currentData.triggers))
+        .replace('{0}', formatSkins(currentData.triggers as SkinCssTrigger[]))
         .replace(' ', '')
     default:
       return ''
   }
 }
 
-function formatSkins (customSkinData: SKIN_MAP_STRUCT[]): string {
-  const customSkinStrings = customSkinData.map((customSkin: SKIN_MAP_STRUCT) => [
+function formatSkins (customSkinData: SkinCssTrigger[]): string {
+  const customSkinStrings = customSkinData.map((customSkin: SkinCssTrigger) => [
     ` .outline {stroke: ${customSkin.outline.stroke}}`,
     ` .skin {fill: ${customSkin.skin.fill}}`,
     ` .hair {fill: ${customSkin.hair.fill}}`,

@@ -1,22 +1,16 @@
 class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-vars
-  rc: any
-  root: any
-  state: any
-  computed: any
+  rc: Function
+  root: ReactComponent
+  state: RootState
 
-  constructor (rc: any, root: any) {
+  constructor (rc: Function, root: ReactComponent) {
     this.rc = rc
     this.root = root
     this.state = root.state
-    this.computed = root.computed
   }
 
-  updateState (nextState: any): void {
+  updateState (nextState: RootState): void {
     this.state = nextState
-  }
-
-  updateComputed (nextComputed: any): void {
-    this.computed = nextComputed
   }
 
   main (): ReactComponent {
@@ -25,12 +19,12 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
       'div',
       { style: GLOBAL_STYLES.text },
       this.toolbar(),
-      state.active as boolean && rc(
+      state.active && rc(
         'div',
         { style: STYLES.content },
-        state.settingsActive as boolean && this.settingsContainer(),
-        !(state.settingsActive as boolean) && this.tabContainer(),
-        !(state.settingsActive as boolean) && this.windowContainer()
+        state.settingsActive && this.settingsContainer(),
+        !(state.settingsActive) && this.tabContainer(),
+        !(state.settingsActive) && this.windowContainer()
       )
     )
   }
@@ -43,13 +37,13 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
       rc(
         'button',
         {
-          title: state.active as boolean ? 'Minimize' : 'Maximize',
+          title: state.active ? 'Minimize' : 'Maximize',
           style: STYLES.button.embedded,
           onClick: () => root.onActivate()
         },
-        state.active as boolean ? rc('span', minimizeIcon) : rc('span', maximizeIcon)
+        state.active ? rc('span', minimizeIcon) : rc('span', maximizeIcon)
       ),
-      state.active as boolean && rc(
+      state.active && rc(
         'div',
         { style: { ...STYLES.toolbar.container, justifyContent: 'start' } },
         rc(
@@ -80,7 +74,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
               style: { display: 'none' },
               type: 'file',
               accept: '.json',
-              onChange: (e: any) => root.onLoadFile(e.target.files[0])
+              onChange: (e: Event) => root.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])
             }
           )
         ),
@@ -112,7 +106,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           rc('span', printIcon)
         )
       ),
-      state.active as boolean && rc(
+      state.active && rc(
         'div',
         { style: { ...STYLES.toolbar.container, justifyContent: 'end' } },
         rc(
@@ -120,14 +114,14 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           {
             title: 'Undo',
             style: STYLES.button.embedded,
-            disabled: root.computed.undoStack.length === 0,
+            disabled: true,
             onClick: () => root.onUndo()
           },
           rc(
             'span',
             {
               ...leftArrowIcon,
-              style: { color: root.computed.undoStack.length === 0 ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black }
+              style: { color: GLOBAL_STYLES.gray }
             }
           )
         ),
@@ -136,14 +130,14 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           {
             title: 'Redo',
             style: STYLES.button.embedded,
-            disabled: root.computed.redoStack.length === 0,
+            disabled: true,
             onClick: () => root.onRedo()
           },
           rc(
             'span',
             {
               ...rightArrowIcon,
-              style: { color: root.computed.redoStack.length === 0 ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black }
+              style: { color: GLOBAL_STYLES.gray }
             }
           )
         ),
@@ -152,7 +146,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           {
             title: 'Settings',
             style: STYLES.button.embedded,
-            onClick: () => root.onToggleSettings(!(state.settingsActive as boolean))
+            onClick: () => root.onToggleSettings(!(state.settingsActive))
           },
           rc('span', settingsIcon)
         ),
@@ -217,11 +211,11 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           position: 'absolute',
           fontSize: GLOBAL_STYLES.textSizes.M[state.settings.fontSize],
           left: '0px',
-          background: state.settingsDirty as boolean
+          background: state.settingsDirty
             ? GLOBAL_STYLES.light_gray3
             : GLOBAL_STYLES.dark_gray1
         },
-        disabled: !(state.settingsDirty as boolean),
+        disabled: !(state.settingsDirty),
         onClick: () => root.onApplySettings()
       }, 'Apply')
     )
@@ -353,12 +347,12 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
       ).map((command: string) => rc(
         'div',
         null,
-        this.tab(command as TRIGGER_TYPES)
+        this.tab(command as TRIGGER_ID)
       ))
     )
   }
 
-  tab (tabID: TRIGGER_TYPES): ReactComponent {
+  tab (tabID: TRIGGER_ID): ReactComponent {
     const { rc, root, state } = this
     return rc('button', {
       style: {
@@ -381,14 +375,14 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
     return this.window(state.triggerData[state.activeTab])
   }
 
-  window (data: any): ReactComponent {
+  window (data: TriggerDataItem): ReactComponent {
     const { rc, state } = this
-    if (data.id === TRIGGER_TYPES.SKIN) {
+    if (data.id === TRIGGER_ID.SKIN) {
       return rc(
         'div',
         { style: STYLES.window },
         this.skinEditorToolbar(data.triggers, state.skinEditorState.ddIndex),
-        this.skinEditor(data)
+        this.skinEditor(data.triggers as SkinCssTrigger[])
       )
     }
 
@@ -400,7 +394,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
     )
   }
 
-  smoothTab (data: any): ReactComponent {
+  smoothTab (data: TriggerDataItem): ReactComponent {
     const { rc, root, state } = this
     return rc(
       'div',
@@ -409,7 +403,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
         for: 'smoothTextInput',
         style: { fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize] }
       }, 'Smoothing'),
-      data.id !== TRIGGER_TYPES.TIME && rc('input', {
+      data.id !== TRIGGER_ID.TIME && rc('input', {
         id: 'smoothTextInput',
         style: {
           ...STYLES.smooth.input,
@@ -417,25 +411,25 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           marginLeft: '5px'
         },
         value: data.smoothing,
-        onChange: (e: any) => root.onUpdateTrigger(
+        onChange: (e: Event) => root.onUpdateTrigger(
           {
             prev: data.smoothing,
-            new: e.target.value
+            new: (e.target as HTMLInputElement).value
           },
           ['smoothing'],
           CONSTRAINTS.SMOOTH
         ),
-        onBlur: (e: any) => root.onUpdateTrigger(
+        onBlur: (e: Event) => root.onUpdateTrigger(
           {
             prev: data.smoothing,
-            new: e.target.value
+            new: (e.target as HTMLInputElement).value
           },
           ['smoothing'],
           CONSTRAINTS.SMOOTH,
           true
         )
       }),
-      data.id === TRIGGER_TYPES.TIME && rc(
+      data.id === TRIGGER_ID.TIME && rc(
         'div',
         { style: STYLES.checkbox.container },
         rc('input', {
@@ -456,7 +450,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
     )
   }
 
-  trigger (data: any, index: number): ReactComponent {
+  trigger (data: TriggerDataItem, index: number): ReactComponent {
     const { rc, root, state } = this
     const triggerData = data.triggers[index]
 
@@ -488,12 +482,12 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           }
         })
       ),
-      this.timeStamp(triggerData[0], index),
-      data.id === TRIGGER_TYPES.ZOOM && this.zoomTrigger(triggerData, index),
-      data.id === TRIGGER_TYPES.PAN && this.cameraPanTrigger(triggerData, index),
-      data.id === TRIGGER_TYPES.FOCUS && this.cameraFocusTrigger(triggerData, index),
-      data.id === TRIGGER_TYPES.TIME && this.timeRemapTrigger(triggerData, index),
-      data.id === TRIGGER_TYPES.SKIN && false,
+      data.id !== TRIGGER_ID.SKIN && this.timeStamp((triggerData as TimedTrigger)[0], index),
+      data.id === TRIGGER_ID.ZOOM && this.zoomTrigger((triggerData as ZoomTrigger), index),
+      data.id === TRIGGER_ID.PAN && this.cameraPanTrigger((triggerData as CameraPanTrigger), index),
+      data.id === TRIGGER_ID.FOCUS && this.cameraFocusTrigger((triggerData as CameraFocusTrigger), index),
+      data.id === TRIGGER_ID.TIME && this.timeRemapTrigger((triggerData as TimeRemapTrigger), index),
+      data.id === TRIGGER_ID.SKIN && false,
       rc(
         'button',
         {
@@ -505,17 +499,13 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
     )
   }
 
-  timeStamp (data: any, index: number): ReactComponent {
-    const { rc, root, computed } = this
+  timeStamp (data: TriggerTime, index: number): ReactComponent {
+    const { rc, root, state } = this
     const tProps = [
       CONSTRAINTS.MINUTE,
       CONSTRAINTS.SECOND,
       CONSTRAINTS.FRAME
     ]
-
-    if (!Array.isArray(data)) {
-      return false
-    }
 
     return rc(
       'div',
@@ -531,22 +521,16 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
         rc('input', {
           style: {
             ...STYLES.trigger.input,
-            color: computed.invalidTimes[index] as boolean ? 'red' : 'black'
+            color: state.invalidTimes[index] ? 'red' : 'black'
           },
           value: timeValue,
-          onChange: (e: any) => root.onUpdateTrigger(
-            {
-              prev: timeValue,
-              new: e.target.value
-            },
+          onChange: (e: Event) => root.onUpdateTrigger(
+            { prev: timeValue, new: (e.target as HTMLInputElement).value },
             ['triggers', index, 0, timeIndex],
             tProps[timeIndex]
           ),
-          onBlur: (e: any) => root.onUpdateTrigger(
-            {
-              prev: timeValue,
-              new: e.target.value
-            },
+          onBlur: (e: Event) => root.onUpdateTrigger(
+            { prev: timeValue, new: (e.target as HTMLInputElement).value },
             ['triggers', index, 0, timeIndex],
             tProps[timeIndex],
             true
@@ -556,7 +540,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
     )
   }
 
-  zoomTrigger (data: any, index: number): ReactComponent {
+  zoomTrigger (data: ZoomTrigger, index: number): ReactComponent {
     const { rc, root } = this
     const labels = ['Zoom To']
 
@@ -571,19 +555,13 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
         id: `triggerText_${labels[0]}_${index}`,
         style: STYLES.trigger.input,
         value: data[1],
-        onChange: (e: any) => root.onUpdateTrigger(
-          {
-            prev: data[1],
-            new: e.target.value
-          },
+        onChange: (e: Event) => root.onUpdateTrigger(
+          { prev: data[1], new: (e.target as HTMLInputElement).value },
           ['triggers', index, 1],
           CONSTRAINTS.ZOOM
         ),
-        onBlur: (e: any) => root.onUpdateTrigger(
-          {
-            prev: data[1],
-            new: e.target.value
-          },
+        onBlur: (e: Event) => root.onUpdateTrigger(
+          { prev: data[1], new: (e.target as HTMLInputElement).value },
           ['triggers', index, 1],
           CONSTRAINTS.ZOOM,
           true
@@ -592,7 +570,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
     )
   }
 
-  cameraPanTrigger (data: any, index: number): ReactComponent {
+  cameraPanTrigger (data: CameraPanTrigger, index: number): ReactComponent {
     const { rc, root } = this
     const cProps = [
       CONSTRAINTS.PAN_WIDTH,
@@ -605,7 +583,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
     return rc(
       window.React.Fragment,
       null,
-      [['w', 'h'], ['x', 'y']].map((pair, pairIndex) => rc(
+      [['width', 'height'], ['x', 'y']].map((pair, pairIndex) => rc(
         'div',
         { style: { display: 'flex', flexDirection: 'row' } },
         pair.map((prop, propIndex) => rc(
@@ -618,14 +596,14 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           rc('input', {
             id: `triggerText_${labels[propIndex + 2 * pairIndex]}_${index}`,
             style: STYLES.trigger.input,
-            value: data[1][prop],
-            onChange: (e: any) => root.onUpdateTrigger(
-              { prev: data[1][prop], new: e.target.value },
+            value: data[1][prop as 'width' | 'height' | 'x' | 'y'],
+            onChange: (e: Event) => root.onUpdateTrigger(
+              { prev: data[1][prop as 'width' | 'height' | 'x' | 'y'], new: (e.target as HTMLInputElement).value },
               ['triggers', index, 1, prop],
               cProps[propIndex + 2 * pairIndex]
             ),
-            onBlur: (e: any) => root.onUpdateTrigger(
-              { prev: data[1][prop], new: e.target.value },
+            onBlur: (e: Event) => root.onUpdateTrigger(
+              { prev: data[1][prop as 'width' | 'height' | 'x' | 'y'], new: (e.target as HTMLInputElement).value },
               ['triggers', index, 1, prop],
               cProps[propIndex + 2 * pairIndex],
               true
@@ -636,9 +614,9 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
     )
   }
 
-  cameraFocusTrigger (data: any, index: number): ReactComponent {
+  cameraFocusTrigger (data: CameraFocusTrigger, index: number): ReactComponent {
     const { rc, root, state } = this
-    const ddIndex = state.focusDDIndices[index] as number
+    const ddIndex = state.focusDDIndices[index]
     const labels = ['Weight']
 
     return rc(
@@ -649,7 +627,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
         {
           style: STYLES.dropdown.head,
           value: ddIndex,
-          onChange: (e: any) => root.onChangeFocusDD(index, e.target.value)
+          onChange: (e: Event) => root.onChangeFocusDD(index, (e.target as HTMLInputElement).value)
         },
         Object.keys(data[1]).map((riderIndex) => {
           const riderNum = 1 + parseInt(riderIndex, 10)
@@ -668,19 +646,13 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
         id: `triggerText_${labels[0]}_${ddIndex}_${index}`,
         style: STYLES.trigger.input,
         value: data[1][ddIndex],
-        onChange: (e: any) => root.onUpdateTrigger(
-          {
-            prev: data[1][ddIndex],
-            new: e.target.value
-          },
+        onChange: (e: Event) => root.onUpdateTrigger(
+          { prev: data[1][ddIndex], new: (e.target as HTMLInputElement).value },
           ['triggers', index, 1, ddIndex],
           CONSTRAINTS.FOCUS_WEIGHT
         ),
-        onBlur: (e: any) => root.onUpdateTrigger(
-          {
-            prev: data[1][ddIndex],
-            new: e.target.value
-          },
+        onBlur: (e: Event) => root.onUpdateTrigger(
+          { prev: data[1][ddIndex], new: (e.target as HTMLInputElement).value },
           ['triggers', index, 1, ddIndex],
           CONSTRAINTS.FOCUS_WEIGHT,
           true
@@ -689,7 +661,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
     )
   }
 
-  timeRemapTrigger (data: any, index: number): ReactComponent {
+  timeRemapTrigger (data: TimeRemapTrigger, index: number): ReactComponent {
     const { rc, root } = this
     const labels = ['Speed']
 
@@ -704,19 +676,13 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
         id: `triggerText_${labels[0]}_${index}`,
         style: STYLES.trigger.input,
         value: data[1],
-        onChange: (e: any) => root.onUpdateTrigger(
-          {
-            prev: data[1],
-            new: e.target.value
-          },
+        onChange: (e: Event) => root.onUpdateTrigger(
+          { prev: data[1], new: (e.target as HTMLInputElement).value },
           ['triggers', index, 1],
           CONSTRAINTS.TIME_SPEED
         ),
-        onBlur: (e: any) => root.onUpdateTrigger(
-          {
-            prev: data[1],
-            new: e.target.value
-          },
+        onBlur: (e: Event) => root.onUpdateTrigger(
+          { prev: data[1], new: (e.target as HTMLInputElement).value },
           ['triggers', index, 1],
           CONSTRAINTS.TIME_SPEED,
           true
@@ -725,7 +691,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
     )
   }
 
-  skinEditor (data: any): ReactComponent {
+  skinEditor (data: SkinCssTrigger[]): ReactComponent {
     const { rc, root, state } = this
     const { ddIndex } = state.skinEditorState
 
@@ -739,18 +705,18 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           id: 'skinElementContainer',
           style: {
             ...STYLES.skinEditor.canvas,
-            transform: `scale(${state.skinEditorState.zoom.scale as number})`,
+            transform: `scale(${state.skinEditorState.zoom.scale})`,
             transformOrigin: `${
-              state.skinEditorState.zoom.xOffset as number
+              state.skinEditorState.zoom.xOffset
             }px ${
-              state.skinEditorState.zoom.yOffset as number
+              state.skinEditorState.zoom.yOffset
             }px`
           },
-          onWheel: (e: any) => root.onZoomSkinEditor(e, true)
+          onWheel: (e: Event) => root.onZoomSkinEditor(e, true)
         },
-        this.flagSvg(data.triggers[ddIndex], ddIndex),
+        this.flagSvg(data[ddIndex], ddIndex),
         rc('svg', { width: '10vw' }),
-        this.riderSvg(data.triggers[ddIndex], ddIndex)
+        this.riderSvg(data[ddIndex], ddIndex)
       ),
       rc(
         'div',
@@ -763,7 +729,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           max: CONSTRAINTS.SKIN_ZOOM.MAX,
           step: 0.1,
           value: state.skinEditorState.zoom.scale,
-          onChange: (e: any) => root.onZoomSkinEditor(e, false)
+          onChange: (e: Event) => root.onZoomSkinEditor(e, false)
         }),
         rc(
           'text',
@@ -778,7 +744,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
         rc('div', {
           style: {
             ...STYLES.skinEditor.outlineColor.input,
-            backgroundColor: data.triggers[ddIndex].outline.stroke
+            backgroundColor: data[ddIndex].outline.stroke
           },
           onClick: () => root.onUpdateTrigger(
             { new: state.skinEditorState.color },
@@ -789,7 +755,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
     )
   }
 
-  skinEditorToolbar (data: any, index: number): ReactComponent {
+  skinEditorToolbar (data: Trigger[], index: number): ReactComponent {
     const { rc, root, state } = this
     const colorValue = state.skinEditorState.color.substring(0, 7)
     const alphaValue = parseInt(state.skinEditorState.color.substring(7), 16) / 255
@@ -831,7 +797,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
             max: CONSTRAINTS.ALPHA_SLIDER.MAX,
             step: 0.01,
             value: alphaValue,
-            onChange: (e: any) => root.onChangeColor(null, e.target.value)
+            onChange: (e: Event) => root.onChangeColor(null, (e.target as HTMLInputElement).value)
           })
         )
       ),
@@ -843,7 +809,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
         },
         type: 'color',
         value: colorValue,
-        onChange: (e: any) => root.onChangeColor(e.target.value, null)
+        onChange: (e: Event) => root.onChangeColor((e.target as HTMLInputElement).value, null)
       }),
       rc(
         'select',
@@ -854,7 +820,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
             fontSize: GLOBAL_STYLES.textSizes.M[state.settings.fontSize]
           },
           value: index,
-          onChange: (e: any) => root.onChangeSkinDD(e.target.value)
+          onChange: (e: Event) => root.onChangeSkinDD((e.target as HTMLInputElement).value)
         },
         Object.keys(data).map((riderIndex) => {
           const riderNum = 1 + parseInt(riderIndex, 10)
@@ -868,9 +834,9 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
     )
   }
 
-  flagSvg (data: any, index: any): ReactComponent {
+  flagSvg (data: SkinCssTrigger, index: number): ReactComponent {
     const { rc, root, state } = this
-    const { color } = state.skinEditorState
+    const color = state.skinEditorState.color
     return rc(
       'svg',
       { style: STYLES.skinEditor.flagSvg },
@@ -887,9 +853,9 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
     )
   }
 
-  riderSvg (data: any, index: any): ReactComponent {
+  riderSvg (data: SkinCssTrigger, index: number): ReactComponent {
     const { rc, root, state } = this
-    const { color } = state.skinEditorState
+    const color = state.skinEditorState.color
     return rc(
       'svg',
       { style: STYLES.skinEditor.riderSvg },

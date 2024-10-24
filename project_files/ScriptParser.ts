@@ -1,29 +1,62 @@
 class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
-  triggerData: any
+  triggerData: TriggerData
 
-  parseScript (scriptText: any): any {
-    this.triggerData = {}
+  constructor () {
+    this.triggerData = this.emptyTriggerData
+  }
+
+  get emptyTriggerData (): TriggerData {
+    return {
+      [TRIGGER_ID.ZOOM]: {
+        id: TRIGGER_ID.ZOOM,
+        triggers: [],
+        smoothing: CONSTRAINTS.SMOOTH.DEFAULT
+      },
+      [TRIGGER_ID.PAN]: {
+        id: TRIGGER_ID.PAN,
+        triggers: [],
+        smoothing: CONSTRAINTS.SMOOTH.DEFAULT
+      },
+      [TRIGGER_ID.FOCUS]: {
+        id: TRIGGER_ID.FOCUS,
+        triggers: [],
+        smoothing: CONSTRAINTS.SMOOTH.DEFAULT
+      },
+      [TRIGGER_ID.TIME]: {
+        id: TRIGGER_ID.TIME,
+        triggers: [],
+        interpolate: CONSTRAINTS.INTERPOLATE.DEFAULT
+      },
+      [TRIGGER_ID.SKIN]: {
+        id: TRIGGER_ID.SKIN,
+        triggers: []
+      }
+    }
+  }
+
+  parseScript (scriptText: string, currentTriggerData: TriggerData): TriggerData {
+    this.triggerData = this.emptyTriggerData
     const trimmedScript = scriptText.replace(/\s/g, '')
 
     Object.keys(TRIGGER_PROPS).forEach((commandId: string) => {
       try {
-        this.parseCommand(commandId as TRIGGER_TYPES, trimmedScript)
+        this.parseCommand(commandId as TRIGGER_ID, trimmedScript)
       } catch (error: any) {
         console.error('[ScriptParser]', error.message)
-        this.triggerData[commandId] = undefined
+        this.triggerData[commandId as TRIGGER_ID] = currentTriggerData[commandId as TRIGGER_ID]
       }
     })
 
     return this.triggerData
   }
 
-  parseCommand (commandId: TRIGGER_TYPES, scriptSection: string): void {
+  parseCommand (commandId: TRIGGER_ID, scriptSection: string): void {
     const currentHeader = TRIGGER_PROPS[commandId].FUNC.split('(')[0]
     const currentHeaderIndex = scriptSection.indexOf(currentHeader)
 
-    if (currentHeaderIndex === -1) return
-
-    this.initCommand(commandId)
+    if (currentHeaderIndex === -1) {
+      throw new Error('Command header not found!')
+    }
 
     const startIndex = currentHeaderIndex + currentHeader.length + 1
     let endIndex = startIndex
@@ -46,14 +79,14 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
     const [keyframes, smoothing] = parameterArray
 
     switch (commandId) {
-      case TRIGGER_TYPES.ZOOM:
-      case TRIGGER_TYPES.PAN:
-      case TRIGGER_TYPES.FOCUS:
-      case TRIGGER_TYPES.TIME:
+      case TRIGGER_ID.ZOOM:
+      case TRIGGER_ID.PAN:
+      case TRIGGER_ID.FOCUS:
+      case TRIGGER_ID.TIME:
         this.parseTriggers(commandId, keyframes)
         this.parseSmoothing(commandId, smoothing)
         break
-      case TRIGGER_TYPES.SKIN:
+      case TRIGGER_ID.SKIN:
         this.parseSkinCss(keyframes)
         break
       default:
@@ -61,50 +94,37 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
     }
   }
 
-  initCommand (commandId: TRIGGER_TYPES): void {
-    this.triggerData[commandId] = {
-      id: commandId,
-      triggers: []
-    }
+  /**
+   * Parses a potential new Trigger[], not necessarily a complete definition of one
+   */
+  parseTriggers (commandId: TRIGGER_ID, commandArray: any[]): void {
+    const triggers: TimedTrigger[] = []
 
-    switch (commandId) {
-      case TRIGGER_TYPES.FOCUS:
-      case TRIGGER_TYPES.PAN:
-      case TRIGGER_TYPES.ZOOM:
-        this.triggerData[commandId].smoothing = CONSTRAINTS.SMOOTH.DEFAULT
-        break
-      case TRIGGER_TYPES.TIME:
-        this.triggerData[commandId].interpolate = CONSTRAINTS.INTERPOLATE.DEFAULT
-        break
-      default:
-        break
-    }
-  }
-
-  parseTriggers (commandId: TRIGGER_TYPES, commandArray: any[]): void {
     for (let i = 0; i < commandArray.length; i += 1) {
-      this.triggerData[commandId].triggers.push([...commandArray[i]])
+      triggers.push(structuredClone(commandArray[i]))
 
       const timeProp = commandArray[i][0] as number | number[]
       if (typeof timeProp === 'number') {
         const index = timeProp
-        this.triggerData[commandId].triggers[i][0] = this.retrieveTimestamp(index)
+        triggers[i][0] = this.retrieveTimestamp(index)
       } else if (timeProp.length === 1) {
         const index = timeProp[0]
-        this.triggerData[commandId].triggers[i][0] = this.retrieveTimestamp(index)
+        triggers[i][0] = this.retrieveTimestamp(index)
       } else if (timeProp.length === 2) {
         const index = timeProp[0] * FPS + timeProp[1]
-        this.triggerData[commandId].triggers[i][0] = this.retrieveTimestamp(index)
+        triggers[i][0] = this.retrieveTimestamp(index)
       } else {
         const index = timeProp[0] * FPS * 60 +
          timeProp[1] * FPS + timeProp[2]
-        this.triggerData[commandId].triggers[i][0] = this.retrieveTimestamp(index)
+        triggers[i][0] = this.retrieveTimestamp(index)
       }
     }
+
+    this.triggerData[commandId].triggers = triggers
   }
 
-  parseSmoothing (commandId: TRIGGER_TYPES, smoothingValue?: boolean | number): void {
-    if (commandId === TRIGGER_TYPES.TIME) {
+  parseSmoothing (commandId: TRIGGER_ID, smoothingValue?: boolean | number): void {
+    if (commandId === TRIGGER_ID.TIME) {
       const constraints = CONSTRAINTS.INTERPOLATE
 
       if (smoothingValue == null) {
@@ -121,7 +141,7 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
       const constraints = CONSTRAINTS.SMOOTH
 
       if (smoothingValue == null) {
-        this.triggerData[commandId].interpolate = constraints.DEFAULT
+        this.triggerData[commandId].smoothing = constraints.DEFAULT
         return
       }
 
@@ -141,8 +161,8 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
 
   parseSkinCss (skinCSSArray: string[]): void {
     skinCSSArray.forEach((skinCSS: string, skinIndex: number) => {
-      this.triggerData[TRIGGER_TYPES.SKIN].triggers.push(
-        structuredClone(TRIGGER_PROPS[TRIGGER_TYPES.SKIN].TEMPLATE)
+      this.triggerData[TRIGGER_ID.SKIN].triggers.push(
+        structuredClone(TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE)
       )
       let depth = 0
       let zeroIndex = 0
@@ -162,14 +182,45 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
       }
     })
 
-    this.triggerData[TRIGGER_TYPES.SKIN].triggers.push(
-      this.triggerData[TRIGGER_TYPES.SKIN].triggers.shift()
-    )
+    if (this.triggerData[TRIGGER_ID.SKIN].triggers.length > 0) {
+      this.triggerData[TRIGGER_ID.SKIN].triggers.push(
+        this.triggerData[TRIGGER_ID.SKIN].triggers.shift() ?? TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE
+      )
+    }
   }
 
   parseSkinProp (cssString: string, skinIndex: number): void {
     const wordRegex = /(['"])?([#]?[a-z0-9A-Z_-]+)(['"])?/g
-    const cssPropKeywords = TRIGGER_PROPS[TRIGGER_TYPES.SKIN].STYLE_MAP
+    const skinTriggers = this.triggerData[TRIGGER_ID.SKIN].triggers as SkinCssTrigger[]
+    const cssPropKeywords: SkinMap = {
+      outline: '.outline',
+      flag: '.flag',
+      skin: '.skin',
+      hair: '.hair',
+      fill: '.fill',
+      eye: '#eye',
+      sled: '.sled',
+      string: '#string',
+      armSleeve: '.arm.sleeve',
+      armHand: '.arm.hand',
+      legPants: '.leg.pants',
+      legFoot: '.leg.foot',
+      torso: '.torso',
+      hatTop: '.hat.top',
+      hatBottom: '.hat.bottom',
+      hatBall: '.hat.ball',
+      scarf1: '.scarf1',
+      scarf2: '.scarf2',
+      scarf3: '.scarf3',
+      scarf4: '.scarf4',
+      scarf5: '.scarf5',
+      id_scarf0: '#scarf0',
+      id_scarf1: '#scarf1',
+      id_scarf2: '#scarf2',
+      id_scarf3: '#scarf3',
+      id_scarf4: '#scarf4',
+      id_scarf5: '#scarf5'
+    }
 
     Object.entries(cssPropKeywords).forEach(([propName, cssSelector]) => {
       if (!cssString.startsWith(cssSelector)) return
@@ -179,26 +230,26 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
         .replace(';', ','))
 
       if (styleData.fill !== undefined) {
-        this.triggerData[TRIGGER_TYPES.SKIN]
-          .triggers[skinIndex][propName].fill = styleData.fill
+        skinTriggers[skinIndex][propName as keyof SkinMap].fill = styleData.fill
       }
 
       if (styleData.stroke !== undefined) {
-        this.triggerData[TRIGGER_TYPES.SKIN]
-          .triggers[skinIndex][propName].stroke = styleData.stroke
+        skinTriggers[skinIndex][propName as keyof SkinMap].stroke = styleData.stroke
       }
     })
+
+    this.triggerData[TRIGGER_ID.SKIN].triggers = skinTriggers
   }
 
-  retrieveTimestamp (index: number): number[] {
+  retrieveTimestamp (index: number): TriggerTime {
     const frames = index % FPS
     const seconds = Math.floor(index / FPS) % 60
     const minutes = Math.floor(index / (60 * FPS))
     return [minutes, seconds, frames]
   }
 
-  removeLeadingZeroes (script: string, commandId: TRIGGER_TYPES): string {
-    if (commandId === TRIGGER_TYPES.SKIN) return script
+  removeLeadingZeroes (script: string, commandId: TRIGGER_ID): string {
+    if (commandId === TRIGGER_ID.SKIN) return script
     return script.replace(/([^\d.+-])0+(\d+)/g, '$1$2')
   }
 }

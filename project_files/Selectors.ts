@@ -1,19 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-function getSimulatorTrack (state: any): any { return state.simulator.engine }
+type Track = any
+type Rider = any
 
-function getWindowFocused (state: any): boolean { return (state.views.Main as boolean) }
+function getSimulatorTrack (state: ReduxState): Track { return state.simulator.engine }
 
-function getPlayerRunning (state: any): boolean { return state.player.running }
+function getWindowFocused (state: ReduxState): boolean { return (state.views.Main as boolean) }
 
-function getCurrentScript (state: any): string { return state.trackData.script }
+function getPlayerRunning (state: ReduxState): boolean { return state.player.running }
 
-function getRiders (state: any): any[] { return getSimulatorTrack(state).engine.state.riders }
+function getCurrentScript (state: ReduxState): string { return state.trackData.script }
 
-function getNumRiders (state: any): number { return getRiders(state).length }
+function getRiders (state: ReduxState): Rider[] { return getSimulatorTrack(state).engine.state.riders }
 
-function getPlayerIndex (state: any): number { return state.player.index }
+function getNumRiders (state: ReduxState): number { return getRiders(state).length }
 
-function getSidebarOpen (state: any): boolean { return (state.views.Sidebar as boolean) }
+function getPlayerIndex (state: ReduxState): number { return state.player.index }
 
-function getTrackTitle (state: any): string { return state.trackData.label }
+function getSidebarOpen (state: ReduxState): boolean { return (state.views.Sidebar as boolean) }
+
+function getTrackTitle (state: ReduxState): string { return state.trackData.label }
