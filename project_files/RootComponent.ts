@@ -3,7 +3,9 @@ interface RootState {
   activeTab: TRIGGER_ID
   triggerData: TriggerData
   focusDDIndices: number[]
-  skinEditorState: SkinEditorState
+  skinEditorSelectedRider: number
+  skinEditorSelectedColor: string
+  skinEditorZoom: [number, number, number]
   settingsActive: boolean
   settingsDirty: boolean
   settings: SettingsState
@@ -11,19 +13,9 @@ interface RootState {
   invalidTimes: boolean[]
 }
 
-interface SkinEditorState {
-  ddIndex: number
-  zoom: { scale: number, xOffset: number, yOffset: number }
-  color: string
-}
-
 interface SettingsState {
   fontSize: number
   resolution: VIEWPORT_OPTION
-}
-
-interface RootComputed {
-  riderCount: number
 }
 
 function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -35,144 +27,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     readonly parser = new ScriptParser()
     readonly state: RootState
     readonly setState: SetState
-    computed: RootComputed
-
-    /**
-     * Clamps the skin editor dropdown index to be less than the number of riders
-     */
-    static clampedSkinDD (riderCount: number, skinEditorState: SkinEditorState): SkinEditorState {
-      let { ddIndex } = skinEditorState
-
-      if (skinEditorState.ddIndex >= riderCount) {
-        ddIndex = riderCount - 1
-      }
-
-      return { ...skinEditorState, ddIndex }
-    }
-
-    /**
-     * Resizes the skin array to match the number of riders
-     */
-    static resizedSkinArray (riderCount: number, triggerData: TriggerData): TriggerData {
-      const nextTriggerData = triggerData
-      const skinTriggers = nextTriggerData[TRIGGER_ID.SKIN].triggers
-      const oldLength = skinTriggers.length
-
-      if (oldLength < riderCount) {
-        skinTriggers.push(...Array(riderCount - oldLength).fill(structuredClone(
-          TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE
-        )))
-      }
-
-      if (oldLength > riderCount) {
-        skinTriggers.splice(riderCount, oldLength - riderCount)
-      }
-
-      nextTriggerData[TRIGGER_ID.SKIN].triggers = skinTriggers
-      return nextTriggerData
-    }
-
-    /**
-     * Resizes the focuser trigger weight arrays to match the number of riders
-     */
-    static resizedFocusWeightArrays (riderCount: number, triggerData: TriggerData): TriggerData {
-      const nextTriggerData = triggerData
-      const focusTriggers = nextTriggerData[TRIGGER_ID.FOCUS].triggers as CameraFocusTrigger[]
-
-      for (let i = 0; i < focusTriggers.length; i++) {
-        const oldLength = focusTriggers[i][1].length
-
-        if (oldLength < riderCount) {
-          focusTriggers[i][1].push(...Array(riderCount - oldLength).fill(0))
-        }
-        if (oldLength > riderCount) {
-          focusTriggers[i][1].splice(riderCount, oldLength - riderCount)
-        }
-      }
-
-      nextTriggerData[TRIGGER_ID.FOCUS].triggers = focusTriggers
-      return nextTriggerData
-    }
-
-    /**
-     * Clamps the focuser dropdown indices to be less than the number of riders
-     */
-    static clampedFocusDDs (riderCount: number, focusDDIndices: number[]): number[] {
-      const nextFocusDDIndices: number[] = []
-
-      focusDDIndices.forEach((ddIndex: number) => {
-        nextFocusDDIndices.push(Math.min(riderCount - 1, ddIndex))
-      })
-
-      return nextFocusDDIndices
-    }
-
-    /**
-     * Resizes the focuser dropdown indices array to match the focus triggers length
-     */
-    static resizedFocusDDIndexArray (triggerLength: number, focusDDIndices: number[]): number[] {
-      const nextFocusDDIndices = [...focusDDIndices]
-
-      const oldLength = focusDDIndices.length
-
-      if (oldLength < triggerLength) {
-        nextFocusDDIndices.push(...Array(triggerLength - oldLength).fill(0))
-      }
-
-      if (oldLength > triggerLength) {
-        nextFocusDDIndices.splice(triggerLength, oldLength - triggerLength)
-      }
-
-      return nextFocusDDIndices
-    }
-
-    /**
-     * Chooses first nonzero weight to be the index of the rider dropdown when loading triggers
-     */
-    static chosenFocusDDIndices (triggerData: TriggerData, focusDDIndices: number[]): number[] {
-      const nextFocusDDIndices = [...focusDDIndices]
-      const focusTriggers = triggerData[TRIGGER_ID.FOCUS].triggers as CameraFocusTrigger[]
-
-      focusTriggers.forEach((trigger: CameraFocusTrigger, triggerIndex: number) => {
-        let newIndex = 0
-        for (let i = 0; i < trigger[1].length; i += 1) {
-          if (trigger[1][i] !== 0) {
-            newIndex = i
-            break
-          }
-        }
-        nextFocusDDIndices[triggerIndex] = newIndex
-      })
-
-      return nextFocusDDIndices
-    }
-
-    /**
-     * Applies new resolution by converting zoom triggers and saving to playback dimensions
-     */
-    static savedViewport (oldResolution: VIEWPORT_OPTION, newResolution: VIEWPORT_OPTION, triggerData: TriggerData): TriggerData {
-      const nextTriggerData = triggerData
-
-      const factor = Math.log2(
-        SETTINGS.VIEWPORT[newResolution].SIZE[0] /
-        SETTINGS.VIEWPORT[oldResolution].SIZE[0]
-      )
-
-      const size = SETTINGS.VIEWPORT[newResolution].SIZE
-      store.dispatch(setPlaybackDimensions({ width: size[0], height: size[1] }))
-
-      const zoomTriggers = nextTriggerData[TRIGGER_ID.ZOOM].triggers as ZoomTrigger[]
-
-      for (let i = 0; i < zoomTriggers.length; i++) {
-        zoomTriggers[i][1] = Math.round((
-          zoomTriggers[i][1] + factor + Number.EPSILON
-        ) * 10e6) / 10e6
-      }
-
-      nextTriggerData[TRIGGER_ID.ZOOM].triggers = zoomTriggers
-
-      return nextTriggerData
-    }
+    lastRiderCount: number | undefined
 
     constructor () {
       super()
@@ -207,11 +62,9 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
           }
         },
         focusDDIndices: [0],
-        skinEditorState: {
-          ddIndex: 0,
-          zoom: { scale: 1, xOffset: 0, yOffset: 0 },
-          color: '#000000ff'
-        },
+        skinEditorSelectedRider: 0,
+        skinEditorSelectedColor: '#000000ff',
+        skinEditorZoom: [1, 0, 0],
         settingsActive: false,
         settingsDirty: false,
         settings: {
@@ -223,10 +76,6 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
           resolution: SETTINGS.VIEWPORT.HD.ID
         },
         invalidTimes: []
-      }
-
-      this.computed = {
-        riderCount: 1
       }
 
       store.subscribe(() => this.updateStore(store.getState()))
@@ -244,18 +93,19 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     updateStore (nextState: ReduxState): void {
       const riderCount = getNumRiders(nextState)
 
-      if (this.computed.riderCount !== riderCount) {
-        this.computed.riderCount = riderCount
-        const { triggerData, skinEditorState, focusDDIndices } = this.state
+      if (this.lastRiderCount !== riderCount) {
+        this.lastRiderCount = riderCount
+        const { triggerData, skinEditorSelectedRider: selectedSkinEditorRider, focusDDIndices } = this.state
 
-        let nextTriggerData = RootComponent.resizedFocusWeightArrays(riderCount, triggerData)
-        nextTriggerData = RootComponent.resizedSkinArray(riderCount, nextTriggerData)
-        const nextSkinEditorState = RootComponent.clampedSkinDD(riderCount, skinEditorState)
-        const nextFocusDDIndices = RootComponent.clampedFocusDDs(riderCount, focusDDIndices)
+        if (selectedSkinEditorRider >= riderCount) {
+          this.setState({ selectedSkinEditorRider: riderCount - 1 })
+        }
+
+        let nextTriggerData = resizedFocusWeightArrays(riderCount, triggerData)
+        nextTriggerData = resizedSkinArray(riderCount, nextTriggerData)
 
         this.setState({ triggerData: nextTriggerData })
-        this.setState({ skinEditorState: nextSkinEditorState })
-        this.setState({ focusDDIndices: nextFocusDDIndices })
+        this.setState({ focusDDIndices: clampedFocusDDs(riderCount, focusDDIndices) })
       }
 
       const sidebarOpen = getSidebarOpen(nextState)
@@ -281,29 +131,34 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const commandData = triggerData[activeTab]
       const newTrigger = structuredClone(commandData.triggers[index] as TimedTrigger)
 
-      const currentIndex = getPlayerIndex(store.getState())
+      const currentPlayerIndex = getPlayerIndex(store.getState())
       newTrigger[0] = [
-        Math.floor(currentIndex / 2400),
-        Math.floor((currentIndex % 2400) / 40),
-        Math.floor(currentIndex % 40)
+        Math.floor(currentPlayerIndex / 2400),
+        Math.floor((currentPlayerIndex % 2400) / 40),
+        Math.floor(currentPlayerIndex % 40)
       ]
 
-      triggerData[activeTab].triggers.splice(index + 1, 0, newTrigger)
+      const triggerStart = triggerData[activeTab].triggers.slice(0, index + 1)
+      const triggerEnd = triggerData[activeTab].triggers.slice(index + 1)
+      const newTriggers = [...triggerStart, newTrigger, ...triggerEnd]
+
+      triggerData[activeTab].triggers = newTriggers
 
       if (activeTab === TRIGGER_ID.FOCUS) {
         this.setState({
           focusDDIndices:
-          RootComponent.resizedFocusDDIndexArray(
-            triggerData[activeTab].triggers.length,
+          resizedFocusDDIndexArray(
+            newTriggers.length,
             focusDDIndices
           )
         })
       }
 
+      this.setState({ invalidTimes: validateTimes(newTriggers as TimedTrigger[]) })
       this.setState({ triggerData })
     }
 
-    onUpdateTrigger (valueChange: ValueChange, path: Array<string | number>, constraints?: Constraint, bounded = false): void {
+    onUpdateTrigger (valueChange: ValueChange, path: any[], constraints?: Constraint, bounded = false): void {
       const { triggerData, activeTab } = this.state
       let pathPointer: any = triggerData[activeTab]
 
@@ -317,31 +172,45 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         constraints
       )
 
+      if (activeTab !== TRIGGER_ID.SKIN) {
+        const triggers = triggerData[activeTab].triggers as TimedTrigger[]
+        this.setState({ invalidTimes: validateTimes(triggers) })
+      }
+
       this.setState({ triggerData })
     }
 
     onDeleteTrigger (index: number): void {
       const { triggerData, activeTab, focusDDIndices } = this.state
 
-      triggerData[activeTab].triggers = triggerData[activeTab].triggers.filter(
-        (_: Trigger, i: number) => index !== i
-      )
+      if (activeTab === TRIGGER_ID.SKIN) return
+
+      const newTriggers: Trigger[] = []
+      for (let i = 0; i < triggerData[activeTab].triggers.length; i++) {
+        if (i !== index) {
+          newTriggers.push(structuredClone(triggerData[activeTab].triggers[i]) as Trigger)
+        }
+      }
+
+      triggerData[activeTab].triggers = newTriggers
 
       if (activeTab === TRIGGER_ID.FOCUS) {
         this.setState({
-          focusDDIndices: RootComponent.resizedFocusDDIndexArray(
-            triggerData[activeTab].triggers.length,
+          focusDDIndices: resizedFocusDDIndexArray(
+            newTriggers.length,
             focusDDIndices
           )
         })
       }
 
+      this.setState({ invalidTimes: validateTimes(newTriggers as TimedTrigger[]) })
       this.setState({ triggerData })
     }
 
     onDownload (): void {
+      const { triggerData } = this.state
       const a = document.createElement('a')
-      const data = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.state.triggerData))
+      const data = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(triggerData))
       a.setAttribute('href', data)
       a.setAttribute('download', getTrackTitle(store.getState()) + '.scriptData.json')
       a.click()
@@ -358,30 +227,37 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onLoadScript (): void {
+      const { triggerData } = this.state
       this.onLoad(
         this.parser.parseScript(
           getCurrentScript(store.getState()),
-          this.state.triggerData
+          triggerData
         )
       )
     }
 
     onLoad (nextTriggerData: TriggerData): void {
+      const { focusDDIndices, activeTab } = this.state
       try {
         Object.keys(TRIGGER_PROPS).forEach((command: string) => {
           if (command === TRIGGER_ID.FOCUS) {
-            let nextFocusDDIndices = [...this.state.focusDDIndices]
-            nextFocusDDIndices = RootComponent.resizedFocusDDIndexArray(
+            let nextFocusDDIndices = [...focusDDIndices]
+            nextFocusDDIndices = resizedFocusDDIndexArray(
               nextTriggerData[command].triggers.length,
               nextFocusDDIndices
             )
-            nextFocusDDIndices = RootComponent.chosenFocusDDIndices(
+            nextFocusDDIndices = chosenFocusDDIndices(
               nextTriggerData,
               nextFocusDDIndices
             )
             this.setState({ focusDDIndices: nextFocusDDIndices })
           }
         })
+
+        if (activeTab !== TRIGGER_ID.SKIN) {
+          const triggers = nextTriggerData[activeTab].triggers as TimedTrigger[]
+          this.setState({ invalidTimes: validateTimes(triggers) })
+        }
 
         this.setState({ triggerData: nextTriggerData })
       } catch (error: any) {
@@ -393,8 +269,8 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const { activeTab, triggerData } = this.state
       try {
         const script = generateScript(activeTab, triggerData)
-        // eslint-disable-next-line no-eval
-        eval.call(window, script) // HACK: Already evaluated script, execute it directly
+        // HACK: Already evaluated script, execute it directly
+        eval.call(window, script) // eslint-disable-line no-eval
       } catch (error: any) {
         console.error(error.message)
       }
@@ -410,40 +286,57 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onUndo (): void {
+      const { activeTab, triggerData } = this.state
       console.log('Undo')
+
+      if (activeTab !== TRIGGER_ID.SKIN) {
+        const triggers = triggerData[activeTab].triggers as TimedTrigger[]
+        this.setState({ invalidTimes: validateTimes(triggers) })
+      }
     }
 
     onRedo (): void {
+      const { activeTab, triggerData } = this.state
       console.log('Redo')
+
+      if (activeTab !== TRIGGER_ID.SKIN) {
+        const triggers = triggerData[activeTab].triggers as TimedTrigger[]
+        this.setState({ invalidTimes: validateTimes(triggers) })
+      }
     }
 
     onResetSkin (index: number): void {
       const { triggerData } = this.state
       if (!window.confirm('Are you sure you want to reset the current rider\'s skin?')) return
 
-      triggerData[TRIGGER_ID.SKIN].triggers[index] = structuredClone(
-        TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE
-      )
+      const defaultSkin = structuredClone(TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE)
+      const skinCssArray = [...triggerData[TRIGGER_ID.SKIN].triggers]
+      skinCssArray[index] = defaultSkin
 
-      this.setState({ triggerData })
+      this.setState({
+        triggerData: {
+          ...triggerData,
+          [TRIGGER_ID.SKIN]: {
+            ...triggerData[TRIGGER_ID.SKIN],
+            triggers: skinCssArray
+          }
+        }
+      })
     }
 
     onChangeColor (color?: string, alpha?: string): void {
+      const { skinEditorSelectedColor } = this.state
+
       const hexAlpha: string = alpha != null
         ? Math.round(Math.min(Math.max(parseFloat(alpha), 0), 1) * 255)
           .toString(16).padStart(2, '0')
-        : this.state.skinEditorState.color.substring(7)
+        : skinEditorSelectedColor.substring(7)
 
       const hexColor = color != null
         ? color + hexAlpha
-        : this.state.skinEditorState.color.substring(0, 7) + hexAlpha
+        : skinEditorSelectedColor.substring(0, 7) + hexAlpha
 
-      this.setState({
-        skinEditorState: {
-          ...this.state.skinEditorState,
-          color: hexColor
-        }
-      })
+      this.setState({ skinEditorSelectedColor: hexColor })
     }
 
     onActivate (): void {
@@ -458,7 +351,13 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onChangeTab (tabName: TRIGGER_ID): void {
+      const { triggerData } = this.state
+
       this.setState({ activeTab: tabName })
+      if (tabName !== TRIGGER_ID.SKIN) {
+        const triggers = triggerData[tabName].triggers as TimedTrigger[]
+        this.setState({ invalidTimes: validateTimes(triggers) })
+      }
     }
 
     onToggleSettings (active: boolean): void {
@@ -506,13 +405,31 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     onApplySettings (): void {
       const { triggerData, settings, unsavedSettings } = this.state
 
-      const nextTriggerData = RootComponent.savedViewport(
-        settings.resolution,
-        unsavedSettings.resolution,
-        triggerData
+      const factor = Math.log2(
+        SETTINGS.VIEWPORT[unsavedSettings.resolution].SIZE[0] /
+        SETTINGS.VIEWPORT[settings.resolution].SIZE[0]
       )
 
-      this.setState({ triggerData: nextTriggerData })
+      const size = SETTINGS.VIEWPORT[unsavedSettings.resolution].SIZE
+      store.dispatch(setPlaybackDimensions({ width: size[0], height: size[1] }))
+
+      const zoomTriggers = triggerData[TRIGGER_ID.ZOOM].triggers as ZoomTrigger[]
+
+      for (let i = 0; i < zoomTriggers.length; i++) {
+        zoomTriggers[i][1] = Math.round((
+          zoomTriggers[i][1] + factor + Number.EPSILON
+        ) * 10e6) / 10e6
+      }
+
+      this.setState({
+        triggerData: {
+          ...triggerData,
+          [TRIGGER_ID.ZOOM]: {
+            ...triggerData[TRIGGER_ID.ZOOM],
+            triggers: zoomTriggers
+          }
+        }
+      })
 
       this.setState({ settingsDirty: false })
       this.setState({
@@ -523,60 +440,45 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onChangeFocusDD (index: number, value: string): void {
-      const nextFocusDDIndices = [...this.state.focusDDIndices]
+      const { focusDDIndices } = this.state
+      const nextFocusDDIndices = [...focusDDIndices]
       nextFocusDDIndices[index] = parseInt(value, 10)
       this.setState({ focusDDIndices: nextFocusDDIndices })
     }
 
     onChangeSkinDD (value: string): void {
-      this.setState({
-        skinEditorState: {
-          ...this.state.skinEditorState,
-          ddIndex: parseInt(value, 10)
-        }
-      })
+      this.setState({ selectedSkinEditorRider: parseInt(value, 10) })
     }
 
     onZoomSkinEditor (e: Event | WheelEvent, isMouseAction: boolean): void {
-      const { skinEditorState } = this.state
+      const { skinEditorZoom } = this.state
       const rect = (document.getElementById('skinElementContainer') as HTMLElement).getBoundingClientRect()
-      let { scale, xOffset, yOffset } = skinEditorState.zoom
+      const [scale, xOffset, yOffset] = skinEditorZoom
+      let newScale = scale
+      let newXOffset = xOffset
+      let newYOffset = yOffset
 
       if (isMouseAction) {
         const eWheel = e as WheelEvent
-        if (skinEditorState.zoom.scale < CONSTRAINTS.SKIN_ZOOM.MAX) {
-          xOffset = (eWheel.clientX - rect.x) / skinEditorState.zoom.scale
-          yOffset = (eWheel.clientY - rect.y) / skinEditorState.zoom.scale
+        if (scale < CONSTRAINTS.SKIN_ZOOM.MAX) {
+          newXOffset = (eWheel.clientX - rect.x) / scale
+          newYOffset = (eWheel.clientY - rect.y) / scale
         }
-        scale = Math.max(Math.min(
-          skinEditorState.zoom.scale - eWheel.deltaY * 1e-3,
+        newScale = Math.max(Math.min(
+          scale - eWheel.deltaY * 1e-3,
           CONSTRAINTS.SKIN_ZOOM.MAX
         ), CONSTRAINTS.SKIN_ZOOM.MIN)
       } else {
-        scale = Math.max(Math.min(
+        newScale = Math.max(Math.min(
           parseInt((e.target as HTMLInputElement).value),
           CONSTRAINTS.SKIN_ZOOM.MAX
         ), CONSTRAINTS.SKIN_ZOOM.MIN)
       }
 
-      this.setState({
-        skinEditorState: {
-          ...this.state.skinEditorState,
-          zoom: {
-            xOffset,
-            yOffset,
-            scale
-          }
-        }
-      })
+      this.setState({ skinEditorZoom: [newScale, newXOffset, newYOffset] })
     }
 
     render (): ReactComponent {
-      // if (this.state.activeTab !== TRIGGER_ID.SKIN) {
-      //   const triggers = this.state.triggerData[this.state.activeTab].triggers as TimedTrigger[]
-      //   this.setState({ invalidTimes: validateTimes(triggers) })
-      // }
-
       this.componentManager.updateState(this.state)
       return this.componentManager.main()
     }

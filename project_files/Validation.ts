@@ -171,3 +171,100 @@ function validateTimes (triggers: TimedTrigger[]): boolean[] {
 
   return invalidIndices
 }
+
+/**
+ * Resizes the skin array to match the number of riders
+ */
+function resizedSkinArray (riderCount: number, triggerData: TriggerData): TriggerData {
+  const nextTriggerData = triggerData
+  const skinTriggers = nextTriggerData[TRIGGER_ID.SKIN].triggers
+  const oldLength = skinTriggers.length
+
+  if (oldLength < riderCount) {
+    skinTriggers.push(...Array(riderCount - oldLength).fill(structuredClone(
+      TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE
+    )))
+  }
+
+  if (oldLength > riderCount) {
+    skinTriggers.splice(riderCount, oldLength - riderCount)
+  }
+
+  nextTriggerData[TRIGGER_ID.SKIN].triggers = skinTriggers
+  return nextTriggerData
+}
+
+/**
+ * Resizes the focuser trigger weight arrays to match the number of riders
+ */
+function resizedFocusWeightArrays (riderCount: number, triggerData: TriggerData): TriggerData {
+  const nextTriggerData = structuredClone(triggerData)
+  const focusTriggers = nextTriggerData[TRIGGER_ID.FOCUS].triggers as CameraFocusTrigger[]
+
+  for (let i = 0; i < focusTriggers.length; i++) {
+    const oldLength = focusTriggers[i][1].length
+
+    if (oldLength < riderCount) {
+      focusTriggers[i][1].push(...Array(riderCount - oldLength).fill(0))
+    }
+    if (oldLength > riderCount) {
+      focusTriggers[i][1].splice(riderCount, oldLength - riderCount)
+    }
+  }
+
+  nextTriggerData[TRIGGER_ID.FOCUS].triggers = focusTriggers
+  return nextTriggerData
+}
+
+/**
+ * Clamps the focuser dropdown indices to be less than the number of riders
+ */
+function clampedFocusDDs (riderCount: number, focusDDIndices: readonly number[]): number[] {
+  const nextFocusDDIndices: number[] = []
+
+  focusDDIndices.forEach((ddIndex: number) => {
+    nextFocusDDIndices.push(Math.min(riderCount - 1, ddIndex))
+  })
+
+  return nextFocusDDIndices
+}
+
+/**
+ * Resizes the focuser dropdown indices array to match the focus triggers length
+ */
+function resizedFocusDDIndexArray (triggerLength: number, focusDDIndices: readonly number[]): number[] {
+  const nextFocusDDIndices = [...focusDDIndices]
+
+  const oldLength = focusDDIndices.length
+
+  if (oldLength < triggerLength) {
+    nextFocusDDIndices.push(...Array(triggerLength - oldLength).fill(0))
+  }
+
+  if (oldLength > triggerLength) {
+    nextFocusDDIndices.splice(triggerLength, oldLength - triggerLength)
+  }
+
+  return nextFocusDDIndices
+}
+
+/**
+ * Chooses first nonzero weight to be the index of the rider dropdown when loading triggers
+ */
+function chosenFocusDDIndices (triggerData: TriggerData, focusDDIndices: number[]): number[] {
+  const nextFocusDDIndices = [...focusDDIndices]
+  const focusTriggers = triggerData[TRIGGER_ID.FOCUS].triggers as CameraFocusTrigger[]
+
+  focusTriggers.forEach((trigger: CameraFocusTrigger, triggerIndex: number) => {
+    let newIndex = 0
+    for (let i = 0; i < trigger[1].length; i += 1) {
+      if (trigger[1][i] !== 0) {
+        newIndex = i
+        break
+      }
+    }
+    nextFocusDDIndices[triggerIndex] = newIndex
+  })
+
+  return nextFocusDDIndices
+}

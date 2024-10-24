@@ -29,8 +29,6 @@ enum TRIGGER_ID {
   SKIN = 'CUSTOM_SKIN'
 }
 
-type TimedTrigger = ZoomTrigger | CameraPanTrigger | CameraFocusTrigger | TimeRemapTrigger
-type Trigger = TimedTrigger | SkinCssTrigger
 type TriggerTime = [number, number, number]
 
 type ZoomTrigger = [TriggerTime, number]
@@ -74,8 +72,8 @@ interface SkinCssTrigger {
 type SkinMap = PropMap<SkinCssTrigger>
 
 interface TriggerMetadata<Type> {
-  DISPLAY_NAME: string
-  FUNC: string
+  readonly DISPLAY_NAME: string
+  readonly FUNC: string
   TEMPLATE: Type
 }
 
@@ -146,6 +144,9 @@ const TRIGGER_PROPS = {
   [TRIGGER_ID.TIME]: TimeRemapMetadata,
   [TRIGGER_ID.SKIN]: SkinCssMetadata
 }
+
+type TimedTrigger = ZoomTrigger | CameraPanTrigger | CameraFocusTrigger | TimeRemapTrigger
+type Trigger = TimedTrigger | SkinCssTrigger
 
 interface TriggerDataItem {
   id: string

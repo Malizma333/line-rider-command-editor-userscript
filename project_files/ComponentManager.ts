@@ -381,7 +381,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
       return rc(
         'div',
         { style: STYLES.window },
-        this.skinEditorToolbar(data.triggers, state.skinEditorState.ddIndex),
+        this.skinEditorToolbar(data.triggers, state.skinEditorSelectedRider),
         this.skinEditor(data.triggers as SkinCssTrigger[])
       )
     }
@@ -616,7 +616,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
 
   cameraFocusTrigger (data: CameraFocusTrigger, index: number): ReactComponent {
     const { rc, root, state } = this
-    const ddIndex = state.focusDDIndices[index]
+    const dropdownIndex = state.focusDDIndices[index]
     const labels = ['Weight']
 
     return rc(
@@ -626,7 +626,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
         'select',
         {
           style: STYLES.dropdown.head,
-          value: ddIndex,
+          value: dropdownIndex,
           onChange: (e: Event) => root.onChangeFocusDD(index, (e.target as HTMLInputElement).value)
         },
         Object.keys(data[1]).map((riderIndex) => {
@@ -639,21 +639,21 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
         })
       ),
       rc('label', {
-        for: `triggerText_${labels[0]}_${ddIndex}_${index}`,
+        for: `triggerText_${labels[0]}_${dropdownIndex}_${index}`,
         style: STYLES.trigger.text
       }, labels[0]),
       rc('input', {
-        id: `triggerText_${labels[0]}_${ddIndex}_${index}`,
+        id: `triggerText_${labels[0]}_${dropdownIndex}_${index}`,
         style: STYLES.trigger.input,
-        value: data[1][ddIndex],
+        value: data[1][dropdownIndex],
         onChange: (e: Event) => root.onUpdateTrigger(
-          { prev: data[1][ddIndex], new: (e.target as HTMLInputElement).value },
-          ['triggers', index, 1, ddIndex],
+          { prev: data[1][dropdownIndex], new: (e.target as HTMLInputElement).value },
+          ['triggers', index, 1, dropdownIndex],
           CONSTRAINTS.FOCUS_WEIGHT
         ),
         onBlur: (e: Event) => root.onUpdateTrigger(
-          { prev: data[1][ddIndex], new: (e.target as HTMLInputElement).value },
-          ['triggers', index, 1, ddIndex],
+          { prev: data[1][dropdownIndex], new: (e.target as HTMLInputElement).value },
+          ['triggers', index, 1, dropdownIndex],
           CONSTRAINTS.FOCUS_WEIGHT,
           true
         )
@@ -693,7 +693,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
 
   skinEditor (data: SkinCssTrigger[]): ReactComponent {
     const { rc, root, state } = this
-    const { ddIndex } = state.skinEditorState
+    const dropdownIndex = state.skinEditorSelectedRider
 
     return rc(
       'div',
@@ -705,18 +705,14 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           id: 'skinElementContainer',
           style: {
             ...STYLES.skinEditor.canvas,
-            transform: `scale(${state.skinEditorState.zoom.scale})`,
-            transformOrigin: `${
-              state.skinEditorState.zoom.xOffset
-            }px ${
-              state.skinEditorState.zoom.yOffset
-            }px`
+            transform: `scale(${state.skinEditorZoom[0]})`,
+            transformOrigin: `${state.skinEditorZoom[1]}px ${state.skinEditorZoom[2]}px`
           },
           onWheel: (e: Event) => root.onZoomSkinEditor(e, true)
         },
-        this.flagSvg(data[ddIndex], ddIndex),
+        this.flagSvg(data[dropdownIndex], dropdownIndex),
         rc('svg', { width: '10vw' }),
-        this.riderSvg(data[ddIndex], ddIndex)
+        this.riderSvg(data[dropdownIndex], dropdownIndex)
       ),
       rc(
         'div',
@@ -728,13 +724,13 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           min: CONSTRAINTS.SKIN_ZOOM.MIN,
           max: CONSTRAINTS.SKIN_ZOOM.MAX,
           step: 0.1,
-          value: state.skinEditorState.zoom.scale,
+          value: state.skinEditorZoom[0],
           onChange: (e: Event) => root.onZoomSkinEditor(e, false)
         }),
         rc(
           'text',
           { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize] } },
-          `x${Math.round(state.skinEditorState.zoom.scale * 10) / 10}`
+          `x${Math.round(state.skinEditorZoom[0] * 10) / 10}`
         )
       ),
       rc(
@@ -744,11 +740,11 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
         rc('div', {
           style: {
             ...STYLES.skinEditor.outlineColor.input,
-            backgroundColor: data[ddIndex].outline.stroke
+            backgroundColor: data[dropdownIndex].outline.stroke
           },
           onClick: () => root.onUpdateTrigger(
-            { new: state.skinEditorState.color },
-            ['triggers', ddIndex, 'outline', 'stroke']
+            { new: state.skinEditorSelectedColor },
+            ['triggers', dropdownIndex, 'outline', 'stroke']
           )
         })
       )
@@ -757,8 +753,8 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
 
   skinEditorToolbar (data: Trigger[], index: number): ReactComponent {
     const { rc, root, state } = this
-    const colorValue = state.skinEditorState.color.substring(0, 7)
-    const alphaValue = parseInt(state.skinEditorState.color.substring(7), 16) / 255
+    const colorValue = state.skinEditorSelectedColor.substring(0, 7)
+    const alphaValue = parseInt(state.skinEditorSelectedColor.substring(7), 16) / 255
 
     return rc(
       'div',
@@ -836,7 +832,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
 
   flagSvg (data: SkinCssTrigger, index: number): ReactComponent {
     const { rc, root, state } = this
-    const color = state.skinEditorState.color
+    const color = state.skinEditorSelectedColor
     return rc(
       'svg',
       { style: STYLES.skinEditor.flagSvg },
@@ -855,7 +851,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
 
   riderSvg (data: SkinCssTrigger, index: number): ReactComponent {
     const { rc, root, state } = this
-    const color = state.skinEditorState.color
+    const color = state.skinEditorSelectedColor
     return rc(
       'svg',
       { style: STYLES.skinEditor.riderSvg },
