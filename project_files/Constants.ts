@@ -5,22 +5,6 @@ const HELP_LINK = 'https://github.com/Malizma333/line-rider-command-editor-users
 const REPORT_LINK = 'https://github.com/Malizma333/line-rider-command-editor-userscript/issues/new'
 const FPS = 40
 
-type VIEWPORT_OPTION = keyof typeof SETTINGS.VIEWPORT
-
-const SETTINGS = {
-  VIEWPORT: {
-    HD: { ID: 'HD', NAME: '720p', SIZE: [1280, 720] },
-    FHD: { ID: 'FHD', NAME: '1080p', SIZE: [1920, 1080] },
-    QHD: { ID: 'QHD', NAME: '1440p', SIZE: [2560, 1440] },
-    UHD: { ID: 'UHD', NAME: '4K', SIZE: [3840, 2160] }
-  },
-  FONT_SIZES: {
-    SMALL: 0,
-    MEDIUM: 1,
-    LARGE: 2
-  }
-} as const
-
 enum TRIGGER_ID {
   ZOOM = 'ZOOM',
   PAN = 'CAMERA_PAN',

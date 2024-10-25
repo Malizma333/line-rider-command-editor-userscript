@@ -8,14 +8,11 @@ interface RootState {
   skinEditorZoom: [number, number, number]
   settingsActive: boolean
   settingsDirty: boolean
-  settings: SettingsState
-  unsavedSettings: SettingsState
-  invalidTimes: boolean[]
-}
-
-interface SettingsState {
   fontSize: number
-  resolution: VIEWPORT_OPTION
+  resolution: ViewportOption
+  fontSizeSetting: number
+  resolutionSetting: ViewportOption
+  invalidTimes: boolean[]
 }
 
 function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -67,14 +64,10 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         skinEditorZoom: [1, 0, 0],
         settingsActive: false,
         settingsDirty: false,
-        settings: {
-          fontSize: SETTINGS.FONT_SIZES.MEDIUM,
-          resolution: SETTINGS.VIEWPORT.HD.ID
-        },
-        unsavedSettings: {
-          fontSize: SETTINGS.FONT_SIZES.MEDIUM,
-          resolution: SETTINGS.VIEWPORT.HD.ID
-        },
+        fontSize: parseInt(getSetting(SETTINGS_KEY.FONT_SIZE), 10),
+        resolution: getSetting(SETTINGS_KEY.VIEWPORT) as ViewportOption,
+        fontSizeSetting: parseInt(getSetting(SETTINGS_KEY.FONT_SIZE), 10),
+        resolutionSetting: getSetting(SETTINGS_KEY.VIEWPORT) as ViewportOption,
         invalidTimes: []
       }
 
@@ -361,56 +354,47 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onToggleSettings (active: boolean): void {
-      const { settingsDirty, settings } = this.state
+      const { settingsDirty, fontSize, resolution } = this.state
 
       if (!active && settingsDirty) {
         if (!window.confirm('Discard changes?')) return
-        this.setState({ unsavedSettings: settings })
+        this.setState({ fontSizeSetting: fontSize })
+        this.setState({ resolutionSetting: resolution })
         this.setState({ settingsDirty: false })
       }
 
       this.setState({ settingsActive: active })
     }
 
-    onChangeFontSize (fontSize: number): void {
-      const { unsavedSettings, settings } = this.state
+    onChangeFontSize (newFontSize: number): void {
+      const { fontSize } = this.state
 
-      if (fontSize !== settings.fontSize) {
+      if (newFontSize !== fontSize) {
         this.setState({ settingsDirty: true })
       }
 
-      this.setState({
-        unsavedSettings: {
-          ...unsavedSettings,
-          fontSize
-        }
-      })
+      this.setState({ fontSizeSetting: newFontSize })
     }
 
-    onChangeViewport (resolution: VIEWPORT_OPTION): void {
-      const { unsavedSettings, settings } = this.state
+    onChangeViewport (newResolution: ViewportOption): void {
+      const { resolution } = this.state
 
-      if (resolution !== settings.resolution) {
+      if (resolution !== newResolution) {
         this.setState({ settingsDirty: true })
       }
 
-      this.setState({
-        unsavedSettings: {
-          ...unsavedSettings,
-          resolution
-        }
-      })
+      this.setState({ resolutionSetting: newResolution })
     }
 
     onApplySettings (): void {
-      const { triggerData, settings, unsavedSettings } = this.state
+      const { triggerData, resolutionSetting, resolution, fontSizeSetting } = this.state
 
       const factor = Math.log2(
-        SETTINGS.VIEWPORT[unsavedSettings.resolution].SIZE[0] /
-        SETTINGS.VIEWPORT[settings.resolution].SIZE[0]
+        SETTINGS[SETTINGS_KEY.VIEWPORT][resolutionSetting].SIZE[0] /
+        SETTINGS[SETTINGS_KEY.VIEWPORT][resolution].SIZE[0]
       )
 
-      const size = SETTINGS.VIEWPORT[unsavedSettings.resolution].SIZE
+      const size = SETTINGS[SETTINGS_KEY.VIEWPORT][resolutionSetting].SIZE
       store.dispatch(setPlaybackDimensions({ width: size[0], height: size[1] }))
 
       const zoomTriggers = triggerData[TRIGGER_ID.ZOOM].triggers as ZoomTrigger[]
@@ -431,12 +415,12 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         }
       })
 
+      saveSetting(SETTINGS_KEY.FONT_SIZE, String(fontSizeSetting))
+      saveSetting(SETTINGS_KEY.VIEWPORT, resolutionSetting)
+
       this.setState({ settingsDirty: false })
-      this.setState({
-        settings: {
-          ...unsavedSettings
-        }
-      })
+      this.setState({ fontSize: fontSizeSetting })
+      this.setState({ resolution: resolutionSetting })
     }
 
     onChangeFocusDD (index: number, value: string): void {

@@ -202,14 +202,14 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
       ),
       rc('text', {
         style: {
-          fontSize: GLOBAL_STYLES.textSizes.L[state.settings.fontSize]
+          fontSize: GLOBAL_STYLES.textSizes.L[state.fontSizeSetting]
         }
       }, 'Settings'),
       rc('button', {
         style: {
           ...STYLES.button.settings,
           position: 'absolute',
-          fontSize: GLOBAL_STYLES.textSizes.M[state.settings.fontSize],
+          fontSize: GLOBAL_STYLES.textSizes.M[state.fontSizeSetting],
           left: '0px',
           background: state.settingsDirty
             ? GLOBAL_STYLES.light_gray3
@@ -225,14 +225,14 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
     const { rc, root, state } = this
     return rc(
       window.React.Fragment,
-      { style: { fontSize: GLOBAL_STYLES.textSizes.M[state.settings.fontSize] } },
+      { style: { fontSize: GLOBAL_STYLES.textSizes.M[state.fontSizeSetting] } },
       rc(
         'div',
         { style: STYLES.settings.row },
         rc('text', {
           style: {
             ...STYLES.settings.label,
-            fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize]
+            fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting]
           }
         }, 'Font Sizes'),
         rc(
@@ -240,38 +240,38 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           {
             style: {
               ...STYLES.settings.parameter,
-              fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize]
+              fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting]
             }
           },
           rc('button', {
             style: {
               ...STYLES.button.settings,
               backgroundColor:
-                state.unsavedSettings.fontSize === SETTINGS.FONT_SIZES.SMALL
+                state.fontSizeSetting === SETTINGS[SETTINGS_KEY.FONT_SIZE].SMALL
                   ? GLOBAL_STYLES.light_gray1
                   : GLOBAL_STYLES.dark_gray1
             },
-            onClick: () => root.onChangeFontSize(SETTINGS.FONT_SIZES.SMALL)
+            onClick: () => root.onChangeFontSize(SETTINGS[SETTINGS_KEY.FONT_SIZE].SMALL)
           }, rc('text', null, 'Small')),
           rc('button', {
             style: {
               ...STYLES.button.settings,
               backgroundColor:
-                state.unsavedSettings.fontSize === SETTINGS.FONT_SIZES.MEDIUM
+                state.fontSizeSetting === SETTINGS[SETTINGS_KEY.FONT_SIZE].MEDIUM
                   ? GLOBAL_STYLES.light_gray1
                   : GLOBAL_STYLES.dark_gray1
             },
-            onClick: () => root.onChangeFontSize(SETTINGS.FONT_SIZES.MEDIUM)
+            onClick: () => root.onChangeFontSize(SETTINGS[SETTINGS_KEY.FONT_SIZE].MEDIUM)
           }, rc('text', null, 'Medium')),
           rc('button', {
             style: {
               ...STYLES.button.settings,
               backgroundColor:
-                state.unsavedSettings.fontSize === SETTINGS.FONT_SIZES.LARGE
+                state.fontSizeSetting === SETTINGS[SETTINGS_KEY.FONT_SIZE].LARGE
                   ? GLOBAL_STYLES.light_gray1
                   : GLOBAL_STYLES.dark_gray1
             },
-            onClick: () => root.onChangeFontSize(SETTINGS.FONT_SIZES.LARGE)
+            onClick: () => root.onChangeFontSize(SETTINGS[SETTINGS_KEY.FONT_SIZE].LARGE)
           }, rc('text', null, 'Large'))
         )
       ),
@@ -281,7 +281,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
         rc('text', {
           style: {
             ...STYLES.settings.label,
-            fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize]
+            fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting]
           }
         }, 'Viewport'),
         rc(
@@ -289,49 +289,49 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           {
             style: {
               ...STYLES.settings.parameter,
-              fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize]
+              fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting]
             }
           },
           rc('button', {
             style: {
               ...STYLES.button.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === SETTINGS.VIEWPORT.HD.ID
+                state.resolutionSetting === SETTINGS[SETTINGS_KEY.VIEWPORT].HD.ID
                   ? GLOBAL_STYLES.light_gray1
                   : GLOBAL_STYLES.dark_gray1
             },
-            onClick: () => root.onChangeViewport(SETTINGS.VIEWPORT.HD.ID)
-          }, rc('text', null, SETTINGS.VIEWPORT.HD.NAME)),
+            onClick: () => root.onChangeViewport(SETTINGS[SETTINGS_KEY.VIEWPORT].HD.ID)
+          }, rc('text', null, SETTINGS[SETTINGS_KEY.VIEWPORT].HD.NAME)),
           rc('button', {
             style: {
               ...STYLES.button.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === SETTINGS.VIEWPORT.FHD.ID
+                state.resolutionSetting === SETTINGS[SETTINGS_KEY.VIEWPORT].FHD.ID
                   ? GLOBAL_STYLES.light_gray1
                   : GLOBAL_STYLES.dark_gray1
             },
-            onClick: () => root.onChangeViewport(SETTINGS.VIEWPORT.FHD.ID)
-          }, rc('text', null, SETTINGS.VIEWPORT.FHD.NAME)),
+            onClick: () => root.onChangeViewport(SETTINGS[SETTINGS_KEY.VIEWPORT].FHD.ID)
+          }, rc('text', null, SETTINGS[SETTINGS_KEY.VIEWPORT].FHD.NAME)),
           rc('button', {
             style: {
               ...STYLES.button.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === SETTINGS.VIEWPORT.QHD.ID
+                state.resolutionSetting === SETTINGS[SETTINGS_KEY.VIEWPORT].QHD.ID
                   ? GLOBAL_STYLES.light_gray1
                   : GLOBAL_STYLES.dark_gray1
             },
-            onClick: () => root.onChangeViewport(SETTINGS.VIEWPORT.QHD.ID)
-          }, rc('text', null, SETTINGS.VIEWPORT.QHD.NAME)),
+            onClick: () => root.onChangeViewport(SETTINGS[SETTINGS_KEY.VIEWPORT].QHD.ID)
+          }, rc('text', null, SETTINGS[SETTINGS_KEY.VIEWPORT].QHD.NAME)),
           rc('button', {
             style: {
               ...STYLES.button.settings,
               backgroundColor:
-                state.unsavedSettings.resolution === SETTINGS.VIEWPORT.UHD.ID
+                state.resolutionSetting === SETTINGS[SETTINGS_KEY.VIEWPORT].UHD.ID
                   ? GLOBAL_STYLES.light_gray1
                   : GLOBAL_STYLES.dark_gray1
             },
-            onClick: () => root.onChangeViewport(SETTINGS.VIEWPORT.UHD.ID)
-          }, rc('text', null, SETTINGS.VIEWPORT.UHD.NAME))
+            onClick: () => root.onChangeViewport(SETTINGS[SETTINGS_KEY.VIEWPORT].UHD.ID)
+          }, rc('text', null, SETTINGS[SETTINGS_KEY.VIEWPORT].UHD.NAME))
         )
       )
     )
@@ -365,7 +365,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
       onClick: () => root.onChangeTab(tabID)
     }, rc(
       'text',
-      { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize] } },
+      { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting] } },
       TRIGGER_PROPS[tabID].DISPLAY_NAME
     ))
   }
@@ -401,13 +401,13 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
       { style: STYLES.smooth.container },
       rc('label', {
         for: 'smoothTextInput',
-        style: { fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize] }
+        style: { fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting] }
       }, 'Smoothing'),
       data.id !== TRIGGER_ID.TIME && rc('input', {
         id: 'smoothTextInput',
         style: {
           ...STYLES.smooth.input,
-          fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize],
+          fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting],
           marginLeft: '5px'
         },
         value: data.smoothing,
@@ -459,7 +459,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
       {
         style: {
           ...STYLES.trigger.container,
-          fontSize: GLOBAL_STYLES.textSizes.M[state.settings.fontSize],
+          fontSize: GLOBAL_STYLES.textSizes.M[state.fontSizeSetting],
           backgroundColor: index === 0 ? GLOBAL_STYLES.gray : GLOBAL_STYLES.white
         }
       },
@@ -729,14 +729,14 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
         }),
         rc(
           'text',
-          { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize] } },
+          { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting] } },
           `x${Math.round(state.skinEditorZoom[0] * 10) / 10}`
         )
       ),
       rc(
         'div',
         { style: STYLES.skinEditor.outlineColor.container },
-        rc('text', { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize] } }, 'Outline'),
+        rc('text', { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting] } }, 'Outline'),
         rc('div', {
           style: {
             ...STYLES.skinEditor.outlineColor.input,
@@ -778,7 +778,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           style: {
             ...STYLES.skinEditor.toolbarItem,
             ...STYLES.alpha.container,
-            fontSize: GLOBAL_STYLES.textSizes.S[state.settings.fontSize]
+            fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting]
           }
         },
         rc('label', { for: 'alphaSlider' }, 'Transparency'),
@@ -813,7 +813,7 @@ class ComponentManager { // eslint-disable-line @typescript-eslint/no-unused-var
           style: {
             ...STYLES.skinEditor.toolbarItem,
             ...STYLES.dropdown.head,
-            fontSize: GLOBAL_STYLES.textSizes.M[state.settings.fontSize]
+            fontSize: GLOBAL_STYLES.textSizes.M[state.fontSizeSetting]
           },
           value: index,
           onChange: (e: Event) => root.onChangeSkinDD((e.target as HTMLInputElement).value)
