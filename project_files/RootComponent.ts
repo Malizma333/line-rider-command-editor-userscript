@@ -211,8 +211,12 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onTest (): void {
-      const { activeTab } = this.state
+      const { activeTab, invalidTimes } = this.state
       try {
+        if (!invalidTimes.every((invalid) => invalid === false)) {
+          throw new Error('Triggers contain invalid times!')
+        }
+
         const script = generateScript(activeTab, this.triggerManager.data as TriggerData)
         // HACK: Already evaluated script, execute it directly
         eval.call(window, script) // eslint-disable-line no-eval
@@ -222,8 +226,12 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onPrint (): void {
-      const { activeTab } = this.state
+      const { activeTab, invalidTimes } = this.state
       try {
+        if (!invalidTimes.every((invalid) => invalid === false)) {
+          throw new Error('Triggers contain invalid times!')
+        }
+
         console.info(generateScript(activeTab, this.triggerManager.data as TriggerData))
       } catch (error: any) {
         console.error(error.message)
