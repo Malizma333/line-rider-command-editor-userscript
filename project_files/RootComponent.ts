@@ -263,8 +263,6 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onResetSkin (index: number): void {
-      if (!window.confirm('Are you sure you want to reset this rider\'s skin?')) return
-
       this.triggerManager.updateFromPath(
         [TRIGGER_ID.SKIN, 'triggers', index],
         structuredClone(TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE),
@@ -313,7 +311,6 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const { settingsDirty, fontSize, resolution } = this.state
 
       if (!active && settingsDirty) {
-        if (!window.confirm('Discard changes?')) return
         this.setState({ fontSizeSetting: fontSize })
         this.setState({ resolutionSetting: resolution })
         this.setState({ settingsDirty: false })

@@ -48,8 +48,7 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
     }]`
 
     // HACK: Using eval is easier than json.parse, which has stricter syntax
-    // eslint-disable-next-line no-eval
-    const parameterArray = eval(parameterText)
+    const parameterArray = eval(parameterText) // eslint-disable-line no-eval
     const [keyframes, smoothing] = parameterArray
 
     switch (commandId) {
