@@ -56,10 +56,10 @@ const CONSTRAINTS = {
     DEFAULT: 1, MIN: 0, MAX: 1, INT: false
   },
   GRAVITY_X: {
-    DEFAULT: 0.175, MIN: -100, MAX: 100, INT: true
+    DEFAULT: 0.175, MIN: -100, MAX: 100, INT: false
   },
   GRAVITY_Y: {
-    DEFAULT: 0, MIN: -100, MAX: 100, INT: true
+    DEFAULT: 0, MIN: -100, MAX: 100, INT: false
   }
 } as const
 
