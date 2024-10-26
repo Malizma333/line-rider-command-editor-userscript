@@ -1109,7 +1109,6 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
           e('input', {
             style: { height: '10px' },
             type: 'range',
-            orient: 'vertical',
             min: CONSTRAINTS.SKIN_ZOOM.MIN,
             max: CONSTRAINTS.SKIN_ZOOM.MAX,
             step: 0.1,
@@ -1224,7 +1223,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const color = state.skinEditorSelectedColor
       return e(
         'svg',
-        { style: STYLES.skinEditor.flagSvg },
+        { height: '18', width: '15', style: { transform: 'scale(5)' } },
         e('path', {
           ...STYLES.riderProps.flag,
           fill: data.flag.fill,
@@ -1243,7 +1242,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const color = state.skinEditorSelectedColor
       return e(
         'svg',
-        { style: STYLES.skinEditor.riderSvg },
+        { height: '25', width: '31', style: { transform: 'scale(5)' } },
         e('rect', {
           ...STYLES.riderProps.skin,
           fill: data.skin.fill,

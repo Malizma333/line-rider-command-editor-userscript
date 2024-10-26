@@ -309,16 +309,6 @@ const STYLES = {
       position: 'absolute',
       top: '20px',
       height: '0px'
-    },
-    flagSvg: {
-      height: '18',
-      transform: 'scale(5)',
-      width: '15'
-    },
-    riderSvg: {
-      height: '25',
-      transform: 'scale(5)',
-      width: '31'
     }
   },
   alpha: {
