@@ -73,8 +73,6 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
 
         this.triggerManager.updateRiderCount(riderCount)
         this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
-
-        this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
         this.setState({ focusDDIndices: focusDDIndices.map((ddIndex) => Math.min(riderCount - 1, ddIndex)) })
       }
 
@@ -105,13 +103,17 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         Math.floor(currentPlayerIndex % 40)
       ]
 
-      this.triggerManager.createTrigger(activeTab, index, triggerTime)
+      const currentTriggers = this.triggerManager.triggerData[activeTab].triggers
+      const newTriggerData = structuredClone((currentTriggers[index] as TimedTrigger)[1])
+      const newTrigger = [triggerTime, newTriggerData] as TimedTrigger
+      const newTriggers = currentTriggers.slice(0, index + 1).concat([newTrigger]).concat(currentTriggers.slice(index + 1))
+      this.triggerManager.updateFromPath([activeTab, 'triggers'], newTriggers)
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
 
       const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
 
       if (activeTab === TRIGGER_ID.FOCUS) {
-        this.setState({ focusDDIndices: focusDDIndices.slice(0, index + 1).concat(0).concat(focusDDIndices.slice(index + 1)) })
+        this.setState({ focusDDIndices: focusDDIndices.slice(0, index + 1).concat([0]).concat(focusDDIndices.slice(index + 1)) })
       }
 
       this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
@@ -120,10 +122,9 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     onUpdateTrigger (valueChange: ValueChange, path: any[], constraints?: Constraint, bounded = false): void {
       const { activeTab } = this.state
 
-      const fullPath = [activeTab].concat(path)
       const newValue = validateData(valueChange, bounded, constraints)
 
-      this.triggerManager.updateFromPath(fullPath, newValue)
+      this.triggerManager.updateFromPath([activeTab, ...path], newValue)
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
 
       const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
@@ -138,7 +139,9 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
 
       if (activeTab === TRIGGER_ID.SKIN) return
 
-      this.triggerManager.deleteTrigger(activeTab, index)
+      const currentTriggers = this.triggerManager.triggerData[activeTab].triggers
+      const newTriggers = currentTriggers.slice(0, index).concat(currentTriggers.slice(index + 1))
+      this.triggerManager.updateFromPath([activeTab, 'triggers'], newTriggers)
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
 
       const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
@@ -200,7 +203,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
           this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
         }
 
-        this.triggerManager.replaceTriggers(nextTriggerData)
+        this.triggerManager.updateFromPath([], nextTriggerData)
         this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
       } catch (error: any) {
         console.error(error.message)
@@ -229,7 +232,9 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
 
     onUndo (): void {
       const { activeTab } = this.state
-      console.log('Undo')
+
+      this.triggerManager.undo()
+      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
 
       if (activeTab !== TRIGGER_ID.SKIN) {
         const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
@@ -239,7 +244,9 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
 
     onRedo (): void {
       const { activeTab } = this.state
-      console.log('Redo')
+
+      this.triggerManager.redo()
+      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
 
       if (activeTab !== TRIGGER_ID.SKIN) {
         const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
@@ -250,7 +257,11 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     onResetSkin (index: number): void {
       if (!window.confirm('Are you sure you want to reset this rider\'s skin?')) return
 
-      this.triggerManager.resetSkinTrigger(index)
+      this.triggerManager.updateFromPath(
+        [TRIGGER_ID.SKIN, 'triggers', index],
+        structuredClone(TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE)
+      )
+
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
     }
 
@@ -333,8 +344,13 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const size = SETTINGS[SETTINGS_KEY.VIEWPORT][resolutionSetting].SIZE
       store.dispatch(setPlaybackDimensions({ width: size[0], height: size[1] }))
 
-      this.triggerManager.updateZoomViewport(factor)
-      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
+      const zoomTriggers = this.triggerManager.triggerData[TRIGGER_ID.ZOOM].triggers as ZoomTrigger[]
+
+      for (let i = 0; i < zoomTriggers.length; i++) {
+        const scaledTrigger = Math.round((zoomTriggers[i][1] + factor + Number.EPSILON) * 10e6) / 10e6
+        this.triggerManager.updateFromPath([TRIGGER_ID.ZOOM, 'triggers', i, 1], scaledTrigger)
+        this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
+      }
 
       saveSetting(SETTINGS_KEY.FONT_SIZE, String(fontSizeSetting))
       saveSetting(SETTINGS_KEY.VIEWPORT, resolutionSetting)
@@ -503,14 +519,14 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             {
               title: 'Undo',
               style: STYLES.button.embedded,
-              disabled: true,
+              disabled: root.triggerManager.undoLen === 0,
               onClick: () => root.onUndo()
             },
             e(
               'span',
               {
                 ...leftArrowIcon,
-                style: { color: GLOBAL_STYLES.gray }
+                style: { color: root.triggerManager.undoLen === 0 ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black }
               }
             )
           ),
@@ -519,14 +535,14 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             {
               title: 'Redo',
               style: STYLES.button.embedded,
-              disabled: true,
+              disabled: root.triggerManager.redoLen === 0,
               onClick: () => root.onRedo()
             },
             e(
               'span',
               {
                 ...rightArrowIcon,
-                style: { color: GLOBAL_STYLES.gray }
+                style: { color: root.triggerManager.redoLen === 0 ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black }
               }
             )
           ),

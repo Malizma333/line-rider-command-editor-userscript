@@ -11,7 +11,7 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
 
     Object.keys(TRIGGER_PROPS).forEach((commandId: string) => {
       try {
-        this.triggerData[commandId as TRIGGER_ID].triggers.length = 0
+        this.triggerData[commandId as TRIGGER_ID].triggers = []
         this.parseCommand(commandId as TRIGGER_ID, trimmedScript)
       } catch (error: any) {
         console.error('[ScriptParser]', error.message)

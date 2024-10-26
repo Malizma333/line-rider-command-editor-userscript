@@ -108,9 +108,13 @@ interface TriggerData {
 
 class TriggerDataManager {
   triggerData: TriggerData
+  private undoStack: any[]
+  private redoStack: any[]
 
   constructor () {
     this.triggerData = TriggerDataManager.initialTriggerData
+    this.undoStack = []
+    this.redoStack = []
   }
 
   static get initialTriggerData (): TriggerData {
@@ -141,11 +145,13 @@ class TriggerDataManager {
       }
     }
   }
+  
+  get undoLen (): number {
+    return this.undoStack.length
+  }
 
-  createTrigger (id: TRIGGER_ID, index: number, currentTime: TriggerTime): void {
-    const newTrigger = structuredClone(this.triggerData[id].triggers[index]) as TimedTrigger
-    newTrigger[0] = currentTime
-    this.triggerData[id].triggers.splice(index + 1, 0, newTrigger)
+  get redoLen (): number {
+    return this.redoStack.length
   }
 
   /**
@@ -184,39 +190,40 @@ class TriggerDataManager {
     this.triggerData[TRIGGER_ID.SKIN].triggers = skinTriggers
   }
 
-  deleteTrigger (id: TRIGGER_ID, index: number): void {
-    this.triggerData[id].triggers.splice(index, 1)
-  }
-
-  resetSkinTrigger (index: number): void {
-    this.triggerData[TRIGGER_ID.SKIN].triggers[index] = structuredClone(
-      TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE
-    )
-  }
-
-  updateZoomViewport (factor: number): void {
-    const zoomTriggers = this.triggerData[TRIGGER_ID.ZOOM].triggers as ZoomTrigger[]
-
-    for (let i = 0; i < zoomTriggers.length; i++) {
-      zoomTriggers[i][1] = Math.round((
-        zoomTriggers[i][1] + factor + Number.EPSILON
-      ) * 10e6) / 10e6
-    }
-
-    this.triggerData[TRIGGER_ID.ZOOM].triggers = zoomTriggers
-  }
-
-  replaceTriggers (newTriggers: TriggerData): void {
-    this.triggerData = newTriggers
-  }
-
   updateFromPath (path: any[], newValue: any): void {
-    let pathPointer: any = this.triggerData
+    this.redoStack = []
+    const oldValue = this.setAtPointer(['triggerData'].concat(path), newValue)
+    this.undoStack.push([path, oldValue])
+  }
+
+  undo (): void {
+    if (this.undoStack.length === 0) return
+
+    const [path, oldValue] = this.undoStack.pop()
+    const newValue = this.setAtPointer(['triggerData'].concat(path), oldValue)
+    this.redoStack.push([path, newValue])
+  }
+
+  redo (): void {
+    if (this.redoStack.length === 0) return
+
+    const [path, newValue] = this.redoStack.pop()
+    const oldValue = this.setAtPointer(['triggerData'].concat(path), newValue)
+    this.undoStack.push([path, oldValue])
+  }
+
+  /**
+   * Updates value at a given path and returns the old value
+   */
+  private setAtPointer(path: any[], value: any): any {
+    let pathPointer: any = this
 
     for (let i = 0; i < path.length - 1; i += 1) {
       pathPointer = pathPointer[path[i]]
     }
 
-    pathPointer[path[path.length - 1]] = newValue
+    const oldValue = pathPointer[path[path.length - 1]]
+    pathPointer[path[path.length - 1]] = value
+    return oldValue
   }
 }
