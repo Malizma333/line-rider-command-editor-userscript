@@ -107,7 +107,7 @@ interface TriggerData {
 }
 
 class TriggerDataManager {
-  triggerData: TriggerData
+  private triggerData: TriggerData
   private undoStack: any[]
   private redoStack: any[]
 
@@ -144,6 +144,10 @@ class TriggerDataManager {
         triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE)]
       }
     }
+  }
+
+  get data (): DeepReadonly<TriggerData> {
+    return this.triggerData as DeepReadonly<TriggerData>
   }
   
   get undoLen (): number {

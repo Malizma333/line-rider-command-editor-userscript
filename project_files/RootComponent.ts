@@ -103,14 +103,14 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         Math.floor(currentPlayerIndex % 40)
       ]
 
-      const currentTriggers = this.triggerManager.triggerData[activeTab].triggers
+      const currentTriggers = this.triggerManager.data[activeTab].triggers
       const newTriggerData = structuredClone((currentTriggers[index] as TimedTrigger)[1])
       const newTrigger = [triggerTime, newTriggerData] as TimedTrigger
       const newTriggers = currentTriggers.slice(0, index + 1).concat([newTrigger]).concat(currentTriggers.slice(index + 1))
       this.triggerManager.updateFromPath([activeTab, 'triggers'], newTriggers, activeTab)
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
 
-      const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
+      const newTriggerArray = this.triggerManager.data[activeTab].triggers
 
       if (activeTab === TRIGGER_ID.FOCUS) {
         this.setState({ focusDDIndices: focusDDIndices.slice(0, index + 1).concat([0]).concat(focusDDIndices.slice(index + 1)) })
@@ -127,7 +127,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       this.triggerManager.updateFromPath([activeTab, ...path], newValue, activeTab)
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
 
-      const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
+      const newTriggerArray = this.triggerManager.data[activeTab].triggers
 
       if (activeTab !== TRIGGER_ID.SKIN) {
         this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
@@ -139,12 +139,12 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
 
       if (activeTab === TRIGGER_ID.SKIN) return
 
-      const currentTriggers = this.triggerManager.triggerData[activeTab].triggers
+      const currentTriggers = this.triggerManager.data[activeTab].triggers
       const newTriggers = currentTriggers.slice(0, index).concat(currentTriggers.slice(index + 1))
       this.triggerManager.updateFromPath([activeTab, 'triggers'], newTriggers, activeTab)
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
 
-      const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
+      const newTriggerArray = this.triggerManager.data[activeTab].triggers
 
       if (activeTab === TRIGGER_ID.FOCUS) {
         this.setState({ focusDDIndices: focusDDIndices.slice(0, index).concat(focusDDIndices.slice(index + 1)) })
@@ -154,7 +154,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onDownload (): void {
-      const jsonString = JSON.stringify(this.triggerManager.triggerData)
+      const jsonString = JSON.stringify(this.triggerManager.data)
       const a = document.createElement('a')
       const data = 'data:text/json;charset=utf-8,' + encodeURIComponent(jsonString)
       a.setAttribute('href', data)
@@ -176,7 +176,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       this.onLoad(
         this.parser.parseScript(
           getCurrentScript(store.getState()),
-          this.triggerManager.triggerData
+          this.triggerManager.data as TriggerData
         )
       )
     }
@@ -213,7 +213,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     onTest (): void {
       const { activeTab } = this.state
       try {
-        const script = generateScript(activeTab, this.triggerManager.triggerData)
+        const script = generateScript(activeTab, this.triggerManager.data as TriggerData)
         // HACK: Already evaluated script, execute it directly
         eval.call(window, script) // eslint-disable-line no-eval
       } catch (error: any) {
@@ -224,7 +224,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     onPrint (): void {
       const { activeTab } = this.state
       try {
-        console.info(generateScript(activeTab, this.triggerManager.triggerData))
+        console.info(generateScript(activeTab, this.triggerManager.data as TriggerData))
       } catch (error: any) {
         console.error(error.message)
       }
@@ -241,7 +241,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       }
 
       if (activeTab !== TRIGGER_ID.SKIN) {
-        const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
+        const newTriggerArray = this.triggerManager.data[activeTab].triggers
         this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
       }
     }
@@ -257,7 +257,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       }
 
       if (activeTab !== TRIGGER_ID.SKIN) {
-        const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
+        const newTriggerArray = this.triggerManager.data[activeTab].triggers
         this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
       }
     }
@@ -304,7 +304,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       this.setState({ activeTab: tabName })
 
       if (tabName !== TRIGGER_ID.SKIN) {
-        const newTriggerArray = this.triggerManager.triggerData[tabName].triggers
+        const newTriggerArray = this.triggerManager.data[tabName].triggers
         this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
       }
     }
@@ -353,7 +353,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const size = SETTINGS[SETTINGS_KEY.VIEWPORT][resolutionSetting].SIZE
       store.dispatch(setPlaybackDimensions({ width: size[0], height: size[1] }))
 
-      const zoomTriggers = this.triggerManager.triggerData[TRIGGER_ID.ZOOM].triggers as ZoomTrigger[]
+      const zoomTriggers = this.triggerManager.data[TRIGGER_ID.ZOOM].triggers as ZoomTrigger[]
       const newZoomTriggers = zoomTriggers.map(trigger => [trigger[0], Math.round((trigger[1] + factor + Number.EPSILON) * 1e7) / 1e7])
       this.triggerManager.updateFromPath([TRIGGER_ID.ZOOM, 'triggers'], newZoomTriggers, TRIGGER_ID.ZOOM)
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
@@ -435,7 +435,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
           { style: STYLES.content },
           state.settingsActive && this.settingsContainer(),
           !(state.settingsActive) && this.tabContainer(),
-          !(state.settingsActive) && this.windowContainer()
+          !(state.settingsActive) && this.window()
         )
       )
     }
@@ -779,18 +779,15 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       ))
     }
 
-    windowContainer (): ReactComponent {
+    window (): ReactComponent {
       const { state, root } = this
-      return this.window(root.triggerManager.triggerData[state.activeTab])
-    }
+      const data = root.triggerManager.data[state.activeTab]
 
-    window (data: TriggerDataItem): ReactComponent {
-      const { state, root } = this
       if (data.id === TRIGGER_ID.SKIN) {
         return e(
           'div',
           { style: STYLES.window },
-          this.skinEditorToolbar(data.triggers, state.skinEditorSelectedRider),
+          this.skinEditorToolbar(state.skinEditorSelectedRider),
           this.skinEditor(data.triggers as SkinCssTrigger[])
         )
       }
@@ -798,13 +795,14 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       return e(
         'div',
         { style: STYLES.window },
-        this.smoothTab(root.triggerManager.triggerData[state.activeTab]),
-        Object.keys(data.triggers).map((i) => this.trigger(data, parseInt(i, 10)))
+        this.smoothTab(),
+        Object.keys(data.triggers).map((i) => this.trigger(parseInt(i, 10)))
       )
     }
 
-    smoothTab (data: TriggerDataItem): ReactComponent {
+    smoothTab (): ReactComponent {
       const { root, state } = this
+      const data = root.triggerManager.data[state.activeTab]
       return e(
         'div',
         { style: STYLES.smooth.container },
@@ -847,8 +845,8 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             type: 'checkbox',
             onChange: () => root.onUpdateTrigger(
               {
-                prev: root.triggerManager.triggerData[state.activeTab].interpolate,
-                new: !(root.triggerManager.triggerData[state.activeTab].interpolate as boolean)
+                prev: root.triggerManager.data[state.activeTab].interpolate,
+                new: !(root.triggerManager.data[state.activeTab].interpolate as boolean)
               },
               ['interpolate'],
               CONSTRAINTS.INTERPOLATE
@@ -859,8 +857,9 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       )
     }
 
-    trigger (data: TriggerDataItem, index: number): ReactComponent {
+    trigger (index: number): ReactComponent {
       const { root, state } = this
+      const data = root.triggerManager.data[state.activeTab]
       const currentTrigger = data.triggers[index]
 
       return e(
@@ -1159,8 +1158,9 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       )
     }
 
-    skinEditorToolbar (data: Trigger[], index: number): ReactComponent {
+    skinEditorToolbar (index: number): ReactComponent {
       const { root, state } = this
+      const data = root.triggerManager.data[TRIGGER_ID.SKIN].triggers
       const colorValue = state.skinEditorSelectedColor.substring(0, 7)
       const alphaValue = parseInt(state.skinEditorSelectedColor.substring(7), 16) / 255
 
