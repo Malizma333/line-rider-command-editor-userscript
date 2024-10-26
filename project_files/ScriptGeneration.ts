@@ -21,6 +21,9 @@ function generateScript (command: TRIGGER_ID, triggerData: TriggerData): string 
       return currentHeader
         .replace('{0}', formatSkins(currentData.triggers as SkinCssTrigger[]))
         .replace(' ', '')
+    case TRIGGER_ID.GRAVITY:
+      return currentHeader
+        .replace('{0}', JSON.stringify(currentData.triggers))
     default:
       return ''
   }

@@ -14,7 +14,7 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
         this.triggerData[commandId as TRIGGER_ID].triggers = []
         this.parseCommand(commandId as TRIGGER_ID, trimmedScript)
       } catch (error: any) {
-        console.error('[ScriptParser]', error.message)
+        console.warn('[ScriptParser]', error.message)
         this.triggerData[commandId as TRIGGER_ID] = structuredClone(
           currentTriggerData[commandId as TRIGGER_ID]
         )
@@ -25,6 +25,10 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
   }
 
   parseCommand (commandId: TRIGGER_ID, scriptSection: string): void {
+    if (commandId === TRIGGER_ID.GRAVITY) {
+      throw new Error('Gravity parsing not supported!')
+    }
+
     const currentHeader = TRIGGER_PROPS[commandId].FUNC.split('(')[0]
     const currentHeaderIndex = scriptSection.indexOf(currentHeader)
 

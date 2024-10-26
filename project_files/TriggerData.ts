@@ -5,7 +5,8 @@ enum TRIGGER_ID {
   PAN = 'CAMERA_PAN',
   FOCUS = 'CAMERA_FOCUS',
   TIME = 'TIME_REMAP',
-  SKIN = 'CUSTOM_SKIN'
+  SKIN = 'CUSTOM_SKIN',
+  GRAVITY = 'GRAVITY'
 }
 
 type TriggerTime = [number, number, number]
@@ -15,9 +16,10 @@ type CameraPanTrigger = [TriggerTime, { w: number, h: number, x: number, y: numb
 type CameraFocusTrigger = [TriggerTime, number[]]
 type TimeRemapTrigger = [TriggerTime, number]
 interface SkinCssTrigger { [property: string]: { stroke?: string, fill?: string } }
+type GravityTrigger = [TriggerTime, { x: number, y: number }]
 
-type TimedTrigger = ZoomTrigger | CameraPanTrigger | CameraFocusTrigger | TimeRemapTrigger
-type Trigger = ZoomTrigger | CameraPanTrigger | CameraFocusTrigger | TimeRemapTrigger | SkinCssTrigger
+type TimedTrigger = ZoomTrigger | CameraPanTrigger | CameraFocusTrigger | TimeRemapTrigger | GravityTrigger
+type Trigger = TimedTrigger | SkinCssTrigger
 
 interface TriggerMetadata<Type> {
   readonly DISPLAY_NAME: string
@@ -83,12 +85,24 @@ const SkinCssMetadata: TriggerMetadata<SkinCssTrigger> = {
   }
 }
 
+const GravityMetadata: TriggerMetadata<GravityTrigger> = {
+  DISPLAY_NAME: 'Gravity',
+  FUNC: `window.store.getState().camera.playbackFollower._frames.length = 0;
+window.store.getState().simulator.engine.engine._computed._frames.length = 1;
+Object.defineProperty(window.$ENGINE_PARAMS, "gravity", {  get() {
+  const x = {0};
+  return {x: 0, y: 0.175};
+}});`, // TODO
+  TEMPLATE: [[0, 0, 0], { x: 0, y: 0.175 }]
+}
+
 const TRIGGER_PROPS = {
   [TRIGGER_ID.ZOOM]: ZoomMetadata,
   [TRIGGER_ID.PAN]: CameraPanMetadata,
   [TRIGGER_ID.FOCUS]: CameraFocusMetadata,
   [TRIGGER_ID.TIME]: TimeRemapMetadata,
-  [TRIGGER_ID.SKIN]: SkinCssMetadata
+  [TRIGGER_ID.SKIN]: SkinCssMetadata,
+  [TRIGGER_ID.GRAVITY]: GravityMetadata
 }
 
 interface TriggerDataItem {
@@ -104,6 +118,7 @@ interface TriggerData {
   [TRIGGER_ID.FOCUS]: TriggerDataItem
   [TRIGGER_ID.TIME]: TriggerDataItem
   [TRIGGER_ID.SKIN]: TriggerDataItem
+  [TRIGGER_ID.GRAVITY]: TriggerDataItem
 }
 
 class TriggerDataManager {
@@ -142,6 +157,10 @@ class TriggerDataManager {
       [TRIGGER_ID.SKIN]: {
         id: TRIGGER_ID.SKIN,
         triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE)]
+      },
+      [TRIGGER_ID.GRAVITY]: {
+        id: TRIGGER_ID.GRAVITY,
+        triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.GRAVITY].TEMPLATE)]
       }
     }
   }

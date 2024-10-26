@@ -789,6 +789,14 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         )
       }
 
+      if (data.id === TRIGGER_ID.GRAVITY) {
+        return e(
+          'div',
+          { style: STYLES.window },
+          Object.keys(data.triggers).map((i) => this.trigger(parseInt(i, 10)))
+        )
+      }
+
       return e(
         'div',
         { style: STYLES.window },
@@ -893,6 +901,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         data.id === TRIGGER_ID.FOCUS && this.cameraFocusTrigger((currentTrigger as CameraFocusTrigger), index),
         data.id === TRIGGER_ID.TIME && this.timeRemapTrigger((currentTrigger as TimeRemapTrigger), index),
         data.id === TRIGGER_ID.SKIN && false,
+        data.id === TRIGGER_ID.GRAVITY && this.gravityTrigger((currentTrigger as GravityTrigger), index),
         e(
           'button',
           {
@@ -953,11 +962,11 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         'div',
         { style: STYLES.trigger.property },
         e('label', {
-          for: `triggerText_${labels[0]}_${index}`,
+          for: `zoomTriggerText_${labels[0]}_${index}`,
           style: STYLES.trigger.text
         }, labels[0]),
         e('input', {
-          id: `triggerText_${labels[0]}_${index}`,
+          id: `zoomTriggerText_${labels[0]}_${index}`,
           style: STYLES.trigger.input,
           value: data[1],
           onChange: (e: Event) => root.onUpdateTrigger(
@@ -995,11 +1004,11 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             'div',
             { style: STYLES.trigger.property },
             e('label', {
-              for: `triggerText_${labels[propIndex + 2 * pairIndex]}_${index}`,
+              for: `camTriggerText_${labels[propIndex + 2 * pairIndex]}_${index}`,
               style: STYLES.trigger.text
             }, labels[propIndex + 2 * pairIndex]),
             e('input', {
-              id: `triggerText_${labels[propIndex + 2 * pairIndex]}_${index}`,
+              id: `camTriggerText_${labels[propIndex + 2 * pairIndex]}_${index}`,
               style: STYLES.trigger.input,
               value: data[1][prop as 'w' | 'h' | 'x' | 'y'],
               onChange: (e: Event) => root.onUpdateTrigger(
@@ -1044,11 +1053,11 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
           })
         ),
         e('label', {
-          for: `triggerText_${labels[0]}_${dropdownIndex}_${index}`,
+          for: `focusTriggerText_${labels[0]}_${dropdownIndex}_${index}`,
           style: STYLES.trigger.text
         }, labels[0]),
         e('input', {
-          id: `triggerText_${labels[0]}_${dropdownIndex}_${index}`,
+          id: `focusTriggerText_${labels[0]}_${dropdownIndex}_${index}`,
           style: STYLES.trigger.input,
           value: data[1][dropdownIndex],
           onChange: (e: Event) => root.onUpdateTrigger(
@@ -1074,11 +1083,11 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         'div',
         { style: STYLES.trigger.property },
         e('label', {
-          for: `triggerText_${labels[0]}_${index}`,
+          for: `timeTriggerText_${labels[0]}_${index}`,
           style: STYLES.trigger.text
         }, labels[0]),
         e('input', {
-          id: `triggerText_${labels[0]}_${index}`,
+          id: `timeTriggerText_${labels[0]}_${index}`,
           style: STYLES.trigger.input,
           value: data[1],
           onChange: (e: Event) => root.onUpdateTrigger(
@@ -1093,6 +1102,42 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             true
           )
         })
+      )
+    }
+
+    gravityTrigger (data: GravityTrigger, index: number): ReactComponent {
+      const { root } = this
+      const cProps = [CONSTRAINTS.GRAVITY_X, CONSTRAINTS.GRAVITY_Y]
+      const labels = ['Gravity X', 'Y']
+      const props = ['x', 'y']
+
+      return e(
+        'div',
+        { style: { display: 'flex', flexDirection: 'row' } },
+        props.map((prop, propIndex) => e(
+          'div',
+          { style: STYLES.trigger.property },
+          e('label', {
+            for: `gravityTriggerText_${labels[propIndex]}_${index}`,
+            style: STYLES.trigger.text
+          }, labels[propIndex]),
+          e('input', {
+            id: `gravityTriggerText_${labels[propIndex]}_${index}`,
+            style: STYLES.trigger.input,
+            value: data[1][prop as 'x' | 'y'],
+            onChange: (e: Event) => root.onUpdateTrigger(
+              { prev: data[1][prop as 'x' | 'y'], new: (e.target as HTMLInputElement).value },
+              ['triggers', index, 1, prop],
+              cProps[propIndex]
+            ),
+            onBlur: (e: Event) => root.onUpdateTrigger(
+              { prev: data[1][prop as 'x' | 'y'], new: (e.target as HTMLInputElement).value },
+              ['triggers', index, 1, prop],
+              cProps[propIndex],
+              true
+            )
+          })
+        ))
       )
     }
 
