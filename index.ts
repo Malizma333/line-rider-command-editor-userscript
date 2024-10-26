@@ -6,6 +6,19 @@ function main (): void {
   (document.getElementById('content') as HTMLElement).appendChild(parent)
 
   ReactDOM.render(React.createElement(InitRoot()), parent)
+
+  const content = (document.getElementById('content') as HTMLElement)
+  const timerId = setInterval(() => {
+    const errorContainer = content.querySelector('div[style="margin: 16px;"]')
+    if (errorContainer != null) {
+      const errorHeader = errorContainer.querySelector('h1')
+      if (errorHeader != null && errorHeader.innerHTML === 'An error occured!') {
+        console.log('Crash detected...')
+        window.save_commands()
+        clearInterval(timerId)
+      }
+    }
+  }, 100)
 }
 
 if (window.store != null) {
