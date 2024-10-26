@@ -194,6 +194,9 @@ class TriggerDataManager {
     this.redoStack = []
     const oldValue = this.setAtPointer(['triggerData'].concat(path), newValue)
     this.undoStack.push([path, oldValue])
+    if (this.undoStack.length > HISTORY_LIMIT) {
+      this.undoStack.shift()
+    }
   }
 
   undo (): void {
