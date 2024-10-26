@@ -354,7 +354,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       store.dispatch(setPlaybackDimensions({ width: size[0], height: size[1] }))
 
       const zoomTriggers = this.triggerManager.triggerData[TRIGGER_ID.ZOOM].triggers as ZoomTrigger[]
-      const newZoomTriggers = zoomTriggers.map(trigger => [trigger[0], Math.round((trigger[1] + factor + Number.EPSILON) * 10e6) / 10e6])
+      const newZoomTriggers = zoomTriggers.map(trigger => [trigger[0], Math.round((trigger[1] + factor + Number.EPSILON) * 1e7) / 1e7])
       this.triggerManager.updateFromPath([TRIGGER_ID.ZOOM, 'triggers'], newZoomTriggers, TRIGGER_ID.ZOOM)
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
 
