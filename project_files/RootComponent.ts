@@ -111,7 +111,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
 
       if (activeTab === TRIGGER_ID.FOCUS) {
-        this.setState({ focusDDIndices: focusDDIndices.concat(0) })
+        this.setState({ focusDDIndices: focusDDIndices.slice(0, index + 1).concat(0).concat(focusDDIndices.slice(index + 1)) })
       }
 
       this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
@@ -144,7 +144,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
 
       if (activeTab === TRIGGER_ID.FOCUS) {
-        this.setState({ focusDDIndices: focusDDIndices.slice(0, newTriggerArray.length) })
+        this.setState({ focusDDIndices: focusDDIndices.slice(0, index).concat(focusDDIndices.slice(index + 1)) })
       }
 
       this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
@@ -185,7 +185,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         const focusDDIndices = Array(focusTriggers.length).fill(0) as number[]
 
         for(let i = 0; i < focusTriggers.length; i++) {
-          for(let j = 0; j < focusTriggers[i][1].length; i++) {
+          for(let j = 0; j < focusTriggers[i][1].length; j++) {
             if(focusTriggers[i][1][j] > 0) {
               focusDDIndices[i] = j
               break
