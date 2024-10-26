@@ -87,12 +87,7 @@ const SkinCssMetadata: TriggerMetadata<SkinCssTrigger> = {
 
 const GravityMetadata: TriggerMetadata<GravityTrigger> = {
   DISPLAY_NAME: 'Gravity',
-  FUNC: `window.store.getState().camera.playbackFollower._frames.length = 0;
-window.store.getState().simulator.engine.engine._computed._frames.length = 1;
-Object.defineProperty(window.$ENGINE_PARAMS, "gravity", {  get() {
-  const x = {0};
-  return {x: 0, y: 0.175};
-}});`, // TODO
+  FUNC: `!function(){window.store.getState().camera.playbackFollower._frames.length=0,window.store.getState().simulator.engine.engine._computed._frames.length=1;let n=0;const r=JSON.parse('{0}');Object.defineProperty(window.$ENGINE_PARAMS,"gravity",{get(){var e,t;return n!==r.length-1&&(e=store.getState().simulator.engine.engine._computed._frames.length,40*(t=r[n+1][0])[0]*60+40*t[1]+t[2]===e)&&(n+=1),r[n][1]}})}();`,
   TEMPLATE: [[0, 0, 0], { x: 0, y: 0.175 }]
 }
 
