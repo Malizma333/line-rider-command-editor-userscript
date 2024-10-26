@@ -507,7 +507,11 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             'button',
             {
               title: 'Run',
-              style: STYLES.button.embedded,
+              style: {
+                ...STYLES.button.embedded,
+                color: !state.invalidTimes.every((invalid) => invalid === false) ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black
+              },
+              disabled: !state.invalidTimes.every((invalid) => invalid === false),
               onClick: () => root.onTest()
             },
             e('span', playIcon)
