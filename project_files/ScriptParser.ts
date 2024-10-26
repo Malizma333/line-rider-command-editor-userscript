@@ -2,44 +2,16 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
   triggerData: TriggerData
 
   constructor () {
-    this.triggerData = this.emptyTriggerData
-  }
-
-  get emptyTriggerData (): TriggerData {
-    return {
-      [TRIGGER_ID.ZOOM]: {
-        id: TRIGGER_ID.ZOOM,
-        triggers: [],
-        smoothing: CONSTRAINTS.SMOOTH.DEFAULT
-      },
-      [TRIGGER_ID.PAN]: {
-        id: TRIGGER_ID.PAN,
-        triggers: [],
-        smoothing: CONSTRAINTS.SMOOTH.DEFAULT
-      },
-      [TRIGGER_ID.FOCUS]: {
-        id: TRIGGER_ID.FOCUS,
-        triggers: [],
-        smoothing: CONSTRAINTS.SMOOTH.DEFAULT
-      },
-      [TRIGGER_ID.TIME]: {
-        id: TRIGGER_ID.TIME,
-        triggers: [],
-        interpolate: CONSTRAINTS.INTERPOLATE.DEFAULT
-      },
-      [TRIGGER_ID.SKIN]: {
-        id: TRIGGER_ID.SKIN,
-        triggers: []
-      }
-    }
+    this.triggerData = TriggerDataManager.initialTriggerData
   }
 
   parseScript (scriptText: string, currentTriggerData: TriggerData): TriggerData {
-    this.triggerData = this.emptyTriggerData
+    this.triggerData = TriggerDataManager.initialTriggerData
     const trimmedScript = scriptText.replace(/\s/g, '')
 
     Object.keys(TRIGGER_PROPS).forEach((commandId: string) => {
       try {
+        this.triggerData[commandId as TRIGGER_ID].triggers.length = 0
         this.parseCommand(commandId as TRIGGER_ID, trimmedScript)
       } catch (error: any) {
         console.error('[ScriptParser]', error.message)
@@ -194,7 +166,7 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
   parseSkinProp (cssString: string, skinIndex: number): void {
     const wordRegex = /(['"])?([#]?[a-z0-9A-Z_-]+)(['"])?/g
     const skinTriggers = this.triggerData[TRIGGER_ID.SKIN].triggers as SkinCssTrigger[]
-    const cssPropKeywords: SkinMap = {
+    const cssPropKeywords = {
       outline: '.outline',
       flag: '.flag',
       skin: '.skin',
@@ -232,11 +204,11 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
         .replace(';', ','))
 
       if (styleData.fill !== undefined) {
-        skinTriggers[skinIndex][propName as keyof SkinMap].fill = styleData.fill
+        skinTriggers[skinIndex][propName].fill = styleData.fill
       }
 
       if (styleData.stroke !== undefined) {
-        skinTriggers[skinIndex][propName as keyof SkinMap].stroke = styleData.stroke
+        skinTriggers[skinIndex][propName].stroke = styleData.stroke
       }
     })
 

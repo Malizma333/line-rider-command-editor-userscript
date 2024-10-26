@@ -1,28 +1,29 @@
-interface RootState {
-  active: boolean
-  activeTab: TRIGGER_ID
-  triggerData: TriggerData
-  focusDDIndices: number[]
-  skinEditorSelectedRider: number
-  skinEditorSelectedColor: string
-  skinEditorZoom: [number, number, number]
-  settingsActive: boolean
-  settingsDirty: boolean
-  fontSize: number
-  resolution: ViewportOption
-  fontSizeSetting: number
-  resolutionSetting: ViewportOption
-  invalidTimes: boolean[]
-}
-
 function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint/no-unused-vars
   const { store, React } = window
   const rootElement = document.getElementById(ROOT_NODE_ID) as HTMLElement
   const e = React.createElement
 
+  interface RootState {
+    active: boolean
+    activeTab: TRIGGER_ID
+    triggerUpdateFlag: boolean
+    focusDDIndices: number[]
+    skinEditorSelectedRider: number
+    skinEditorSelectedColor: string
+    skinEditorZoom: [number, number, number]
+    settingsActive: boolean
+    settingsDirty: boolean
+    fontSize: number
+    resolution: ViewportOption
+    fontSizeSetting: number
+    resolutionSetting: ViewportOption
+    invalidTimes: boolean[]
+  }
+
   class RootComponent extends React.Component {
     readonly componentManager = new ComponentManager(this)
     readonly parser = new ScriptParser()
+    readonly triggerManager = new TriggerDataManager()
     readonly state: RootState
     readonly setState: SetState
     lastRiderCount: number | undefined
@@ -33,32 +34,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       this.state = {
         active: false,
         activeTab: TRIGGER_ID.ZOOM,
-        triggerData: {
-          [TRIGGER_ID.ZOOM]: {
-            id: TRIGGER_ID.ZOOM,
-            triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.ZOOM].TEMPLATE)],
-            smoothing: CONSTRAINTS.SMOOTH.DEFAULT
-          },
-          [TRIGGER_ID.PAN]: {
-            id: TRIGGER_ID.PAN,
-            triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.PAN].TEMPLATE)],
-            smoothing: CONSTRAINTS.SMOOTH.DEFAULT
-          },
-          [TRIGGER_ID.FOCUS]: {
-            id: TRIGGER_ID.FOCUS,
-            triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.FOCUS].TEMPLATE)],
-            smoothing: CONSTRAINTS.SMOOTH.DEFAULT
-          },
-          [TRIGGER_ID.TIME]: {
-            id: TRIGGER_ID.TIME,
-            triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.TIME].TEMPLATE)],
-            interpolate: CONSTRAINTS.INTERPOLATE.DEFAULT
-          },
-          [TRIGGER_ID.SKIN]: {
-            id: TRIGGER_ID.SKIN,
-            triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE)]
-          }
-        },
+        triggerUpdateFlag: false,
         focusDDIndices: [0],
         skinEditorSelectedRider: 0,
         skinEditorSelectedColor: '#000000ff',
@@ -89,17 +65,16 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
 
       if (this.lastRiderCount !== riderCount) {
         this.lastRiderCount = riderCount
-        const { triggerData, skinEditorSelectedRider: selectedSkinEditorRider, focusDDIndices } = this.state
+        const { skinEditorSelectedRider, focusDDIndices } = this.state
 
-        if (selectedSkinEditorRider >= riderCount) {
-          this.setState({ selectedSkinEditorRider: riderCount - 1 })
+        if (skinEditorSelectedRider >= riderCount) {
+          this.setState({ skinEditorSelectedRider: riderCount - 1 })
         }
 
-        let nextTriggerData = resizedFocusWeightArrays(riderCount, triggerData)
-        nextTriggerData = resizedSkinArray(riderCount, nextTriggerData)
+        this.triggerManager.updateRiderCount(riderCount)
 
-        this.setState({ triggerData: nextTriggerData })
-        this.setState({ focusDDIndices: clampedFocusDDs(riderCount, focusDDIndices) })
+        this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
+        this.setState({ focusDDIndices: focusDDIndices.map((ddIndex) => Math.min(riderCount - 1, ddIndex)) })
       }
 
       const sidebarOpen = getSidebarOpen(nextState)
@@ -118,93 +93,72 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onCreateTrigger (index: number): void {
-      const { triggerData, activeTab, focusDDIndices } = this.state
+      const { activeTab, focusDDIndices } = this.state
 
       if (activeTab === TRIGGER_ID.SKIN) return
 
-      const commandData = triggerData[activeTab]
-      const newTrigger = structuredClone(commandData.triggers[index] as TimedTrigger)
-
       const currentPlayerIndex = getPlayerIndex(store.getState())
-      newTrigger[0] = [
+      const triggerTime: TriggerTime = [
         Math.floor(currentPlayerIndex / 2400),
         Math.floor((currentPlayerIndex % 2400) / 40),
         Math.floor(currentPlayerIndex % 40)
       ]
 
-      const triggerStart = triggerData[activeTab].triggers.slice(0, index + 1)
-      const triggerEnd = triggerData[activeTab].triggers.slice(index + 1)
-      const newTriggers = [...triggerStart, newTrigger, ...triggerEnd]
-
-      triggerData[activeTab].triggers = newTriggers
+      this.triggerManager.createTrigger(activeTab, index, triggerTime)
+      const newTriggerArray = this.triggerManager.getTriggerArray(activeTab)
 
       if (activeTab === TRIGGER_ID.FOCUS) {
-        this.setState({
-          focusDDIndices:
-          resizedFocusDDIndexArray(
-            newTriggers.length,
-            focusDDIndices
-          )
-        })
+        const newFocusDDIndices = resizedFocusDDIndexArray(
+          newTriggerArray.length,
+          focusDDIndices
+        )
+        this.setState({ focusDDIndices: newFocusDDIndices })
       }
 
-      this.setState({ invalidTimes: validateTimes(newTriggers as TimedTrigger[]) })
-      this.setState({ triggerData })
+      this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
+      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
     }
 
     onUpdateTrigger (valueChange: ValueChange, path: any[], constraints?: Constraint, bounded = false): void {
-      const { triggerData, activeTab } = this.state
-      let pathPointer: any = triggerData[activeTab]
+      const { activeTab } = this.state
 
-      for (let i = 0; i < path.length - 1; i += 1) {
-        pathPointer = pathPointer[path[i]]
-      }
+      const fullPath = [activeTab].concat(path)
+      const newValue = validateData(valueChange, bounded, constraints)
 
-      pathPointer[path[path.length - 1]] = validateData(
-        valueChange,
-        bounded,
-        constraints
-      )
+      this.triggerManager.updateFromPath(fullPath, newValue)
+      const newTriggerArray = this.triggerManager.getTriggerArray(activeTab)
 
       if (activeTab !== TRIGGER_ID.SKIN) {
-        const triggers = triggerData[activeTab].triggers as TimedTrigger[]
-        this.setState({ invalidTimes: validateTimes(triggers) })
+        this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
       }
 
-      this.setState({ triggerData })
+      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
     }
 
     onDeleteTrigger (index: number): void {
-      const { triggerData, activeTab, focusDDIndices } = this.state
+      const { activeTab, focusDDIndices } = this.state
 
       if (activeTab === TRIGGER_ID.SKIN) return
 
-      const newTriggers: Trigger[] = []
-      for (let i = 0; i < triggerData[activeTab].triggers.length; i++) {
-        if (i !== index) {
-          newTriggers.push(structuredClone(triggerData[activeTab].triggers[i]) as Trigger)
-        }
-      }
-
-      triggerData[activeTab].triggers = newTriggers
+      this.triggerManager.deleteTrigger(activeTab, index)
+      const newTriggerArray = this.triggerManager.getTriggerArray(activeTab)
 
       if (activeTab === TRIGGER_ID.FOCUS) {
-        this.setState({
-          focusDDIndices: resizedFocusDDIndexArray(
-            newTriggers.length,
-            focusDDIndices
-          )
-        })
+        const newFocusDDIndices = resizedFocusDDIndexArray(
+          newTriggerArray.length,
+          focusDDIndices
+        )
+        this.setState({ focusDDIndices: newFocusDDIndices })
       }
 
-      this.setState({ invalidTimes: validateTimes(newTriggers as TimedTrigger[]) })
-      this.setState({ triggerData })
+      this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
+      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
     }
 
     onDownload (): void {
-      const { triggerData } = this.state
+      const jsonString = JSON.stringify(this.triggerManager.triggerData)
       const a = document.createElement('a')
-      const data = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(triggerData))
+      const data = 'data:text/json;charset=utf-8,' + encodeURIComponent(jsonString)
       a.setAttribute('href', data)
       a.setAttribute('download', getTrackTitle(store.getState()) + '.scriptData.json')
       a.click()
@@ -221,11 +175,10 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onLoadScript (): void {
-      const { triggerData } = this.state
       this.onLoad(
         this.parser.parseScript(
           getCurrentScript(store.getState()),
-          triggerData
+          this.triggerManager.triggerData
         )
       )
     }
@@ -235,34 +188,31 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       try {
         Object.keys(TRIGGER_PROPS).forEach((command: string) => {
           if (command === TRIGGER_ID.FOCUS) {
-            let nextFocusDDIndices = [...focusDDIndices]
-            nextFocusDDIndices = resizedFocusDDIndexArray(
-              nextTriggerData[command].triggers.length,
-              nextFocusDDIndices
-            )
-            nextFocusDDIndices = chosenFocusDDIndices(
-              nextTriggerData,
-              nextFocusDDIndices
+            const nextFocusDDIndices = chosenFocusDDIndices(nextTriggerData,
+              resizedFocusDDIndexArray(
+                nextTriggerData[command].triggers.length,
+                focusDDIndices
+              )
             )
             this.setState({ focusDDIndices: nextFocusDDIndices })
           }
         })
 
         if (activeTab !== TRIGGER_ID.SKIN) {
-          const triggers = nextTriggerData[activeTab].triggers as TimedTrigger[]
-          this.setState({ invalidTimes: validateTimes(triggers) })
+          const newTriggerArray = nextTriggerData[activeTab].triggers
+          this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
         }
 
-        this.setState({ triggerData: nextTriggerData })
+        this.triggerManager.replaceTriggers(nextTriggerData)
       } catch (error: any) {
         console.error(error.message)
       }
     }
 
     onTest (): void {
-      const { activeTab, triggerData } = this.state
+      const { activeTab } = this.state
       try {
-        const script = generateScript(activeTab, triggerData)
+        const script = generateScript(activeTab, this.triggerManager.triggerData)
         // HACK: Already evaluated script, execute it directly
         eval.call(window, script) // eslint-disable-line no-eval
       } catch (error: any) {
@@ -271,51 +221,39 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onPrint (): void {
-      const { activeTab, triggerData } = this.state
+      const { activeTab } = this.state
       try {
-        console.info(generateScript(activeTab, triggerData))
+        console.info(generateScript(activeTab, this.triggerManager.triggerData))
       } catch (error: any) {
         console.error(error.message)
       }
     }
 
     onUndo (): void {
-      const { activeTab, triggerData } = this.state
+      const { activeTab } = this.state
       console.log('Undo')
 
       if (activeTab !== TRIGGER_ID.SKIN) {
-        const triggers = triggerData[activeTab].triggers as TimedTrigger[]
-        this.setState({ invalidTimes: validateTimes(triggers) })
+        const newTriggerArray = this.triggerManager.getTriggerArray(activeTab)
+        this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
       }
     }
 
     onRedo (): void {
-      const { activeTab, triggerData } = this.state
+      const { activeTab } = this.state
       console.log('Redo')
 
       if (activeTab !== TRIGGER_ID.SKIN) {
-        const triggers = triggerData[activeTab].triggers as TimedTrigger[]
-        this.setState({ invalidTimes: validateTimes(triggers) })
+        const newTriggerArray = this.triggerManager.getTriggerArray(activeTab)
+        this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
       }
     }
 
     onResetSkin (index: number): void {
-      const { triggerData } = this.state
-      if (!window.confirm('Are you sure you want to reset the current rider\'s skin?')) return
+      if (!window.confirm('Are you sure you want to reset this rider\'s skin?')) return
 
-      const defaultSkin = structuredClone(TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE)
-      const skinCssArray = [...triggerData[TRIGGER_ID.SKIN].triggers]
-      skinCssArray[index] = defaultSkin
-
-      this.setState({
-        triggerData: {
-          ...triggerData,
-          [TRIGGER_ID.SKIN]: {
-            ...triggerData[TRIGGER_ID.SKIN],
-            triggers: skinCssArray
-          }
-        }
-      })
+      this.triggerManager.resetSkinTrigger(index)
+      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
     }
 
     onChangeColor (color?: string, alpha?: string): void {
@@ -345,12 +283,11 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onChangeTab (tabName: TRIGGER_ID): void {
-      const { triggerData } = this.state
-
       this.setState({ activeTab: tabName })
+
       if (tabName !== TRIGGER_ID.SKIN) {
-        const triggers = triggerData[tabName].triggers as TimedTrigger[]
-        this.setState({ invalidTimes: validateTimes(triggers) })
+        const newTriggerArray = this.triggerManager.getTriggerArray(tabName)
+        this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
       }
     }
 
@@ -388,7 +325,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onApplySettings (): void {
-      const { triggerData, resolutionSetting, resolution, fontSizeSetting } = this.state
+      const { resolutionSetting, resolution, fontSizeSetting } = this.state
 
       const factor = Math.log2(
         SETTINGS[SETTINGS_KEY.VIEWPORT][resolutionSetting].SIZE[0] /
@@ -398,23 +335,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const size = SETTINGS[SETTINGS_KEY.VIEWPORT][resolutionSetting].SIZE
       store.dispatch(setPlaybackDimensions({ width: size[0], height: size[1] }))
 
-      const zoomTriggers = triggerData[TRIGGER_ID.ZOOM].triggers as ZoomTrigger[]
-
-      for (let i = 0; i < zoomTriggers.length; i++) {
-        zoomTriggers[i][1] = Math.round((
-          zoomTriggers[i][1] + factor + Number.EPSILON
-        ) * 10e6) / 10e6
-      }
-
-      this.setState({
-        triggerData: {
-          ...triggerData,
-          [TRIGGER_ID.ZOOM]: {
-            ...triggerData[TRIGGER_ID.ZOOM],
-            triggers: zoomTriggers
-          }
-        }
-      })
+      this.triggerManager.updateZoomViewport(factor)
 
       saveSetting(SETTINGS_KEY.FONT_SIZE, String(fontSizeSetting))
       saveSetting(SETTINGS_KEY.VIEWPORT, resolutionSetting)
@@ -422,6 +343,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       this.setState({ settingsDirty: false })
       this.setState({ fontSize: fontSizeSetting })
       this.setState({ resolution: resolutionSetting })
+      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
     }
 
     onChangeFocusDD (index: number, value: string): void {
@@ -432,7 +354,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onChangeSkinDD (value: string): void {
-      this.setState({ selectedSkinEditorRider: parseInt(value, 10) })
+      this.setState({ skinEditorSelectedRider: parseInt(value, 10) })
     }
 
     onZoomSkinEditor (e: Event | WheelEvent, isMouseAction: boolean): void {
@@ -670,14 +592,14 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         ),
         e('text', {
           style: {
-            fontSize: GLOBAL_STYLES.textSizes.L[state.fontSizeSetting]
+            fontSize: GLOBAL_STYLES.textSizes.L[state.fontSize]
           }
         }, 'Settings'),
         e('button', {
           style: {
             ...STYLES.button.settings,
             position: 'absolute',
-            fontSize: GLOBAL_STYLES.textSizes.M[state.fontSizeSetting],
+            fontSize: GLOBAL_STYLES.textSizes.M[state.fontSize],
             left: '0px',
             background: state.settingsDirty
               ? GLOBAL_STYLES.light_gray3
@@ -693,14 +615,14 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const { root, state } = this
       return e(
         window.React.Fragment,
-        { style: { fontSize: GLOBAL_STYLES.textSizes.M[state.fontSizeSetting] } },
+        { style: { fontSize: GLOBAL_STYLES.textSizes.M[state.fontSize] } },
         e(
           'div',
           { style: STYLES.settings.row },
           e('text', {
             style: {
               ...STYLES.settings.label,
-              fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting]
+              fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize]
             }
           }, 'Font Sizes'),
           e(
@@ -708,7 +630,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             {
               style: {
                 ...STYLES.settings.parameter,
-                fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting]
+                fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize]
               }
             },
             e('button', {
@@ -749,7 +671,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
           e('text', {
             style: {
               ...STYLES.settings.label,
-              fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting]
+              fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize]
             }
           }, 'Viewport'),
           e(
@@ -757,7 +679,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             {
               style: {
                 ...STYLES.settings.parameter,
-                fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting]
+                fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize]
               }
             },
             e('button', {
@@ -832,18 +754,18 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         onClick: () => root.onChangeTab(tabID)
       }, e(
         'text',
-        { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting] } },
+        { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] } },
         TRIGGER_PROPS[tabID].DISPLAY_NAME
       ))
     }
 
     windowContainer (): ReactComponent {
-      const { state } = this
-      return this.window(state.triggerData[state.activeTab])
+      const { state, root } = this
+      return this.window(root.triggerManager.triggerData[state.activeTab])
     }
 
     window (data: TriggerDataItem): ReactComponent {
-      const { state } = this
+      const { state, root } = this
       if (data.id === TRIGGER_ID.SKIN) {
         return e(
           'div',
@@ -856,7 +778,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       return e(
         'div',
         { style: STYLES.window },
-        this.smoothTab(state.triggerData[state.activeTab]),
+        this.smoothTab(root.triggerManager.triggerData[state.activeTab]),
         Object.keys(data.triggers).map((i) => this.trigger(data, parseInt(i, 10)))
       )
     }
@@ -868,13 +790,13 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         { style: STYLES.smooth.container },
         e('label', {
           for: 'smoothTextInput',
-          style: { fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting] }
+          style: { fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] }
         }, 'Smoothing'),
         data.id !== TRIGGER_ID.TIME && e('input', {
           id: 'smoothTextInput',
           style: {
             ...STYLES.smooth.input,
-            fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting],
+            fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize],
             marginLeft: '5px'
           },
           value: data.smoothing,
@@ -905,8 +827,8 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             type: 'checkbox',
             onChange: () => root.onUpdateTrigger(
               {
-                prev: state.triggerData[state.activeTab].interpolate,
-                new: !(state.triggerData[state.activeTab].interpolate as boolean)
+                prev: root.triggerManager.triggerData[state.activeTab].interpolate,
+                new: !(root.triggerManager.triggerData[state.activeTab].interpolate as boolean)
               },
               ['interpolate'],
               CONSTRAINTS.INTERPOLATE
@@ -919,14 +841,14 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
 
     trigger (data: TriggerDataItem, index: number): ReactComponent {
       const { root, state } = this
-      const triggerData = data.triggers[index]
+      const currentTrigger = data.triggers[index]
 
       return e(
         'div',
         {
           style: {
             ...STYLES.trigger.container,
-            fontSize: GLOBAL_STYLES.textSizes.M[state.fontSizeSetting],
+            fontSize: GLOBAL_STYLES.textSizes.M[state.fontSize],
             backgroundColor: index === 0 ? GLOBAL_STYLES.gray : GLOBAL_STYLES.white
           }
         },
@@ -949,11 +871,11 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             }
           })
         ),
-        data.id !== TRIGGER_ID.SKIN && this.timeStamp((triggerData as TimedTrigger)[0], index),
-        data.id === TRIGGER_ID.ZOOM && this.zoomTrigger((triggerData as ZoomTrigger), index),
-        data.id === TRIGGER_ID.PAN && this.cameraPanTrigger((triggerData as CameraPanTrigger), index),
-        data.id === TRIGGER_ID.FOCUS && this.cameraFocusTrigger((triggerData as CameraFocusTrigger), index),
-        data.id === TRIGGER_ID.TIME && this.timeRemapTrigger((triggerData as TimeRemapTrigger), index),
+        data.id !== TRIGGER_ID.SKIN && this.timeStamp((currentTrigger as TimedTrigger)[0], index),
+        data.id === TRIGGER_ID.ZOOM && this.zoomTrigger((currentTrigger as ZoomTrigger), index),
+        data.id === TRIGGER_ID.PAN && this.cameraPanTrigger((currentTrigger as CameraPanTrigger), index),
+        data.id === TRIGGER_ID.FOCUS && this.cameraFocusTrigger((currentTrigger as CameraFocusTrigger), index),
+        data.id === TRIGGER_ID.TIME && this.timeRemapTrigger((currentTrigger as TimeRemapTrigger), index),
         data.id === TRIGGER_ID.SKIN && false,
         e(
           'button',
@@ -1050,7 +972,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       return e(
         window.React.Fragment,
         null,
-        [['width', 'height'], ['x', 'y']].map((pair, pairIndex) => e(
+        [['w', 'h'], ['x', 'y']].map((pair, pairIndex) => e(
           'div',
           { style: { display: 'flex', flexDirection: 'row' } },
           pair.map((prop, propIndex) => e(
@@ -1063,14 +985,14 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             e('input', {
               id: `triggerText_${labels[propIndex + 2 * pairIndex]}_${index}`,
               style: STYLES.trigger.input,
-              value: data[1][prop as 'width' | 'height' | 'x' | 'y'],
+              value: data[1][prop as 'w' | 'h' | 'x' | 'y'],
               onChange: (e: Event) => root.onUpdateTrigger(
-                { prev: data[1][prop as 'width' | 'height' | 'x' | 'y'], new: (e.target as HTMLInputElement).value },
+                { prev: data[1][prop as 'w' | 'h' | 'x' | 'y'], new: (e.target as HTMLInputElement).value },
                 ['triggers', index, 1, prop],
                 cProps[propIndex + 2 * pairIndex]
               ),
               onBlur: (e: Event) => root.onUpdateTrigger(
-                { prev: data[1][prop as 'width' | 'height' | 'x' | 'y'], new: (e.target as HTMLInputElement).value },
+                { prev: data[1][prop as 'w' | 'h' | 'x' | 'y'], new: (e.target as HTMLInputElement).value },
                 ['triggers', index, 1, prop],
                 cProps[propIndex + 2 * pairIndex],
                 true
@@ -1196,14 +1118,14 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
           }),
           e(
             'text',
-            { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting] } },
+            { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] } },
             `x${Math.round(state.skinEditorZoom[0] * 10) / 10}`
           )
         ),
         e(
           'div',
           { style: STYLES.skinEditor.outlineColor.container },
-          e('text', { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting] } }, 'Outline'),
+          e('text', { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] } }, 'Outline'),
           e('div', {
             style: {
               ...STYLES.skinEditor.outlineColor.input,
@@ -1245,7 +1167,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             style: {
               ...STYLES.skinEditor.toolbarItem,
               ...STYLES.alpha.container,
-              fontSize: GLOBAL_STYLES.textSizes.S[state.fontSizeSetting]
+              fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize]
             }
           },
           e('label', { for: 'alphaSlider' }, 'Transparency'),
@@ -1280,7 +1202,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             style: {
               ...STYLES.skinEditor.toolbarItem,
               ...STYLES.dropdown.head,
-              fontSize: GLOBAL_STYLES.textSizes.M[state.fontSizeSetting]
+              fontSize: GLOBAL_STYLES.textSizes.M[state.fontSize]
             },
             value: index,
             onChange: (e: Event) => root.onChangeSkinDD((e.target as HTMLInputElement).value)
