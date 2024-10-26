@@ -190,29 +190,33 @@ class TriggerDataManager {
     this.triggerData[TRIGGER_ID.SKIN].triggers = skinTriggers
   }
 
-  updateFromPath (path: any[], newValue: any): void {
+  updateFromPath (path: any[], newValue: any, location: TRIGGER_ID): void {
     this.redoStack = []
     const oldValue = this.setAtPointer(['triggerData'].concat(path), newValue)
-    this.undoStack.push([path, oldValue])
+    this.undoStack.push([path, oldValue, location])
     if (this.undoStack.length > HISTORY_LIMIT) {
       this.undoStack.shift()
     }
   }
 
-  undo (): void {
-    if (this.undoStack.length === 0) return
+  undo (): TRIGGER_ID | null {
+    if (this.undoStack.length === 0) return null
 
-    const [path, oldValue] = this.undoStack.pop()
+    const [path, oldValue, location] = this.undoStack.pop()
     const newValue = this.setAtPointer(['triggerData'].concat(path), oldValue)
-    this.redoStack.push([path, newValue])
+    this.redoStack.push([path, newValue, location])
+
+    return location
   }
 
-  redo (): void {
-    if (this.redoStack.length === 0) return
+  redo (): TRIGGER_ID | null {
+    if (this.redoStack.length === 0) return null
 
-    const [path, newValue] = this.redoStack.pop()
+    const [path, newValue, location] = this.redoStack.pop()
     const oldValue = this.setAtPointer(['triggerData'].concat(path), newValue)
-    this.undoStack.push([path, oldValue])
+    this.undoStack.push([path, oldValue, location])
+
+    return location
   }
 
   /**

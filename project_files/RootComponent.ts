@@ -107,7 +107,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const newTriggerData = structuredClone((currentTriggers[index] as TimedTrigger)[1])
       const newTrigger = [triggerTime, newTriggerData] as TimedTrigger
       const newTriggers = currentTriggers.slice(0, index + 1).concat([newTrigger]).concat(currentTriggers.slice(index + 1))
-      this.triggerManager.updateFromPath([activeTab, 'triggers'], newTriggers)
+      this.triggerManager.updateFromPath([activeTab, 'triggers'], newTriggers, activeTab)
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
 
       const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
@@ -124,7 +124,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
 
       const newValue = validateData(valueChange, bounded, constraints)
 
-      this.triggerManager.updateFromPath([activeTab, ...path], newValue)
+      this.triggerManager.updateFromPath([activeTab, ...path], newValue, activeTab)
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
 
       const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
@@ -141,7 +141,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
 
       const currentTriggers = this.triggerManager.triggerData[activeTab].triggers
       const newTriggers = currentTriggers.slice(0, index).concat(currentTriggers.slice(index + 1))
-      this.triggerManager.updateFromPath([activeTab, 'triggers'], newTriggers)
+      this.triggerManager.updateFromPath([activeTab, 'triggers'], newTriggers, activeTab)
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
 
       const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
@@ -203,7 +203,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
           this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
         }
 
-        this.triggerManager.updateFromPath([], nextTriggerData)
+        this.triggerManager.updateFromPath([], nextTriggerData, TRIGGER_ID.ZOOM)
         this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
       } catch (error: any) {
         console.error(error.message)
@@ -233,8 +233,12 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     onUndo (): void {
       const { activeTab } = this.state
 
-      this.triggerManager.undo()
+      const tabChange = this.triggerManager.undo()
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
+
+      if (activeTab !== tabChange) {
+        this.setState({ activeTab: tabChange })
+      }
 
       if (activeTab !== TRIGGER_ID.SKIN) {
         const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
@@ -245,8 +249,12 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     onRedo (): void {
       const { activeTab } = this.state
 
-      this.triggerManager.redo()
+      const tabChange = this.triggerManager.redo()
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
+
+      if (activeTab !== tabChange) {
+        this.setState({ activeTab: tabChange })
+      }
 
       if (activeTab !== TRIGGER_ID.SKIN) {
         const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
@@ -259,7 +267,8 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
 
       this.triggerManager.updateFromPath(
         [TRIGGER_ID.SKIN, 'triggers', index],
-        structuredClone(TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE)
+        structuredClone(TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE),
+        TRIGGER_ID.SKIN
       )
 
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
@@ -345,12 +354,9 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       store.dispatch(setPlaybackDimensions({ width: size[0], height: size[1] }))
 
       const zoomTriggers = this.triggerManager.triggerData[TRIGGER_ID.ZOOM].triggers as ZoomTrigger[]
-
-      for (let i = 0; i < zoomTriggers.length; i++) {
-        const scaledTrigger = Math.round((zoomTriggers[i][1] + factor + Number.EPSILON) * 10e6) / 10e6
-        this.triggerManager.updateFromPath([TRIGGER_ID.ZOOM, 'triggers', i, 1], scaledTrigger)
-        this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
-      }
+      const newZoomTriggers = zoomTriggers.map(trigger => [trigger[0], Math.round((trigger[1] + factor + Number.EPSILON) * 10e6) / 10e6])
+      this.triggerManager.updateFromPath([TRIGGER_ID.ZOOM, 'triggers'], newZoomTriggers, TRIGGER_ID.ZOOM)
+      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
 
       saveSetting(SETTINGS_KEY.FONT_SIZE, String(fontSizeSetting))
       saveSetting(SETTINGS_KEY.VIEWPORT, resolutionSetting)
