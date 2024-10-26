@@ -72,6 +72,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         }
 
         this.triggerManager.updateRiderCount(riderCount)
+        this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
 
         this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
         this.setState({ focusDDIndices: focusDDIndices.map((ddIndex) => Math.min(riderCount - 1, ddIndex)) })
@@ -105,18 +106,15 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       ]
 
       this.triggerManager.createTrigger(activeTab, index, triggerTime)
-      const newTriggerArray = this.triggerManager.getTriggerArray(activeTab)
+      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
+
+      const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
 
       if (activeTab === TRIGGER_ID.FOCUS) {
-        const newFocusDDIndices = resizedFocusDDIndexArray(
-          newTriggerArray.length,
-          focusDDIndices
-        )
-        this.setState({ focusDDIndices: newFocusDDIndices })
+        this.setState({ focusDDIndices: focusDDIndices.concat(0) })
       }
 
       this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
-      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
     }
 
     onUpdateTrigger (valueChange: ValueChange, path: any[], constraints?: Constraint, bounded = false): void {
@@ -126,13 +124,13 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const newValue = validateData(valueChange, bounded, constraints)
 
       this.triggerManager.updateFromPath(fullPath, newValue)
-      const newTriggerArray = this.triggerManager.getTriggerArray(activeTab)
+      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
+
+      const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
 
       if (activeTab !== TRIGGER_ID.SKIN) {
         this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
       }
-
-      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
     }
 
     onDeleteTrigger (index: number): void {
@@ -141,18 +139,15 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       if (activeTab === TRIGGER_ID.SKIN) return
 
       this.triggerManager.deleteTrigger(activeTab, index)
-      const newTriggerArray = this.triggerManager.getTriggerArray(activeTab)
+      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
+
+      const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
 
       if (activeTab === TRIGGER_ID.FOCUS) {
-        const newFocusDDIndices = resizedFocusDDIndexArray(
-          newTriggerArray.length,
-          focusDDIndices
-        )
-        this.setState({ focusDDIndices: newFocusDDIndices })
+        this.setState({ focusDDIndices: focusDDIndices.slice(0, newTriggerArray.length) })
       }
 
       this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
-      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
     }
 
     onDownload (): void {
@@ -184,19 +179,21 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onLoad (nextTriggerData: TriggerData): void {
-      const { focusDDIndices, activeTab } = this.state
+      const { activeTab } = this.state
       try {
-        Object.keys(TRIGGER_PROPS).forEach((command: string) => {
-          if (command === TRIGGER_ID.FOCUS) {
-            const nextFocusDDIndices = chosenFocusDDIndices(nextTriggerData,
-              resizedFocusDDIndexArray(
-                nextTriggerData[command].triggers.length,
-                focusDDIndices
-              )
-            )
-            this.setState({ focusDDIndices: nextFocusDDIndices })
+        const focusTriggers = nextTriggerData[TRIGGER_ID.FOCUS].triggers as CameraFocusTrigger[]
+        const focusDDIndices = Array(focusTriggers.length).fill(0) as number[]
+
+        for(let i = 0; i < focusTriggers.length; i++) {
+          for(let j = 0; j < focusTriggers[i][1].length; i++) {
+            if(focusTriggers[i][1][j] > 0) {
+              focusDDIndices[i] = j
+              break
+            }
           }
-        })
+        }
+
+        this.setState({ focusDDIndices })
 
         if (activeTab !== TRIGGER_ID.SKIN) {
           const newTriggerArray = nextTriggerData[activeTab].triggers
@@ -204,6 +201,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         }
 
         this.triggerManager.replaceTriggers(nextTriggerData)
+        this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
       } catch (error: any) {
         console.error(error.message)
       }
@@ -234,7 +232,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       console.log('Undo')
 
       if (activeTab !== TRIGGER_ID.SKIN) {
-        const newTriggerArray = this.triggerManager.getTriggerArray(activeTab)
+        const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
         this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
       }
     }
@@ -244,7 +242,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       console.log('Redo')
 
       if (activeTab !== TRIGGER_ID.SKIN) {
-        const newTriggerArray = this.triggerManager.getTriggerArray(activeTab)
+        const newTriggerArray = this.triggerManager.triggerData[activeTab].triggers
         this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
       }
     }
@@ -286,7 +284,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       this.setState({ activeTab: tabName })
 
       if (tabName !== TRIGGER_ID.SKIN) {
-        const newTriggerArray = this.triggerManager.getTriggerArray(tabName)
+        const newTriggerArray = this.triggerManager.triggerData[tabName].triggers
         this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
       }
     }
@@ -336,6 +334,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       store.dispatch(setPlaybackDimensions({ width: size[0], height: size[1] }))
 
       this.triggerManager.updateZoomViewport(factor)
+      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
 
       saveSetting(SETTINGS_KEY.FONT_SIZE, String(fontSizeSetting))
       saveSetting(SETTINGS_KEY.VIEWPORT, resolutionSetting)
@@ -343,7 +342,6 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       this.setState({ settingsDirty: false })
       this.setState({ fontSize: fontSizeSetting })
       this.setState({ resolution: resolutionSetting })
-      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
     }
 
     onChangeFocusDD (index: number, value: string): void {

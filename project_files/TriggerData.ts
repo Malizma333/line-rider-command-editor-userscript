@@ -142,10 +142,6 @@ class TriggerDataManager {
     }
   }
 
-  getTriggerArray (id: TRIGGER_ID): Trigger[] {
-    return this.triggerData[id].triggers
-  }
-
   createTrigger (id: TRIGGER_ID, index: number, currentTime: TriggerTime): void {
     const newTrigger = structuredClone(this.triggerData[id].triggers[index]) as TimedTrigger
     newTrigger[0] = currentTime

@@ -171,39 +171,3 @@ function validateTimes (triggers: TimedTrigger[]): boolean[] {
 
   return invalidIndices
 }
-
-/**
- * Resizes the focuser dropdown indices array to match the focus triggers length
- */
-function resizedFocusDDIndexArray (triggerLength: number, focusDDIndices: readonly number[]): readonly number[] {
-  if (focusDDIndices.length < triggerLength) {
-    return focusDDIndices.concat(...Array(triggerLength - focusDDIndices.length).fill(0))
-  }
-
-  if (focusDDIndices.length > triggerLength) {
-    return focusDDIndices.slice(0, triggerLength)
-  }
-
-  return focusDDIndices
-}
-
-/**
- * Chooses first nonzero weight to be the index of the rider dropdown when loading triggers
- */
-function chosenFocusDDIndices (triggerData: TriggerData, focusDDIndices: readonly number[]): number[] {
-  const nextFocusDDIndices = [...focusDDIndices]
-  const focusTriggers = triggerData[TRIGGER_ID.FOCUS].triggers as CameraFocusTrigger[]
-
-  focusTriggers.forEach((trigger: CameraFocusTrigger, triggerIndex: number) => {
-    let newIndex = 0
-    for (let i = 0; i < trigger[1].length; i += 1) {
-      if (trigger[1][i] !== 0) {
-        newIndex = i
-        break
-      }
-    }
-    nextFocusDDIndices[triggerIndex] = newIndex
-  })
-
-  return nextFocusDDIndices
-}
