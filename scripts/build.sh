@@ -20,18 +20,6 @@ case $1 in
   ;;
 esac
 
-if ! command -v tsc &> /dev/null
-then
-  echo "typescript not found, installing..."
-  npm install typescript -g
-fi
-
-if ! command -v uglifyjs &> /dev/null
-then
-  echo "uglifyjs not found, installing..."
-  npm install uglify-js -g
-fi
-
 tsc -p tsconfig.json --out "$BUILD_FILE"
 MINI=$(uglifyjs -c -m -- "$BUILD_FILE")
 echo "$MINI" > "$BUILD_FILE"

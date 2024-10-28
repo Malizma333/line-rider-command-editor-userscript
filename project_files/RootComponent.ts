@@ -187,9 +187,9 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         const focusTriggers = nextTriggerData[TRIGGER_ID.FOCUS].triggers as CameraFocusTrigger[]
         const focusDDIndices = Array(focusTriggers.length).fill(0) as number[]
 
-        for(let i = 0; i < focusTriggers.length; i++) {
-          for(let j = 0; j < focusTriggers[i][1].length; j++) {
-            if(focusTriggers[i][1][j] > 0) {
+        for (let i = 0; i < focusTriggers.length; i++) {
+          for (let j = 0; j < focusTriggers[i][1].length; j++) {
+            if (focusTriggers[i][1][j] > 0) {
               focusDDIndices[i] = j
               break
             }
@@ -213,7 +213,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     onTest (): void {
       const { activeTab, invalidTimes } = this.state
       try {
-        if (!invalidTimes.every((invalid) => invalid === false)) {
+        if (!invalidTimes.every((invalid) => !invalid)) {
           throw new Error('Triggers contain invalid times!')
         }
 
@@ -228,7 +228,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     onPrint (): void {
       const { activeTab, invalidTimes } = this.state
       try {
-        if (!invalidTimes.every((invalid) => invalid === false)) {
+        if (!invalidTimes.every((invalid) => !invalid)) {
           throw new Error('Triggers contain invalid times!')
         }
 
@@ -509,9 +509,9 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
               title: 'Run',
               style: {
                 ...STYLES.button.embedded,
-                color: !state.invalidTimes.every((invalid) => invalid === false) ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black
+                color: !state.invalidTimes.every((invalid) => !invalid) ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black
               },
-              disabled: !state.invalidTimes.every((invalid) => invalid === false),
+              disabled: !state.invalidTimes.every((invalid) => !invalid),
               onClick: () => root.onTest()
             },
             e('span', playIcon)
