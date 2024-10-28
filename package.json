@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "lint": "ts-standard --fix ./project_files/*",
+    "lint": "ts-standard --fix ./project_files/* index.ts",
     "build": "bash scripts/build.sh -d",
     "deploy": "bash scripts/build.sh"
   },
