@@ -20,7 +20,7 @@ case $1 in
   ;;
 esac
 
-tsc -p tsconfig.json --out "$BUILD_FILE"
+tsc -p tsconfig.json
 MINI=$(uglifyjs -c -m -- "$BUILD_FILE")
 echo "$MINI" > "$BUILD_FILE"
 
@@ -31,7 +31,7 @@ if $DEVELOP; then
 else
   LOCATION="$REPOSITORY"
   NAME="Command Editor"
-  VERSION="2.0.0"
+  VERSION="2.3.0"
 fi
 
 echo "window.CMD_EDITOR_DEBUG=$DEVELOP

@@ -1,4 +1,4 @@
-MIN_FILE="g.min.js"
+MIN_FILE="gravity-convert.min.js"
 touch "$MIN_FILE"
 > "$MIN_FILE"
 
