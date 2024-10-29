@@ -471,25 +471,25 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       return e(
         'div',
         { style: STYLES.toolbar.container },
-        !state.active && this.toolbarButton(0, 'Maximize', false, () => root.onActivate(), maximizeIcon),
+        !state.active && this.toolbarButton(0, 'Maximize', false, () => root.onActivate(), FeatherIcons_maximize),
         state.active && e(
           'div',
           { style: { ...STYLES.toolbar.container, justifyContent: 'start' } },
-          this.toolbarButton(0, 'Minimize', false, () => root.onActivate(), minimizeIcon),
-          this.toolbarButton(1, 'Download', false, () => root.onDownload(), downloadIcon),
-          this.toolbarButton(2, 'Upload', false, () => root.onClickFile(), uploadIcon),
-          this.toolbarButton(3, 'Load From Script', false, () => root.onLoadScript(), upRightArrowIcon),
-          this.toolbarButton(4, 'Run', state.invalidTimes.some(i => i), () => root.onTest(), playIcon),
-          this.toolbarButton(5, 'Copy Script', false, async () => await root.onCopy(), copyIcon)
+          this.toolbarButton(0, 'Minimize', false, () => root.onActivate(), FeatherIcons_minimize),
+          this.toolbarButton(1, 'Download', false, () => root.onDownload(), FeatherIcons_download),
+          this.toolbarButton(2, 'Upload', false, () => root.onClickFile(), FeatherIcons_upload),
+          this.toolbarButton(3, 'Load From Script', false, () => root.onLoadScript(), FeatherIcons_cornerUpRight),
+          this.toolbarButton(4, 'Run', state.invalidTimes.some(i => i), () => root.onTest(), FeatherIcons_play),
+          this.toolbarButton(5, 'Copy Script', false, async () => await root.onCopy(), FeatherIcons_copy)
         ),
         state.active && e(
           'div',
           { style: { ...STYLES.toolbar.container, justifyContent: 'end' } },
-          this.toolbarButton(6, 'Undo', root.triggerManager.undoLen === 0, () => root.onUndo(), leftArrowIcon),
-          this.toolbarButton(7, 'Redo', root.triggerManager.redoLen === 0, () => root.onRedo(), rightArrowIcon),
-          this.toolbarButton(8, 'Settings', false, () => root.onToggleSettings(), settingsIcon),
-          this.toolbarButton(9, 'Report Issue', false, () => root.onReport(), flagIcon),
-          this.toolbarButton(10, 'Help', false, () => root.onHelp(), helpIcon)
+          this.toolbarButton(6, 'Undo', root.triggerManager.undoLen === 0, () => root.onUndo(), FeatherIcons_arrowLeft),
+          this.toolbarButton(7, 'Redo', root.triggerManager.redoLen === 0, () => root.onRedo(), FeatherIcons_arrowRight),
+          this.toolbarButton(8, 'Settings', false, () => root.onToggleSettings(), FeatherIcons_settings),
+          this.toolbarButton(9, 'Report Issue', false, () => root.onReport(), FeatherIcons_flag),
+          this.toolbarButton(10, 'Help', false, () => root.onHelp(), FeatherIcons_helpCircle)
         ),
         e(
           'input',
@@ -562,7 +562,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             },
             onClick: () => root.onToggleSettings()
           },
-          e('span', xIcon)
+          e('span', FeatherIcons_x)
         ),
         e('text', {
           style: {
@@ -846,7 +846,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             onClick: () => root.onDeleteTrigger(index)
           },
           e('span', {
-            ...xIcon,
+            ...FeatherIcons_x,
             style: {
               color: index === 0 ? GLOBAL_STYLES.dark_gray2 : GLOBAL_STYLES.black
             }
@@ -865,7 +865,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             style: STYLES.trigger.createButton,
             onClick: () => root.onCreateTrigger(index)
           },
-          e('span', plusIcon)
+          e('span', FeatherIcons_plus)
         )
       )
     }
@@ -1177,7 +1177,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             },
             onClick: () => root.onResetSkin(index)
           },
-          e('span', trashIcon)
+          e('span', FeatherIcons_trash2)
         ),
         e(
           'div',
