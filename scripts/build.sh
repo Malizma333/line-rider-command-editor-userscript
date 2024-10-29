@@ -1,7 +1,7 @@
 #!/bin/bash
 
 REPOSITORY="https://github.com/Malizma333/line-rider-command-editor-userscript/raw/master"
-DIRPATH=$(dirname $(realpath $0))
+DIRPATH=$(dirname $(dirname $(realpath $0)))
 DIRECTORY="file://C:${DIRPATH:2}"
 
 USER_SCRIPT_FILE="line-rider-command-editor.user.js"
