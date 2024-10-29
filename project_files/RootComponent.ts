@@ -512,6 +512,10 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       icon: InlineIcon
     ): ReactComponent {
       const { root, state } = this
+      if (disabled && state.toolbarColors[id] !== TOOLBAR_COLOR.NONE) {
+        root.onUpdateToolbarColor(id, TOOLBAR_COLOR.NONE)
+      }
+
       return e(
         'button',
         {
