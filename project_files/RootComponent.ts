@@ -94,7 +94,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onUpdateToolbarColor (index: number, state: TOOLBAR_COLOR): void {
-      this.setState({ toolbarColors: this.state.toolbarColors.map((e,i) => i == index ? state : e) })
+      this.setState({ toolbarColors: this.state.toolbarColors.map((e, i) => i === index ? state : e) })
     }
 
     onCreateTrigger (index: number): void {
@@ -169,7 +169,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       a.remove()
     }
 
-    onClickFile () {
+    onClickFile (): void {
       const triggerUploadInput = (document.getElementById('trigger-file-upload') as HTMLInputElement)
       triggerUploadInput.value = ''
       triggerUploadInput.click()
@@ -237,14 +237,15 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       }
     }
 
-    onPrint (): void {
+    async onCopy (): Promise<void> {
       const { activeTab, invalidTimes } = this.state
       try {
         if (!invalidTimes.every((invalid) => !invalid)) {
           throw new Error('Triggers contain invalid times!')
         }
 
-        console.info(generateScript(activeTab, this.triggerManager.data as TriggerData))
+        const script = generateScript(activeTab, this.triggerManager.data as TriggerData)
+        return await navigator.clipboard.writeText(script)
       } catch (error: any) {
         console.error(error.message)
       }
@@ -470,26 +471,25 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       return e(
         'div',
         { style: STYLES.toolbar.container },
-        !state.active && this.toolbarButton('Maximize', 0, false, () => root.onActivate(), maximizeIcon),
+        !state.active && this.toolbarButton(0, 'Maximize', false, () => root.onActivate(), maximizeIcon),
         state.active && e(
           'div',
           { style: { ...STYLES.toolbar.container, justifyContent: 'start' } },
-          this.toolbarButton('Minimize', 0, false, () => root.onActivate(), minimizeIcon),
-          this.toolbarButton('Download', 1, false, () => root.onDownload(), downloadIcon),
-          this.toolbarButton('Upload', 2, false, () => root.onClickFile(), uploadIcon),
-          this.toolbarButton('Load From Script', 3, false, () => root.onLoadScript(), upRightArrowIcon),
-          this.toolbarButton('Load From Script', 4, false, () => root.onLoadScript(), upRightArrowIcon),
-          this.toolbarButton('Run', 5, state.invalidTimes.some(i => i), () => root.onTest(), playIcon),
-          this.toolbarButton('Print To Console', 6, false, () => root.onPrint(), printIcon),
+          this.toolbarButton(0, 'Minimize', false, () => root.onActivate(), minimizeIcon),
+          this.toolbarButton(1, 'Download', false, () => root.onDownload(), downloadIcon),
+          this.toolbarButton(2, 'Upload', false, () => root.onClickFile(), uploadIcon),
+          this.toolbarButton(3, 'Load From Script', false, () => root.onLoadScript(), upRightArrowIcon),
+          this.toolbarButton(4, 'Run', state.invalidTimes.some(i => i), () => root.onTest(), playIcon),
+          this.toolbarButton(5, 'Copy Script', false, async () => await root.onCopy(), copyIcon)
         ),
         state.active && e(
           'div',
           { style: { ...STYLES.toolbar.container, justifyContent: 'end' } },
-          this.toolbarButton('Undo', 7, root.triggerManager.undoLen === 0, () => root.onUndo(), leftArrowIcon),
-          this.toolbarButton('Redo', 8, root.triggerManager.redoLen === 0, () => root.onRedo(), rightArrowIcon),
-          this.toolbarButton('Settings', 9, false, () => root.onToggleSettings(), settingsIcon),
-          this.toolbarButton('Report Issue', 10, false, () => root.onReport(), flagIcon),
-          this.toolbarButton('Help', 11, false, () => root.onHelp(), helpIcon)
+          this.toolbarButton(6, 'Undo', root.triggerManager.undoLen === 0, () => root.onUndo(), leftArrowIcon),
+          this.toolbarButton(7, 'Redo', root.triggerManager.redoLen === 0, () => root.onRedo(), rightArrowIcon),
+          this.toolbarButton(8, 'Settings', false, () => root.onToggleSettings(), settingsIcon),
+          this.toolbarButton(9, 'Report Issue', false, () => root.onReport(), flagIcon),
+          this.toolbarButton(10, 'Help', false, () => root.onHelp(), helpIcon)
         ),
         e(
           'input',
@@ -505,8 +505,8 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     toolbarButton (
+      id: number,
       title: string,
-      index: number,
       disabled: boolean,
       onClick: Function,
       icon: InlineIcon
@@ -518,12 +518,12 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
           title,
           style: {
             ...STYLES.button.embedded,
-            backgroundColor: STYLES.button.embedded.bgColor[state.toolbarColors[index]]
+            backgroundColor: STYLES.button.embedded.bgColor[state.toolbarColors[id]]
           },
-          onMouseOver: () => !disabled && root.onUpdateToolbarColor(index, TOOLBAR_COLOR.HOVER),
-          onMouseOut: () => !disabled && root.onUpdateToolbarColor(index, TOOLBAR_COLOR.NONE),
-          onMouseDown: () => !disabled && root.onUpdateToolbarColor(index, TOOLBAR_COLOR.ACTIVE),
-          onMouseUp: () => !disabled && root.onUpdateToolbarColor(index, TOOLBAR_COLOR.HOVER),
+          onMouseOver: () => !disabled && root.onUpdateToolbarColor(id, TOOLBAR_COLOR.HOVER),
+          onMouseOut: () => !disabled && root.onUpdateToolbarColor(id, TOOLBAR_COLOR.NONE),
+          onMouseDown: () => !disabled && root.onUpdateToolbarColor(id, TOOLBAR_COLOR.ACTIVE),
+          onMouseUp: () => !disabled && root.onUpdateToolbarColor(id, TOOLBAR_COLOR.HOVER),
           onClick,
           disabled
         },
