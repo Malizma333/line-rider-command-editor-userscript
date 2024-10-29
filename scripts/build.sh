@@ -1,7 +1,7 @@
 #!/bin/bash
 
 REPOSITORY="https://github.com/Malizma333/line-rider-command-editor-userscript/raw/master"
-DIRPATH=$(dirname $(realpath $0))
+DIRPATH=$(dirname $(dirname $(realpath $0)))
 DIRECTORY="file://C:${DIRPATH:2}"
 
 USER_SCRIPT_FILE="line-rider-command-editor.user.js"
@@ -20,19 +20,7 @@ case $1 in
   ;;
 esac
 
-if ! command -v tsc &> /dev/null
-then
-  echo "typescript not found, installing..."
-  npm install typescript -g
-fi
-
-if ! command -v uglifyjs &> /dev/null
-then
-  echo "uglifyjs not found, installing..."
-  npm install uglify-js -g
-fi
-
-tsc -p tsconfig.json --out "$BUILD_FILE"
+tsc -p tsconfig.json
 MINI=$(uglifyjs -c -m -- "$BUILD_FILE")
 echo "$MINI" > "$BUILD_FILE"
 
@@ -43,7 +31,7 @@ if $DEVELOP; then
 else
   LOCATION="$REPOSITORY"
   NAME="Command Editor"
-  VERSION="2.0.0"
+  VERSION="2.3.0"
 fi
 
 echo "window.CMD_EDITOR_DEBUG=$DEVELOP

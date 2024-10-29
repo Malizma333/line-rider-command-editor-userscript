@@ -29,25 +29,25 @@ interface TriggerMetadata<Type> {
 
 const ZoomMetadata: TriggerMetadata<ZoomTrigger> = {
   DISPLAY_NAME: 'Zoom',
-  FUNC: 'getAutoZoom = createZoomer({0},{1});',
+  FUNC: 'getAutoZoom=createZoomer({0},{1});',
   TEMPLATE: [[0, 0, 0], 1]
 }
 
 const CameraPanMetadata: TriggerMetadata<CameraPanTrigger> = {
   DISPLAY_NAME: 'Pan',
-  FUNC: 'getCamBounds = createBoundsPanner({0},{1});',
+  FUNC: 'getCamBounds=createBoundsPanner({0},{1});',
   TEMPLATE: [[0, 0, 0], { w: 0.4, h: 0.4, x: 0, y: 0 }]
 }
 
 const CameraFocusMetadata: TriggerMetadata<CameraFocusTrigger> = {
   DISPLAY_NAME: 'Focus',
-  FUNC: 'getCamFocus = createFocuser({0},{1});',
+  FUNC: 'getCamFocus=createFocuser({0},{1});',
   TEMPLATE: [[0, 0, 0], [1]]
 }
 
 const TimeRemapMetadata: TriggerMetadata<TimeRemapTrigger> = {
   DISPLAY_NAME: 'Speed',
-  FUNC: 'timeRemapper = createTimeRemapper({0},{1});',
+  FUNC: 'timeRemapper=createTimeRemapper({0},{1});',
   TEMPLATE: [[0, 0, 0], 1]
 }
 
@@ -87,7 +87,7 @@ const SkinCssMetadata: TriggerMetadata<SkinCssTrigger> = {
 
 const GravityMetadata: TriggerMetadata<GravityTrigger> = {
   DISPLAY_NAME: 'Gravity',
-  FUNC: `!function(){window.store.getState().camera.playbackFollower._frames.length=0,window.store.getState().simulator.engine.engine._computed._frames.length=1;let n=0;const r=JSON.parse('{0}');Object.defineProperty(window.$ENGINE_PARAMS,"gravity",{get(){var e,t;return n!==r.length-1&&(e=store.getState().simulator.engine.engine._computed._frames.length,40*(t=r[n+1][0])[0]*60+40*t[1]+t[2]===e)&&(n+=1),r[n][1]}})}();`,
+  FUNC: '!function(){window.store.getState().camera.playbackFollower._frames.length=0,window.store.getState().simulator.engine.engine._computed._frames.length=1;let n=0;const r=JSON.parse(\'{0}\');Object.defineProperty(window.$ENGINE_PARAMS,"gravity",{get(){var e,t;return n!==r.length-1&&(e=store.getState().simulator.engine.engine._computed._frames.length,40*(t=r[n+1][0])[0]*60+40*t[1]+t[2]===e)&&(n+=1),r[n][1]}})}();',
   TEMPLATE: [[0, 0, 0], { x: 0, y: 0.175 }]
 }
 
@@ -117,8 +117,8 @@ interface TriggerData {
 }
 
 class TriggerDataManager {
-  private triggerData: TriggerData
-  private undoStack: any[]
+  private readonly triggerData: TriggerData
+  private readonly undoStack: any[]
   private redoStack: any[]
 
   constructor () {
@@ -163,7 +163,7 @@ class TriggerDataManager {
   get data (): DeepReadonly<TriggerData> {
     return this.triggerData as DeepReadonly<TriggerData>
   }
-  
+
   get undoLen (): number {
     return this.undoStack.length
   }
@@ -240,7 +240,7 @@ class TriggerDataManager {
   /**
    * Updates value at a given path and returns the old value
    */
-  private setAtPointer(path: any[], value: any): any {
+  private setAtPointer (path: any[], value: any): any {
     let pathPointer: any = this
 
     for (let i = 0; i < path.length - 1; i += 1) {

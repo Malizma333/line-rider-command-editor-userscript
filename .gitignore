@@ -1,3 +1,4 @@
 .vscode
 *.user.js
-g.min.js
+gravity-convert.min.js
+node_modules

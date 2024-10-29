@@ -13,7 +13,7 @@ function main (): void {
     if (errorContainer != null) {
       const errorHeader = errorContainer.querySelector('h1')
       if (errorHeader != null && errorHeader.innerHTML === 'An error occured!') {
-        console.log('Crash detected...')
+        console.warn('Crash detected...')
         window.save_commands()
         clearInterval(timerId)
       }
