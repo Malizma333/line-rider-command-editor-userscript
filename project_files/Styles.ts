@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+enum TOOLBAR_COLOR {
+  NONE = 0,
+  HOVER = 1,
+  ACTIVE = 2
+}
+
 const GLOBAL_STYLES = {
   black: '#000000',
   dark_gray1: '#b7b7b7',
@@ -53,6 +59,8 @@ const STYLES = {
     embedded: {
       alignItems: 'center',
       background: 'none',
+      bgColor: ['transparent', GLOBAL_STYLES.dark_gray1, GLOBAL_STYLES.light_gray1],
+      borderRadius: '0.5em',
       border: 'none',
       display: 'flex',
       height: '1.5em',
