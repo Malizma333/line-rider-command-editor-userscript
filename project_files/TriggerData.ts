@@ -108,6 +108,7 @@ interface TriggerDataItem {
 }
 
 interface TriggerData {
+  version: number | undefined
   [TRIGGER_ID.ZOOM]: TriggerDataItem
   [TRIGGER_ID.PAN]: TriggerDataItem
   [TRIGGER_ID.FOCUS]: TriggerDataItem
@@ -129,6 +130,7 @@ class TriggerDataManager {
 
   static get initialTriggerData (): TriggerData {
     return {
+      version: undefined,
       [TRIGGER_ID.ZOOM]: {
         id: TRIGGER_ID.ZOOM,
         triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.ZOOM].TEMPLATE)],
@@ -241,7 +243,7 @@ class TriggerDataManager {
    * Updates value at a given path and returns the old value
    */
   private setAtPointer (path: any[], value: any): any {
-    let pathPointer: any = this
+    let pathPointer: any = this // eslint-disable-line @typescript-eslint/no-this-alias
 
     for (let i = 0; i < path.length - 1; i += 1) {
       pathPointer = pathPointer[path[i]]

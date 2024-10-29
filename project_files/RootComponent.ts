@@ -471,25 +471,25 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       return e(
         'div',
         { style: STYLES.toolbar.container },
-        !state.active && this.toolbarButton(0, 'Maximize', false, () => root.onActivate(), FeatherIcons_maximize),
+        !state.active && this.toolbarButton(0, 'Maximize', false, () => root.onActivate(), FICON_MAXIMIZE),
         state.active && e(
           'div',
           { style: { ...STYLES.toolbar.container, justifyContent: 'start' } },
-          this.toolbarButton(0, 'Minimize', false, () => root.onActivate(), FeatherIcons_minimize),
-          this.toolbarButton(1, 'Download', false, () => root.onDownload(), FeatherIcons_download),
-          this.toolbarButton(2, 'Upload', false, () => root.onClickFile(), FeatherIcons_upload),
-          this.toolbarButton(3, 'Load From Script', false, () => root.onLoadScript(), FeatherIcons_cornerUpRight),
-          this.toolbarButton(4, 'Run', state.invalidTimes.some(i => i), () => root.onTest(), FeatherIcons_play),
-          this.toolbarButton(5, 'Copy Script', false, async () => await root.onCopy(), FeatherIcons_copy)
+          this.toolbarButton(0, 'Minimize', false, () => root.onActivate(), FICON_MINIMIZE),
+          this.toolbarButton(1, 'Download', false, () => root.onDownload(), FICON_DOWNLOAD),
+          this.toolbarButton(2, 'Upload', false, () => root.onClickFile(), FICON_UPLOAD),
+          this.toolbarButton(3, 'Load From Script', false, () => root.onLoadScript(), FICON_CORNER_UP_RIGHT),
+          this.toolbarButton(4, 'Run', state.invalidTimes.some(i => i), () => root.onTest(), FICON_PLAY),
+          this.toolbarButton(5, 'Copy Script', false, async () => await root.onCopy(), FICON_COPY)
         ),
         state.active && e(
           'div',
           { style: { ...STYLES.toolbar.container, justifyContent: 'end' } },
-          this.toolbarButton(6, 'Undo', root.triggerManager.undoLen === 0, () => root.onUndo(), FeatherIcons_arrowLeft),
-          this.toolbarButton(7, 'Redo', root.triggerManager.redoLen === 0, () => root.onRedo(), FeatherIcons_arrowRight),
-          this.toolbarButton(8, 'Settings', false, () => root.onToggleSettings(), FeatherIcons_settings),
-          this.toolbarButton(9, 'Report Issue', false, () => root.onReport(), FeatherIcons_flag),
-          this.toolbarButton(10, 'Help', false, () => root.onHelp(), FeatherIcons_helpCircle)
+          this.toolbarButton(6, 'Undo', root.triggerManager.undoLen === 0, () => root.onUndo(), FICON_ARROW_LEFT),
+          this.toolbarButton(7, 'Redo', root.triggerManager.redoLen === 0, () => root.onRedo(), FICON_ARROW_RIGHT),
+          this.toolbarButton(8, 'Settings', false, () => root.onToggleSettings(), FICON_SETTINGS),
+          this.toolbarButton(9, 'Report Issue', false, () => root.onReport(), FICON_FLAG),
+          this.toolbarButton(10, 'Help', false, () => root.onHelp(), FICON_HELP_CIRCLE)
         ),
         e(
           'input',
@@ -562,7 +562,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             },
             onClick: () => root.onToggleSettings()
           },
-          e('span', FeatherIcons_x)
+          e('span', FICON_X)
         ),
         e('text', {
           style: {
@@ -846,7 +846,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             onClick: () => root.onDeleteTrigger(index)
           },
           e('span', {
-            ...FeatherIcons_x,
+            ...FICON_X,
             style: {
               color: index === 0 ? GLOBAL_STYLES.dark_gray2 : GLOBAL_STYLES.black
             }
@@ -865,7 +865,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             style: STYLES.trigger.createButton,
             onClick: () => root.onCreateTrigger(index)
           },
-          e('span', FeatherIcons_plus)
+          e('span', FICON_PLUS)
         )
       )
     }
@@ -1177,7 +1177,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             },
             onClick: () => root.onResetSkin(index)
           },
-          e('span', FeatherIcons_trash2)
+          e('span', FICON_TRASH2)
         ),
         e(
           'div',
