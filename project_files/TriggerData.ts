@@ -29,25 +29,25 @@ interface TriggerMetadata<Type> {
 
 const ZoomMetadata: TriggerMetadata<ZoomTrigger> = {
   DISPLAY_NAME: 'Zoom',
-  FUNC: 'getAutoZoom = createZoomer({0},{1});',
+  FUNC: 'getAutoZoom=createZoomer({0},{1});',
   TEMPLATE: [[0, 0, 0], 1]
 }
 
 const CameraPanMetadata: TriggerMetadata<CameraPanTrigger> = {
   DISPLAY_NAME: 'Pan',
-  FUNC: 'getCamBounds = createBoundsPanner({0},{1});',
+  FUNC: 'getCamBounds=createBoundsPanner({0},{1});',
   TEMPLATE: [[0, 0, 0], { w: 0.4, h: 0.4, x: 0, y: 0 }]
 }
 
 const CameraFocusMetadata: TriggerMetadata<CameraFocusTrigger> = {
   DISPLAY_NAME: 'Focus',
-  FUNC: 'getCamFocus = createFocuser({0},{1});',
+  FUNC: 'getCamFocus=createFocuser({0},{1});',
   TEMPLATE: [[0, 0, 0], [1]]
 }
 
 const TimeRemapMetadata: TriggerMetadata<TimeRemapTrigger> = {
   DISPLAY_NAME: 'Speed',
-  FUNC: 'timeRemapper = createTimeRemapper({0},{1});',
+  FUNC: 'timeRemapper=createTimeRemapper({0},{1});',
   TEMPLATE: [[0, 0, 0], 1]
 }
 
