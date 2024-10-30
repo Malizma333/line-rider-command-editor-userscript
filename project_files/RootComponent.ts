@@ -1,3 +1,5 @@
+// TODO DOCS
+
 function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint/no-unused-vars
   const { store, React } = window
   const rootElement = document.getElementById(ROOT_NODE_ID) as HTMLElement
