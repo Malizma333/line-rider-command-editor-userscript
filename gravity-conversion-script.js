@@ -2,7 +2,7 @@
   window.store.getState().camera.playbackFollower._frames.length = 0
   window.store.getState().simulator.engine.engine._computed._frames.length = 1
   let triggerPointer = 0
-  const triggers = JSON.parse("{0}")
+  const triggers = JSON.parse("{0}") // Preserve "{0}", as it is checked for in bash script
   Object.defineProperty(window.$ENGINE_PARAMS, "gravity", { get() {
     if (triggerPointer === triggers.length - 1) {
       return triggers[triggerPointer][1]

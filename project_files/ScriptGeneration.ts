@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+/**
+ * Generates a Line Rider Web script from trigger data and a specific command id
+ */
 function generateScript (command: TRIGGER_ID, triggerData: TriggerData): string {
   const currentData = triggerData[command]
   const currentHeader = (TRIGGER_PROPS[command]).FUNC
@@ -29,6 +32,9 @@ function generateScript (command: TRIGGER_ID, triggerData: TriggerData): string 
   }
 }
 
+/**
+ * Formats a list of `SkinCSSTriggers` into an array of css strings
+ */
 function formatSkins (customSkinData: SkinCssTrigger[]): string {
   const nullColor = '#ffffffff'
   const customSkinStrings = customSkinData.map((customSkin: SkinCssTrigger) => [
@@ -61,6 +67,7 @@ function formatSkins (customSkinData: SkinCssTrigger[]): string {
     ` .flag {fill: ${customSkin.flag.fill ?? nullColor}}`
   ].join('').replace(/\n/g, ''))
 
+  // For some reason, the skin css array input is indexed +1 mod n
   customSkinStrings.unshift(customSkinStrings.pop() ?? '')
 
   return JSON.stringify(customSkinStrings)

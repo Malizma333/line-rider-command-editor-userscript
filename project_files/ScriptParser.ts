@@ -5,6 +5,10 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
     this.triggerData = TriggerDataManager.initialTriggerData
   }
 
+  /**
+   * Parses text from the script field into a trigger data object, reverting to the original
+   * value if an error occurs
+   */
   parseScript (scriptText: string, currentTriggerData: TriggerData): TriggerData {
     this.triggerData = TriggerDataManager.initialTriggerData
     const trimmedScript = scriptText.replace(/\s/g, '')
@@ -24,6 +28,9 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
     return this.triggerData
   }
 
+  /**
+   * Parses an individual command given its id and applies the parsed script to the trigger data
+   */
   parseCommand (commandId: TRIGGER_ID, scriptSection: string): void {
     if (commandId === TRIGGER_ID.GRAVITY) {
       throw new Error('Gravity parsing not supported!')
@@ -100,6 +107,9 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
     this.triggerData[commandId].triggers = triggers
   }
 
+  /**
+   * Parses integer or boolean smoothing for a command if its available
+   */
   parseSmoothing (commandId: TRIGGER_ID, smoothingValue?: boolean | number): void {
     if (commandId === TRIGGER_ID.TIME) {
       const constraints = CONSTRAINTS.INTERPOLATE
@@ -136,6 +146,9 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
     }
   }
 
+  /**
+   * Parses a string of CSS into a skin trigger array
+   */
   parseSkinCss (skinCSSArray: string[]): void {
     skinCSSArray.forEach((skinCSS: string, skinIndex: number) => {
       this.triggerData[TRIGGER_ID.SKIN].triggers.push(
@@ -159,6 +172,7 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
       }
     })
 
+    // Revert from 1 indexed modulo n skin array to 0 indexed array
     if (this.triggerData[TRIGGER_ID.SKIN].triggers.length > 0) {
       this.triggerData[TRIGGER_ID.SKIN].triggers.push(
         this.triggerData[TRIGGER_ID.SKIN].triggers.shift() ?? TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE
@@ -166,6 +180,9 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
     }
   }
 
+  /**
+   * Parses a specific property of a skin css string
+   */
   parseSkinProp (cssString: string, skinIndex: number): void {
     const wordRegex = /(['"])?([#]?[a-z0-9A-Z_-]+)(['"])?/g
     const skinTriggers = this.triggerData[TRIGGER_ID.SKIN].triggers as SkinCssTrigger[]
@@ -218,6 +235,9 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
     this.triggerData[TRIGGER_ID.SKIN].triggers = skinTriggers
   }
 
+  /**
+   * Converts a player index to a trigger timestamp
+   */
   retrieveTimestamp (index: number): TriggerTime {
     const frames = index % FPS
     const seconds = Math.floor(index / FPS) % 60
@@ -225,6 +245,9 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
     return [minutes, seconds, frames]
   }
 
+  /**
+   * Removes the leading zeros from numbers within the script
+   */
   removeLeadingZeroes (script: string, commandId: TRIGGER_ID): string {
     if (commandId === TRIGGER_ID.SKIN) return script
     return script.replace(/([^\d.+-])0+(\d+)/g, '$1$2')

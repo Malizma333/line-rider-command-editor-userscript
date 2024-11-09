@@ -1,3 +1,5 @@
+// TODO DOCS
+
 function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint/no-unused-vars
   const { store, React } = window
   const rootElement = document.getElementById(ROOT_NODE_ID) as HTMLElement
@@ -18,6 +20,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     fontSizeSetting: number
     resolutionSetting: ViewportOption
     invalidTimes: boolean[]
+    toolbarColors: TOOLBAR_COLOR[]
   }
 
   class RootComponent extends React.Component {
@@ -45,7 +48,8 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         resolution: getSetting(SETTINGS_KEY.VIEWPORT) as ViewportOption,
         fontSizeSetting: parseInt(getSetting(SETTINGS_KEY.FONT_SIZE), 10),
         resolutionSetting: getSetting(SETTINGS_KEY.VIEWPORT) as ViewportOption,
-        invalidTimes: []
+        invalidTimes: [],
+        toolbarColors: Array(16).fill(TOOLBAR_COLOR.NONE)
       }
 
       store.subscribe(() => this.updateStore(store.getState()))
@@ -89,6 +93,10 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
 
       rootElement.style.opacity = shouldBeVisible ? '1' : '0'
       rootElement.style.pointerEvents = shouldBeVisible ? 'auto' : 'none'
+    }
+
+    onUpdateToolbarColor (index: number, state: TOOLBAR_COLOR): void {
+      this.setState({ toolbarColors: this.state.toolbarColors.map((e, i) => i === index ? state : e) })
     }
 
     onCreateTrigger (index: number): void {
@@ -163,6 +171,12 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       a.remove()
     }
 
+    onClickFile (): void {
+      const triggerUploadInput = (document.getElementById('trigger-file-upload') as HTMLInputElement)
+      triggerUploadInput.value = ''
+      triggerUploadInput.click()
+    }
+
     onLoadFile (file: File): void {
       const reader = new window.FileReader()
       reader.onload = () => {
@@ -225,14 +239,15 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       }
     }
 
-    onPrint (): void {
+    async onCopy (): Promise<void> {
       const { activeTab, invalidTimes } = this.state
       try {
         if (!invalidTimes.every((invalid) => !invalid)) {
           throw new Error('Triggers contain invalid times!')
         }
 
-        console.info(generateScript(activeTab, this.triggerManager.data as TriggerData))
+        const script = generateScript(activeTab, this.triggerManager.data as TriggerData)
+        return await navigator.clipboard.writeText(script)
       } catch (error: any) {
         console.error(error.message)
       }
@@ -315,16 +330,24 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       }
     }
 
-    onToggleSettings (active: boolean): void {
-      const { settingsDirty, fontSize, resolution } = this.state
+    onToggleSettings (): void {
+      const { settingsActive, settingsDirty, fontSize, resolution } = this.state
 
-      if (!active && settingsDirty) {
+      if (settingsActive && settingsDirty) {
         this.setState({ fontSizeSetting: fontSize })
         this.setState({ resolutionSetting: resolution })
         this.setState({ settingsDirty: false })
       }
 
-      this.setState({ settingsActive: active })
+      this.setState({ settingsActive: !settingsActive })
+    }
+
+    onReport (): void {
+      window.open(REPORT_LINK)
+    }
+
+    onHelp (): void {
+      window.open(HELP_LINK)
     }
 
     onChangeFontSize (newFontSize: number): void {
@@ -450,145 +473,69 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       return e(
         'div',
         { style: STYLES.toolbar.container },
-        e(
-          'button',
-          {
-            title: state.active ? 'Minimize' : 'Maximize',
-            style: STYLES.button.embedded,
-            onClick: () => root.onActivate()
-          },
-          state.active ? e('span', minimizeIcon) : e('span', maximizeIcon)
-        ),
+        !state.active && this.toolbarButton(0, 'Maximize', false, () => root.onActivate(), FICON_MAXIMIZE),
         state.active && e(
           'div',
           { style: { ...STYLES.toolbar.container, justifyContent: 'start' } },
-          e(
-            'button',
-            {
-              title: 'Download',
-              style: STYLES.button.embedded,
-              onClick: () => root.onDownload()
-            },
-            e('span', downloadIcon)
-          ),
-          e(
-            'button',
-            {
-              title: 'Upload',
-              style: STYLES.button.embedded,
-              onClick: () => {
-                const triggerUploadInput = (document.getElementById('trigger-file-upload') as HTMLInputElement)
-                triggerUploadInput.value = ''
-                triggerUploadInput.click()
-              }
-            },
-            e('span', uploadIcon),
-            e(
-              'input',
-              {
-                id: 'trigger-file-upload',
-                style: { display: 'none' },
-                type: 'file',
-                accept: '.json',
-                onChange: (e: Event) => root.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])
-              }
-            )
-          ),
-          e(
-            'button',
-            {
-              title: 'Load From Script',
-              style: STYLES.button.embedded,
-              onClick: () => root.onLoadScript()
-            },
-            e('span', upRightArrowIcon)
-          ),
-          e(
-            'button',
-            {
-              title: 'Run',
-              style: {
-                ...STYLES.button.embedded,
-                color: !state.invalidTimes.every((invalid) => !invalid) ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black
-              },
-              disabled: !state.invalidTimes.every((invalid) => !invalid),
-              onClick: () => root.onTest()
-            },
-            e('span', playIcon)
-          ),
-          e(
-            'button',
-            {
-              title: 'Print to Console',
-              style: STYLES.button.embedded,
-              onClick: () => root.onPrint()
-            },
-            e('span', printIcon)
-          )
+          this.toolbarButton(0, 'Minimize', false, () => root.onActivate(), FICON_MINIMIZE),
+          this.toolbarButton(1, 'Download', false, () => root.onDownload(), FICON_DOWNLOAD),
+          this.toolbarButton(2, 'Upload', false, () => root.onClickFile(), FICON_UPLOAD),
+          this.toolbarButton(3, 'Load From Script', false, () => root.onLoadScript(), FICON_CORNER_UP_RIGHT),
+          this.toolbarButton(4, 'Run', state.invalidTimes.some(i => i), () => root.onTest(), FICON_PLAY),
+          this.toolbarButton(5, 'Copy Script', false, async () => await root.onCopy(), FICON_COPY)
         ),
         state.active && e(
           'div',
           { style: { ...STYLES.toolbar.container, justifyContent: 'end' } },
-          e(
-            'button',
-            {
-              title: 'Undo',
-              style: STYLES.button.embedded,
-              disabled: root.triggerManager.undoLen === 0,
-              onClick: () => root.onUndo()
-            },
-            e(
-              'span',
-              {
-                ...leftArrowIcon,
-                style: { color: root.triggerManager.undoLen === 0 ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black }
-              }
-            )
-          ),
-          e(
-            'button',
-            {
-              title: 'Redo',
-              style: STYLES.button.embedded,
-              disabled: root.triggerManager.redoLen === 0,
-              onClick: () => root.onRedo()
-            },
-            e(
-              'span',
-              {
-                ...rightArrowIcon,
-                style: { color: root.triggerManager.redoLen === 0 ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black }
-              }
-            )
-          ),
-          e(
-            'button',
-            {
-              title: 'Settings',
-              style: STYLES.button.embedded,
-              onClick: () => root.onToggleSettings(!(state.settingsActive))
-            },
-            e('span', settingsIcon)
-          ),
-          e(
-            'button',
-            {
-              title: 'Report Issue',
-              style: STYLES.button.embedded,
-              onClick: () => window.open(REPORT_LINK)
-            },
-            e('span', flagIcon)
-          ),
-          e(
-            'button',
-            {
-              title: 'Help',
-              style: STYLES.button.embedded,
-              onClick: () => window.open(HELP_LINK)
-            },
-            e('span', helpIcon)
-          )
+          this.toolbarButton(6, 'Undo', root.triggerManager.undoLen === 0, () => root.onUndo(), FICON_ARROW_LEFT),
+          this.toolbarButton(7, 'Redo', root.triggerManager.redoLen === 0, () => root.onRedo(), FICON_ARROW_RIGHT),
+          this.toolbarButton(8, 'Settings', false, () => root.onToggleSettings(), FICON_SETTINGS),
+          this.toolbarButton(9, 'Report Issue', false, () => root.onReport(), FICON_FLAG),
+          this.toolbarButton(10, 'Help', false, () => root.onHelp(), FICON_HELP_CIRCLE)
+        ),
+        e(
+          'input',
+          {
+            id: 'trigger-file-upload',
+            style: { display: 'none' },
+            type: 'file',
+            accept: '.json',
+            onChange: (e: Event) => root.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])
+          }
         )
+      )
+    }
+
+    toolbarButton (
+      id: number,
+      title: string,
+      disabled: boolean,
+      onClick: Function,
+      icon: InlineIcon
+    ): ReactComponent {
+      const { root, state } = this
+      if (disabled && state.toolbarColors[id] !== TOOLBAR_COLOR.NONE) {
+        root.onUpdateToolbarColor(id, TOOLBAR_COLOR.NONE)
+      }
+
+      return e(
+        'button',
+        {
+          title,
+          style: {
+            ...STYLES.button.embedded,
+            backgroundColor: STYLES.button.embedded.bgColor[state.toolbarColors[id]]
+          },
+          onMouseOver: () => !disabled && root.onUpdateToolbarColor(id, TOOLBAR_COLOR.HOVER),
+          onMouseOut: () => !disabled && root.onUpdateToolbarColor(id, TOOLBAR_COLOR.NONE),
+          onMouseDown: () => !disabled && root.onUpdateToolbarColor(id, TOOLBAR_COLOR.ACTIVE),
+          onMouseUp: () => !disabled && root.onUpdateToolbarColor(id, TOOLBAR_COLOR.HOVER),
+          onClick,
+          disabled
+        },
+        e('span', {
+          ...icon, style: { color: disabled ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black }
+        })
       )
     }
 
@@ -615,9 +562,9 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
               fontSize: '32px',
               right: '0px'
             },
-            onClick: () => root.onToggleSettings(false)
+            onClick: () => root.onToggleSettings()
           },
-          e('span', xIcon)
+          e('span', FICON_X)
         ),
         e('text', {
           style: {
@@ -901,7 +848,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             onClick: () => root.onDeleteTrigger(index)
           },
           e('span', {
-            ...xIcon,
+            ...FICON_X,
             style: {
               color: index === 0 ? GLOBAL_STYLES.dark_gray2 : GLOBAL_STYLES.black
             }
@@ -920,7 +867,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             style: STYLES.trigger.createButton,
             onClick: () => root.onCreateTrigger(index)
           },
-          e('span', plusIcon)
+          e('span', FICON_PLUS)
         )
       )
     }
@@ -1232,7 +1179,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             },
             onClick: () => root.onResetSkin(index)
           },
-          e('span', trashIcon)
+          e('span', FICON_TRASH2)
         ),
         e(
           'div',
