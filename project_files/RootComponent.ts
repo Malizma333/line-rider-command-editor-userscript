@@ -10,6 +10,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     activeTab: TRIGGER_ID
     triggerUpdateFlag: boolean
     focusDDIndices: number[]
+    gravityDDIndices: number[]
     skinEditorSelectedRider: number
     skinEditorSelectedColor: string
     skinEditorZoom: [number, number, number]
@@ -25,7 +26,8 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
 
   class RootComponent extends React.Component {
     readonly componentManager = new ComponentManager(this)
-    readonly parser = new ScriptParser()
+    readonly scriptParser = new ScriptParser()
+    readonly fileParser = new FileParser()
     readonly triggerManager = new TriggerDataManager()
     readonly state: RootState
     readonly setState: SetState
@@ -39,6 +41,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         activeTab: TRIGGER_ID.ZOOM,
         triggerUpdateFlag: false,
         focusDDIndices: [0],
+        gravityDDIndices: [0],
         skinEditorSelectedRider: 0,
         skinEditorSelectedColor: '#000000ff',
         skinEditorZoom: [1, 0, 0],
@@ -69,7 +72,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
 
       if (this.lastRiderCount !== riderCount) {
         this.lastRiderCount = riderCount
-        const { skinEditorSelectedRider, focusDDIndices } = this.state
+        const { skinEditorSelectedRider, focusDDIndices, gravityDDIndices } = this.state
 
         if (skinEditorSelectedRider >= riderCount) {
           this.setState({ skinEditorSelectedRider: riderCount - 1 })
@@ -78,6 +81,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         this.triggerManager.updateRiderCount(riderCount)
         this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
         this.setState({ focusDDIndices: focusDDIndices.map((ddIndex) => Math.min(riderCount - 1, ddIndex)) })
+        this.setState({ gravityDDIndices: gravityDDIndices.map((ddIndex) => Math.min(riderCount - 1, ddIndex)) })
       }
 
       const sidebarOpen = getSidebarOpen(nextState)
@@ -100,7 +104,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onCreateTrigger (index: number): void {
-      const { activeTab, focusDDIndices } = this.state
+      const { activeTab, focusDDIndices, gravityDDIndices } = this.state
 
       if (activeTab === TRIGGER_ID.SKIN) return
 
@@ -124,6 +128,10 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         this.setState({ focusDDIndices: focusDDIndices.slice(0, index + 1).concat([0]).concat(focusDDIndices.slice(index + 1)) })
       }
 
+      if (activeTab === TRIGGER_ID.GRAVITY) {
+        this.setState({ gravityDDIndices: gravityDDIndices.slice(0, index + 1).concat([0]).concat(gravityDDIndices.slice(index + 1)) })
+      }
+
       this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
     }
 
@@ -143,7 +151,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onDeleteTrigger (index: number): void {
-      const { activeTab, focusDDIndices } = this.state
+      const { activeTab, focusDDIndices, gravityDDIndices } = this.state
 
       if (activeTab === TRIGGER_ID.SKIN) return
 
@@ -158,6 +166,10 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         this.setState({ focusDDIndices: focusDDIndices.slice(0, index).concat(focusDDIndices.slice(index + 1)) })
       }
 
+      if (activeTab === TRIGGER_ID.FOCUS) {
+        this.setState({ gravityDDIndices: gravityDDIndices.slice(0, index).concat(gravityDDIndices.slice(index + 1)) })
+      }
+
       this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
     }
 
@@ -166,7 +178,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const a = document.createElement('a')
       const data = 'data:text/json;charset=utf-8,' + encodeURIComponent(jsonString)
       a.setAttribute('href', data)
-      a.setAttribute('download', getTrackTitle(store.getState()) + '.scriptData.json')
+      a.setAttribute('download', getTrackTitle(store.getState()) + '.script.json')
       a.click()
       a.remove()
     }
@@ -180,15 +192,23 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     onLoadFile (file: File): void {
       const reader = new window.FileReader()
       reader.onload = () => {
-        const triggerData = JSON.parse(reader.result as string)
-        this.onLoad(triggerData)
+        try {
+          this.onLoad(
+            this.fileParser.parseFile(
+              JSON.parse(reader.result as string),
+              this.triggerManager.data as TriggerData
+            )
+          )
+        } catch (error: any) {
+          console.error(`[Root.onLoadFile()] Failed to load file: ${error.message}`)
+        }
       }
       reader.readAsText(file)
     }
 
     onLoadScript (): void {
       this.onLoad(
-        this.parser.parseScript(
+        this.scriptParser.parseScript(
           getCurrentScript(store.getState()),
           this.triggerManager.data as TriggerData
         )
@@ -201,26 +221,21 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         const focusTriggers = nextTriggerData[TRIGGER_ID.FOCUS].triggers as CameraFocusTrigger[]
         const focusDDIndices = Array(focusTriggers.length).fill(0) as number[]
 
-        for (let i = 0; i < focusTriggers.length; i++) {
-          for (let j = 0; j < focusTriggers[i][1].length; j++) {
-            if (focusTriggers[i][1][j] > 0) {
-              focusDDIndices[i] = j
-              break
-            }
-          }
-        }
+        const gravityTriggers = nextTriggerData[TRIGGER_ID.GRAVITY].triggers as GravityTrigger[]
+        const gravityDDIndices = Array(gravityTriggers.length).fill(0) as number[]
 
-        this.setState({ focusDDIndices })
+        this.triggerManager.updateFromPath([], nextTriggerData, TRIGGER_ID.ZOOM)
 
         if (activeTab !== TRIGGER_ID.SKIN) {
           const newTriggerArray = nextTriggerData[activeTab].triggers
           this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
         }
 
-        this.triggerManager.updateFromPath([], nextTriggerData, TRIGGER_ID.ZOOM)
+        this.setState({ focusDDIndices })
+        this.setState({ gravityDDIndices })
         this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
       } catch (error: any) {
-        console.error(error.message)
+        console.error(`[Root.onLoad()] ${error.message}`)
       }
     }
 
@@ -235,7 +250,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         // HACK: Already evaluated script, execute it directly
         eval.call(window, script) // eslint-disable-line no-eval
       } catch (error: any) {
-        console.error(error.message)
+        console.error(`[Root.onTest()] ${error.message}`)
       }
     }
 
@@ -249,7 +264,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         const script = generateScript(activeTab, this.triggerManager.data as TriggerData)
         return await navigator.clipboard.writeText(script)
       } catch (error: any) {
-        console.error(error.message)
+        console.error(`[Root.onCopy()] ${error.message}`)
       }
     }
 
@@ -399,6 +414,13 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const nextFocusDDIndices = [...focusDDIndices]
       nextFocusDDIndices[index] = parseInt(value, 10)
       this.setState({ focusDDIndices: nextFocusDDIndices })
+    }
+
+    onChangeGravityDD (index: number, value: string): void {
+      const { gravityDDIndices } = this.state
+      const nextGravityDDIndices = [...gravityDDIndices]
+      nextGravityDDIndices[index] = parseInt(value, 10)
+      this.setState({ gravityDDIndices: nextGravityDDIndices })
     }
 
     onChangeSkinDD (value: string): void {
@@ -1065,33 +1087,50 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     gravityTrigger (data: GravityTrigger, index: number): ReactComponent {
-      const { root } = this
+      const { root, state } = this
       const cProps = [CONSTRAINTS.GRAVITY_X, CONSTRAINTS.GRAVITY_Y]
       const labels = ['Gravity X', 'Y']
       const props = ['x', 'y']
+      const dropdownIndex = state.gravityDDIndices[index]
 
       return e(
         'div',
         { style: { display: 'flex', flexDirection: 'row' } },
+        e(
+          'select',
+          {
+            style: STYLES.dropdown.head,
+            value: dropdownIndex,
+            onChange: (e: Event) => root.onChangeGravityDD(index, (e.target as HTMLInputElement).value)
+          },
+          Object.keys(data[1]).map((riderIndex) => {
+            const riderNum = 1 + parseInt(riderIndex, 10)
+
+            return e('option', {
+              style: STYLES.dropdown.option,
+              value: parseInt(riderIndex, 10)
+            }, e('text', null, `Rider ${riderNum}`))
+          })
+        ),
         props.map((prop, propIndex) => e(
           'div',
           { style: STYLES.trigger.property },
           e('label', {
-            for: `gravityTriggerText_${labels[propIndex]}_${index}`,
+            for: `gravityTriggerText_${labels[propIndex]}_${dropdownIndex}_${index}`,
             style: STYLES.trigger.text
           }, labels[propIndex]),
           e('input', {
-            id: `gravityTriggerText_${labels[propIndex]}_${index}`,
+            id: `gravityTriggerText_${labels[propIndex]}_${dropdownIndex}_${index}`,
             style: STYLES.trigger.input,
-            value: data[1][prop as 'x' | 'y'],
+            value: data[1][dropdownIndex][prop as 'x' | 'y'],
             onChange: (e: Event) => root.onUpdateTrigger(
-              { prev: data[1][prop as 'x' | 'y'], new: (e.target as HTMLInputElement).value },
-              ['triggers', index, 1, prop],
+              { prev: data[1][dropdownIndex][prop as 'x' | 'y'], new: (e.target as HTMLInputElement).value },
+              ['triggers', index, 1, dropdownIndex, prop],
               cProps[propIndex]
             ),
             onBlur: (e: Event) => root.onUpdateTrigger(
-              { prev: data[1][prop as 'x' | 'y'], new: (e.target as HTMLInputElement).value },
-              ['triggers', index, 1, prop],
+              { prev: data[1][dropdownIndex][prop as 'x' | 'y'], new: (e.target as HTMLInputElement).value },
+              ['triggers', index, 1, dropdownIndex, prop],
               cProps[propIndex],
               true
             )

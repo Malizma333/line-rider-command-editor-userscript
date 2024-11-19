@@ -18,7 +18,7 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
         this.triggerData[commandId as TRIGGER_ID].triggers = []
         this.parseCommand(commandId as TRIGGER_ID, trimmedScript)
       } catch (error: any) {
-        console.warn('[ScriptParser]', error.message)
+        console.warn(`[ScriptParser.parseScript()] ${error.message}`)
         this.triggerData[commandId as TRIGGER_ID] = structuredClone(
           currentTriggerData[commandId as TRIGGER_ID]
         )
