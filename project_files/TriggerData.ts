@@ -88,7 +88,7 @@ const SkinCssMetadata: TriggerMetadata<SkinCssTrigger> = {
 
 const GravityMetadata: TriggerMetadata<GravityTrigger> = {
   DISPLAY_NAME: 'Gravity',
-  FUNC: '!function(){window.store.getState().camera.playbackFollower._frames.length=0,window.store.getState().simulator.engine.engine._computed._frames.length=1;let n=0;const r=JSON.parse(\'{0}\');Object.defineProperty(window.$ENGINE_PARAMS,"gravity",{get(){var e,t;return n!==r.length-1&&(e=store.getState().simulator.engine.engine._computed._frames.length,40*(t=r[n+1][0])[0]*60+40*t[1]+t[2]===e)&&(n+=1),r[n][1]}})}();',
+  FUNC: '!function(){window.store.getState().camera.playbackFollower._frames.length=0,window.store.getState().simulator.engine.engine._computed._frames.length=1;let r=0,a=0;const o=store.getState().simulator.engine.engine.state.riders.length,g=JSON.parse(\'{0}\');Object.defineProperty(window.$ENGINE_PARAMS,"gravity",{get(){a+=1;var e,t,n=Math.floor(a/17)%o;return r!==g.length-1&&(e=store.getState().simulator.engine.engine._computed._frames.length,40*(t=g[r+1][0])[0]*60+40*t[1]+t[2]===e)&&(r+=1),g[r][1][n]}})}();',
   TEMPLATE: [[0, 0, 0], [{ x: 0, y: 0.175 }]]
 }
 

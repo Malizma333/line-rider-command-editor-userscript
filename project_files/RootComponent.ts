@@ -220,18 +220,19 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       try {
         const focusTriggers = nextTriggerData[TRIGGER_ID.FOCUS].triggers as CameraFocusTrigger[]
         const focusDDIndices = Array(focusTriggers.length).fill(0) as number[]
-        this.setState({ focusDDIndices })
 
         const gravityTriggers = nextTriggerData[TRIGGER_ID.GRAVITY].triggers as GravityTrigger[]
         const gravityDDIndices = Array(gravityTriggers.length).fill(0) as number[]
-        this.setState({ gravityDDIndices })
+
+        this.triggerManager.updateFromPath([], nextTriggerData, TRIGGER_ID.ZOOM)
 
         if (activeTab !== TRIGGER_ID.SKIN) {
           const newTriggerArray = nextTriggerData[activeTab].triggers
           this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) })
         }
 
-        this.triggerManager.updateFromPath([], nextTriggerData, TRIGGER_ID.ZOOM)
+        this.setState({ focusDDIndices })
+        this.setState({ gravityDDIndices })
         this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
       } catch (error: any) {
         console.error(`[Root.onLoad()] ${error.message}`)
