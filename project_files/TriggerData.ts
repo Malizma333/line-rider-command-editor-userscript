@@ -193,6 +193,21 @@ class TriggerDataManager {
 
     this.triggerData[TRIGGER_ID.FOCUS].triggers = focusTriggers
 
+    const gravityTriggers = this.triggerData[TRIGGER_ID.GRAVITY].triggers as GravityTrigger[]
+
+    for (let i = 0; i < gravityTriggers.length; i++) {
+      const oldLength = gravityTriggers[i][1].length
+
+      if (oldLength < riderCount) {
+        gravityTriggers[i][1].push(...Array(riderCount - oldLength).fill({x: 0, y: 0.175}))
+      }
+      if (oldLength > riderCount) {
+        gravityTriggers[i][1].splice(riderCount, oldLength - riderCount)
+      }
+    }
+
+    this.triggerData[TRIGGER_ID.GRAVITY].triggers = gravityTriggers
+
     const skinTriggers = this.triggerData[TRIGGER_ID.SKIN].triggers
     const oldLength = skinTriggers.length
 
