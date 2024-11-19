@@ -17,7 +17,7 @@ type CameraPanTrigger = [TriggerTime, { w: number, h: number, x: number, y: numb
 type CameraFocusTrigger = [TriggerTime, number[]]
 type TimeRemapTrigger = [TriggerTime, number]
 interface SkinCssTrigger { [property: string]: { stroke?: string, fill?: string } }
-type GravityTrigger = [TriggerTime, { x: number, y: number }]
+type GravityTrigger = [TriggerTime, [{ x: number, y: number }]]
 
 type TimedTrigger = ZoomTrigger | CameraPanTrigger | CameraFocusTrigger | TimeRemapTrigger | GravityTrigger
 type Trigger = TimedTrigger | SkinCssTrigger
@@ -89,7 +89,7 @@ const SkinCssMetadata: TriggerMetadata<SkinCssTrigger> = {
 const GravityMetadata: TriggerMetadata<GravityTrigger> = {
   DISPLAY_NAME: 'Gravity',
   FUNC: '!function(){window.store.getState().camera.playbackFollower._frames.length=0,window.store.getState().simulator.engine.engine._computed._frames.length=1;let n=0;const r=JSON.parse(\'{0}\');Object.defineProperty(window.$ENGINE_PARAMS,"gravity",{get(){var e,t;return n!==r.length-1&&(e=store.getState().simulator.engine.engine._computed._frames.length,40*(t=r[n+1][0])[0]*60+40*t[1]+t[2]===e)&&(n+=1),r[n][1]}})}();',
-  TEMPLATE: [[0, 0, 0], { x: 0, y: 0.175 }]
+  TEMPLATE: [[0, 0, 0], [{ x: 0, y: 0.175 }]]
 }
 
 const TRIGGER_PROPS = {
@@ -109,7 +109,6 @@ interface TriggerDataItem {
 }
 
 interface TriggerData {
-  version: number | undefined
   [TRIGGER_ID.ZOOM]: TriggerDataItem
   [TRIGGER_ID.PAN]: TriggerDataItem
   [TRIGGER_ID.FOCUS]: TriggerDataItem
@@ -131,7 +130,6 @@ class TriggerDataManager {
 
   static get initialTriggerData (): TriggerData {
     return {
-      version: undefined,
       [TRIGGER_ID.ZOOM]: {
         id: TRIGGER_ID.ZOOM,
         triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.ZOOM].TEMPLATE)],

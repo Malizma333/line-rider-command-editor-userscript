@@ -25,7 +25,8 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
 
   class RootComponent extends React.Component {
     readonly componentManager = new ComponentManager(this)
-    readonly parser = new ScriptParser()
+    readonly scriptParser = new ScriptParser()
+    readonly fileParser = new FileParser()
     readonly triggerManager = new TriggerDataManager()
     readonly state: RootState
     readonly setState: SetState
@@ -166,7 +167,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const a = document.createElement('a')
       const data = 'data:text/json;charset=utf-8,' + encodeURIComponent(jsonString)
       a.setAttribute('href', data)
-      a.setAttribute('download', getTrackTitle(store.getState()) + '.scriptData.json')
+      a.setAttribute('download', getTrackTitle(store.getState()) + '.script.json')
       a.click()
       a.remove()
     }
@@ -180,15 +181,23 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     onLoadFile (file: File): void {
       const reader = new window.FileReader()
       reader.onload = () => {
-        const triggerData = JSON.parse(reader.result as string)
-        this.onLoad(triggerData)
+        try {
+          this.onLoad(
+            this.fileParser.parseFile(
+              JSON.parse(reader.result as string),
+              this.triggerManager.data as TriggerData
+            )
+          )
+        } catch (error: any) {
+          console.error(`[Root.onLoadFile()] Failed to load file: ${error.message}`)
+        }
       }
       reader.readAsText(file)
     }
 
     onLoadScript (): void {
       this.onLoad(
-        this.parser.parseScript(
+        this.scriptParser.parseScript(
           getCurrentScript(store.getState()),
           this.triggerManager.data as TriggerData
         )
@@ -220,7 +229,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         this.triggerManager.updateFromPath([], nextTriggerData, TRIGGER_ID.ZOOM)
         this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag })
       } catch (error: any) {
-        console.error(error.message)
+        console.error(`[Root.onLoad()] ${error.message}`)
       }
     }
 
@@ -235,7 +244,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         // HACK: Already evaluated script, execute it directly
         eval.call(window, script) // eslint-disable-line no-eval
       } catch (error: any) {
-        console.error(error.message)
+        console.error(`[Root.onTest()] ${error.message}`)
       }
     }
 
@@ -249,7 +258,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
         const script = generateScript(activeTab, this.triggerManager.data as TriggerData)
         return await navigator.clipboard.writeText(script)
       } catch (error: any) {
-        console.error(error.message)
+        console.error(`[Root.onCopy()] ${error.message}`)
       }
     }
 
@@ -1069,6 +1078,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       const cProps = [CONSTRAINTS.GRAVITY_X, CONSTRAINTS.GRAVITY_Y]
       const labels = ['Gravity X', 'Y']
       const props = ['x', 'y']
+      let i = 0
 
       return e(
         'div',
@@ -1083,14 +1093,14 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
           e('input', {
             id: `gravityTriggerText_${labels[propIndex]}_${index}`,
             style: STYLES.trigger.input,
-            value: data[1][prop as 'x' | 'y'],
+            value: data[1][i][prop as 'x' | 'y'],
             onChange: (e: Event) => root.onUpdateTrigger(
-              { prev: data[1][prop as 'x' | 'y'], new: (e.target as HTMLInputElement).value },
+              { prev: data[1][i][prop as 'x' | 'y'], new: (e.target as HTMLInputElement).value },
               ['triggers', index, 1, prop],
               cProps[propIndex]
             ),
             onBlur: (e: Event) => root.onUpdateTrigger(
-              { prev: data[1][prop as 'x' | 'y'], new: (e.target as HTMLInputElement).value },
+              { prev: data[1][i][prop as 'x' | 'y'], new: (e.target as HTMLInputElement).value },
               ['triggers', index, 1, prop],
               cProps[propIndex],
               true
