@@ -31,7 +31,7 @@ if $DEVELOP; then
 else
   LOCATION="$REPOSITORY"
   NAME="Command Editor"
-  VERSION="2.3.0"
+  VERSION="$(git rev-list --count --all).0"
 fi
 
 echo "window.CMD_EDITOR_DEBUG=$DEVELOP
