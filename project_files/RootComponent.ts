@@ -455,6 +455,26 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       this.setState({ skinEditorZoom: [newScale, newXOffset, newYOffset] })
     }
 
+    onCameraDataCapture (data: Trigger, index: number, triggerType: TRIGGER_ID) {
+      switch (triggerType) {
+        case TRIGGER_ID.ZOOM: {
+          this.onUpdateTrigger(
+            { prev: data[1] as number, new: Math.log2(getEditorZoom(store.getState())).toString() },
+            ['triggers', index, 1],
+            CONSTRAINTS.ZOOM,
+            true
+          )
+          break
+        }
+        case TRIGGER_ID.PAN: {
+          break
+        }
+        default: {
+          break
+        }
+      }
+    }
+
     render (): ReactComponent {
       this.componentManager.updateState(this.state)
       return this.componentManager.main()
@@ -874,9 +894,11 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             style: {
               color: index === 0 ? GLOBAL_STYLES.dark_gray2 : GLOBAL_STYLES.black
             }
-          })
+          }),
         ),
         data.id !== TRIGGER_ID.SKIN && this.timeStamp((currentTrigger as TimedTrigger)[0], index),
+        data.id === TRIGGER_ID.ZOOM && this.captureButton(currentTrigger as Trigger, index, TRIGGER_ID.ZOOM),
+        data.id === TRIGGER_ID.PAN && this.captureButton(currentTrigger as Trigger, index, TRIGGER_ID.PAN),
         data.id === TRIGGER_ID.ZOOM && this.zoomTrigger((currentTrigger as ZoomTrigger), index),
         data.id === TRIGGER_ID.PAN && this.cameraPanTrigger((currentTrigger as CameraPanTrigger), index),
         data.id === TRIGGER_ID.FOCUS && this.cameraFocusTrigger((currentTrigger as CameraFocusTrigger), index),
@@ -932,6 +954,24 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
             )
           })
         ))
+      )
+    }
+
+    captureButton (data: Trigger, index: number, triggerType: TRIGGER_ID): ReactComponent {
+      const { root, state } = this
+
+      return e(
+        'button',
+        {
+          style: {
+            ...STYLES.button.embedded,
+            fontSize: '22px',
+            position: 'absolute',
+            right: '25px'
+          },
+          onClick: () => root.onCameraDataCapture(data, index, triggerType)
+        },
+        e('span', { ...FICON_CAMERA })
       )
     }
 

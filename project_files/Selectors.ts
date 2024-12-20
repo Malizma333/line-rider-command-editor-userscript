@@ -20,3 +20,5 @@ function getPlayerIndex (state: ReduxState): number { return state.player.index 
 function getSidebarOpen (state: ReduxState): boolean { return (state.views.Sidebar as boolean) }
 
 function getTrackTitle (state: ReduxState): string { return state.trackData.label }
+
+function getEditorZoom (state: ReduxState): number { return state.camera.editorZoom }
