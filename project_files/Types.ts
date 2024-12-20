@@ -7,6 +7,7 @@ interface Window {
   onAppReady: Function
   save_commands: Function
   CMD_EDITOR_DEBUG: boolean
+  getAutoZoom?: any
 }
 
 type PropMap<Type> = {
