@@ -459,7 +459,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
       switch (triggerType) {
         case TRIGGER_ID.ZOOM: {
           this.onUpdateTrigger(
-            { prev: data[1] as number, new: Math.log2(getEditorZoom(store.getState())).toString() },
+            { prev: (data as ZoomTrigger)[1] as number, new: Math.log2(getEditorZoom(store.getState())).toString() },
             ['triggers', index, 1],
             CONSTRAINTS.ZOOM,
             true
@@ -467,6 +467,24 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
           break
         }
         case TRIGGER_ID.PAN: {
+          const { x, y } = getEditorPosition(store.getState())
+          const track = getSimulatorTrack(store.getState())
+          const { width, height } = getPlaybackDimensions(store.getState())
+          const zoom = getPlaybackZoom(store.getState())
+          const playerIndex = Math.floor(getPlayerIndex(store.getState()))
+          const camera = store.getState().camera.playbackFollower.getCamera(track, { zoom, width, height }, playerIndex)
+          this.onUpdateTrigger(
+            { prev: (data as CameraPanTrigger)[1]['x'], new: ((x - camera.x) * zoom / width).toString() },
+            ['triggers', index, 1, 'x'],
+            CONSTRAINTS.PAN_X,
+            true
+          )
+          this.onUpdateTrigger(
+            { prev: (data as CameraPanTrigger)[1]['y'], new: ((y - camera.y) * zoom / height).toString() },
+            ['triggers', index, 1, 'y'],
+            CONSTRAINTS.PAN_Y,
+            true
+          )
           break
         }
         default: {
@@ -958,7 +976,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     captureButton (data: Trigger, index: number, triggerType: TRIGGER_ID): ReactComponent {
-      const { root, state } = this
+      const { root } = this
 
       return e(
         'button',
