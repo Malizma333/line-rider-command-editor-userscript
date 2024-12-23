@@ -1147,7 +1147,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     gravityTrigger (data: GravityTrigger, index: number): ReactComponent {
       const { root, state } = this
       const cProps = [CONSTRAINTS.GRAVITY_X, CONSTRAINTS.GRAVITY_Y]
-      const labels = ['Gravity X', 'Y']
+      const labels = ['X', 'Y']
       const props = ['x', 'y']
       const dropdownIndex = state.gravityDDIndices[index]
 
