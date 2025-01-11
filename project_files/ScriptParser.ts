@@ -33,7 +33,11 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
    */
   parseCommand (commandId: TRIGGER_ID, scriptSection: string): void {
     if (commandId === TRIGGER_ID.GRAVITY) {
-      throw new Error('Gravity parsing not supported!')
+      throw new Error('Gravity parsing not supported!');
+    }
+
+    if (TRIGGER_PROPS[commandId].FUNC === undefined) {
+      throw new Error('Function undefined!');
     }
 
     const currentHeader = TRIGGER_PROPS[commandId].FUNC.split('(')[0]

@@ -8,6 +8,15 @@ interface Window {
   save_commands: Function
   CMD_EDITOR_DEBUG: boolean
   getAutoZoom?: any
+  createZoomer: Function
+  getCamBounds?: any
+  createBoundsPanner: Function
+  getCamFocus?: any
+  createFocuser: Function
+  timeRemapper?: any
+  createTimeRemapper: Function
+  setCustomRiders: Function
+  setCustomGravity?: Function
 }
 
 type PropMap<Type> = {

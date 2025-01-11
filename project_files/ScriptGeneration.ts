@@ -7,6 +7,10 @@ function generateScript (command: TRIGGER_ID, triggerData: TriggerData): string 
   const currentData = triggerData[command]
   const currentHeader = (TRIGGER_PROPS[command]).FUNC
 
+  if (currentHeader === undefined) {
+    return '';
+  }
+
   switch (command) {
     case TRIGGER_ID.FOCUS:
     case TRIGGER_ID.PAN:
@@ -14,21 +18,18 @@ function generateScript (command: TRIGGER_ID, triggerData: TriggerData): string 
       return currentHeader
         .replace('{0}', JSON.stringify(currentData.triggers))
         .replace('{1}', String(currentData.smoothing))
-        .replace(' ', '')
+        .replace(' ', '');
     case TRIGGER_ID.TIME:
       return currentHeader
         .replace('{0}', JSON.stringify(currentData.triggers))
         .replace('{1}', String(currentData.interpolate))
-        .replace(' ', '')
+        .replace(' ', '');
     case TRIGGER_ID.SKIN:
       return currentHeader
         .replace('{0}', formatSkins(currentData.triggers as SkinCssTrigger[]))
-        .replace(' ', '')
-    case TRIGGER_ID.GRAVITY:
-      return currentHeader
-        .replace('{0}', JSON.stringify(currentData.triggers))
+        .replace(' ', '');
     default:
-      return ''
+      return '';
   }
 }
 
