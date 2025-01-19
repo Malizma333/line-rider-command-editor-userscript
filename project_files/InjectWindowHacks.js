@@ -69,10 +69,12 @@ window.setCustomGravity = (function () {
   }
 
   return function(newTriggers) {
-    triggers = newTriggers;
-
-    for (let i = 0; i < triggers.length; i++) {
-      triggers[i][0] = triggers[i][0][0] * 2400 + triggers[i][0][1] * 40 + triggers[i][0][2];
+    triggers.length = 0;
+    for (let i = 0; i < newTriggers.length; i++) {
+      triggers.push([
+        newTriggers[i][0][0] * 2400 + newTriggers[i][0][1] * 40 + newTriggers[i][0][2],
+        newTriggers[i][1] // This is a reference, be careful
+      ]);
     }
 
     reset();
