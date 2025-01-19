@@ -1,33 +1,23 @@
 window.setCustomGravity = (function () {
   const numIters = window.store.getState().simulator.engine.getFrame(0).snapshot.entities[0].entities[0].points.length;
-
   let init = false;
   let numRiders = window.store.getState().simulator.engine.engine.state.riders.length;
-  let triggerIndex = 0;
-  let nextFrame = 0;
-  let current = {
-    iter: 0,
-    rider: 0,
-    frame: 0
-  };
+  let currentIter = 0;
+  let currentRider = 0;
   let triggers = [];
 
-  function getTriggerFrame(i) {
-    return triggers[i][0][0] * 2400 + triggers[i][0][1] * 40 + triggers[i][0][2];
-  }
+  window.store.subscribe(() => {
+    if (numRiders !== window.store.getState().simulator.engine.engine.state.riders.length) {
+      reset();
+    }
+  });
 
   function reset() {
     window.store.dispatch({ type: "STOP_PLAYER" });
+
     numRiders = window.store.getState().simulator.engine.engine.state.riders.length;
-    triggerIndex = 0;
-    nextFrame = 0;
-    current.iter = 0;
-    current.rider = 0;
-    current.frame = 0;
-  
-    if (triggers.length > 1) {
-      nextFrame = getTriggerFrame(triggerIndex + 1);
-    }
+    currentIter = 0;
+    currentRider = 0;
 
     window.requestAnimationFrame(() => {
       window.store.getState().camera.playbackFollower._frames.length = 0
@@ -36,29 +26,43 @@ window.setCustomGravity = (function () {
   }
 
   function getGravity() {
-    if (current.frame === nextFrame) {
-      triggerIndex += 1;
-      if (triggerIndex < triggers.length - 1) {
-        nextFrame = getTriggerFrame(triggerIndex + 1);
+    if (triggers.length === 0) {
+      return { x: 0, y: 0.175 }
+    }
+
+    let currentFrame = window.store.getState().simulator.engine.engine._computed._frames.length - 1;
+    let gravity = triggers[triggers.length - 1][1][currentRider];
+
+    if (currentFrame < triggers[triggers.length - 1][0]) {
+      // Binary search for the proper index... could be cheaper with cache reset detection but i cba
+      let low = 0;
+      let high = triggers.length - 1;
+      while (low < high) {
+        let mid = Math.ceil((high + low) / 2);
+
+        if (currentFrame < triggers[mid][0]) {
+          high = mid - 1;
+        } else {
+          low = mid;
+        }
       }
+
+      gravity = triggers[low][1][currentRider];
     }
 
-    let gravity = triggers[triggerIndex][1][current.iter];
-
-    if (triggerIndex === triggers.length - 1) {
-      return gravity;
+    if (gravity === undefined) {
+      gravity = { x: 0, y: 0.175 };
     }
 
-    current.iter += 1;
+    currentIter += 1;
 
-    if (current.iter === numIters) {
-      current.iter = 0;
-      current.rider += 1;
+    if (currentIter === numIters) {
+      currentIter = 0;
+      currentRider += 1;
     }
 
-    if (current.rider === numRiders) {
-      current.rider = 0;
-      current.frame += 1;
+    if (currentRider === numRiders) {
+      currentRider = 0;
     }
 
     return gravity;
@@ -66,13 +70,16 @@ window.setCustomGravity = (function () {
 
   return function(newTriggers) {
     triggers = newTriggers;
-    reset();
 
-    if (init) {
-      return;
+    for (let i = 0; i < triggers.length; i++) {
+      triggers[i][0] = triggers[i][0][0] * 2400 + triggers[i][0][1] * 40 + triggers[i][0][2];
     }
 
-    init = true;
-    Object.defineProperty(window.$ENGINE_PARAMS, "gravity", { get: getGravity });
+    reset();
+
+    if (!init) {
+      init = true;
+      Object.defineProperty(window.$ENGINE_PARAMS, "gravity", { get: getGravity });
+    }
   }
 })();
