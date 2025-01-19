@@ -15,7 +15,7 @@ function executeScript (command: TRIGGER_ID, triggerData: TriggerData): void {
       window.timeRemapper = window.createTimeRemapper(currentData.triggers, currentData.interpolate);
       break;
     case TRIGGER_ID.SKIN:
-      window.setCustomRiders(currentData.triggers);
+      window.setCustomRiders(formatSkins(currentData.triggers as SkinCssTrigger[]));
       break;
     case TRIGGER_ID.GRAVITY:
       if (window.setCustomGravity !== undefined) {

@@ -26,7 +26,7 @@ function generateScript (command: TRIGGER_ID, triggerData: TriggerData): string 
         .replace(' ', '');
     case TRIGGER_ID.SKIN:
       return currentHeader
-        .replace('{0}', formatSkins(currentData.triggers as SkinCssTrigger[]))
+        .replace('{0}', JSON.stringify(formatSkins(currentData.triggers as SkinCssTrigger[])))
         .replace(' ', '');
     default:
       return '';
@@ -36,7 +36,7 @@ function generateScript (command: TRIGGER_ID, triggerData: TriggerData): string 
 /**
  * Formats a list of `SkinCSSTriggers` into an array of css strings
  */
-function formatSkins (customSkinData: SkinCssTrigger[]): string {
+function formatSkins (customSkinData: SkinCssTrigger[]): string[] {
   const nullColor = '#ffffffff'
   const customSkinStrings = customSkinData.map((customSkin: SkinCssTrigger) => [
     ` .outline {stroke: ${customSkin.outline.stroke ?? nullColor}}`,
@@ -71,5 +71,5 @@ function formatSkins (customSkinData: SkinCssTrigger[]): string {
   // For some reason, the skin css array input is indexed +1 mod n
   customSkinStrings.unshift(customSkinStrings.pop() ?? '')
 
-  return JSON.stringify(customSkinStrings)
+  return customSkinStrings
 }

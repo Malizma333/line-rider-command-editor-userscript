@@ -198,7 +198,7 @@ class TriggerDataManager {
       const oldLength = gravityTriggers[i][1].length
 
       if (oldLength < riderCount) {
-        gravityTriggers[i][1].push(...Array(riderCount - oldLength).fill({x: 0, y: 0.175}))
+        gravityTriggers[i][1].push(...Array(riderCount - oldLength).fill(null).map(_ => ({x: 0, y: 0.175})))
       }
       if (oldLength > riderCount) {
         gravityTriggers[i][1].splice(riderCount, oldLength - riderCount)
@@ -211,7 +211,7 @@ class TriggerDataManager {
     const oldLength = skinTriggers.length
 
     if (oldLength < riderCount) {
-      skinTriggers.push(...Array(riderCount - oldLength).fill(structuredClone(
+      skinTriggers.push(...Array(riderCount - oldLength).fill(null).map(_ => structuredClone(
         TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE
       )))
     }
