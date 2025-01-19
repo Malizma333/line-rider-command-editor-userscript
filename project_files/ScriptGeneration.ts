@@ -7,6 +7,10 @@ function generateScript (command: TRIGGER_ID, triggerData: TriggerData): string 
   const currentData = triggerData[command]
   const currentHeader = (TRIGGER_PROPS[command]).FUNC
 
+  if (currentHeader === undefined) {
+    return '';
+  }
+
   switch (command) {
     case TRIGGER_ID.FOCUS:
     case TRIGGER_ID.PAN:
@@ -14,28 +18,25 @@ function generateScript (command: TRIGGER_ID, triggerData: TriggerData): string 
       return currentHeader
         .replace('{0}', JSON.stringify(currentData.triggers))
         .replace('{1}', String(currentData.smoothing))
-        .replace(' ', '')
+        .replace(' ', '');
     case TRIGGER_ID.TIME:
       return currentHeader
         .replace('{0}', JSON.stringify(currentData.triggers))
         .replace('{1}', String(currentData.interpolate))
-        .replace(' ', '')
+        .replace(' ', '');
     case TRIGGER_ID.SKIN:
       return currentHeader
-        .replace('{0}', formatSkins(currentData.triggers as SkinCssTrigger[]))
-        .replace(' ', '')
-    case TRIGGER_ID.GRAVITY:
-      return currentHeader
-        .replace('{0}', JSON.stringify(currentData.triggers))
+        .replace('{0}', JSON.stringify(formatSkins(currentData.triggers as SkinCssTrigger[])))
+        .replace(' ', '');
     default:
-      return ''
+      return '';
   }
 }
 
 /**
  * Formats a list of `SkinCSSTriggers` into an array of css strings
  */
-function formatSkins (customSkinData: SkinCssTrigger[]): string {
+function formatSkins (customSkinData: SkinCssTrigger[]): string[] {
   const nullColor = '#ffffffff'
   const customSkinStrings = customSkinData.map((customSkin: SkinCssTrigger) => [
     ` .outline {stroke: ${customSkin.outline.stroke ?? nullColor}}`,
@@ -70,5 +71,5 @@ function formatSkins (customSkinData: SkinCssTrigger[]): string {
   // For some reason, the skin css array input is indexed +1 mod n
   customSkinStrings.unshift(customSkinStrings.pop() ?? '')
 
-  return JSON.stringify(customSkinStrings)
+  return customSkinStrings
 }

@@ -24,7 +24,7 @@ type Trigger = TimedTrigger | SkinCssTrigger
 
 interface TriggerMetadata<Type> {
   readonly DISPLAY_NAME: string
-  readonly FUNC: string
+  readonly FUNC?: string
   TEMPLATE: Type
 }
 
@@ -88,7 +88,6 @@ const SkinCssMetadata: TriggerMetadata<SkinCssTrigger> = {
 
 const GravityMetadata: TriggerMetadata<GravityTrigger> = {
   DISPLAY_NAME: 'Gravity',
-  FUNC: 'window.store.dispatch({type:"STOP_PLAYER"}),window.store.dispatch({type:"SET_PLAYER_INDEX",payload:0}),window.requestAnimationFrame(()=>{window.store.getState().camera.playbackFollower._frames.length=0,window.store.getState().simulator.engine.engine._computed._frames.length=1;const t=store.getState().simulator.engine.engine.state.riders.length,n=JSON.parse(\'{0}\');let r=0,a=-1,o=0,i=1<n.length?2400*n[1][0][0]+40*n[1][0][1]+n[1][0][2]:0;Object.defineProperty(window.$ENGINE_PARAMS,"gravity",{get(){(a+=1)===17*t&&(a=0,o+=1);var e=Math.floor(a/17)%t;return r!==n.length-1&&i===o&&(r+=1)<n.length-1&&(i=2400*n[r+1][0][0]+40*n[r+1][0][1]+n[r+1][0][2]),n[r][1][e]}})});',
   TEMPLATE: [[0, 0, 0], [{ x: 0, y: 0.175 }]]
 }
 
@@ -199,7 +198,7 @@ class TriggerDataManager {
       const oldLength = gravityTriggers[i][1].length
 
       if (oldLength < riderCount) {
-        gravityTriggers[i][1].push(...Array(riderCount - oldLength).fill({x: 0, y: 0.175}))
+        gravityTriggers[i][1].push(...Array(riderCount - oldLength).fill(null).map(_ => ({x: 0, y: 0.175})))
       }
       if (oldLength > riderCount) {
         gravityTriggers[i][1].splice(riderCount, oldLength - riderCount)
@@ -212,7 +211,7 @@ class TriggerDataManager {
     const oldLength = skinTriggers.length
 
     if (oldLength < riderCount) {
-      skinTriggers.push(...Array(riderCount - oldLength).fill(structuredClone(
+      skinTriggers.push(...Array(riderCount - oldLength).fill(null).map(_ => structuredClone(
         TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE
       )))
     }

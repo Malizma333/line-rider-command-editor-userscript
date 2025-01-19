@@ -246,9 +246,7 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
           throw new Error('Triggers contain invalid times!')
         }
 
-        const script = generateScript(activeTab, this.triggerManager.data as TriggerData)
-        // HACK: Already evaluated script, execute it directly
-        eval.call(window, script) // eslint-disable-line no-eval
+        executeScript(activeTab, this.triggerManager.data as TriggerData)
       } catch (error: any) {
         console.error(`[Root.onTest()] ${error.message}`)
       }
