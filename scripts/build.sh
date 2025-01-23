@@ -26,6 +26,8 @@ for filename in ./src/*.js; do
   cat "${filename}" >> "${build_file}"
 done
 
+cat ./init.js >> "${build_file}"
+
 mini=$(uglifyjs -c -m -- "${build_file}")
 echo "${mini}" > "${build_file}"
 

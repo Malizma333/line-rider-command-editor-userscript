@@ -99,11 +99,11 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
         const index = timeProp[0]
         triggers[i][0] = this.retrieveTimestamp(index)
       } else if (timeProp.length === 2) {
-        const index = timeProp[0] * FPS + timeProp[1]
+        const index = timeProp[0] * 40 + timeProp[1]
         triggers[i][0] = this.retrieveTimestamp(index)
       } else {
-        const index = timeProp[0] * FPS * 60 +
-         timeProp[1] * FPS + timeProp[2]
+        const index = timeProp[0] * 2400 +
+         timeProp[1] * 40 + timeProp[2]
         triggers[i][0] = this.retrieveTimestamp(index)
       }
     }
@@ -243,9 +243,9 @@ class ScriptParser { // eslint-disable-line @typescript-eslint/no-unused-vars
    * Converts a player index to a trigger timestamp
    */
   retrieveTimestamp (index: number): TriggerTime {
-    const frames = index % FPS
-    const seconds = Math.floor(index / FPS) % 60
-    const minutes = Math.floor(index / (60 * FPS))
+    const frames = index % 40
+    const seconds = Math.floor(index / 40) % 60
+    const minutes = Math.floor(index / 2400)
     return [minutes, seconds, frames]
   }
 

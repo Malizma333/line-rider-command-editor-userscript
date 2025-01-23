@@ -224,6 +224,7 @@ class TriggerDataManager {
   }
 
   updateFromPath (path: any[], newValue: any, location: TRIGGER_ID): void {
+    const HISTORY_LIMIT = 30
     this.redoStack = []
     const oldValue = this.setAtPointer(['triggerData'].concat(path), newValue)
     this.undoStack.push([path, oldValue, location])

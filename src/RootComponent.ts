@@ -1,8 +1,7 @@
 // TODO DOCS
 
-function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint/no-unused-vars
+function InitRoot (rootElement: HTMLElement): ReactComponent { // eslint-disable-line @typescript-eslint/no-unused-vars
   const { store, React } = window
-  const rootElement = document.getElementById(ROOT_NODE_ID) as HTMLElement
   const e = React.createElement
 
   interface RootState {
@@ -356,11 +355,11 @@ function InitRoot (): ReactComponent { // eslint-disable-line @typescript-eslint
     }
 
     onReport (): void {
-      window.open(REPORT_LINK)
+      window.open('https://github.com/Malizma333/line-rider-command-editor-userscript/issues/new')
     }
 
     onHelp (): void {
-      window.open(HELP_LINK)
+      window.open('https://github.com/Malizma333/line-rider-command-editor-userscript#readme')
     }
 
     onChangeFontSize (newFontSize: number): void {

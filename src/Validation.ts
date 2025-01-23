@@ -166,10 +166,10 @@ function validateTimes (triggers: TimedTrigger[]): boolean[] {
     const time2 = triggers[i + 1][0] as number[]
     const index1 = (
       time1[0] * 60 + time1[1]
-    ) * FPS + time1[2]
+    ) * 40 + time1[2]
     const index2 = (
       time2[0] * 60 + time2[1]
-    ) * FPS + time2[2]
+    ) * 40 + time2[2]
 
     if (index1 >= index2) {
       invalidIndices[i + 1] = true

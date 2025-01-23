@@ -37,6 +37,7 @@ const GLOBAL_STYLES = {
 const STYLES = {
   root: {
     backgroundColor: GLOBAL_STYLES.light_gray3,
+    transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
     border: '2px solid black',
     left: '50px',
     opacity: 0,
