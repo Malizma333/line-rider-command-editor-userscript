@@ -53,8 +53,8 @@ echo "window.CMD_EDITOR_DEBUG=${dev}
 // @match        https://*.surge.sh/*
 // @grant        none
 // @require      ${path}/command-editor.min.js
-// @downloadURL  https://github.com/Malizma333/linerider-userscript-mods/raw/master/mods/line-rider-bookmark-mod.user.js
-// @updateURL    https://github.com/Malizma333/linerider-userscript-mods/raw/master/mods/line-rider-bookmark-mod.user.js
+// @downloadURL  https://github.com/Malizma333/linerider-userscript-mods/raw/refs/heads/master/mods/line-rider-command-editor.user.js
+// @updateURL    https://github.com/Malizma333/linerider-userscript-mods/raw/refs/heads/master/mods/line-rider-command-editor.user.js
 // @homepageURL  https://github.com/Malizma333/linerider-userscript-mods
 // @supportURL   https://github.com/Malizma333/linerider-userscript-mods/issues
 // ==/UserScript==" >> "${userscript_file}"

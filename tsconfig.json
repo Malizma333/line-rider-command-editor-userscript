@@ -4,5 +4,5 @@
     "strict": true,
     "outFile": "command-editor.min.js"
   },
-  "include": ["src/*"],
+  "include": ["src/*", "index.ts"],
 }
