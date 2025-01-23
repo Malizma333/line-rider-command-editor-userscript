@@ -22,7 +22,7 @@ esac
 
 tsc -p tsconfig.json
 
-for filename in ./project_files/*.js; do
+for filename in ./src/*.js; do
   cat "${filename}" >> "${build_file}"
 done
 
