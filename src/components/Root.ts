@@ -1,6 +1,6 @@
 // TODO DOCS
 
-function InitRoot (rootElement: HTMLElement): ReactComponent { // eslint-disable-line @typescript-eslint/no-unused-vars
+function GetRoot (rootElement: HTMLElement): ReactComponent { // eslint-disable-line @typescript-eslint/no-unused-vars
   const { store, React } = window
   const e = React.createElement
 

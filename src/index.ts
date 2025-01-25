@@ -25,7 +25,7 @@ function main (): void {
   const parent = document.createElement('div');
   (document.getElementById('content') as HTMLElement).appendChild(parent)
 
-  ReactDOM.render(React.createElement(InitRoot(parent)), parent)
+  ReactDOM.render(React.createElement(GetRoot(parent)), parent)
 
   const content = (document.getElementById('content') as HTMLElement)
   const timerId = setInterval(() => {
