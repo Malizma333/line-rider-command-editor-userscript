@@ -29,7 +29,7 @@ function InitRoot (rootElement: HTMLElement): ReactComponent { // eslint-disable
     readonly fileParser = new FileParser()
     readonly triggerManager = new TriggerDataManager()
     readonly state: RootState
-    readonly setState: SetState
+    readonly setState: any
     lastRiderCount: number | undefined
 
     constructor () {
@@ -54,7 +54,7 @@ function InitRoot (rootElement: HTMLElement): ReactComponent { // eslint-disable
         toolbarColors: Array(16).fill(TOOLBAR_COLOR.NONE)
       }
 
-      store.subscribe(() => this.updateStore(store.getState()))
+      store.subscribe(() => this.updateStore())
     }
 
     componentDidMount (): void {
@@ -66,8 +66,8 @@ function InitRoot (rootElement: HTMLElement): ReactComponent { // eslint-disable
       }
     }
 
-    updateStore (nextState: ReduxState): void {
-      const riderCount = getNumRiders(nextState)
+    updateStore (): void {
+      const riderCount = getNumRiders(store.getState())
 
       if (this.lastRiderCount !== riderCount) {
         this.lastRiderCount = riderCount
@@ -83,14 +83,14 @@ function InitRoot (rootElement: HTMLElement): ReactComponent { // eslint-disable
         this.setState({ gravityDDIndices: gravityDDIndices.map((ddIndex) => Math.min(riderCount - 1, ddIndex)) })
       }
 
-      const sidebarOpen = getSidebarOpen(nextState)
+      const sidebarOpen = getSidebarOpen(store.getState())
 
       if (sidebarOpen) {
         this.setState({ active: false })
       }
 
-      const playerRunning = getPlayerRunning(nextState)
-      const windowFocused = getWindowFocused(nextState)
+      const playerRunning = getPlayerRunning(store.getState())
+      const windowFocused = getWindowFocused(store.getState())
 
       const shouldBeVisible = window.CMD_EDITOR_DEBUG || (!playerRunning && windowFocused)
 
@@ -245,7 +245,32 @@ function InitRoot (rootElement: HTMLElement): ReactComponent { // eslint-disable
           throw new Error('Triggers contain invalid times!')
         }
 
-        executeScript(activeTab, this.triggerManager.data as TriggerData)
+        const currentData = this.triggerManager.data[activeTab]
+
+        switch (activeTab) {
+          case TRIGGER_ID.ZOOM:
+            window.getAutoZoom = window.createZoomer(currentData.triggers, currentData.smoothing);
+            break;
+          case TRIGGER_ID.PAN:
+            window.getCamBounds = window.createBoundsPanner(currentData.triggers, currentData.smoothing);
+            break;
+          case TRIGGER_ID.FOCUS:
+            window.getCamFocus = window.createFocuser(currentData.triggers, currentData.smoothing);
+            break;
+          case TRIGGER_ID.TIME:
+            window.timeRemapper = window.createTimeRemapper(currentData.triggers, currentData.interpolate);
+            break;
+          case TRIGGER_ID.SKIN:
+            window.setCustomRiders(formatSkins(currentData.triggers as SkinCssTrigger[]));
+            break;
+          case TRIGGER_ID.GRAVITY:
+            if (window.setCustomGravity !== undefined) {
+              window.setCustomGravity(currentData.triggers);
+            }
+            break;
+          default:
+            break;
+        }
       } catch (error: any) {
         console.error(`[Root.onTest()] ${error.message}`)
       }

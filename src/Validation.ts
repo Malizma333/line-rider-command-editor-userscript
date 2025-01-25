@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // TODO DOCS
+// TODO Refactor into custom component
 
 interface ValueChange {
   prev?: number | boolean

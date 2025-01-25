@@ -1,9 +1,33 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+interface DispatchAction {
+  type: string
+  payload: Payload
+  meta?: Object
+}
+
+type ReduxState = ReturnType<typeof window.store.getState>
+
+type Payload = any
 type Track = any
 type Rider = any
 type EditorPosition = any
 type Dimensions = any
+
+function setPlaybackDimensions (dimension: { width: number, height: number }): DispatchAction {
+  return {
+    type: 'SET_PLAYBACK_DIMENSIONS',
+    payload: dimension
+  }
+}
+
+function closeSidebar (): DispatchAction {
+  return {
+    type: 'SET_VIEWS',
+    payload: { Sidebar: null },
+    meta: { name: 'SET_SIDEBAR_PAGE', auto: false }
+  }
+}
 
 function getSimulatorTrack (state: ReduxState): Track { return state.simulator.engine }
 

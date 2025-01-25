@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // TODO DOCS
+// TODO This whole file feels to vague, break up?
 
 enum TRIGGER_ID {
   ZOOM = 'ZOOM',
@@ -160,8 +161,8 @@ class TriggerDataManager {
     }
   }
 
-  get data (): DeepReadonly<TriggerData> {
-    return this.triggerData as DeepReadonly<TriggerData>
+  get data () {
+    return this.triggerData
   }
 
   get undoLen (): number {
