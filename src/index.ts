@@ -1,5 +1,5 @@
 import { STYLES } from "./components/lib/Styles";
-import GetRootComponent from "./components/Root";
+import { RootComponent } from "./components/Root";
 import { getPlayerRunning, getWindowFocused } from "./Store";
 
 declare global {
@@ -25,14 +25,14 @@ declare global {
   type ReactComponent = typeof window.React.Component
 }
 
-export default function main (): void {
+function main (): void {
   const { React, ReactDOM, store } = window;
   const content = document.getElementById("content") as HTMLElement;
   const parent = document.createElement("div");
 
   Object.assign(parent.style, STYLES.root);
 
-  ReactDOM.render(React.createElement(GetRootComponent()), parent);
+  ReactDOM.render(React.createElement(RootComponent), parent);
 
   content.appendChild(parent);
 

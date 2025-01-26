@@ -17,6 +17,6 @@ export default tseslint.config(
       semi: "error",
       quotes: "error"
     },
-    ignores: ["*.min.js", "*.config.js"]
+    ignores: ["*.min.js", "*.config.*"]
   }
 );
