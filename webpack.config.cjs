@@ -1,11 +1,11 @@
-// eslint-disable-next-line no-undef
+/* eslint-disable no-undef */
 module.exports = {
   mode: "production",
   entry: ['./src/index.ts', './src/globalHacks/gravity.js'],
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.ts$/,
         use: 'ts-loader',
         exclude: /node_modules/,
       },
@@ -15,6 +15,7 @@ module.exports = {
     extensions: ['.ts', '.js'],
   },
   output: {
-    filename: 'command-editor.min.js'
+    filename: 'command-editor.min.js',
+    path: __dirname
   },
 };
