@@ -1,6 +1,6 @@
 // TODO DOCS
 
-function GetRoot (rootElement: HTMLElement): ReactComponent { // eslint-disable-line @typescript-eslint/no-unused-vars
+function GetRootComponent (): ReactComponent { // eslint-disable-line @typescript-eslint/no-unused-vars
   const { store, React } = window
   const e = React.createElement
 
@@ -58,8 +58,6 @@ function GetRoot (rootElement: HTMLElement): ReactComponent { // eslint-disable-
     }
 
     componentDidMount (): void {
-      Object.assign(rootElement.style, STYLES.root)
-
       window.save_commands = () => {
         this.onDownload()
         return 'Downloaded commands!'
@@ -88,14 +86,6 @@ function GetRoot (rootElement: HTMLElement): ReactComponent { // eslint-disable-
       if (sidebarOpen) {
         this.setState({ active: false })
       }
-
-      const playerRunning = getPlayerRunning(store.getState())
-      const windowFocused = getWindowFocused(store.getState())
-
-      const shouldBeVisible = window.CMD_EDITOR_DEBUG || (!playerRunning && windowFocused)
-
-      rootElement.style.opacity = shouldBeVisible ? '1' : '0'
-      rootElement.style.pointerEvents = shouldBeVisible ? 'auto' : 'none'
     }
 
     onUpdateToolbarColor (index: number, state: TOOLBAR_COLOR): void {

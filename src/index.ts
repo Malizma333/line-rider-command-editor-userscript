@@ -20,14 +20,25 @@ interface Window {
 type ReactComponent = typeof window.React.Component
 
 function main (): void {
-  const { React, ReactDOM } = window
+  const { React, ReactDOM, store } = window
+  const content = document.getElementById('content') as HTMLElement;
+  let parent = document.createElement('div');
 
-  const parent = document.createElement('div');
-  (document.getElementById('content') as HTMLElement).appendChild(parent)
+  Object.assign(parent.style, STYLES.root);
 
-  ReactDOM.render(React.createElement(GetRoot(parent)), parent)
+  ReactDOM.render(React.createElement(GetRootComponent()), parent);
 
-  const content = (document.getElementById('content') as HTMLElement)
+  content.appendChild(parent);
+
+  store.subscribe(() => {
+    const playerRunning = getPlayerRunning(store.getState())
+    const windowFocused = getWindowFocused(store.getState())
+    const shouldBeVisible = window.CMD_EDITOR_DEBUG || (!playerRunning && windowFocused)
+
+    parent.style.opacity = shouldBeVisible ? '1' : '0'
+    parent.style.pointerEvents = shouldBeVisible ? 'auto' : 'none'
+  });
+
   const timerId = setInterval(() => {
     const errorContainer = content.querySelector('div[style="margin: 16px;"]')
     if (errorContainer) {
