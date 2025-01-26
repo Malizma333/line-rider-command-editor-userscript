@@ -20,14 +20,14 @@ window.setCustomGravity = (function () {
     currentRider = 0;
 
     window.requestAnimationFrame(() => {
-      window.store.getState().camera.playbackFollower._frames.length = 0
-      window.store.getState().simulator.engine.engine._computed._frames.length = 1
+      window.store.getState().camera.playbackFollower._frames.length = 0;
+      window.store.getState().simulator.engine.engine._computed._frames.length = 1;
     });
   }
 
   function getGravity() {
     if (triggers.length === 0) {
-      return { x: 0, y: 0.175 }
+      return { x: 0, y: 0.175 };
     }
 
     let currentFrame = window.store.getState().simulator.engine.engine._computed._frames.length - 1;
@@ -70,10 +70,10 @@ window.setCustomGravity = (function () {
 
   return function(newTriggers) {
     triggers.length = 0;
-    for (let i = 0; i < newTriggers.length; i++) {
+    for (const trigger of newTriggers) {
       triggers.push([
-        newTriggers[i][0][0] * 2400 + newTriggers[i][0][1] * 40 + newTriggers[i][0][2],
-        newTriggers[i][1] // This is a reference, be careful
+        trigger[0][0] * 2400 + trigger[0][1] * 40 + trigger[0][2],
+        trigger[1] // This is a reference, be careful
       ]);
     }
 
@@ -83,5 +83,5 @@ window.setCustomGravity = (function () {
       init = true;
       Object.defineProperty(window.$ENGINE_PARAMS, "gravity", { get: getGravity });
     }
-  }
+  };
 })();

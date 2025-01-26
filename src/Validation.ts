@@ -1,20 +1,18 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// TODO DOCS
-// TODO Refactor into custom component
+import { TimedTrigger } from "./TriggerData";
 
-interface ValueChange {
+export interface ValueChange {
   prev?: number | boolean
   new: string | boolean
 }
 
-interface Constraint {
+export interface Constraint {
   DEFAULT: boolean | number
   INT?: boolean
   MIN?: number
   MAX?: number
 }
 
-const CONSTRAINTS = {
+export const CONSTRAINTS = {
   INTERPOLATE: {
     DEFAULT: true
   },
@@ -63,119 +61,119 @@ const CONSTRAINTS = {
   GRAVITY_Y: {
     DEFAULT: 0, MIN: -100, MAX: 100, INT: false
   }
-} as const
+} as const;
 
-function validateData (
+export function validateData (
   valueChange: ValueChange, bounded: boolean, constraints?: Constraint
 ): typeof valueChange.prev | typeof valueChange.new {
   if (constraints == null) {
-    return valueChange.new
+    return valueChange.new;
   }
 
-  if (typeof constraints.DEFAULT === 'boolean') {
-    return valueChange.new
+  if (typeof constraints.DEFAULT === "boolean") {
+    return valueChange.new;
   }
 
-  if (typeof constraints.DEFAULT === 'number' && (constraints.INT ?? false)) {
-    return validateInteger(valueChange, constraints, bounded)
+  if (typeof constraints.DEFAULT === "number" && (constraints.INT ?? false)) {
+    return validateInteger(valueChange, constraints, bounded);
   }
 
-  if (typeof constraints.DEFAULT === 'number' && !(constraints.INT ?? false)) {
-    return validateFloat(valueChange, constraints, bounded)
+  if (typeof constraints.DEFAULT === "number" && !(constraints.INT ?? false)) {
+    return validateFloat(valueChange, constraints, bounded);
   }
 
-  return valueChange.prev
+  return valueChange.prev;
 }
 
-function validateInteger (valueChange: ValueChange, constraints: Constraint, bounded: boolean): number {
-  const prevValue = valueChange.prev as number
-  const newValue = valueChange.new as string
+export function validateInteger (valueChange: ValueChange, constraints: Constraint, bounded: boolean): number {
+  const prevValue = valueChange.prev as number;
+  const newValue = valueChange.new as string;
 
-  if (newValue.trim() === '') {
-    return 0
+  if (newValue.trim() === "") {
+    return 0;
   }
 
-  const parsedValue = Math.floor(Number(newValue))
+  const parsedValue = Math.floor(Number(newValue));
 
   if (Number.isNaN(parsedValue)) {
-    return prevValue
+    return prevValue;
   }
 
-  if (newValue.includes('.')) {
-    return prevValue
+  if (newValue.includes(".")) {
+    return prevValue;
   }
 
   if (!bounded) {
-    return parsedValue
+    return parsedValue;
   }
 
   if (parsedValue < (constraints.MIN as number)) {
-    return (constraints.MIN as number)
+    return (constraints.MIN as number);
   }
 
   if (parsedValue > (constraints.MAX as number)) {
-    return (constraints.MAX as number)
+    return (constraints.MAX as number);
   }
 
-  return parsedValue
+  return parsedValue;
 }
 
-function validateFloat (valueChange: ValueChange, constraints: Constraint, bounded: boolean): number | string {
-  const prevValue = valueChange.prev as number
-  const newValue = valueChange.new as string
+export function validateFloat (valueChange: ValueChange, constraints: Constraint, bounded: boolean): number | string {
+  const prevValue = valueChange.prev as number;
+  const newValue = valueChange.new as string;
 
-  if (newValue.trim() === '') {
-    return 0.0
+  if (newValue.trim() === "") {
+    return 0.0;
   }
 
-  const parsedValue = Number(newValue)
+  const parsedValue = Number(newValue);
 
   if (Number.isNaN(parsedValue)) {
-    return prevValue
+    return prevValue;
   }
 
   if (!bounded) {
     // HACK: Include partially inputted floats (eg 1.)
-    if (newValue.includes('.')) {
-      return newValue
+    if (newValue.includes(".")) {
+      return newValue;
     }
 
-    return parsedValue
+    return parsedValue;
   }
 
   if (parsedValue < (constraints.MIN as number)) {
-    return (constraints.MIN as number)
+    return (constraints.MIN as number);
   }
 
   if (parsedValue > (constraints.MAX as number)) {
-    return (constraints.MAX as number)
+    return (constraints.MAX as number);
   }
 
-  return parsedValue
+  return parsedValue;
 }
 
-function validateTimes (triggers: TimedTrigger[]): boolean[] {
-  const invalidIndices = Array(triggers.length).map(() => false)
+export function validateTimes (triggers: TimedTrigger[]): boolean[] {
+  const invalidIndices = Array(triggers.length).map(() => false);
 
-  const firstTime = triggers[0][0]
+  const firstTime = triggers[0][0];
   if (firstTime[0] !== 0 || firstTime[1] !== 0 || firstTime[2] !== 0) {
-    invalidIndices[0] = true
+    invalidIndices[0] = true;
   }
 
   for (let i = 0; i < triggers.length - 1; i += 1) {
-    const time1 = triggers[i][0] as number[]
-    const time2 = triggers[i + 1][0] as number[]
+    const time1 = triggers[i][0] as number[];
+    const time2 = triggers[i + 1][0] as number[];
     const index1 = (
       time1[0] * 60 + time1[1]
-    ) * 40 + time1[2]
+    ) * 40 + time1[2];
     const index2 = (
       time2[0] * 60 + time2[1]
-    ) * 40 + time2[2]
+    ) * 40 + time2[2];
 
     if (index1 >= index2) {
-      invalidIndices[i + 1] = true
+      invalidIndices[i + 1] = true;
     }
   }
 
-  return invalidIndices
+  return invalidIndices;
 }

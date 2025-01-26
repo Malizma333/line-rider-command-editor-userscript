@@ -1,62 +1,60 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 interface DispatchAction {
   type: string
   payload: Payload
-  meta?: Object
+  meta?: object
 }
 
 type ReduxState = ReturnType<typeof window.store.getState>
 
-type Payload = any
-type Track = any
-type Rider = any
-type EditorPosition = any
-type Dimensions = any
+type Payload = null | boolean | number | string | object
+interface Track { engine: { state: { riders: Rider[] } } }
+type Rider = object
+interface EditorPosition { x: number, y: number }
+interface Dimensions { width: number, height: number }
 
-function setPlaybackDimensions (dimension: { width: number, height: number }): DispatchAction {
+export function setPlaybackDimensions (dimension: Dimensions): DispatchAction {
   return {
-    type: 'SET_PLAYBACK_DIMENSIONS',
+    type: "SET_PLAYBACK_DIMENSIONS",
     payload: dimension
-  }
+  };
 }
 
-function closeSidebar (): DispatchAction {
+export function closeSidebar (): DispatchAction {
   return {
-    type: 'SET_VIEWS',
+    type: "SET_VIEWS",
     payload: { Sidebar: null },
-    meta: { name: 'SET_SIDEBAR_PAGE', auto: false }
-  }
+    meta: { name: "SET_SIDEBAR_PAGE", auto: false }
+  };
 }
 
-function getSimulatorTrack (state: ReduxState): Track { return state.simulator.engine }
+export function getSimulatorTrack (state: ReduxState): Track { return state.simulator.engine; }
 
-function getWindowFocused (state: ReduxState): boolean { return (state.views.Main as boolean) }
+export function getWindowFocused (state: ReduxState): boolean { return (state.views.Main as boolean); }
 
-function getPlayerRunning (state: ReduxState): boolean { return state.player.running }
+export function getPlayerRunning (state: ReduxState): boolean { return state.player.running; }
 
-function getCurrentScript (state: ReduxState): string { return state.trackData.script }
+export function getCurrentScript (state: ReduxState): string { return state.trackData.script; }
 
-function getRiders (state: ReduxState): Rider[] { return getSimulatorTrack(state).engine.state.riders }
+export function getRiders (state: ReduxState): Rider[] { return getSimulatorTrack(state).engine.state.riders; }
 
-function getNumRiders (state: ReduxState): number { return getRiders(state).length }
+export function getNumRiders (state: ReduxState): number { return getRiders(state).length; }
 
-function getPlayerIndex (state: ReduxState): number { return state.player.index }
+export function getPlayerIndex (state: ReduxState): number { return state.player.index; }
 
-function getSidebarOpen (state: ReduxState): boolean { return (state.views.Sidebar as boolean) }
+export function getSidebarOpen (state: ReduxState): boolean { return (state.views.Sidebar as boolean); }
 
-function getTrackTitle (state: ReduxState): string { return state.trackData.label }
+export function getTrackTitle (state: ReduxState): string { return state.trackData.label; }
 
-function getEditorZoom (state: ReduxState): number { return state.camera.editorZoom }
+export function getEditorZoom (state: ReduxState): number { return state.camera.editorZoom; }
 
-function getEditorPosition (state: ReduxState): EditorPosition { return state.camera.editorPosition }
+export function getEditorPosition (state: ReduxState): EditorPosition { return state.camera.editorPosition; }
 
-function getPlaybackZoom(state: ReduxState): number {
+export function getPlaybackZoom(state: ReduxState): number {
   return window.getAutoZoom ?
     window.getAutoZoom(getPlayerIndex(state)) :
-    state.camera.playbackZoom
+    state.camera.playbackZoom;
 }
 
-function getPlaybackDimensions(state: ReduxState): Dimensions {
+export function getPlaybackDimensions(state: ReduxState): Dimensions {
   return state.camera.playbackDimensions || state.camera.editorDimensions;
 }
