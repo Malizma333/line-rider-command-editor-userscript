@@ -1,9 +1,3 @@
-export enum TOOLBAR_COLOR {
-  NONE = 0,
-  HOVER = 1,
-  ACTIVE = 2
-}
-
 export const GLOBAL_STYLES = {
   black: "#000000",
   dark_gray1: "#b7b7b7",

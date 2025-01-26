@@ -1,12 +1,15 @@
-import { STYLES, GLOBAL_STYLES, TOOLBAR_COLOR } from "./lib/Styles";
-import { TRIGGER_ID, TRIGGER_PROPS, TriggerTime, TimedTrigger, Trigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, TimeRemapTrigger, GravityTrigger, SkinCssTrigger } from "../TriggerData";
-import { SETTINGS_KEY, SETTINGS } from "../SettingsStorage";
-import { CONSTRAINTS } from "../Validation";
-import * as FICONS from "./lib/Icons";
-import { RootComponent, RootState } from "./Root";
+import { STYLES, GLOBAL_STYLES } from "./lib/styles";
+import { TOOLBAR_COLOR } from "./lib/styles.types";
+import { TRIGGER_PROPS } from "../lib/TriggerDataManager";
+import { TRIGGER_ID, TriggerTime, TimedTrigger, Trigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, TimeRemapTrigger, GravityTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
+import { SETTINGS } from "../lib/settings-storage";
+import { SETTINGS_KEY } from "../lib/settings-storage.types";
+import { CONSTRAINTS } from "../lib/validation";
+import * as FICONS from "./lib/icons";
+import { RootComponent, RootState } from "./RootComponent";
+import { InlineIcon } from "./lib/icons.types";
 
-const { React } = window;
-const e = React.createElement;
+const e = window.React.createElement;
 
 export default class ComponentManager {
   root: RootComponent;
@@ -80,7 +83,7 @@ export default class ComponentManager {
     title: string,
     disabled: boolean,
     onClick: () => void,
-    icon: FICONS.InlineIcon
+    icon: InlineIcon
   ): ReactComponent {
     const { root, state } = this;
     if (disabled && state.toolbarColors[id] !== TOOLBAR_COLOR.NONE) {

@@ -1,9 +1,4 @@
-export type ViewportOption = keyof typeof SETTINGS[SETTINGS_KEY.VIEWPORT]
-
-export enum SETTINGS_KEY {
-  VIEWPORT = "VIEWPORT",
-  FONT_SIZE = "FONT_SIZE"
-}
+import { SETTINGS_KEY } from "./settings-storage.types";
 
 const LOCAL_STORAGE_PREFIX = "CMD_EDITOR_MOD_";
 

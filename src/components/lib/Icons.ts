@@ -1,8 +1,4 @@
-export interface InlineIcon {
-  dangerouslySetInnerHTML: {
-    __html: string
-  }
-}
+import { InlineIcon } from "./icons.types";
 
 const head = "<svg style=\"display: block\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\">";
 const tail = "</svg>";

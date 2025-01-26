@@ -1,12 +1,15 @@
-import { TOOLBAR_COLOR } from "./lib/Styles";
-import { TriggerDataManager, TRIGGER_ID, TRIGGER_PROPS, TriggerData, TriggerTime, TimedTrigger, Trigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, GravityTrigger, SkinCssTrigger } from "../TriggerData";
-import ScriptParser from "../io/ScriptReader";
-import FileParser from "../io/ScriptJsonReader";
+import { TOOLBAR_COLOR } from "./lib/styles.types";
+import { TriggerDataManager, TRIGGER_PROPS } from "../lib/TriggerDataManager";
+import { TRIGGER_ID, TriggerData, TriggerTime, TimedTrigger, Trigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, GravityTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
+import ScriptReader from "../io/ScriptReader";
+import ScriptJsonReader from "../io/ScriptJsonReader";
 import { formatSkins, generateScript } from "../io/ScriptWriter";
-import { getSetting, saveSetting, SETTINGS_KEY, ViewportOption, SETTINGS } from "../SettingsStorage";
-import * as Store from "../Store";
-import { validateTimes, validateData, ValueChange, Constraint, CONSTRAINTS } from "../Validation";
-import ComponentManager from "./CompManager";
+import { getSetting, saveSetting, SETTINGS } from "../lib/settings-storage";
+import { SETTINGS_KEY, ViewportOption } from "../lib/settings-storage.types";
+import * as Store from "../lib/redux-store";
+import { validateTimes, validateData, CONSTRAINTS } from "../lib/validation";
+import { ValueChange, Constraint } from "../lib/validation.types";
+import ComponentManager from "./ComponentManager";
 
 const { store, React } = window;
 
@@ -31,8 +34,8 @@ export interface RootState {
 
 export class RootComponent extends React.Component {
   readonly componentManager = new ComponentManager(this);
-  readonly scriptParser = new ScriptParser();
-  readonly fileParser = new FileParser();
+  readonly scriptParser = new ScriptReader();
+  readonly fileParser = new ScriptJsonReader();
   readonly triggerManager = new TriggerDataManager();
   readonly state: RootState;
   readonly setState: any;

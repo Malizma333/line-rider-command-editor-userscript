@@ -1,4 +1,5 @@
-import { TRIGGER_ID, TriggerData, TRIGGER_PROPS, SkinCssTrigger } from "../TriggerData";
+import { TRIGGER_PROPS } from "../lib/TriggerDataManager";
+import { TRIGGER_ID, TriggerData, SkinCssTrigger } from "../lib/TriggerDataManager.types";
 
 /**
  * Generates a Line Rider Web script from trigger data and a specific command id

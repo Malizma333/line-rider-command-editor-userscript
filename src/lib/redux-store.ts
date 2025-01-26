@@ -1,16 +1,4 @@
-interface DispatchAction {
-  type: string
-  payload: Payload
-  meta?: object
-}
-
-type ReduxState = ReturnType<typeof window.store.getState>
-
-type Payload = null | boolean | number | string | object
-interface Track { engine: { state: { riders: Rider[] } } }
-type Rider = object
-interface EditorPosition { x: number, y: number }
-interface Dimensions { width: number, height: number }
+import { Dimensions, ReduxState, DispatchAction, Track, Rider, EditorPosition } from "./redux-store.types";
 
 export function setPlaybackDimensions (dimension: Dimensions): DispatchAction {
   return {

@@ -1,33 +1,5 @@
-import { CONSTRAINTS } from "./Validation";
-
-export type Primitive = any
-
-export enum TRIGGER_ID {
-  ZOOM = "ZOOM",
-  PAN = "CAMERA_PAN",
-  FOCUS = "CAMERA_FOCUS",
-  TIME = "TIME_REMAP",
-  SKIN = "CUSTOM_SKIN",
-  GRAVITY = "GRAVITY"
-}
-
-export type TriggerTime = [number, number, number]
-
-export type ZoomTrigger = [TriggerTime, number]
-export type CameraPanTrigger = [TriggerTime, { w: number, h: number, x: number, y: number }]
-export type CameraFocusTrigger = [TriggerTime, number[]]
-export type TimeRemapTrigger = [TriggerTime, number]
-export type SkinCssTrigger = Record<string, { stroke?: string, fill?: string }>;
-export type GravityTrigger = [TriggerTime, [{ x: number, y: number }]]
-
-export type TimedTrigger = ZoomTrigger | CameraPanTrigger | CameraFocusTrigger | TimeRemapTrigger | GravityTrigger
-export type Trigger = TimedTrigger | SkinCssTrigger
-
-interface TriggerMetadata<Type> {
-  readonly DISPLAY_NAME: string
-  readonly FUNC?: string
-  TEMPLATE: Type
-}
+import { CONSTRAINTS } from "./validation";
+import { TriggerMetadata, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, TimeRemapTrigger, SkinCssTrigger, GravityTrigger, Primitive, TRIGGER_ID, TriggerData } from "./TriggerDataManager.types";
 
 const ZoomMetadata: TriggerMetadata<ZoomTrigger> = {
   DISPLAY_NAME: "Zoom",
@@ -100,22 +72,6 @@ export const TRIGGER_PROPS = {
   [TRIGGER_ID.SKIN]: SkinCssMetadata,
   [TRIGGER_ID.GRAVITY]: GravityMetadata
 };
-
-interface TriggerDataItem {
-  id: string
-  triggers: Trigger[]
-  smoothing?: number
-  interpolate?: boolean
-}
-
-export interface TriggerData {
-  [TRIGGER_ID.ZOOM]: TriggerDataItem
-  [TRIGGER_ID.PAN]: TriggerDataItem
-  [TRIGGER_ID.FOCUS]: TriggerDataItem
-  [TRIGGER_ID.TIME]: TriggerDataItem
-  [TRIGGER_ID.SKIN]: TriggerDataItem
-  [TRIGGER_ID.GRAVITY]: TriggerDataItem
-}
 
 type HistoryItem = [(string | number)[], Primitive, TRIGGER_ID]
 

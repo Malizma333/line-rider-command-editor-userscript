@@ -1,6 +1,6 @@
-import { STYLES } from "./components/lib/Styles";
-import { RootComponent } from "./components/Root";
-import { getPlayerRunning, getWindowFocused } from "./Store";
+import { STYLES } from "./components/lib/styles";
+import { RootComponent } from "./components/RootComponent";
+import { getPlayerRunning, getWindowFocused } from "./lib/redux-store";
 
 declare global {
   interface Window {

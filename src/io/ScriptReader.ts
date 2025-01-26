@@ -1,7 +1,8 @@
-import { TriggerDataManager, TriggerData, TimedTrigger, TRIGGER_ID, TRIGGER_PROPS, SkinCssTrigger, TriggerTime } from "../TriggerData";
-import { CONSTRAINTS } from "../Validation";
+import { TriggerDataManager, TRIGGER_PROPS } from "../lib/TriggerDataManager";
+import { TRIGGER_ID, TriggerData, TriggerTime, TimedTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
+import { CONSTRAINTS } from "../lib/validation";
 
-export default class ScriptParser {
+export default class ScriptReader {
   triggerData: TriggerData;
 
   constructor () {
