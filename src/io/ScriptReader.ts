@@ -1,9 +1,9 @@
-import { TriggerDataManager, TRIGGER_PROPS } from "../lib/TriggerDataManager";
-import { TRIGGER_ID, TriggerData, TriggerTime, TimedTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
+import { TriggerDataManager, TRIGGER_METADATA } from "../lib/TriggerDataManager";
+import { TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
 import { CONSTRAINTS } from "../lib/validation";
 
 export default class ScriptReader {
-  triggerData: TriggerData;
+  triggerData: TriggerDataLookup;
 
   constructor () {
     this.triggerData = TriggerDataManager.initialTriggerData;
@@ -13,11 +13,11 @@ export default class ScriptReader {
    * Parses text from the script field into a trigger data object, reverting to the original
    * value if an error occurs
    */
-  parseScript (scriptText: string, currentTriggerData: TriggerData): TriggerData {
+  parseScript (scriptText: string, currentTriggerData: TriggerDataLookup): TriggerDataLookup {
     this.triggerData = TriggerDataManager.initialTriggerData;
     const trimmedScript = scriptText.replace(/\s/g, "");
 
-    Object.keys(TRIGGER_PROPS).forEach((commandId: string) => {
+    Object.keys(TRIGGER_METADATA).forEach((commandId: string) => {
       try {
         this.triggerData[commandId as TRIGGER_ID].triggers = [];
         this.parseCommand(commandId as TRIGGER_ID, trimmedScript);
@@ -42,11 +42,11 @@ export default class ScriptReader {
       throw new Error("Gravity parsing not supported!");
     }
 
-    if (TRIGGER_PROPS[commandId].FUNC === undefined) {
+    if (TRIGGER_METADATA[commandId].FUNC === undefined) {
       throw new Error("Function undefined!");
     }
 
-    const currentHeader = TRIGGER_PROPS[commandId].FUNC.split("(")[0];
+    const currentHeader = TRIGGER_METADATA[commandId].FUNC.split("(")[0];
     const currentHeaderIndex = scriptSection.indexOf(currentHeader);
 
     if (currentHeaderIndex === -1) {
@@ -162,7 +162,7 @@ export default class ScriptReader {
   parseSkinCss (skinCSSArray: string[]): void {
     skinCSSArray.forEach((skinCSS: string, skinIndex: number) => {
       this.triggerData[TRIGGER_ID.SKIN].triggers.push(
-        structuredClone(TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE)
+        structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE)
       );
       let depth = 0;
       let zeroIndex = 0;
@@ -185,7 +185,7 @@ export default class ScriptReader {
     // Revert from 1 indexed modulo n skin array to 0 indexed array
     if (this.triggerData[TRIGGER_ID.SKIN].triggers.length > 0) {
       this.triggerData[TRIGGER_ID.SKIN].triggers.push(
-        this.triggerData[TRIGGER_ID.SKIN].triggers.shift() ?? TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE
+        this.triggerData[TRIGGER_ID.SKIN].triggers.shift() ?? TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE
       );
     }
   }

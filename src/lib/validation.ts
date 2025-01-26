@@ -74,7 +74,7 @@ export function validateData (
   return valueChange.prev;
 }
 
-export function validateInteger (valueChange: ValueChange, constraints: Constraint, bounded: boolean): number {
+function validateInteger (valueChange: ValueChange, constraints: Constraint, bounded: boolean): number {
   const prevValue = valueChange.prev as number;
   const newValue = valueChange.new as string;
 
@@ -107,7 +107,7 @@ export function validateInteger (valueChange: ValueChange, constraints: Constrai
   return parsedValue;
 }
 
-export function validateFloat (valueChange: ValueChange, constraints: Constraint, bounded: boolean): number | string {
+function validateFloat (valueChange: ValueChange, constraints: Constraint, bounded: boolean): number | string {
   const prevValue = valueChange.prev as number;
   const newValue = valueChange.new as string;
 

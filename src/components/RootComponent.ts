@@ -1,6 +1,6 @@
 import { TOOLBAR_COLOR } from "./lib/styles.types";
-import { TriggerDataManager, TRIGGER_PROPS } from "../lib/TriggerDataManager";
-import { TRIGGER_ID, TriggerData, TriggerTime, TimedTrigger, Trigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, GravityTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
+import { TriggerDataManager, TRIGGER_METADATA } from "../lib/TriggerDataManager";
+import { TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, Trigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, GravityTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
 import ScriptReader from "../io/ScriptReader";
 import ScriptJsonReader from "../io/ScriptJsonReader";
 import { formatSkins, generateScript } from "../io/ScriptWriter";
@@ -194,7 +194,7 @@ export class RootComponent extends React.Component {
         this.onLoad(
           this.fileParser.parseFile(
             JSON.parse(reader.result as string),
-            this.triggerManager.data as TriggerData
+            this.triggerManager.data as TriggerDataLookup
           )
         );
       } catch (error) {
@@ -210,12 +210,12 @@ export class RootComponent extends React.Component {
     this.onLoad(
       this.scriptParser.parseScript(
         Store.getCurrentScript(store.getState()),
-        this.triggerManager.data as TriggerData
+        this.triggerManager.data as TriggerDataLookup
       )
     );
   }
 
-  onLoad(nextTriggerData: TriggerData): void {
+  onLoad(nextTriggerData: TriggerDataLookup): void {
     const { activeTab } = this.state;
     try {
       const focusTriggers = nextTriggerData[TRIGGER_ID.FOCUS].triggers as CameraFocusTrigger[];
@@ -288,7 +288,7 @@ export class RootComponent extends React.Component {
         throw new Error("Triggers contain invalid times!");
       }
 
-      const script = generateScript(activeTab, this.triggerManager.data as TriggerData);
+      const script = generateScript(activeTab, this.triggerManager.data as TriggerDataLookup);
       return await navigator.clipboard.writeText(script);
     } catch (error) {
       if (error instanceof Error) {
@@ -332,7 +332,7 @@ export class RootComponent extends React.Component {
   onResetSkin(index: number): void {
     this.triggerManager.updateFromPath(
       [TRIGGER_ID.SKIN, "triggers", index],
-      structuredClone(TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE),
+      structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE),
       TRIGGER_ID.SKIN
     );
 

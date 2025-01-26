@@ -1,82 +1,68 @@
 import { CONSTRAINTS } from "./validation";
-import { TriggerMetadata, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, TimeRemapTrigger, SkinCssTrigger, GravityTrigger, Primitive, TRIGGER_ID, TriggerData } from "./TriggerDataManager.types";
+import { GravityTrigger, Primitive, TRIGGER_ID, TriggerDataLookup, TriggerMetadataLookup, HistoryItem, CameraFocusTrigger } from "./TriggerDataManager.types";
 
-const ZoomMetadata: TriggerMetadata<ZoomTrigger> = {
-  DISPLAY_NAME: "Zoom",
-  FUNC: "getAutoZoom=createZoomer({0},{1});",
-  TEMPLATE: [[0, 0, 0], 1]
-};
-
-const CameraPanMetadata: TriggerMetadata<CameraPanTrigger> = {
-  DISPLAY_NAME: "Pan",
-  FUNC: "getCamBounds=createBoundsPanner({0},{1});",
-  TEMPLATE: [[0, 0, 0], { w: 0.4, h: 0.4, x: 0, y: 0 }]
-};
-
-const CameraFocusMetadata: TriggerMetadata<CameraFocusTrigger> = {
-  DISPLAY_NAME: "Focus",
-  FUNC: "getCamFocus=createFocuser({0},{1});",
-  TEMPLATE: [[0, 0, 0], [1]]
-};
-
-const TimeRemapMetadata: TriggerMetadata<TimeRemapTrigger> = {
-  DISPLAY_NAME: "Speed",
-  FUNC: "timeRemapper=createTimeRemapper({0},{1});",
-  TEMPLATE: [[0, 0, 0], 1]
-};
-
-const SkinCssMetadata: TriggerMetadata<SkinCssTrigger> = {
-  DISPLAY_NAME: "Skin",
-  FUNC: "setCustomRiders({0});",
-  TEMPLATE: {
-    outline: { stroke: "black" },
-    flag: { fill: "#00000066" },
-    skin: { fill: "white" },
-    hair: { fill: "black" },
-    fill: { fill: "black" },
-    eye: { fill: "black" },
-    sled: { fill: "white" },
-    string: { stroke: "black" },
-    armSleeve: { fill: "black" },
-    armHand: { fill: "white" },
-    legPants: { fill: "black" },
-    legFoot: { fill: "white" },
-    torso: { fill: "white" },
-    hatTop: { fill: "white" },
-    hatBottom: { stroke: "black" },
-    hatBall: { fill: "black" },
-    scarf1: { fill: "#FD4F38" },
-    scarf2: { fill: "white" },
-    scarf3: { fill: "#06A725" },
-    scarf4: { fill: "white" },
-    scarf5: { fill: "#3995FD" },
-    id_scarf0: { fill: "white" },
-    id_scarf1: { fill: "#FD4F38" },
-    id_scarf2: { fill: "white" },
-    id_scarf3: { fill: "#06A725" },
-    id_scarf4: { fill: "white" },
-    id_scarf5: { fill: "#3995FD" }
+export const TRIGGER_METADATA: TriggerMetadataLookup = {
+  [TRIGGER_ID.ZOOM]: {
+    DISPLAY_NAME: "Zoom",
+    FUNC: "getAutoZoom=createZoomer({0},{1});",
+    TEMPLATE: [[0, 0, 0], 1]
+  },
+  [TRIGGER_ID.PAN]: {
+    DISPLAY_NAME: "Pan",
+    FUNC: "getCamBounds=createBoundsPanner({0},{1});",
+    TEMPLATE: [[0, 0, 0], { w: 0.4, h: 0.4, x: 0, y: 0 }]
+  },
+  [TRIGGER_ID.FOCUS]: {
+    DISPLAY_NAME: "Focus",
+    FUNC: "getCamFocus=createFocuser({0},{1});",
+    TEMPLATE: [[0, 0, 0], [1]]
+  },
+  [TRIGGER_ID.TIME]: {
+    DISPLAY_NAME: "Speed",
+    FUNC: "timeRemapper=createTimeRemapper({0},{1});",
+    TEMPLATE: [[0, 0, 0], 1]
+  },
+  [TRIGGER_ID.SKIN]: {
+    DISPLAY_NAME: "Skin",
+    FUNC: "setCustomRiders({0});",
+    TEMPLATE: {
+      outline: { stroke: "black" },
+      flag: { fill: "#00000066" },
+      skin: { fill: "white" },
+      hair: { fill: "black" },
+      fill: { fill: "black" },
+      eye: { fill: "black" },
+      sled: { fill: "white" },
+      string: { stroke: "black" },
+      armSleeve: { fill: "black" },
+      armHand: { fill: "white" },
+      legPants: { fill: "black" },
+      legFoot: { fill: "white" },
+      torso: { fill: "white" },
+      hatTop: { fill: "white" },
+      hatBottom: { stroke: "black" },
+      hatBall: { fill: "black" },
+      scarf1: { fill: "#FD4F38" },
+      scarf2: { fill: "white" },
+      scarf3: { fill: "#06A725" },
+      scarf4: { fill: "white" },
+      scarf5: { fill: "#3995FD" },
+      id_scarf0: { fill: "white" },
+      id_scarf1: { fill: "#FD4F38" },
+      id_scarf2: { fill: "white" },
+      id_scarf3: { fill: "#06A725" },
+      id_scarf4: { fill: "white" },
+      id_scarf5: { fill: "#3995FD" }
+    }
+  },
+  [TRIGGER_ID.GRAVITY]: {
+    DISPLAY_NAME: "Gravity",
+    TEMPLATE: [[0, 0, 0], [{ x: 0, y: 0.175 }]]
   }
 };
 
-const GravityMetadata: TriggerMetadata<GravityTrigger> = {
-  DISPLAY_NAME: "Gravity",
-  TEMPLATE: [[0, 0, 0], [{ x: 0, y: 0.175 }]]
-};
-
-export const TRIGGER_PROPS = {
-  [TRIGGER_ID.ZOOM]: ZoomMetadata,
-  [TRIGGER_ID.PAN]: CameraPanMetadata,
-  [TRIGGER_ID.FOCUS]: CameraFocusMetadata,
-  [TRIGGER_ID.TIME]: TimeRemapMetadata,
-  [TRIGGER_ID.SKIN]: SkinCssMetadata,
-  [TRIGGER_ID.GRAVITY]: GravityMetadata
-};
-
-type HistoryItem = [(string | number)[], Primitive, TRIGGER_ID]
-
 export class TriggerDataManager {
-  private triggerData: TriggerData;
+  private triggerData: TriggerDataLookup;
   private undoStack: HistoryItem[];
   private redoStack: HistoryItem[];
 
@@ -86,35 +72,35 @@ export class TriggerDataManager {
     this.redoStack = [];
   }
 
-  static get initialTriggerData (): TriggerData {
+  static get initialTriggerData (): TriggerDataLookup {
     return {
       [TRIGGER_ID.ZOOM]: {
         id: TRIGGER_ID.ZOOM,
-        triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.ZOOM].TEMPLATE)],
+        triggers: [structuredClone(TRIGGER_METADATA[TRIGGER_ID.ZOOM].TEMPLATE)],
         smoothing: CONSTRAINTS.SMOOTH.DEFAULT
       },
       [TRIGGER_ID.PAN]: {
         id: TRIGGER_ID.PAN,
-        triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.PAN].TEMPLATE)],
+        triggers: [structuredClone(TRIGGER_METADATA[TRIGGER_ID.PAN].TEMPLATE)],
         smoothing: CONSTRAINTS.SMOOTH.DEFAULT
       },
       [TRIGGER_ID.FOCUS]: {
         id: TRIGGER_ID.FOCUS,
-        triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.FOCUS].TEMPLATE)],
+        triggers: [structuredClone(TRIGGER_METADATA[TRIGGER_ID.FOCUS].TEMPLATE)],
         smoothing: CONSTRAINTS.SMOOTH.DEFAULT
       },
       [TRIGGER_ID.TIME]: {
         id: TRIGGER_ID.TIME,
-        triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.TIME].TEMPLATE)],
+        triggers: [structuredClone(TRIGGER_METADATA[TRIGGER_ID.TIME].TEMPLATE)],
         interpolate: CONSTRAINTS.INTERPOLATE.DEFAULT
       },
       [TRIGGER_ID.SKIN]: {
         id: TRIGGER_ID.SKIN,
-        triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE)]
+        triggers: [structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE)]
       },
       [TRIGGER_ID.GRAVITY]: {
         id: TRIGGER_ID.GRAVITY,
-        triggers: [structuredClone(TRIGGER_PROPS[TRIGGER_ID.GRAVITY].TEMPLATE)]
+        triggers: [structuredClone(TRIGGER_METADATA[TRIGGER_ID.GRAVITY].TEMPLATE)]
       }
     };
   }
@@ -171,7 +157,7 @@ export class TriggerDataManager {
 
     if (oldLength < riderCount) {
       skinTriggers.push(...Array(riderCount - oldLength).fill(null).map(() => structuredClone(
-        TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE
+        TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE
       )));
     }
 

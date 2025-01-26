@@ -1,6 +1,6 @@
 import { STYLES, GLOBAL_STYLES } from "./lib/styles";
 import { TOOLBAR_COLOR } from "./lib/styles.types";
-import { TRIGGER_PROPS } from "../lib/TriggerDataManager";
+import { TRIGGER_METADATA } from "../lib/TriggerDataManager";
 import { TRIGGER_ID, TriggerTime, TimedTrigger, Trigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, TimeRemapTrigger, GravityTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
 import { SETTINGS } from "../lib/settings-storage";
 import { SETTINGS_KEY } from "../lib/settings-storage.types";
@@ -280,7 +280,7 @@ export default class ComponentManager {
       "div",
       { style: STYLES.tabs.container },
       Object.keys(
-        TRIGGER_PROPS
+        TRIGGER_METADATA
       ).map((command: string) => e(
         "div",
         null,
@@ -303,7 +303,7 @@ export default class ComponentManager {
     }, e(
       "text",
       { style: { fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] } },
-      TRIGGER_PROPS[tabID].DISPLAY_NAME
+      TRIGGER_METADATA[tabID].DISPLAY_NAME
     ));
   }
 

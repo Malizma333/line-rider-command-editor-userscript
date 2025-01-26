@@ -1,9 +1,9 @@
-import { TriggerDataManager, TRIGGER_PROPS } from "../lib/TriggerDataManager";
-import { TRIGGER_ID, TriggerData, TriggerTime, TimedTrigger, GravityTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
+import { TriggerDataManager, TRIGGER_METADATA } from "../lib/TriggerDataManager";
+import { TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, GravityTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
 import { CONSTRAINTS } from "../lib/validation";
 
 export default class ScriptJsonReader {
-  triggerData: TriggerData;
+  triggerData: TriggerDataLookup;
 
   constructor () {
     this.triggerData = TriggerDataManager.initialTriggerData;
@@ -13,10 +13,10 @@ export default class ScriptJsonReader {
    * Parses file from the script file format into a trigger data object, reverting to the original
    * value if an error occurs
    */
-  parseFile (fileObject: TriggerData, currentTriggerData: TriggerData): TriggerData {
+  parseFile (fileObject: TriggerDataLookup, currentTriggerData: TriggerDataLookup): TriggerDataLookup {
     this.triggerData = TriggerDataManager.initialTriggerData;
 
-    Object.keys(TRIGGER_PROPS).forEach((commandId: string) => {
+    Object.keys(TRIGGER_METADATA).forEach((commandId: string) => {
       try {
         this.triggerData[commandId as TRIGGER_ID].triggers = [];
         this.parseCommand(commandId as TRIGGER_ID, fileObject);
@@ -36,7 +36,7 @@ export default class ScriptJsonReader {
   /**
    * Parses an individual command given its id and applies the parsed file data to the trigger data
    */
-  parseCommand (commandId: TRIGGER_ID, fileObject: TriggerData): void {
+  parseCommand (commandId: TRIGGER_ID, fileObject: TriggerDataLookup): void {
     if (fileObject[commandId] === undefined) {
       throw new Error(`Command ${commandId} not found!`);
     }
@@ -144,7 +144,7 @@ export default class ScriptJsonReader {
     const triggers = [] as SkinCssTrigger[];
 
     for (const skinMap of skinMapArray) {
-      const defaultSkinMap = structuredClone(TRIGGER_PROPS[TRIGGER_ID.SKIN].TEMPLATE);
+      const defaultSkinMap = structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE);
       for (const key of Object.keys(defaultSkinMap)) {
         if (skinMap[key] === undefined) continue;
         

@@ -1,5 +1,3 @@
-export type Primitive = any
-
 export type TriggerTime = [number, number, number]
 
 export type ZoomTrigger = [TriggerTime, number]
@@ -21,24 +19,36 @@ export enum TRIGGER_ID {
   GRAVITY = "GRAVITY"
 }
 
-export interface TriggerMetadata<Type> {
-  readonly DISPLAY_NAME: string
-  readonly FUNC?: string
-  TEMPLATE: Type
-}
+export type Primitive = any
+export type HistoryItem = [(string | number)[], Primitive, TRIGGER_ID]
 
-export interface TriggerDataItem {
+interface TriggerData {
   id: string
   triggers: Trigger[]
   smoothing?: number
   interpolate?: boolean
 }
 
-export interface TriggerData {
-  [TRIGGER_ID.ZOOM]: TriggerDataItem
-  [TRIGGER_ID.PAN]: TriggerDataItem
-  [TRIGGER_ID.FOCUS]: TriggerDataItem
-  [TRIGGER_ID.TIME]: TriggerDataItem
-  [TRIGGER_ID.SKIN]: TriggerDataItem
-  [TRIGGER_ID.GRAVITY]: TriggerDataItem
+interface TriggerMetadata<Type> {
+  readonly DISPLAY_NAME: string
+  readonly FUNC?: string
+  TEMPLATE: Type
+}
+
+export interface TriggerDataLookup {
+  [TRIGGER_ID.ZOOM]: TriggerData
+  [TRIGGER_ID.PAN]: TriggerData
+  [TRIGGER_ID.FOCUS]: TriggerData
+  [TRIGGER_ID.TIME]: TriggerData
+  [TRIGGER_ID.SKIN]: TriggerData
+  [TRIGGER_ID.GRAVITY]: TriggerData
+}
+
+export interface TriggerMetadataLookup {
+  [TRIGGER_ID.ZOOM]: TriggerMetadata<ZoomTrigger>
+  [TRIGGER_ID.PAN]: TriggerMetadata<CameraPanTrigger>
+  [TRIGGER_ID.FOCUS]: TriggerMetadata<CameraFocusTrigger>
+  [TRIGGER_ID.TIME]: TriggerMetadata<TimeRemapTrigger>
+  [TRIGGER_ID.SKIN]: TriggerMetadata<SkinCssTrigger>
+  [TRIGGER_ID.GRAVITY]: TriggerMetadata<GravityTrigger>
 }

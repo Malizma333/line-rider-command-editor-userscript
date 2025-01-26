@@ -1,12 +1,12 @@
-import { TRIGGER_PROPS } from "../lib/TriggerDataManager";
-import { TRIGGER_ID, TriggerData, SkinCssTrigger } from "../lib/TriggerDataManager.types";
+import { TRIGGER_METADATA } from "../lib/TriggerDataManager";
+import { TRIGGER_ID, TriggerDataLookup, SkinCssTrigger } from "../lib/TriggerDataManager.types";
 
 /**
  * Generates a Line Rider Web script from trigger data and a specific command id
  */
-export function generateScript (command: TRIGGER_ID, triggerData: TriggerData): string {
+export function generateScript (command: TRIGGER_ID, triggerData: TriggerDataLookup): string {
   const currentData = triggerData[command];
-  const currentHeader = (TRIGGER_PROPS[command]).FUNC;
+  const currentHeader = (TRIGGER_METADATA[command]).FUNC;
 
   if (currentHeader === undefined) {
     return "";
