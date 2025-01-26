@@ -1,7 +1,7 @@
 {
+  "type": "module",
   "scripts": {
-    "build": "bash scripts/build.sh -d",
-    "deploy": "bash scripts/build.sh",
+    "build": "bash build.sh",
     "lint": "npx eslint ./src --fix"
   },
   "devDependencies": {
@@ -11,6 +11,8 @@
     "eslint": "^9.19.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.21.0",
-    "uglify-js": "^3.19.3"
+    "uglify-js": "^3.19.3",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1"
   }
 }
