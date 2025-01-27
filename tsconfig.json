@@ -3,6 +3,7 @@
     "strict": true,
     "noImplicitAny": true,
     "allowJs": true,
+    "jsx": "react",
     "module": "ES2015",
     "target": "ES6",
     "moduleResolution": "bundler",
