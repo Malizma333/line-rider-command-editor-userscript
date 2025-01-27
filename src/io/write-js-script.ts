@@ -4,7 +4,7 @@ import { TRIGGER_ID, TriggerDataLookup, SkinCssTrigger } from "../lib/TriggerDat
 /**
  * Generates a Line Rider Web script from trigger data and a specific command id
  */
-export function generateScript (command: TRIGGER_ID, triggerData: TriggerDataLookup): string {
+export function writeScript (command: TRIGGER_ID, triggerData: TriggerDataLookup): string {
   const currentData = triggerData[command];
   const currentHeader = (TRIGGER_METADATA[command]).FUNC;
 

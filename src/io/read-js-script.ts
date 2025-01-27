@@ -2,42 +2,17 @@ import { TriggerDataManager, TRIGGER_METADATA } from "../lib/TriggerDataManager"
 import { TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
 import { CONSTRAINTS } from "../lib/validation";
 
-export default class ScriptReader {
-  triggerData: TriggerDataLookup;
-
-  constructor () {
-    this.triggerData = TriggerDataManager.initialTriggerData;
-  }
-
-  /**
-   * Parses text from the script field into a trigger data object, reverting to the original
-   * value if an error occurs
-   */
-  parseScript (scriptText: string, currentTriggerData: TriggerDataLookup): TriggerDataLookup {
-    this.triggerData = TriggerDataManager.initialTriggerData;
-    const trimmedScript = scriptText.replace(/\s/g, "");
-
-    Object.keys(TRIGGER_METADATA).forEach((commandId: string) => {
-      try {
-        this.triggerData[commandId as TRIGGER_ID].triggers = [];
-        this.parseCommand(commandId as TRIGGER_ID, trimmedScript);
-      } catch (error) {
-        if (error instanceof Error) {
-          console.warn(`[ScriptParser.parseScript()] ${error.message}`);
-          this.triggerData[commandId as TRIGGER_ID] = structuredClone(
-            currentTriggerData[commandId as TRIGGER_ID]
-          );
-        }
-      }
-    });
-
-    return this.triggerData;
-  }
+/**
+ * Parses text from the script field into a trigger data object, reverting to the original
+ * value if an error occurs
+ */
+export default function readJsScript(scriptText: string, currentTriggerData: TriggerDataLookup): TriggerDataLookup {
+  const triggerData = TriggerDataManager.initialTriggerData;
 
   /**
    * Parses an individual command given its id and applies the parsed script to the trigger data
    */
-  parseCommand (commandId: TRIGGER_ID, scriptSection: string): void {
+  function parseCommand (commandId: TRIGGER_ID, scriptSection: string): void {
     if (commandId === TRIGGER_ID.GRAVITY) {
       throw new Error("Gravity parsing not supported!");
     }
@@ -62,7 +37,7 @@ export default class ScriptReader {
     }
 
     const parameterText = `[${
-      this.removeLeadingZeroes(
+      removeLeadingZeroes(
         scriptSection.substring(startIndex, endIndex),
         commandId
       )
@@ -77,11 +52,11 @@ export default class ScriptReader {
       case TRIGGER_ID.PAN:
       case TRIGGER_ID.FOCUS:
       case TRIGGER_ID.TIME:
-        this.parseTriggers(commandId, keyframes);
-        this.parseSmoothing(commandId, smoothing);
+        parseTriggers(commandId, keyframes);
+        parseSmoothing(commandId, smoothing);
         break;
       case TRIGGER_ID.SKIN:
-        this.parseSkinCss(keyframes);
+        parseSkinCss(keyframes);
         break;
       default:
         break;
@@ -91,7 +66,7 @@ export default class ScriptReader {
   /**
    * Parses a potential new Trigger[], not necessarily a complete definition of one
    */
-  parseTriggers (commandId: TRIGGER_ID, commandArray: TimedTrigger[]): void {
+  function parseTriggers (commandId: TRIGGER_ID, commandArray: TimedTrigger[]): void {
     const triggers: TimedTrigger[] = [];
 
     for (let i = 0; i < commandArray.length; i += 1) {
@@ -100,37 +75,37 @@ export default class ScriptReader {
       const timeProp = commandArray[i][0] as number | number[];
       if (typeof timeProp === "number") {
         const index = timeProp;
-        triggers[i][0] = this.retrieveTimestamp(index);
+        triggers[i][0] = retrieveTimestamp(index);
       } else if (timeProp.length === 1) {
         const index = timeProp[0];
-        triggers[i][0] = this.retrieveTimestamp(index);
+        triggers[i][0] = retrieveTimestamp(index);
       } else if (timeProp.length === 2) {
         const index = timeProp[0] * 40 + timeProp[1];
-        triggers[i][0] = this.retrieveTimestamp(index);
+        triggers[i][0] = retrieveTimestamp(index);
       } else {
         const index = timeProp[0] * 2400 +
          timeProp[1] * 40 + timeProp[2];
-        triggers[i][0] = this.retrieveTimestamp(index);
+        triggers[i][0] = retrieveTimestamp(index);
       }
     }
 
-    this.triggerData[commandId].triggers = triggers;
+    triggerData[commandId].triggers = triggers;
   }
 
   /**
    * Parses integer or boolean smoothing for a command if its available
    */
-  parseSmoothing (commandId: TRIGGER_ID, smoothingValue?: boolean | number): void {
+  function parseSmoothing (commandId: TRIGGER_ID, smoothingValue?: boolean | number): void {
     if (commandId === TRIGGER_ID.TIME) {
       const constraints = CONSTRAINTS.INTERPOLATE;
 
       if (smoothingValue == null) {
-        this.triggerData[commandId].interpolate = constraints.DEFAULT;
+        triggerData[commandId].interpolate = constraints.DEFAULT;
         return;
       }
 
       if (smoothingValue === true || smoothingValue === false) {
-        this.triggerData[commandId].interpolate = smoothingValue;
+        triggerData[commandId].interpolate = smoothingValue;
       } else {
         throw new Error("Invalid boolean!");
       }
@@ -138,7 +113,7 @@ export default class ScriptReader {
       const constraints = CONSTRAINTS.SMOOTH;
 
       if (smoothingValue == null) {
-        this.triggerData[commandId].smoothing = constraints.DEFAULT;
+        triggerData[commandId].smoothing = constraints.DEFAULT;
         return;
       }
 
@@ -147,11 +122,11 @@ export default class ScriptReader {
       }
 
       if (smoothingValue > constraints.MAX) {
-        this.triggerData[commandId].smoothing = constraints.MAX;
+        triggerData[commandId].smoothing = constraints.MAX;
       } else if (smoothingValue < constraints.MIN) {
-        this.triggerData[commandId].smoothing = constraints.MIN;
+        triggerData[commandId].smoothing = constraints.MIN;
       } else {
-        this.triggerData[commandId].smoothing = smoothingValue;
+        triggerData[commandId].smoothing = smoothingValue;
       }
     }
   }
@@ -159,9 +134,9 @@ export default class ScriptReader {
   /**
    * Parses a string of CSS into a skin trigger array
    */
-  parseSkinCss (skinCSSArray: string[]): void {
+  function parseSkinCss (skinCSSArray: string[]): void {
     skinCSSArray.forEach((skinCSS: string, skinIndex: number) => {
-      this.triggerData[TRIGGER_ID.SKIN].triggers.push(
+      triggerData[TRIGGER_ID.SKIN].triggers.push(
         structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE)
       );
       let depth = 0;
@@ -172,7 +147,7 @@ export default class ScriptReader {
         if (skinCSS.charAt(i) === "}") {
           depth -= 1;
           if (depth === 0) {
-            this.parseSkinProp(
+            parseSkinProp(
               skinCSS.substring(zeroIndex, i + 1).replace(/\s/g, ""),
               skinIndex
             );
@@ -183,9 +158,9 @@ export default class ScriptReader {
     });
 
     // Revert from 1 indexed modulo n skin array to 0 indexed array
-    if (this.triggerData[TRIGGER_ID.SKIN].triggers.length > 0) {
-      this.triggerData[TRIGGER_ID.SKIN].triggers.push(
-        this.triggerData[TRIGGER_ID.SKIN].triggers.shift() ?? TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE
+    if (triggerData[TRIGGER_ID.SKIN].triggers.length > 0) {
+      triggerData[TRIGGER_ID.SKIN].triggers.push(
+        triggerData[TRIGGER_ID.SKIN].triggers.shift() ?? TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE
       );
     }
   }
@@ -193,9 +168,9 @@ export default class ScriptReader {
   /**
    * Parses a specific property of a skin css string
    */
-  parseSkinProp (cssString: string, skinIndex: number): void {
+  function parseSkinProp (cssString: string, skinIndex: number): void {
     const wordRegex = /(['"])?([#]?[a-z0-9A-Z_-]+)(['"])?/g;
-    const skinTriggers = this.triggerData[TRIGGER_ID.SKIN].triggers as SkinCssTrigger[];
+    const skinTriggers = triggerData[TRIGGER_ID.SKIN].triggers as SkinCssTrigger[];
     const cssPropKeywords = {
       outline: ".outline",
       flag: ".flag",
@@ -242,13 +217,13 @@ export default class ScriptReader {
       }
     });
 
-    this.triggerData[TRIGGER_ID.SKIN].triggers = skinTriggers;
+    triggerData[TRIGGER_ID.SKIN].triggers = skinTriggers;
   }
 
   /**
    * Converts a player index to a trigger timestamp
    */
-  retrieveTimestamp (index: number): TriggerTime {
+  function retrieveTimestamp (index: number): TriggerTime {
     const frames = index % 40;
     const seconds = Math.floor(index / 40) % 60;
     const minutes = Math.floor(index / 2400);
@@ -258,8 +233,26 @@ export default class ScriptReader {
   /**
    * Removes the leading zeros from numbers within the script
    */
-  removeLeadingZeroes (script: string, commandId: TRIGGER_ID): string {
+  function removeLeadingZeroes (script: string, commandId: TRIGGER_ID): string {
     if (commandId === TRIGGER_ID.SKIN) return script;
     return script.replace(/([^\d.+-])0+(\d+)/g, "$1$2");
   }
+
+  const trimmedScript = scriptText.replace(/\s/g, "");
+
+  Object.keys(TRIGGER_METADATA).forEach((commandId: string) => {
+    try {
+      triggerData[commandId as TRIGGER_ID].triggers = [];
+      parseCommand(commandId as TRIGGER_ID, trimmedScript);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.warn(`[ScriptParser.parseScript()] ${error.message}`);
+        triggerData[commandId as TRIGGER_ID] = structuredClone(
+          currentTriggerData[commandId as TRIGGER_ID]
+        );
+      }
+    }
+  });
+
+  return triggerData;
 }

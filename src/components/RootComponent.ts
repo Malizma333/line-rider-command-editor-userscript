@@ -1,9 +1,9 @@
 import { TOOLBAR_COLOR } from "./lib/styles.types";
 import { TriggerDataManager, TRIGGER_METADATA } from "../lib/TriggerDataManager";
 import { TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, Trigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, GravityTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
-import ScriptReader from "../io/ScriptReader";
-import ScriptJsonReader from "../io/ScriptJsonReader";
-import { formatSkins, generateScript } from "../io/ScriptWriter";
+import readJsScript from "../io/read-js-script";
+import readJsonScript from "../io/read-json-script";
+import { formatSkins, writeScript } from "../io/write-js-script";
 import { getSetting, saveSetting, SETTINGS } from "../lib/settings-storage";
 import { SETTINGS_KEY, ViewportOption } from "../lib/settings-storage.types";
 import * as Store from "../lib/redux-store";
@@ -34,8 +34,6 @@ export interface RootState {
 
 export class RootComponent extends React.Component {
   readonly componentManager = new ComponentManager(this);
-  readonly scriptParser = new ScriptReader();
-  readonly fileParser = new ScriptJsonReader();
   readonly triggerManager = new TriggerDataManager();
   readonly state: RootState;
   readonly setState: any;
@@ -192,7 +190,7 @@ export class RootComponent extends React.Component {
     reader.onload = () => {
       try {
         this.onLoad(
-          this.fileParser.parseFile(
+          readJsonScript(
             JSON.parse(reader.result as string),
             this.triggerManager.data as TriggerDataLookup
           )
@@ -208,7 +206,7 @@ export class RootComponent extends React.Component {
 
   onLoadScript(): void {
     this.onLoad(
-      this.scriptParser.parseScript(
+      readJsScript(
         Store.getCurrentScript(store.getState()),
         this.triggerManager.data as TriggerDataLookup
       )
@@ -288,7 +286,7 @@ export class RootComponent extends React.Component {
         throw new Error("Triggers contain invalid times!");
       }
 
-      const script = generateScript(activeTab, this.triggerManager.data as TriggerDataLookup);
+      const script = writeScript(activeTab, this.triggerManager.data as TriggerDataLookup);
       return await navigator.clipboard.writeText(script);
     } catch (error) {
       if (error instanceof Error) {
