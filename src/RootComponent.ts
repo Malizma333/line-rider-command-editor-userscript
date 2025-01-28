@@ -6,7 +6,8 @@ import readJsonScript from "./io/read-json-script";
 import { formatSkins, writeScript } from "./io/write-js-script";
 import { getSetting, saveSetting, SETTINGS } from "./lib/settings-storage";
 import { SETTINGS_KEY, ViewportOption } from "./lib/settings-storage.types";
-import * as Store from "./lib/redux-store";
+import * as Actions from "./lib/redux-actions";
+import * as Selectors from "./lib/redux-selectors";
 import { validateTimes, CONSTRAINTS } from "./lib/validation";
 import App from "./App";
 
@@ -67,7 +68,7 @@ export class RootComponent extends React.Component {
   }
 
   updateStore(): void {
-    const riderCount = Store.getNumRiders(store.getState());
+    const riderCount = Selectors.getNumRiders(store.getState());
 
     if (this.lastRiderCount !== riderCount) {
       this.lastRiderCount = riderCount;
@@ -83,7 +84,7 @@ export class RootComponent extends React.Component {
       this.setState({ gravityDDIndices: gravityDDIndices.map((ddIndex) => Math.min(riderCount - 1, ddIndex)) });
     }
 
-    const sidebarOpen = Store.getSidebarOpen(store.getState());
+    const sidebarOpen = Selectors.getSidebarOpen(store.getState());
 
     if (sidebarOpen) {
       this.setState({ active: false });
@@ -99,7 +100,7 @@ export class RootComponent extends React.Component {
 
     if (activeTab === TRIGGER_ID.SKIN) return;
 
-    const currentPlayerIndex = Store.getPlayerIndex(store.getState());
+    const currentPlayerIndex = Selectors.getPlayerIndex(store.getState());
     const triggerTime: TriggerTime = [
       Math.floor(currentPlayerIndex / 2400),
       Math.floor((currentPlayerIndex % 2400) / 40),
@@ -167,7 +168,7 @@ export class RootComponent extends React.Component {
     const a = document.createElement("a");
     const data = "data:text/json;charset=utf-8," + encodeURIComponent(jsonString);
     a.setAttribute("href", data);
-    a.setAttribute("download", Store.getTrackTitle(store.getState()) + ".script.json");
+    a.setAttribute("download", Selectors.getTrackTitle(store.getState()) + ".script.json");
     a.click();
     a.remove();
   }
@@ -200,7 +201,7 @@ export class RootComponent extends React.Component {
   onLoadScript(): void {
     this.onLoad(
       readJsScript(
-        Store.getCurrentScript(store.getState()),
+        Selectors.getCurrentScript(store.getState()),
         this.triggerManager.data as TriggerDataLookup
       )
     );
@@ -347,10 +348,10 @@ export class RootComponent extends React.Component {
 
   onActivate(): void {
     const { active } = this.state;
-    const sidebarOpen = Store.getSidebarOpen(store.getState());
+    const sidebarOpen = Selectors.getSidebarOpen(store.getState());
 
     if (!active && sidebarOpen) {
-      store.dispatch(Store.closeSidebar());
+      store.dispatch(Actions.closeSidebar());
     }
 
     this.setState({ active: !active });
@@ -410,7 +411,7 @@ export class RootComponent extends React.Component {
     );
 
     const size = SETTINGS[SETTINGS_KEY.VIEWPORT][resolutionSetting].SIZE;
-    store.dispatch(Store.setPlaybackDimensions({ width: size[0], height: size[1] }));
+    store.dispatch(Actions.setPlaybackDimensions({ width: size[0], height: size[1] }));
 
     const zoomTriggers = this.triggerManager.data[TRIGGER_ID.ZOOM].triggers as ZoomTrigger[];
     const newZoomTriggers = zoomTriggers.map(trigger => [trigger[0], Math.round((trigger[1] + factor + Number.EPSILON) * 1e7) / 1e7]);
@@ -474,15 +475,15 @@ export class RootComponent extends React.Component {
   onCameraDataCapture(index: number, triggerType: TRIGGER_ID) {
     switch (triggerType) {
       case TRIGGER_ID.ZOOM: {
-        this.onUpdateTrigger(Math.log2(Store.getEditorZoom(store.getState())), ["triggers", index.toString(), "1"]);
+        this.onUpdateTrigger(Math.log2(Selectors.getEditorZoom(store.getState())), ["triggers", index.toString(), "1"]);
         break;
       }
       case TRIGGER_ID.PAN: {
-        const { x, y } = Store.getEditorPosition(store.getState());
-        const track = Store.getSimulatorTrack(store.getState());
-        const { width, height } = Store.getPlaybackDimensions(store.getState());
-        const zoom = Store.getPlaybackZoom(store.getState());
-        const playerIndex = Math.floor(Store.getPlayerIndex(store.getState()));
+        const { x, y } = Selectors.getEditorPosition(store.getState());
+        const track = Selectors.getSimulatorTrack(store.getState());
+        const { width, height } = Selectors.getPlaybackDimensions(store.getState());
+        const zoom = Selectors.getPlaybackZoom(store.getState());
+        const playerIndex = Math.floor(Selectors.getPlayerIndex(store.getState()));
         const camera = store.getState().camera.playbackFollower.getCamera(track, { zoom, width, height }, playerIndex);
         this.onUpdateTrigger((x - camera.x) * zoom / width, ["triggers", index.toString(), "1", "x"]);
         this.onUpdateTrigger((y - camera.y) * zoom / height, ["triggers", index.toString(), "1", "y"]);

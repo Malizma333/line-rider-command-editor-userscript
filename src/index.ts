@@ -1,6 +1,6 @@
 import { STYLES } from "./components/styles";
 import { RootComponent } from "./RootComponent";
-import { getPlayerRunning, getWindowFocused } from "./lib/redux-store";
+import { getPlayerRunning, getWindowFocused } from "./lib/redux-actions";
 import { CameraFocusTrigger, CameraPanTrigger, GravityTrigger, TimeRemapTrigger, ZoomTrigger } from "./lib/TriggerDataManager.types";
 import type { Store } from "redux";
 

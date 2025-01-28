@@ -1,9 +1,5 @@
 Documentation
 Break up trigger data file
 Break up root component
-Convert validation into custom components
-Break up types and interfaces into .d.ts files
 Refactor history item to use object instead of array
 Refactor get path to be more specific or directly modify path
-Refactor path to be string array?
-Refactor components into tsx
