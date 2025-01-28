@@ -21,8 +21,6 @@ declare global {
     setCustomRiders: Function
     setCustomGravity?: Function
   }
-
-  type ReactComponent = typeof window.React.Component
 }
 
 function main (): void {

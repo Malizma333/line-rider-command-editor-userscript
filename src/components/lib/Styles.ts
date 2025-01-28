@@ -152,7 +152,8 @@ export const STYLES = {
       backgroundColor: GLOBAL_STYLES.white,
       overflow: "hidden",
       textAlign: "center",
-      width: "3em"
+      width: "3em",
+      marginLeft: "5px"
     }
   },
   checkbox: {

@@ -1,5 +1,5 @@
 import { CONSTRAINTS } from "./validation";
-import { GravityTrigger, Primitive, TRIGGER_ID, TriggerDataLookup, TriggerMetadataLookup, HistoryItem, CameraFocusTrigger } from "./TriggerDataManager.types";
+import { GravityTrigger, TRIGGER_ID, TriggerDataLookup, TriggerMetadataLookup, HistoryItem, CameraFocusTrigger } from "./TriggerDataManager.types";
 
 export const TRIGGER_METADATA: TriggerMetadataLookup = {
   [TRIGGER_ID.ZOOM]: {
@@ -168,7 +168,7 @@ export class TriggerDataManager {
     this.triggerData[TRIGGER_ID.SKIN].triggers = skinTriggers;
   }
 
-  updateFromPath (path: string[], newValue: Primitive, location: TRIGGER_ID): void {
+  updateFromPath (path: string[], newValue: any, location: TRIGGER_ID): void {
     const HISTORY_LIMIT = 30;
     this.redoStack = [];
     const oldValue = this.setAtPointer(path, newValue);
@@ -209,8 +209,8 @@ export class TriggerDataManager {
   /**
    * Updates value at a given path and returns the old value
    */
-  private setAtPointer (path: string[], value: Primitive): Primitive {
-    let pathPointer: Primitive = this.triggerData;
+  private setAtPointer (path: string[], value: any): any {
+    let pathPointer: any = this.triggerData;
 
     for (let i = 0; i < path.length - 1; i += 1) {
       pathPointer = pathPointer[path[i]];

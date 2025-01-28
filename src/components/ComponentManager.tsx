@@ -1,32 +1,27 @@
 import { STYLES, GLOBAL_STYLES } from "./lib/styles";
 import { TOOLBAR_COLOR } from "./lib/styles.types";
 import { TRIGGER_METADATA } from "../lib/TriggerDataManager";
-import { TRIGGER_ID, TriggerTime, TimedTrigger, Trigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, TimeRemapTrigger, GravityTrigger, SkinCssTrigger, Primitive } from "../lib/TriggerDataManager.types";
+import { TRIGGER_ID, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, TimeRemapTrigger, GravityTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
 import { SETTINGS } from "../lib/settings-storage";
-import { SETTINGS_KEY } from "../lib/settings-storage.types";
+import { SETTINGS_KEY, ViewportOption } from "../lib/settings-storage.types";
 import { CONSTRAINTS } from "../lib/validation";
 import * as FICONS from "./lib/icons";
-import { RootComponent, RootState } from "./RootComponent";
-import { InlineIcon } from "./lib/icons.types";
+import { RootComponent } from "./RootComponent";
 import { Constraint } from "../lib/validation.types";
+import FloatPicker from "./FloatPicker";
+import IntPicker from "./IntPicker";
 
 const { React } = window;
 
 export default class ComponentManager {
   root: RootComponent;
-  state: RootState;
 
   constructor(root: RootComponent) {
     this.root = root;
-    this.state = root.state;
   }
 
-  updateState(nextState: RootState): void {
-    this.state = nextState;
-  }
-
-  main(): ReactComponent {
-    const { state } = this;
+  main() {
+    const state = this.root.state;
     return <div style={GLOBAL_STYLES.text}>
       {this.toolbar()}
       {state.active && <div style={STYLES.content}>
@@ -37,8 +32,10 @@ export default class ComponentManager {
     </div>;
   }
 
-  toolbar(): ReactComponent {
-    const { root, state } = this;
+  toolbar() {
+    const root = this.root;
+    const state = this.root.state;
+
     return <div style={STYLES.toolbar.container}>
       {!state.active && this.toolbarButton(0, "Maximize", false, () => root.onActivate(), FICONS.MAXIMIZE)}
       {state.active && <div style={{ ...STYLES.toolbar.container, justifyContent: "start" }}>
@@ -66,8 +63,10 @@ export default class ComponentManager {
     </div>;
   }
 
-  toolbarButton(id: number, title: string, disabled: boolean, onClick: () => void, icon: InlineIcon): ReactComponent {
-    const { root, state } = this;
+  toolbarButton(id: number, title: string, disabled: boolean, onClick: () => void, icon: React.JSX.Element) {
+    const root = this.root;
+    const state = this.root.state;
+
     if (disabled && state.toolbarColors[id] !== TOOLBAR_COLOR.NONE) {
       root.onUpdateToolbarColor(id, TOOLBAR_COLOR.NONE);
     }
@@ -82,25 +81,27 @@ export default class ComponentManager {
       onClick={onClick}
       disabled={disabled}
     >
-      <span {...icon} style={{ color: disabled ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black }}></span>
+      {icon}
     </button>;
   }
 
-  settingsContainer(): ReactComponent {
+  settingsContainer() {
     return <div style={STYLES.settings.window}>
       {this.settingsHeader()}
       {this.settings()}
     </div>;
   }
 
-  settingsHeader(): ReactComponent {
-    const { root, state } = this;
+  settingsHeader() {
+    const root = this.root;
+    const state = this.root.state;
+
     return <div style={STYLES.settings.header}>
       <button
         style={{ ...STYLES.button.embedded, position: "absolute", fontSize: "32px", right: "0px" }}
         onClick={() => root.onToggleSettings()}
       >
-        <span {...FICONS.X}></span>
+        {FICONS.X}
       </button>
       <text style={{ fontSize: GLOBAL_STYLES.textSizes.L[state.fontSize] }}>
         Settings
@@ -123,8 +124,9 @@ export default class ComponentManager {
     </div>;
   }
 
-  settings(): ReactComponent {
-    const { state, root } = this;
+  settings() {
+    const root = this.root;
+    const state = this.root.state;
 
     return <div style={{ fontSize: GLOBAL_STYLES.textSizes.M[state.fontSize] }}>
       <div style={STYLES.settings.row}>
@@ -132,9 +134,9 @@ export default class ComponentManager {
           Font Sizes
         </text>
         <div style={{ ...STYLES.settings.parameter, fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] }}>
-          {this.settingButton(state.fontSizeSetting, SETTINGS[SETTINGS_KEY.FONT_SIZE].SMALL, "Small", (e) => root.onChangeFontSize(e))}
-          {this.settingButton(state.fontSizeSetting, SETTINGS[SETTINGS_KEY.FONT_SIZE].MEDIUM, "Medium", (e) => root.onChangeFontSize(e))}
-          {this.settingButton(state.fontSizeSetting, SETTINGS[SETTINGS_KEY.FONT_SIZE].LARGE, "Large", (e) => root.onChangeFontSize(e))}
+          {this.settingButton(state.fontSizeSetting, SETTINGS[SETTINGS_KEY.FONT_SIZE].SMALL, "Small", (e) => root.onChangeFontSize(e as number))}
+          {this.settingButton(state.fontSizeSetting, SETTINGS[SETTINGS_KEY.FONT_SIZE].MEDIUM, "Medium", (e) => root.onChangeFontSize(e as number))}
+          {this.settingButton(state.fontSizeSetting, SETTINGS[SETTINGS_KEY.FONT_SIZE].LARGE, "Large", (e) => root.onChangeFontSize(e as number))}
         </div>
       </div>
       <div style={STYLES.settings.row}>
@@ -142,16 +144,16 @@ export default class ComponentManager {
           Viewport
         </text>
         <div style={{ ...STYLES.settings.parameter, fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] }}>
-          {this.settingButton(state.resolutionSetting, SETTINGS[SETTINGS_KEY.VIEWPORT].HD.ID, "720p", (e) => root.onChangeViewport(e))}
-          {this.settingButton(state.resolutionSetting, SETTINGS[SETTINGS_KEY.VIEWPORT].FHD.ID, "1080p", (e) => root.onChangeViewport(e))}
-          {this.settingButton(state.resolutionSetting, SETTINGS[SETTINGS_KEY.VIEWPORT].QHD.ID, "1440p", (e) => root.onChangeViewport(e))}
-          {this.settingButton(state.resolutionSetting, SETTINGS[SETTINGS_KEY.VIEWPORT].UHD.ID, "4K", (e) => root.onChangeViewport(e))}
+          {this.settingButton(state.resolutionSetting, SETTINGS[SETTINGS_KEY.VIEWPORT].HD.ID, "720p", (e) => root.onChangeViewport(e as ViewportOption))}
+          {this.settingButton(state.resolutionSetting, SETTINGS[SETTINGS_KEY.VIEWPORT].FHD.ID, "1080p", (e) => root.onChangeViewport(e as ViewportOption))}
+          {this.settingButton(state.resolutionSetting, SETTINGS[SETTINGS_KEY.VIEWPORT].QHD.ID, "1440p", (e) => root.onChangeViewport(e as ViewportOption))}
+          {this.settingButton(state.resolutionSetting, SETTINGS[SETTINGS_KEY.VIEWPORT].UHD.ID, "4K", (e) => root.onChangeViewport(e as ViewportOption))}
         </div>
       </div>
     </div>;
   }
 
-  settingButton(current: Primitive, target: Primitive, label: string, action: (e: Primitive) => void): ReactComponent {
+  settingButton(current: string | number, target: string | number, label: string, action: (e: string | number) => void) {
     return <button
       style={{
         ...STYLES.button.settings,
@@ -163,8 +165,9 @@ export default class ComponentManager {
     </button>;
   }
 
-  tabContainer(): ReactComponent {
-    const { root, state } = this;
+  tabContainer() {
+    const root = this.root;
+    const state = this.root.state;
 
     return <div style={STYLES.tabs.container}>
       {...Object.keys(TRIGGER_METADATA).map((command: string) => {
@@ -187,8 +190,9 @@ export default class ComponentManager {
     </div>;
   }
 
-  window(): ReactComponent {
-    const { state, root } = this;
+  window() {
+    const root = this.root;
+    const state = this.root.state;
     const data = root.triggerManager.data[state.activeTab];
 
     if (data.id === TRIGGER_ID.SKIN) {
@@ -204,9 +208,11 @@ export default class ComponentManager {
     </div>;
   }
 
-  smoothTab(): ReactComponent {
-    const { root, state } = this;
+  smoothTab() {
+    const root = this.root;
+    const state = this.root.state;
     const data = root.triggerManager.data[state.activeTab];
+
     return <div style={STYLES.smooth.container}>
       <label
         htmlFor="smoothTextInput"
@@ -214,52 +220,31 @@ export default class ComponentManager {
       >
         Smoothing
       </label>
-      {data.id !== TRIGGER_ID.TIME ? <input
+      {data.id !== TRIGGER_ID.TIME ? <IntPicker
         id="smoothTextInput"
         style={{
           ...STYLES.smooth.input,
           fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize],
-          marginLeft: "5px"
         }}
-        value={data.smoothing}
-        onChange={(e: React.ChangeEvent) => root.onUpdateTrigger(
-          {
-            prev: data.smoothing,
-            new: (e.target as HTMLInputElement).value
-          },
-          ["smoothing"],
-          CONSTRAINTS.SMOOTH
-        )}
-        onBlur={(e: React.ChangeEvent) => root.onUpdateTrigger(
-          {
-            prev: data.smoothing,
-            new: (e.target as HTMLInputElement).value
-          },
-          ["smoothing"],
-          CONSTRAINTS.SMOOTH,
-          true
-        )}
+        value={data.smoothing || 0}
+        min={CONSTRAINTS.SMOOTH.MIN}
+        max={CONSTRAINTS.SMOOTH.MAX}
+        onChange={(v: number | string) => root.onUpdateTrigger(v, ["smoothing"])}
       /> : <div style={STYLES.checkbox.container }>
         <input
           id="smoothTextInput"
           style={STYLES.checkbox.primary}
           type="checkbox"
-          onChange={() => root.onUpdateTrigger(
-            {
-              prev: root.triggerManager.data[state.activeTab].interpolate,
-              new: !(root.triggerManager.data[state.activeTab].interpolate as boolean)
-            },
-            ["interpolate"],
-            CONSTRAINTS.INTERPOLATE
-          )}
+          onChange={() => root.onUpdateTrigger(!root.triggerManager.data[state.activeTab].interpolate, ["interpolate"])}
         />
         {data.interpolate as boolean && <div style={STYLES.checkbox.fill }></div>}
       </div>}
     </div>;
   }
 
-  trigger(index: number): ReactComponent {
-    const { root, state } = this;
+  trigger(index: number) {
+    const root = this.root;
+    const state = this.root.state;
     const data = root.triggerManager.data[state.activeTab];
     const currentTrigger = data.triggers[index];
 
@@ -280,24 +265,24 @@ export default class ComponentManager {
         disabled={index === 0}
         onClick={() => root.onDeleteTrigger(index)}
       >
-        <span {...FICONS.X} style={{ color: index === 0 ? GLOBAL_STYLES.dark_gray2 : GLOBAL_STYLES.black }}/>
+        <span style={{ color: index === 0 ? GLOBAL_STYLES.dark_gray2 : GLOBAL_STYLES.black }}>{FICONS.X}</span>
       </button>
       {this.timeStamp((currentTrigger as TimedTrigger)[0], index)}
-      {data.id === TRIGGER_ID.ZOOM && this.captureButton(currentTrigger as Trigger, index, TRIGGER_ID.ZOOM)}
-      {data.id === TRIGGER_ID.PAN && this.captureButton(currentTrigger as Trigger, index, TRIGGER_ID.PAN)}
+      {data.id === TRIGGER_ID.ZOOM && this.captureButton(index, TRIGGER_ID.ZOOM)}
+      {data.id === TRIGGER_ID.PAN && this.captureButton(index, TRIGGER_ID.PAN)}
       {data.id === TRIGGER_ID.ZOOM && this.zoomTrigger((currentTrigger as ZoomTrigger), index)}
       {data.id === TRIGGER_ID.PAN && this.cameraPanTrigger((currentTrigger as CameraPanTrigger), index)}
       {data.id === TRIGGER_ID.FOCUS && this.cameraFocusTrigger((currentTrigger as CameraFocusTrigger), index)}
       {data.id === TRIGGER_ID.TIME && this.timeRemapTrigger((currentTrigger as TimeRemapTrigger), index)}
       {data.id === TRIGGER_ID.GRAVITY && this.gravityTrigger((currentTrigger as GravityTrigger), index)}
       <button style={STYLES.trigger.createButton} onClick={() => root.onCreateTrigger(index)}>
-        <span {...FICONS.PLUS}/>
+        <span>{FICONS.PLUS}</span>
       </button>
     </div>;
   }
 
-  timeStamp(data: TriggerTime, index: number): ReactComponent {
-    const { state } = this;
+  timeStamp(data: TriggerTime, index: number) {
+    const state = this.root.state;
     const cProps = [CONSTRAINTS.MINUTE, CONSTRAINTS.SECOND, CONSTRAINTS.FRAME];
     const labels = ["Time", ":", ":"];
 
@@ -309,14 +294,15 @@ export default class ComponentManager {
             timeValue,
             ["triggers", index.toString(), "0", timeIndex.toString()],
             cProps[timeIndex],
-            state.invalidTimes[index] ? "red" : "black"
+            state.invalidTimes[index] ? "red" : "black",
+            true
           )}
         </div>;
       })}
     </div>;
   }
 
-  captureButton(data: Trigger, index: number, triggerType: TRIGGER_ID): ReactComponent {
+  captureButton(index: number, triggerType: TRIGGER_ID) {
     const { root } = this;
 
     return <button
@@ -326,13 +312,13 @@ export default class ComponentManager {
         position: "absolute",
         right: "25px"
       }}
-      onClick={() => root.onCameraDataCapture(data, index, triggerType)}
+      onClick={() => root.onCameraDataCapture(index, triggerType)}
     >
-      <span {...FICONS.CAMERA}></span>
+      <span>{FICONS.CAMERA}</span>
     </button>;
   }
 
-  zoomTrigger(data: ZoomTrigger, index: number): ReactComponent {
+  zoomTrigger(data: ZoomTrigger, index: number) {
     return <div style={STYLES.trigger.property}>
       {this.triggerProp(
         "Zoom To",
@@ -343,7 +329,7 @@ export default class ComponentManager {
     </div>;
   }
 
-  cameraPanTrigger(data: CameraPanTrigger, index: number): ReactComponent {
+  cameraPanTrigger(data: CameraPanTrigger, index: number) {
     const cProps = [CONSTRAINTS.PAN_WIDTH, CONSTRAINTS.PAN_HEIGHT, CONSTRAINTS.PAN_X, CONSTRAINTS.PAN_Y];
     const labels = ["Width", "Height", "Offset X", "Y"];
 
@@ -365,8 +351,9 @@ export default class ComponentManager {
     </div>;
   }
 
-  cameraFocusTrigger(data: CameraFocusTrigger, index: number): ReactComponent {
-    const { root, state } = this;
+  cameraFocusTrigger(data: CameraFocusTrigger, index: number) {
+    const root = this.root;
+    const state = this.root.state;
     const dropdownIndex = state.focusDDIndices[index];
 
     return <div style={STYLES.trigger.property}>
@@ -390,7 +377,7 @@ export default class ComponentManager {
     </div>;
   }
 
-  timeRemapTrigger(data: TimeRemapTrigger, index: number): ReactComponent {
+  timeRemapTrigger(data: TimeRemapTrigger, index: number) {
     return <div style={STYLES.trigger.property}>
       {this.triggerProp(
         "Speed",
@@ -401,8 +388,9 @@ export default class ComponentManager {
     </div>;
   }
 
-  gravityTrigger(data: GravityTrigger, index: number): ReactComponent {
-    const { root, state } = this;
+  gravityTrigger(data: GravityTrigger, index: number) {
+    const root = this.root;
+    const state = this.root.state;
     const dropdownIndex = state.gravityDDIndices[index];
     const cProps = [CONSTRAINTS.GRAVITY_X, CONSTRAINTS.GRAVITY_Y];
     const labels = ["X", "Y"];
@@ -432,29 +420,29 @@ export default class ComponentManager {
     </div>;
   }
 
-  triggerProp(labelText: string, value: Primitive, propPath: string[], constraints: Constraint, color?: string): ReactComponent {
-    const { root } = this;
+  triggerProp(labelText: string, value: string | number, propPath: string[], constraints: Constraint, color?: string, isInt = false) {
+    const root = this.root;
+    const NumberPicker = isInt ? IntPicker : FloatPicker;
 
     return <div>
       <label
-        style={{
-          ...STYLES.trigger.text,
-          color: color || "black"
-        }}
+        style={STYLES.trigger.text}
         htmlFor={propPath.join("_")}
       >{labelText}</label>
-      <input
-        style={STYLES.trigger.input}
+      <NumberPicker
+        style={{ ...STYLES.trigger.input, color: color || "black" }}
         id={propPath.join("_")}
         value={value}
-        onChange={(e: React.ChangeEvent) => root.onUpdateTrigger({ prev: value, new: (e.target as HTMLInputElement).value }, propPath, constraints)}
-        onBlur={(e: React.ChangeEvent) => root.onUpdateTrigger({ prev: value, new: (e.target as HTMLInputElement).value }, propPath, constraints, true)}
+        min={constraints.MIN}
+        max={constraints.MAX}
+        onChange={(v: number | string) => root.onUpdateTrigger(v, propPath)}
       />
     </div>;
   }
 
-  skinEditor(data: SkinCssTrigger[]): ReactComponent {
-    const { root, state } = this;
+  skinEditor(data: SkinCssTrigger[]) {
+    const root = this.root;
+    const state = this.root.state;
     const dropdownIndex = state.skinEditorSelectedRider;
 
     return <div style={STYLES.skinEditor.container}>
@@ -490,14 +478,15 @@ export default class ComponentManager {
         <text style={{ fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] }}>Outline</text>
         <div
           style={{ ...STYLES.skinEditor.outlineColor.input, backgroundColor: data[dropdownIndex].outline.stroke }}
-          onClick={() => root.onUpdateTrigger({ new: state.skinEditorSelectedColor }, ["triggers", dropdownIndex.toString(), "outline", "stroke"])}
+          onClick={() => root.onUpdateTrigger(state.skinEditorSelectedColor, ["triggers", dropdownIndex.toString(), "outline", "stroke"])}
         ></div>
       </div>
     </div>;
   }
 
-  skinEditorToolbar(index: number): ReactComponent {
-    const { root, state } = this;
+  skinEditorToolbar(index: number) {
+    const root = this.root;
+    const state = this.root.state;
     const data = root.triggerManager.data[TRIGGER_ID.SKIN].triggers;
     const colorValue = state.skinEditorSelectedColor.substring(0, 7);
     const alphaValue = parseInt(state.skinEditorSelectedColor.substring(7), 16) / 255;
@@ -507,7 +496,7 @@ export default class ComponentManager {
         style={{ ...STYLES.button.embedded, fontSize: "32px", position: "absolute", right: "10px" }}
         onClick={() => root.onResetSkin(index)}
       >
-        <span {...FICONS.TRASH2}></span>
+        {FICONS.TRASH2}
       </button>
       <div style={{ ...STYLES.skinEditor.toolbarItem, ...STYLES.alpha.container, fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] }}>
         <label htmlFor="alphaSlider">Transparency</label>
@@ -544,35 +533,43 @@ export default class ComponentManager {
     </div>;
   }
 
-  flagSvg(data: SkinCssTrigger, index: string): ReactComponent {
-    const { root, state } = this;
-    const color = state.skinEditorSelectedColor;
+  flagSvg(data: SkinCssTrigger, index: string) {
+    const root = this.root;
+    const state = this.root.state;
+    const updateColor = (target: string, stroke = false) => {
+      root.onUpdateTrigger(state.skinEditorSelectedColor, ["triggers", index, target, stroke ? "stroke" : "fill"]);
+    };
+
     return <svg height="18" width="15" style={{ transform: "scale(5)" }}>
       <path
         transform="translate(-5, -3)"
         d="M6,3A1,1 0 0,1 7,4V4.88C8.06,4.44 9.5,4 11,4C14,4 14,6 16,6C19,6 20,4 20,4V12C20,12 19,14 16,14C13,14 13,12 11,12C8,12 7,14 7,14V21H5V4A1,1 0 0,1 6,3Z"
         fill={data.flag.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "flag", "fill"])}
+        onClick={() => updateColor("flag")}
       />
       <path
         transform="translate(-5, -3)"
         d="M6,3A1,1 0 0,1 7,4V4.88C8.06,4.44 9.5,4 11,4C14,4 14,6 16,6C19,6 20,4 20,4V12C20,12 19,14 16,14C13,14 13,12 11,12C8,12 7,14 7,14V21H5V4A1,1 0 0,1 6,3M7,7.25V11.5C7,11.5 9,10 11,10C13,10 14,12 16,12C18,12 18,11 18,11V7.5C18,7.5 17,8 16,8C14,8 13,6 11,6C9,6 7,7.25 7,7.25Z"
         fill={data.flag.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "flag", "fill"])}
+        onClick={() => updateColor("flag")}
       />
     </svg>;
   }
 
-  riderSvg(data: SkinCssTrigger, index: string): ReactComponent {
-    const { root, state } = this;
-    const color = state.skinEditorSelectedColor;
+  riderSvg(data: SkinCssTrigger, index: string) {
+    const root = this.root;
+    const state = this.root.state;
+    const updateColor = (target: string, stroke = false) => {
+      root.onUpdateTrigger(state.skinEditorSelectedColor, ["triggers", index, target, stroke ? "stroke" : "fill"]);
+    };
+
     return <svg height="25" width="31" style={{ transform: "scale(5)" }}>
       <rect
         transform="translate(13,8) rotate(-90)"
         width="3.1"
         height="4.5"
         fill={data.skin.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "skin", "fill"])}
+        onClick={() => updateColor("skin")}
       />
       <path
         {...STYLES.riderProps.outline}
@@ -580,34 +577,34 @@ export default class ComponentManager {
         d="M 0 -0.25 v 0.4 c 0.1 1.3 1.2 1.2 3.1 0 v -0.4"
         stroke={data.outline.stroke}
         fill={data.skin.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "skin", "fill"])}
+        onClick={() => updateColor("skin")}
       />
       <rect
         transform="translate(12.4, 5.15) rotate(-90)"
         width="0.3"
         height="5.1"
         fill={data.hair.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "hair", "fill"])}
+        onClick={() => updateColor("hair")}
       />
       <rect
         transform="translate(12.2, 8.1) rotate(-90)"
         width="3.1"
         height="0.3"
         fill={data.hair.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "hair", "fill"])}
+        onClick={() => updateColor("hair")}
       />
       <rect
         transform="translate(12.2,4.2) scale(0.8,0.8)"
         width="3.1"
         height="4.8"
         fill={data.fill.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "fill", "fill"])}
+        onClick={() => updateColor("fill")}
       />
       <polygon
         transform="translate(16.3,6.7)"
         points="0.4,-0.4 0,-0.5 -0.4,-0.4 -0.5,0 -0.4,0.4 0,0.5 0.4,0.4 0.5,0"
         fill={data.eye.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "eye", "fill"])}
+        onClick={() => updateColor("eye")}
       />
       <path
         {...STYLES.riderProps.outline}
@@ -615,7 +612,7 @@ export default class ComponentManager {
         d="M13.6-2.2c-1.35,0-2.55,0.75-3.15,1.85H0C-0.2-0.35-0.35-0.2-0.35,0S-0.2,0.35,0,0.35h1.75V4.4H-0.2c-0.2,0-0.35,0.15-0.35,0.35S-0.4,5.1-0.2,5.1h13.8c2,0,3.65-1.65,3.65-3.65S15.6-2.2,13.6-2.2zM9.05,4.4h-6.6V0.35h6.6V4.4z M13.6,4.4H9.75V0.35h0.35C10.05,0.5,10,0.7,10,0.9c0,0.2,0.15,0.35,0.35,0.35c0.15,0,0.3-0.1,0.35-0.25c0.05-0.2,0.1-0.45,0.2-0.65h0.9c0.2,0,0.35-0.15,0.35-0.35S12-0.35,11.8-0.35h-0.5c0.5-0.7,1.35-1.15,2.3-1.15c1.65,0,2.95,1.3,2.95,2.95C16.55,3.1,15.25,4.4,13.6,4.4z"
         stroke={data.outline.stroke}
         fill={data.sled.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "sled", "fill"])}
+        onClick={() => updateColor("sled")}
       />
       <line
         transform="translate(21.5, 10.5) rotate(40)"
@@ -625,7 +622,7 @@ export default class ComponentManager {
         y2="0"
         strokeWidth="0.3"
         stroke={data.string.stroke}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "string", "stroke"])}
+        onClick={() => updateColor("string", true)}
       />
       <path
         {...STYLES.riderProps.outline}
@@ -633,7 +630,7 @@ export default class ComponentManager {
         d="M5-0.7h0.5c0,0,0.3-0.7,0.5-0.6c0.2,0.1,0,0.6,0,0.6s0.4,0,0.6,0c0.2,0,0.5,0.3,0.5,0.7c0,0.4-0.2,0.7-0.5,0.7c-0.5,0-1.6,0-1.6,0"
         stroke={data.outline.stroke}
         fill={data.armHand.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "armHand", "fill"])}
+        onClick={() => updateColor("armHand")}
       />
       <path
         {...STYLES.riderProps.outline}
@@ -641,7 +638,7 @@ export default class ComponentManager {
         d="M4.8-0.7H0c-0.4,0-0.7,0.3-0.7,0.7S-0.4,0.7,0,0.7h4.8"
         stroke={data.outline.stroke}
         fill={data.legPants.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "legPants", "fill"])}
+        onClick={() => updateColor("legPants")}
       />
       <path
         {...STYLES.riderProps.outline}
@@ -649,49 +646,49 @@ export default class ComponentManager {
         d="M4.8,0.7h2.4l0-2.7L6.7-2L6-0.7H4.8"
         stroke={data.outline.stroke}
         fill={data.legFoot.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "legFoot", "fill"])}
+        onClick={() => updateColor("legFoot")}
       />
       <rect
         {...STYLES.riderProps.id_scarfEven}
         x="2"
         fill={data.id_scarf0.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "id_scarf0", "fill"])}
+        onClick={() => updateColor("id_scarf0")}
       />
       <rect
         {...STYLES.riderProps.id_scarfEven}
         x="0"
         fill={data.id_scarf0.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "id_scarf0", "fill"])}
+        onClick={() => updateColor("id_scarf0")}
       />
       <rect
         {...STYLES.riderProps.id_scarfOdd}
         x="-2"
         fill={data.id_scarf1.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "id_scarf1", "fill"])}
+        onClick={() => updateColor("id_scarf1")}
       />
       <rect
         {...STYLES.riderProps.id_scarfOdd}
         x="-4"
         fill={data.id_scarf2.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "id_scarf2", "fill"])}
+        onClick={() => updateColor("id_scarf2")}
       />
       <rect
         {...STYLES.riderProps.id_scarfOdd}
         x="-6"
         fill={data.id_scarf3.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "id_scarf3", "fill"])}
+        onClick={() => updateColor("id_scarf3")}
       />
       <rect
         {...STYLES.riderProps.id_scarfOdd}
         x="-8"
         fill={data.id_scarf4.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "id_scarf4", "fill"])}
+        onClick={() => updateColor("id_scarf4")}
       />
       <rect
         {...STYLES.riderProps.id_scarfOdd}
         x="-10"
         fill={data.id_scarf5.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "id_scarf5", "fill"])}
+        onClick={() => updateColor("id_scarf5")}
       />
       <rect
         {...STYLES.riderProps.outline}
@@ -700,37 +697,37 @@ export default class ComponentManager {
         height="4.4"
         stroke={data.outline.stroke}
         fill={data.torso.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "torso", "fill"])}
+        onClick={() => updateColor("torso")}
       />
       <rect
         {...STYLES.riderProps.scarfOdd}
         y="1.5"
         fill={data.scarf1.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "scarf1", "fill"])}
+        onClick={() => updateColor("scarf1")}
       />
       <rect
         {...STYLES.riderProps.scarfOdd}
         y="0.5"
         fill={data.scarf2.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "scarf2", "fill"])}
+        onClick={() => updateColor("scarf2")}
       />
       <rect
         {...STYLES.riderProps.scarfOdd}
         y="-0.5"
         fill={data.scarf3.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "scarf3", "fill"])}
+        onClick={() => updateColor("scarf3")}
       />
       <rect
         {...STYLES.riderProps.scarfOdd}
         y="-1.5"
         fill={data.scarf4.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "scarf4", "fill"])}
+        onClick={() => updateColor("scarf4")}
       />
       <rect
         {...STYLES.riderProps.scarfOdd}
         y="-2.5"
         fill={data.scarf5.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "scarf5", "fill"])}
+        onClick={() => updateColor("scarf5")}
       />
       <path
         {...STYLES.riderProps.outline}
@@ -738,7 +735,7 @@ export default class ComponentManager {
         d="M11-2.6h-0.4v5.2H11c1.2,0,2.2-1.2,2.2-2.6S12.2-2.6,11-2.6z"
         stroke={data.outline.stroke}
         fill={data.hatTop.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "hatTop", "fill"])}
+        onClick={() => updateColor("hatTop")}
       />
       <path
         transform="translate(14.8,5) rotate(-90) translate(-10,0)"
@@ -746,7 +743,7 @@ export default class ComponentManager {
         strokeLinecap="round"
         d="M10.6-2.6 v5.2"
         stroke={data.hatBottom.stroke}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "hatBottom", "stroke"])}
+        onClick={() => updateColor("hatBottom", true)}
       />
       <circle
         transform="translate(14.8,5) rotate(-90) translate(-10,0)"
@@ -754,7 +751,7 @@ export default class ComponentManager {
         cy="0"
         r="0.7"
         fill={data.hatBall.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "hatBall", "fill"])}
+        onClick={() => updateColor("hatBall")}
       />
       <path
         {...STYLES.riderProps.outline}
@@ -762,7 +759,7 @@ export default class ComponentManager {
         d="M5,0.7H0c-0.4,0-0.7-0.3-0.7-0.7S-0.4-0.7,0-0.7h5"
         stroke={data.outline.stroke}
         fill={data.armSleeve.fill}
-        onClick={() => root.onUpdateTrigger({ new: color }, ["triggers", index, "armSleeve", "fill"])}
+        onClick={() => updateColor("armSleeve")}
       />
     </svg>;
   }

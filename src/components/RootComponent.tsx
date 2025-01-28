@@ -1,14 +1,13 @@
 import { TOOLBAR_COLOR } from "./lib/styles.types";
 import { TriggerDataManager, TRIGGER_METADATA } from "../lib/TriggerDataManager";
-import { TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, Trigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, GravityTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
+import { TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, GravityTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
 import readJsScript from "../io/read-js-script";
 import readJsonScript from "../io/read-json-script";
 import { formatSkins, writeScript } from "../io/write-js-script";
 import { getSetting, saveSetting, SETTINGS } from "../lib/settings-storage";
 import { SETTINGS_KEY, ViewportOption } from "../lib/settings-storage.types";
 import * as Store from "../lib/redux-store";
-import { validateTimes, validateData, CONSTRAINTS } from "../lib/validation";
-import { ValueChange, Constraint } from "../lib/validation.types";
+import { validateTimes, CONSTRAINTS } from "../lib/validation";
 import ComponentManager from "./ComponentManager";
 
 const { store, React } = window;
@@ -130,10 +129,8 @@ export class RootComponent extends React.Component {
     this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) });
   }
 
-  onUpdateTrigger(valueChange: ValueChange, path: string[], constraints?: Constraint, bounded = false): void {
+  onUpdateTrigger(newValue: number | string | boolean, path: string[]): void {
     const { activeTab } = this.state;
-
-    const newValue = validateData(valueChange, bounded, constraints);
 
     this.triggerManager.updateFromPath([activeTab, ...path], newValue, activeTab);
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
@@ -481,15 +478,10 @@ export class RootComponent extends React.Component {
     this.setState({ skinEditorZoom: [newScale, newXOffset, newYOffset] });
   }
 
-  onCameraDataCapture(data: Trigger, index: number, triggerType: TRIGGER_ID) {
+  onCameraDataCapture(index: number, triggerType: TRIGGER_ID) {
     switch (triggerType) {
       case TRIGGER_ID.ZOOM: {
-        this.onUpdateTrigger(
-          { prev: (data as ZoomTrigger)[1] as number, new: Math.log2(Store.getEditorZoom(store.getState())).toString() },
-          ["triggers", index.toString(), "1"],
-          CONSTRAINTS.ZOOM,
-          true
-        );
+        this.onUpdateTrigger(Math.log2(Store.getEditorZoom(store.getState())), ["triggers", index.toString(), "1"]);
         break;
       }
       case TRIGGER_ID.PAN: {
@@ -499,18 +491,8 @@ export class RootComponent extends React.Component {
         const zoom = Store.getPlaybackZoom(store.getState());
         const playerIndex = Math.floor(Store.getPlayerIndex(store.getState()));
         const camera = store.getState().camera.playbackFollower.getCamera(track, { zoom, width, height }, playerIndex);
-        this.onUpdateTrigger(
-          { prev: (data as CameraPanTrigger)[1]["x"], new: ((x - camera.x) * zoom / width).toString() },
-          ["triggers", index.toString(), "1", "x"],
-          CONSTRAINTS.PAN_X,
-          true
-        );
-        this.onUpdateTrigger(
-          { prev: (data as CameraPanTrigger)[1]["y"], new: ((y - camera.y) * zoom / height).toString() },
-          ["triggers", index.toString(), "1", "y"],
-          CONSTRAINTS.PAN_Y,
-          true
-        );
+        this.onUpdateTrigger((x - camera.x) * zoom / width, ["triggers", index.toString(), "1", "x"]);
+        this.onUpdateTrigger((y - camera.y) * zoom / height, ["triggers", index.toString(), "1", "y"]);
         break;
       }
       default: {
@@ -519,8 +501,7 @@ export class RootComponent extends React.Component {
     }
   }
 
-  render(): ReactComponent {
-    this.componentManager.updateState(this.state);
+  render() {
     return this.componentManager.main();
   }
 }

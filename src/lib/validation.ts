@@ -1,5 +1,4 @@
 import { TimedTrigger } from "../lib/TriggerDataManager.types";
-import { ValueChange, Constraint } from "./validation.types";
 
 export const CONSTRAINTS = {
   INTERPOLATE: {
@@ -51,95 +50,6 @@ export const CONSTRAINTS = {
     DEFAULT: 0, MIN: -100, MAX: 100, INT: false
   }
 } as const;
-
-export function validateData (
-  valueChange: ValueChange, bounded: boolean, constraints?: Constraint
-): typeof valueChange.prev | typeof valueChange.new {
-  if (constraints == null) {
-    return valueChange.new;
-  }
-
-  if (typeof constraints.DEFAULT === "boolean") {
-    return valueChange.new;
-  }
-
-  if (typeof constraints.DEFAULT === "number" && (constraints.INT ?? false)) {
-    return validateInteger(valueChange, constraints, bounded);
-  }
-
-  if (typeof constraints.DEFAULT === "number" && !(constraints.INT ?? false)) {
-    return validateFloat(valueChange, constraints, bounded);
-  }
-
-  return valueChange.prev;
-}
-
-function validateInteger (valueChange: ValueChange, constraints: Constraint, bounded: boolean): number {
-  const prevValue = valueChange.prev as number;
-  const newValue = valueChange.new as string;
-
-  if (newValue.trim() === "") {
-    return 0;
-  }
-
-  const parsedValue = Math.floor(Number(newValue));
-
-  if (Number.isNaN(parsedValue)) {
-    return prevValue;
-  }
-
-  if (newValue.includes(".")) {
-    return prevValue;
-  }
-
-  if (!bounded) {
-    return parsedValue;
-  }
-
-  if (parsedValue < (constraints.MIN as number)) {
-    return (constraints.MIN as number);
-  }
-
-  if (parsedValue > (constraints.MAX as number)) {
-    return (constraints.MAX as number);
-  }
-
-  return parsedValue;
-}
-
-function validateFloat (valueChange: ValueChange, constraints: Constraint, bounded: boolean): number | string {
-  const prevValue = valueChange.prev as number;
-  const newValue = valueChange.new as string;
-
-  if (newValue.trim() === "") {
-    return 0.0;
-  }
-
-  const parsedValue = Number(newValue);
-
-  if (Number.isNaN(parsedValue)) {
-    return prevValue;
-  }
-
-  if (!bounded) {
-    // HACK: Include partially inputted floats (eg 1.)
-    if (newValue.includes(".")) {
-      return newValue;
-    }
-
-    return parsedValue;
-  }
-
-  if (parsedValue < (constraints.MIN as number)) {
-    return (constraints.MIN as number);
-  }
-
-  if (parsedValue > (constraints.MAX as number)) {
-    return (constraints.MAX as number);
-  }
-
-  return parsedValue;
-}
 
 export function validateTimes (triggers: TimedTrigger[]): boolean[] {
   const invalidIndices = Array(triggers.length).map(() => false);
