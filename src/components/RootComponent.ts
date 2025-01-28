@@ -36,7 +36,6 @@ export class RootComponent extends React.Component {
   readonly componentManager = new ComponentManager(this);
   readonly triggerManager = new TriggerDataManager();
   readonly state: RootState;
-  readonly setState: any;
   lastRiderCount: number | undefined;
 
   constructor() {
@@ -131,7 +130,7 @@ export class RootComponent extends React.Component {
     this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) });
   }
 
-  onUpdateTrigger(valueChange: ValueChange, path: (string | number)[], constraints?: Constraint, bounded = false): void {
+  onUpdateTrigger(valueChange: ValueChange, path: string[], constraints?: Constraint, bounded = false): void {
     const { activeTab } = this.state;
 
     const newValue = validateData(valueChange, bounded, constraints);
@@ -329,7 +328,7 @@ export class RootComponent extends React.Component {
 
   onResetSkin(index: number): void {
     this.triggerManager.updateFromPath(
-      [TRIGGER_ID.SKIN, "triggers", index],
+      [TRIGGER_ID.SKIN, "triggers", index.toString()],
       structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE),
       TRIGGER_ID.SKIN
     );
@@ -454,7 +453,7 @@ export class RootComponent extends React.Component {
     this.setState({ skinEditorSelectedRider: parseInt(value, 10) });
   }
 
-  onZoomSkinEditor(e: Event | WheelEvent, isMouseAction: boolean): void {
+  onZoomSkinEditor(e: React.ChangeEvent | React.WheelEvent, isMouseAction: boolean): void {
     const { skinEditorZoom } = this.state;
     const rect = (document.getElementById("skinElementContainer") as HTMLElement).getBoundingClientRect();
     const [scale, xOffset, yOffset] = skinEditorZoom;
@@ -463,7 +462,7 @@ export class RootComponent extends React.Component {
     let newYOffset = yOffset;
 
     if (isMouseAction) {
-      const eWheel = e as WheelEvent;
+      const eWheel = e as React.WheelEvent;
       if (scale < CONSTRAINTS.SKIN_ZOOM.MAX) {
         newXOffset = (eWheel.clientX - rect.x) / scale;
         newYOffset = (eWheel.clientY - rect.y) / scale;
@@ -487,7 +486,7 @@ export class RootComponent extends React.Component {
       case TRIGGER_ID.ZOOM: {
         this.onUpdateTrigger(
           { prev: (data as ZoomTrigger)[1] as number, new: Math.log2(Store.getEditorZoom(store.getState())).toString() },
-          ["triggers", index, 1],
+          ["triggers", index.toString(), "1"],
           CONSTRAINTS.ZOOM,
           true
         );
@@ -502,13 +501,13 @@ export class RootComponent extends React.Component {
         const camera = store.getState().camera.playbackFollower.getCamera(track, { zoom, width, height }, playerIndex);
         this.onUpdateTrigger(
           { prev: (data as CameraPanTrigger)[1]["x"], new: ((x - camera.x) * zoom / width).toString() },
-          ["triggers", index, 1, "x"],
+          ["triggers", index.toString(), "1", "x"],
           CONSTRAINTS.PAN_X,
           true
         );
         this.onUpdateTrigger(
           { prev: (data as CameraPanTrigger)[1]["y"], new: ((y - camera.y) * zoom / height).toString() },
-          ["triggers", index, 1, "y"],
+          ["triggers", index.toString(), "1", "y"],
           CONSTRAINTS.PAN_Y,
           true
         );

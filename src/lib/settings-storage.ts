@@ -4,10 +4,10 @@ const LOCAL_STORAGE_PREFIX = "CMD_EDITOR_MOD_";
 
 export const SETTINGS = {
   [SETTINGS_KEY.VIEWPORT]: {
-    HD: { ID: "HD", NAME: "720p", SIZE: [1280, 720] },
-    FHD: { ID: "FHD", NAME: "1080p", SIZE: [1920, 1080] },
-    QHD: { ID: "QHD", NAME: "1440p", SIZE: [2560, 1440] },
-    UHD: { ID: "UHD", NAME: "4K", SIZE: [3840, 2160] }
+    HD: { ID: "HD", SIZE: [1280, 720] },
+    FHD: { ID: "FHD", SIZE: [1920, 1080] },
+    QHD: { ID: "QHD", SIZE: [2560, 1440] },
+    UHD: { ID: "UHD", SIZE: [3840, 2160] }
   },
   [SETTINGS_KEY.FONT_SIZE]: {
     SMALL: 0,

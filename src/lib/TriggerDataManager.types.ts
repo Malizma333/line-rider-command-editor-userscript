@@ -20,7 +20,7 @@ export enum TRIGGER_ID {
 }
 
 export type Primitive = any
-export type HistoryItem = [(string | number)[], Primitive, TRIGGER_ID]
+export type HistoryItem = [string[], Primitive, TRIGGER_ID]
 
 interface TriggerData {
   id: string
