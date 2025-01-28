@@ -1,5 +1,4 @@
 Documentation
 Break up trigger data file
 Break up root component
-Refactor history item to use object instead of array
 Refactor get path to be more specific or directly modify path

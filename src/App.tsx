@@ -80,7 +80,7 @@ export default class App {
       onClick={onClick}
       disabled={disabled}
     >
-      {icon}
+      <span style={{ color: disabled ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black }}>{icon}</span>
     </button>;
   }
 

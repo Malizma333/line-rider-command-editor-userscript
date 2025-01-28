@@ -172,7 +172,7 @@ export class TriggerDataManager {
     const HISTORY_LIMIT = 30;
     this.redoStack = [];
     const oldValue = this.setAtPointer(path, newValue);
-    this.undoStack.push([path, oldValue, location]);
+    this.undoStack.push({ modificationPath: path, oldValue: oldValue, activeTab: location });
     if (this.undoStack.length > HISTORY_LIMIT) {
       this.undoStack.shift();
     }
@@ -185,11 +185,11 @@ export class TriggerDataManager {
       return null;
     }
 
-    const [path, oldValue, location] = previous;
-    const newValue = this.setAtPointer(path, oldValue);
-    this.redoStack.push([path, newValue, location]);
+    const { modificationPath, oldValue, activeTab } = previous;
+    const newValue = this.setAtPointer(modificationPath, oldValue);
+    this.redoStack.push({ modificationPath, oldValue: newValue, activeTab });
 
-    return location;
+    return activeTab;
   }
 
   redo (): TRIGGER_ID | null {
@@ -199,11 +199,11 @@ export class TriggerDataManager {
       return null;
     }
 
-    const [path, newValue, location] = next;
-    const oldValue = this.setAtPointer(path, newValue);
-    this.undoStack.push([path, oldValue, location]);
+    const { modificationPath, oldValue, activeTab } = next;
+    const newValue = this.setAtPointer(modificationPath, oldValue);
+    this.undoStack.push({ modificationPath, oldValue: newValue, activeTab });
 
-    return location;
+    return activeTab;
   }
 
   /**
