@@ -377,10 +377,6 @@ export class RootComponent extends React.Component {
     this.setState({ settingsActive: !settingsActive });
   }
 
-  onReport(): void {
-    window.open("https://github.com/Malizma333/line-rider-command-editor-userscript/issues/new");
-  }
-
   onHelp(): void {
     window.open("https://github.com/Malizma333/line-rider-command-editor-userscript#readme");
   }

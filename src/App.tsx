@@ -50,8 +50,7 @@ export default class App {
         {this.toolbarButton(6, "Undo", root.triggerManager.undoLen === 0, () => root.onUndo(), FICONS.ARROW_LEFT)}
         {this.toolbarButton(7, "Redo", root.triggerManager.redoLen === 0, () => root.onRedo(), FICONS.ARROW_RIGHT)}
         {this.toolbarButton(8, "Settings", false, () => root.onToggleSettings(), FICONS.SETTINGS)}
-        {this.toolbarButton(9, "Report Issue", false, () => root.onReport(), FICONS.FLAG)}
-        {this.toolbarButton(10, "Help", false, () => root.onHelp(), FICONS.HELP_CIRCLE)}
+        {this.toolbarButton(9, "Help", false, () => root.onHelp(), FICONS.HELP_CIRCLE)}
       </div>}
       <input
         id="trigger-file-upload"
