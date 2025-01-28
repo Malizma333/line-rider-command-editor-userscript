@@ -19,7 +19,8 @@ export enum TRIGGER_ID {
   GRAVITY = "GRAVITY"
 }
 
-export type HistoryItem = [string[], any, TRIGGER_ID]
+export type PathValue = object | number | string | boolean
+export type HistoryItem = [string[], PathValue, TRIGGER_ID]
 
 interface TriggerData {
   id: string

@@ -1,19 +1,19 @@
-import { STYLES, GLOBAL_STYLES } from "./lib/styles";
-import { TOOLBAR_COLOR } from "./lib/styles.types";
-import { TRIGGER_METADATA } from "../lib/TriggerDataManager";
-import { TRIGGER_ID, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, TimeRemapTrigger, GravityTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
-import { SETTINGS } from "../lib/settings-storage";
-import { SETTINGS_KEY, ViewportOption } from "../lib/settings-storage.types";
-import { CONSTRAINTS } from "../lib/validation";
-import * as FICONS from "./lib/icons";
+import { STYLES, GLOBAL_STYLES } from "./components/styles";
+import { TOOLBAR_COLOR } from "./components/styles.types";
+import { TRIGGER_METADATA } from "./lib/TriggerDataManager";
+import { TRIGGER_ID, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, TimeRemapTrigger, GravityTrigger, SkinCssTrigger } from "./lib/TriggerDataManager.types";
+import { SETTINGS } from "./lib/settings-storage";
+import { SETTINGS_KEY, ViewportOption } from "./lib/settings-storage.types";
+import { CONSTRAINTS } from "./lib/validation";
+import * as FICONS from "./components/icons";
 import { RootComponent } from "./RootComponent";
-import { Constraint } from "../lib/validation.types";
-import FloatPicker from "./FloatPicker";
-import IntPicker from "./IntPicker";
+import { Constraint } from "./lib/validation.types";
+import FloatPicker from "./components/FloatPicker";
+import IntPicker from "./components/IntPicker";
 
 const { React } = window;
 
-export default class ComponentManager {
+export default class App {
   root: RootComponent;
 
   constructor(root: RootComponent) {

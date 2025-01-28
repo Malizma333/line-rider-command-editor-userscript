@@ -1,36 +1,37 @@
-import { STYLES } from "./components/lib/styles";
-import { RootComponent } from "./components/RootComponent";
+import { STYLES } from "./components/styles";
+import { RootComponent } from "./RootComponent";
 import { getPlayerRunning, getWindowFocused } from "./lib/redux-store";
+import { CameraFocusTrigger, CameraPanTrigger, GravityTrigger, TimeRemapTrigger, ZoomTrigger } from "./lib/TriggerDataManager.types";
+import type { Store } from "redux";
 
 declare global {
   interface Window {
-    React: any
-    ReactDOM: any
-    store: any
-    onAppReady: Function
-    save_commands: Function
+    ReactDOM: { render: (child: React.ComponentElement<object, RootComponent>, parent: HTMLElement) => void }
+    store: Store
     CMD_EDITOR_DEBUG: boolean
-    getAutoZoom?: any
-    createZoomer: Function
-    getCamBounds?: any
-    createBoundsPanner: Function
-    getCamFocus?: any
-    createFocuser: Function
-    timeRemapper?: any
-    createTimeRemapper: Function
-    setCustomRiders: Function
-    setCustomGravity?: Function
+    onAppReady: () => void
+    saveCommands: () => void
+    getAutoZoom?: (index: number) => number
+    createZoomer: (zoom: ZoomTrigger[], smoothing?: number) => typeof window.getAutoZoom
+    getCamBounds?: (index: number) => { w: number, h: number, x: number, y: number }
+    createBoundsPanner: (pan: CameraPanTrigger[], smoothing?: number) => typeof window.getCamBounds
+    getCamFocus?: (index: number) => boolean[]
+    createFocuser: (focus: CameraFocusTrigger[], smoothing?: number) => typeof window.getCamFocus
+    timeRemapper?: object
+    createTimeRemapper: (timeRemap: TimeRemapTrigger[], smoothing?: boolean) => typeof window.timeRemapper
+    setCustomRiders: (cssList: string[]) => void
+    setCustomGravity?: (gravity: GravityTrigger[]) => void
   }
 }
 
 function main (): void {
-  const { React, ReactDOM, store } = window;
+  const { React, store } = window;
   const content = document.getElementById("content") as HTMLElement;
   const parent = document.createElement("div");
 
   Object.assign(parent.style, STYLES.root);
 
-  ReactDOM.render(React.createElement(RootComponent), parent);
+  window.ReactDOM.render(React.createElement(RootComponent), parent);
 
   content.appendChild(parent);
 
@@ -49,7 +50,7 @@ function main (): void {
       const errorHeader = errorContainer.querySelector("h1");
       if (errorHeader && errorHeader.innerHTML === "An error occured!") {
         console.warn("[index.main()] Crash detected...");
-        window.save_commands();
+        window.saveCommands();
         clearInterval(timerId);
       }
     }

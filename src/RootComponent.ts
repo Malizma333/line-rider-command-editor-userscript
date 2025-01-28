@@ -1,14 +1,14 @@
-import { TOOLBAR_COLOR } from "./lib/styles.types";
-import { TriggerDataManager, TRIGGER_METADATA } from "../lib/TriggerDataManager";
-import { TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, GravityTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
-import readJsScript from "../io/read-js-script";
-import readJsonScript from "../io/read-json-script";
-import { formatSkins, writeScript } from "../io/write-js-script";
-import { getSetting, saveSetting, SETTINGS } from "../lib/settings-storage";
-import { SETTINGS_KEY, ViewportOption } from "../lib/settings-storage.types";
-import * as Store from "../lib/redux-store";
-import { validateTimes, CONSTRAINTS } from "../lib/validation";
-import ComponentManager from "./ComponentManager";
+import { TOOLBAR_COLOR } from "./components/styles.types";
+import { TriggerDataManager, TRIGGER_METADATA } from "./lib/TriggerDataManager";
+import { TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, GravityTrigger, SkinCssTrigger, CameraPanTrigger, TimeRemapTrigger } from "./lib/TriggerDataManager.types";
+import readJsScript from "./io/read-js-script";
+import readJsonScript from "./io/read-json-script";
+import { formatSkins, writeScript } from "./io/write-js-script";
+import { getSetting, saveSetting, SETTINGS } from "./lib/settings-storage";
+import { SETTINGS_KEY, ViewportOption } from "./lib/settings-storage.types";
+import * as Store from "./lib/redux-store";
+import { validateTimes, CONSTRAINTS } from "./lib/validation";
+import App from "./App";
 
 const { store, React } = window;
 
@@ -32,13 +32,13 @@ export interface RootState {
 }
 
 export class RootComponent extends React.Component {
-  readonly componentManager = new ComponentManager(this);
+  readonly componentManager = new App(this);
   readonly triggerManager = new TriggerDataManager();
   readonly state: RootState;
   lastRiderCount: number | undefined;
 
   constructor() {
-    super();
+    super({});
 
     this.state = {
       active: false,
@@ -63,10 +63,7 @@ export class RootComponent extends React.Component {
   }
 
   componentDidMount(): void {
-    window.save_commands = () => {
-      this.onDownload();
-      return "Downloaded commands!";
-    };
+    window.saveCommands = () => this.onDownload();
   }
 
   updateStore(): void {
@@ -246,23 +243,23 @@ export class RootComponent extends React.Component {
 
       switch (activeTab) {
         case TRIGGER_ID.ZOOM:
-          window.getAutoZoom = window.createZoomer(currentData.triggers, currentData.smoothing);
+          window.getAutoZoom = window.createZoomer(currentData.triggers as ZoomTrigger[], currentData.smoothing);
           break;
         case TRIGGER_ID.PAN:
-          window.getCamBounds = window.createBoundsPanner(currentData.triggers, currentData.smoothing);
+          window.getCamBounds = window.createBoundsPanner(currentData.triggers as CameraPanTrigger[], currentData.smoothing);
           break;
         case TRIGGER_ID.FOCUS:
-          window.getCamFocus = window.createFocuser(currentData.triggers, currentData.smoothing);
+          window.getCamFocus = window.createFocuser(currentData.triggers as CameraFocusTrigger[], currentData.smoothing);
           break;
         case TRIGGER_ID.TIME:
-          window.timeRemapper = window.createTimeRemapper(currentData.triggers, currentData.interpolate);
+          window.timeRemapper = window.createTimeRemapper(currentData.triggers as TimeRemapTrigger[], currentData.interpolate);
           break;
         case TRIGGER_ID.SKIN:
           window.setCustomRiders(formatSkins(currentData.triggers as SkinCssTrigger[]));
           break;
         case TRIGGER_ID.GRAVITY:
           if (window.setCustomGravity !== undefined) {
-            window.setCustomGravity(currentData.triggers);
+            window.setCustomGravity(currentData.triggers as GravityTrigger[]);
           }
           break;
         default:
