@@ -1,11 +1,10 @@
-import { TOOLBAR_COLOR } from "./components/styles.types";
 import { TriggerDataManager, TRIGGER_METADATA } from "./lib/TriggerDataManager";
 import { TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, GravityTrigger, SkinCssTrigger, CameraPanTrigger, TimeRemapTrigger } from "./lib/TriggerDataManager.types";
 import readJsScript from "./io/read-js-script";
 import readJsonScript from "./io/read-json-script";
 import { formatSkins, writeScript } from "./io/write-js-script";
-import { getSetting, saveSetting, SETTINGS } from "./lib/settings-storage";
-import { SETTINGS_KEY, ViewportOption } from "./lib/settings-storage.types";
+import { getSetting, saveSetting } from "./lib/settings-storage";
+import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from "./lib/settings-storage.types";
 import * as Actions from "./lib/redux-actions";
 import * as Selectors from "./lib/redux-selectors";
 import { validateTimes, CONSTRAINTS } from "./lib/validation";
@@ -24,12 +23,11 @@ export interface RootState {
   skinEditorZoom: [number, number, number]
   settingsActive: boolean
   settingsDirty: boolean
-  fontSize: number
-  resolution: ViewportOption
-  fontSizeSetting: number
-  resolutionSetting: ViewportOption
+  fontSize: FONT_SIZE_SETTING
+  fontSizeSetting: FONT_SIZE_SETTING
+  resolution: VIEWPORT_SETTING
+  resolutionSetting: VIEWPORT_SETTING
   invalidTimes: boolean[]
-  toolbarColors: TOOLBAR_COLOR[]
 }
 
 export class RootComponent extends React.Component {
@@ -38,8 +36,8 @@ export class RootComponent extends React.Component {
   readonly state: RootState;
   lastRiderCount: number | undefined;
 
-  constructor() {
-    super({});
+  constructor(props: object) {
+    super(props);
 
     this.state = {
       active: false,
@@ -52,12 +50,11 @@ export class RootComponent extends React.Component {
       skinEditorZoom: [1, 0, 0],
       settingsActive: false,
       settingsDirty: false,
-      fontSize: parseInt(getSetting(SETTINGS_KEY.FONT_SIZE), 10),
-      resolution: getSetting(SETTINGS_KEY.VIEWPORT) as ViewportOption,
-      fontSizeSetting: parseInt(getSetting(SETTINGS_KEY.FONT_SIZE), 10),
-      resolutionSetting: getSetting(SETTINGS_KEY.VIEWPORT) as ViewportOption,
-      invalidTimes: [],
-      toolbarColors: Array(16).fill(TOOLBAR_COLOR.NONE)
+      fontSize: getSetting(SETTINGS_KEY.FONT_SIZE),
+      resolution: getSetting(SETTINGS_KEY.VIEWPORT),
+      fontSizeSetting: getSetting(SETTINGS_KEY.FONT_SIZE),
+      resolutionSetting: getSetting(SETTINGS_KEY.VIEWPORT),
+      invalidTimes: []
     };
 
     store.subscribe(() => this.updateStore());
@@ -89,10 +86,6 @@ export class RootComponent extends React.Component {
     if (sidebarOpen) {
       this.setState({ active: false });
     }
-  }
-
-  onUpdateToolbarColor(index: number, state: TOOLBAR_COLOR): void {
-    this.setState({ toolbarColors: this.state.toolbarColors.map((e, i) => i === index ? state : e) });
   }
 
   onCreateTrigger(index: number): void {
@@ -173,7 +166,7 @@ export class RootComponent extends React.Component {
     a.remove();
   }
 
-  onClickFile(): void {
+  onUpload(): void {
     const triggerUploadInput = (document.getElementById("trigger-file-upload") as HTMLInputElement);
     triggerUploadInput.value = "";
     triggerUploadInput.click();
@@ -346,7 +339,7 @@ export class RootComponent extends React.Component {
     this.setState({ skinEditorSelectedColor: hexColor });
   }
 
-  onActivate(): void {
+  onToggleActive(): void {
     const { active } = this.state;
     const sidebarOpen = Selectors.getSidebarOpen(store.getState());
 
@@ -392,7 +385,7 @@ export class RootComponent extends React.Component {
     this.setState({ fontSizeSetting: newFontSize });
   }
 
-  onChangeViewport(newResolution: ViewportOption): void {
+  onChangeViewport(newResolution: number): void {
     const { resolution } = this.state;
 
     if (resolution !== newResolution) {
@@ -405,20 +398,22 @@ export class RootComponent extends React.Component {
   onApplySettings(): void {
     const { resolutionSetting, resolution, fontSizeSetting } = this.state;
 
-    const factor = Math.log2(
-      SETTINGS[SETTINGS_KEY.VIEWPORT][resolutionSetting].SIZE[0] /
-      SETTINGS[SETTINGS_KEY.VIEWPORT][resolution].SIZE[0]
-    );
+    const resolutionPixels = {
+      [VIEWPORT_SETTING.HD]: { width: 1280, height: 720 },
+      [VIEWPORT_SETTING.FHD]: { width: 1920, height: 1080 },
+      [VIEWPORT_SETTING.QHD]: { width: 2560, height: 1440 },
+      [VIEWPORT_SETTING.UHD]: { width: 3840, height: 2160 }
+    };
 
-    const size = SETTINGS[SETTINGS_KEY.VIEWPORT][resolutionSetting].SIZE;
-    store.dispatch(Actions.setPlaybackDimensions({ width: size[0], height: size[1] }));
+    const factor = Math.log2(resolutionPixels[resolutionSetting].width / resolutionPixels[resolution].width);
+    store.dispatch(Actions.setPlaybackDimensions(resolutionPixels[resolutionSetting]));
 
     const zoomTriggers = this.triggerManager.data[TRIGGER_ID.ZOOM].triggers as ZoomTrigger[];
     const newZoomTriggers = zoomTriggers.map(trigger => [trigger[0], Math.round((trigger[1] + factor + Number.EPSILON) * 1e7) / 1e7]);
     this.triggerManager.updateFromPath([TRIGGER_ID.ZOOM, "triggers"], newZoomTriggers, TRIGGER_ID.ZOOM);
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
 
-    saveSetting(SETTINGS_KEY.FONT_SIZE, String(fontSizeSetting));
+    saveSetting(SETTINGS_KEY.FONT_SIZE, fontSizeSetting);
     saveSetting(SETTINGS_KEY.VIEWPORT, resolutionSetting);
 
     this.setState({ settingsDirty: false });
@@ -472,7 +467,7 @@ export class RootComponent extends React.Component {
     this.setState({ skinEditorZoom: [newScale, newXOffset, newYOffset] });
   }
 
-  onCameraDataCapture(index: number, triggerType: TRIGGER_ID) {
+  onCaptureCamera(index: number, triggerType: TRIGGER_ID) {
     switch (triggerType) {
       case TRIGGER_ID.ZOOM: {
         this.onUpdateTrigger(Math.log2(Selectors.getEditorZoom(store.getState())), ["triggers", index.toString(), "1"]);

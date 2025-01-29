@@ -1,30 +1,28 @@
-import { SETTINGS_KEY } from "./settings-storage.types";
+import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from "./settings-storage.types";
 
 const LOCAL_STORAGE_PREFIX = "CMD_EDITOR_MOD_";
 
-export const SETTINGS = {
-  [SETTINGS_KEY.VIEWPORT]: {
-    HD: { ID: "HD", SIZE: [1280, 720] },
-    FHD: { ID: "FHD", SIZE: [1920, 1080] },
-    QHD: { ID: "QHD", SIZE: [2560, 1440] },
-    UHD: { ID: "UHD", SIZE: [3840, 2160] }
-  },
-  [SETTINGS_KEY.FONT_SIZE]: {
-    SMALL: 0,
-    MEDIUM: 1,
-    LARGE: 2
-  }
-} as const;
-
 const DEFAULTS = {
-  [SETTINGS_KEY.FONT_SIZE]: SETTINGS.FONT_SIZE.MEDIUM,
-  [SETTINGS_KEY.VIEWPORT]: SETTINGS.VIEWPORT.HD.ID
+  [SETTINGS_KEY.FONT_SIZE]: FONT_SIZE_SETTING.MEDIUM,
+  [SETTINGS_KEY.VIEWPORT]: VIEWPORT_SETTING.HD
 } as const;
 
-export function getSetting (key: SETTINGS_KEY): string {
-  return window.localStorage.getItem(LOCAL_STORAGE_PREFIX + key) ?? String(DEFAULTS[key]);
+export function getSetting (key: SETTINGS_KEY): number {
+  const item = window.localStorage.getItem(LOCAL_STORAGE_PREFIX + key);
+
+  if (!item) {
+    return DEFAULTS[key];
+  }
+
+  const parsed = parseInt(item, 10);
+
+  if (isNaN(parsed)) {
+    return DEFAULTS[key];
+  }
+
+  return parsed;
 }
 
-export function saveSetting (key: SETTINGS_KEY, value: string): void {
-  window.localStorage.setItem(LOCAL_STORAGE_PREFIX + key, value);
+export function saveSetting (key: SETTINGS_KEY, value: number): void {
+  window.localStorage.setItem(LOCAL_STORAGE_PREFIX + key, String(value));
 }

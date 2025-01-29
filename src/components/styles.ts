@@ -1,3 +1,5 @@
+import { FONT_SIZE_SETTING } from "../lib/settings-storage.types";
+
 export const GLOBAL_STYLES = {
   black: "#000000",
   dark_gray1: "#b7b7b7",
@@ -14,9 +16,9 @@ export const GLOBAL_STYLES = {
     fontWeight: "bold"
   },
   textSizes: {
-    S: ["12px", "14px", "18px"],
-    M: ["18px", "22px", "24px"],
-    L: ["28px", "32px", "36px"]
+    S: {[FONT_SIZE_SETTING.SMALL]: "12px", [FONT_SIZE_SETTING.MEDIUM]: "14px", [FONT_SIZE_SETTING.LARGE]: "18px"},
+    M: {[FONT_SIZE_SETTING.SMALL]: "18px", [FONT_SIZE_SETTING.MEDIUM]: "22px", [FONT_SIZE_SETTING.LARGE]: "24px"},
+    L: {[FONT_SIZE_SETTING.SMALL]: "28px", [FONT_SIZE_SETTING.MEDIUM]: "32px", [FONT_SIZE_SETTING.LARGE]: "36px"}
   },
   centerX: {
     left: "0px",
@@ -47,35 +49,6 @@ export const STYLES = {
     justifyContent: "center",
     paddingTop: "1vh",
     width: "clamp(425px, 40vw, 650px)"
-  },
-  button: {
-    embedded: {
-      alignItems: "center",
-      background: "none",
-      bgColor: ["transparent", GLOBAL_STYLES.dark_gray1, GLOBAL_STYLES.light_gray1],
-      borderRadius: "0.5em",
-      border: "none",
-      display: "flex",
-      height: "1.5em",
-      justifyContent: "center",
-      userSelect: "none",
-      width: "1.5em"
-    },
-    filled: {
-      alignItems: "center",
-      backgroundColor: GLOBAL_STYLES.white,
-      border: "2px solid black",
-      display: "flex",
-      height: "1.5em",
-      justifyContent: "center",
-      userSelect: "none",
-      width: "1.5em"
-    },
-    settings: {
-      border: "2px solid black",
-      borderRadius: "5px",
-      margin: "5px"
-    }
   },
   toolbar: {
     container: {
@@ -200,6 +173,15 @@ export const STYLES = {
       padding: "12px",
       position: "relative"
     },
+    buttonContainer: {
+      alignItems: "center",
+      display: "flex",
+      flexDirection: "row",
+      direction: "ltr",
+      justifyContent: "space-between",
+      position: "absolute",
+      right: "5px"
+    },
     property: {
       alignItems: "center",
       display: "flex",
@@ -267,7 +249,7 @@ export const STYLES = {
     },
     toolbar: {
       alignItems: "center",
-      backgroundColor: GLOBAL_STYLES.light_gray1,
+      backgroundColor: GLOBAL_STYLES.white,
       borderBottom: "3px solid black",
       flex: 1,
       display: "flex",

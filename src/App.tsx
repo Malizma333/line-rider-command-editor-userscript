@@ -1,15 +1,15 @@
 import { STYLES, GLOBAL_STYLES } from "./components/styles";
-import { TOOLBAR_COLOR } from "./components/styles.types";
 import { TRIGGER_METADATA } from "./lib/TriggerDataManager";
 import { TRIGGER_ID, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, TimeRemapTrigger, GravityTrigger, SkinCssTrigger } from "./lib/TriggerDataManager.types";
-import { SETTINGS } from "./lib/settings-storage";
-import { SETTINGS_KEY, ViewportOption } from "./lib/settings-storage.types";
+import { FONT_SIZE_SETTING, VIEWPORT_SETTING } from "./lib/settings-storage.types";
 import { CONSTRAINTS } from "./lib/validation";
-import * as FICONS from "./components/icons";
+import * as FICONS from "./components/Icons";
 import { RootComponent } from "./RootComponent";
 import { Constraint } from "./lib/validation.types";
 import FloatPicker from "./components/FloatPicker";
 import IntPicker from "./components/IntPicker";
+import SettingsRadioButton from "./components/SettingsRadioButton";
+import EmbeddedButton from "./components/EmbeddedButton";
 
 const { React } = window;
 
@@ -37,20 +37,20 @@ export default class App {
     const state = this.root.state;
 
     return <div style={STYLES.toolbar.container}>
-      {!state.active && this.toolbarButton(0, "Maximize", false, () => root.onActivate(), FICONS.MAXIMIZE)}
+      {!state.active && <EmbeddedButton title="Maximize" onClick={() => root.onToggleActive()} icon={FICONS.MAXIMIZE}/>}
       {state.active && <div style={{ ...STYLES.toolbar.container, justifyContent: "start" }}>
-        {this.toolbarButton(0, "Minimize", false, () => root.onActivate(), FICONS.MINIMIZE)}
-        {this.toolbarButton(1, "Download", false, () => root.onDownload(), FICONS.DOWNLOAD)}
-        {this.toolbarButton(2, "Upload", false, () => root.onClickFile(), FICONS.UPLOAD)}
-        {this.toolbarButton(3, "Load From Script", false, () => root.onLoadScript(), FICONS.CORNER_UP_RIGHT)}
-        {this.toolbarButton(4, "Run", state.invalidTimes.some(i => i), () => root.onTest(), FICONS.PLAY)}
-        {this.toolbarButton(5, "Copy Script", false, async () => await root.onCopy(), FICONS.COPY)}
+        <EmbeddedButton title="Minimize" onClick={() => root.onToggleActive()} icon={FICONS.MINIMIZE}/>
+        <EmbeddedButton title="Download" onClick={() => root.onDownload()} icon={FICONS.DOWNLOAD}/>
+        <EmbeddedButton title="Upload" onClick={() => root.onUpload()} icon={FICONS.UPLOAD}/>
+        <EmbeddedButton title="Load From Script" onClick={() => root.onLoadScript()} icon={FICONS.CORNER_UP_RIGHT}/>
+        <EmbeddedButton title="Run" onClick={() => root.onTest()} icon={FICONS.PLAY} disabled={state.invalidTimes.some(i => i)}/>
+        <EmbeddedButton title="Copy Script" onClick={async () => await root.onCopy()} icon={FICONS.COPY}/>
       </div>}
       {state.active && <div style={{ ...STYLES.toolbar.container, justifyContent: "end" }}>
-        {this.toolbarButton(6, "Undo", root.triggerManager.undoLen === 0, () => root.onUndo(), FICONS.ARROW_LEFT)}
-        {this.toolbarButton(7, "Redo", root.triggerManager.redoLen === 0, () => root.onRedo(), FICONS.ARROW_RIGHT)}
-        {this.toolbarButton(8, "Settings", false, () => root.onToggleSettings(), FICONS.SETTINGS)}
-        {this.toolbarButton(9, "Help", false, () => root.onHelp(), FICONS.HELP_CIRCLE)}
+        <EmbeddedButton title="Undo" onClick={() => root.onUndo()} icon={FICONS.ARROW_LEFT} disabled={root.triggerManager.undoLen === 0}/>
+        <EmbeddedButton title="Redo" onClick={() => root.onRedo()} icon={FICONS.ARROW_RIGHT} disabled={root.triggerManager.redoLen === 0}/>
+        <EmbeddedButton title="Settings" onClick={() => root.onToggleSettings()} icon={FICONS.SETTINGS}/>
+        <EmbeddedButton title="Help" onClick={() => root.onHelp()} icon={FICONS.HELP_CIRCLE}/>
       </div>}
       <input
         id="trigger-file-upload"
@@ -60,28 +60,6 @@ export default class App {
         onChange={(e: React.ChangeEvent) => root.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])}
       />
     </div>;
-  }
-
-  toolbarButton(id: number, title: string, disabled: boolean, onClick: () => void, icon: React.JSX.Element) {
-    const root = this.root;
-    const state = this.root.state;
-
-    if (disabled && state.toolbarColors[id] !== TOOLBAR_COLOR.NONE) {
-      root.onUpdateToolbarColor(id, TOOLBAR_COLOR.NONE);
-    }
-
-    return <button
-      title={title}
-      style={{ ...STYLES.button.embedded, backgroundColor: STYLES.button.embedded.bgColor[state.toolbarColors[id]] }}
-      onMouseOver={() => !disabled && root.onUpdateToolbarColor(id, TOOLBAR_COLOR.HOVER)}
-      onMouseOut={() => !disabled && root.onUpdateToolbarColor(id, TOOLBAR_COLOR.NONE)}
-      onMouseDown={() => !disabled && root.onUpdateToolbarColor(id, TOOLBAR_COLOR.ACTIVE)}
-      onMouseUp={() => !disabled && root.onUpdateToolbarColor(id, TOOLBAR_COLOR.HOVER)}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      <span style={{ color: disabled ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black }}>{icon}</span>
-    </button>;
   }
 
   settingsContainer() {
@@ -96,20 +74,19 @@ export default class App {
     const state = this.root.state;
 
     return <div style={STYLES.settings.header}>
-      <button
-        style={{ ...STYLES.button.embedded, position: "absolute", fontSize: "32px", right: "0px" }}
+      <EmbeddedButton
         onClick={() => root.onToggleSettings()}
-      >
-        {FICONS.X}
-      </button>
+        icon={FICONS.X}
+        style={{position: "absolute", right: "0px"}}
+      />
       <text style={{ fontSize: GLOBAL_STYLES.textSizes.L[state.fontSize] }}>
         Settings
       </text>
       <button
         style={{
-          ...STYLES.button.settings,
-          position: "absolute",
+          // ...STYLES.button.embedded,
           fontSize: GLOBAL_STYLES.textSizes.M[state.fontSize],
+          position: "absolute",
           left: "0px",
           background: state.settingsDirty
             ? GLOBAL_STYLES.light_gray3
@@ -133,9 +110,9 @@ export default class App {
           Font Sizes
         </text>
         <div style={{ ...STYLES.settings.parameter, fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] }}>
-          {this.settingButton(state.fontSizeSetting, SETTINGS[SETTINGS_KEY.FONT_SIZE].SMALL, "Small", (e) => root.onChangeFontSize(e as number))}
-          {this.settingButton(state.fontSizeSetting, SETTINGS[SETTINGS_KEY.FONT_SIZE].MEDIUM, "Medium", (e) => root.onChangeFontSize(e as number))}
-          {this.settingButton(state.fontSizeSetting, SETTINGS[SETTINGS_KEY.FONT_SIZE].LARGE, "Large", (e) => root.onChangeFontSize(e as number))}
+          <SettingsRadioButton current={state.fontSizeSetting} target={FONT_SIZE_SETTING.SMALL} label="Small" onClick={(e: number) => root.onChangeFontSize(e as number)} />
+          <SettingsRadioButton current={state.fontSizeSetting} target={FONT_SIZE_SETTING.MEDIUM} label="Medium" onClick={(e: number) => root.onChangeFontSize(e as number)} />
+          <SettingsRadioButton current={state.fontSizeSetting} target={FONT_SIZE_SETTING.LARGE} label="Large" onClick={(e: number) => root.onChangeFontSize(e as number)} />
         </div>
       </div>
       <div style={STYLES.settings.row}>
@@ -143,25 +120,13 @@ export default class App {
           Viewport
         </text>
         <div style={{ ...STYLES.settings.parameter, fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] }}>
-          {this.settingButton(state.resolutionSetting, SETTINGS[SETTINGS_KEY.VIEWPORT].HD.ID, "720p", (e) => root.onChangeViewport(e as ViewportOption))}
-          {this.settingButton(state.resolutionSetting, SETTINGS[SETTINGS_KEY.VIEWPORT].FHD.ID, "1080p", (e) => root.onChangeViewport(e as ViewportOption))}
-          {this.settingButton(state.resolutionSetting, SETTINGS[SETTINGS_KEY.VIEWPORT].QHD.ID, "1440p", (e) => root.onChangeViewport(e as ViewportOption))}
-          {this.settingButton(state.resolutionSetting, SETTINGS[SETTINGS_KEY.VIEWPORT].UHD.ID, "4K", (e) => root.onChangeViewport(e as ViewportOption))}
+          <SettingsRadioButton current={state.fontSizeSetting} target={VIEWPORT_SETTING.HD} label="720p" onClick={(e: number) => root.onChangeViewport(e as number)} />
+          <SettingsRadioButton current={state.fontSizeSetting} target={VIEWPORT_SETTING.FHD} label="1080p" onClick={(e: number) => root.onChangeViewport(e as number)} />
+          <SettingsRadioButton current={state.fontSizeSetting} target={VIEWPORT_SETTING.QHD} label="1440p" onClick={(e: number) => root.onChangeViewport(e as number)} />
+          <SettingsRadioButton current={state.fontSizeSetting} target={VIEWPORT_SETTING.UHD} label="4K" onClick={(e: number) => root.onChangeViewport(e as number)} />
         </div>
       </div>
     </div>;
-  }
-
-  settingButton(current: string | number, target: string | number, label: string, action: (e: string | number) => void) {
-    return <button
-      style={{
-        ...STYLES.button.settings,
-        backgroundColor: current === target ? GLOBAL_STYLES.light_gray1 : GLOBAL_STYLES.dark_gray1
-      }}
-      onClick={() => action(target)}
-    >
-      <text>{label}</text>
-    </button>;
   }
 
   tabContainer() {
@@ -248,27 +213,27 @@ export default class App {
     const currentTrigger = data.triggers[index];
 
     return <div
-        style={{
-          ...STYLES.trigger.container,
-          fontSize: GLOBAL_STYLES.textSizes.M[state.fontSize],
-          backgroundColor: index === 0 ? GLOBAL_STYLES.gray : GLOBAL_STYLES.white
-        }}
-      >
-      <button
-        style={{
-          ...STYLES.button.embedded,
-          fontSize: "22px",
-          position: "absolute",
-          right: "0px"
-        }}
-        disabled={index === 0}
-        onClick={() => root.onDeleteTrigger(index)}
-      >
-        <span style={{ color: index === 0 ? GLOBAL_STYLES.dark_gray2 : GLOBAL_STYLES.black }}>{FICONS.X}</span>
-      </button>
+      style={{
+        ...STYLES.trigger.container,
+        fontSize: GLOBAL_STYLES.textSizes.M[state.fontSize],
+        backgroundColor: GLOBAL_STYLES.white
+      }}
+    >
+      <div style={STYLES.trigger.buttonContainer}>
+        <EmbeddedButton
+          onClick={() => root.onDeleteTrigger(index)}
+          icon={FICONS.X}
+          disabled={index === 0}
+        />
+        {data.id === TRIGGER_ID.ZOOM || data.id === TRIGGER_ID.PAN && (
+          <EmbeddedButton
+            onClick={() => root.onCaptureCamera(index, data.id as TRIGGER_ID)}
+            icon={FICONS.CAMERA}
+          />)
+        }
+      </div>
+      
       {this.timeStamp((currentTrigger as TimedTrigger)[0], index)}
-      {data.id === TRIGGER_ID.ZOOM && this.captureButton(index, TRIGGER_ID.ZOOM)}
-      {data.id === TRIGGER_ID.PAN && this.captureButton(index, TRIGGER_ID.PAN)}
       {data.id === TRIGGER_ID.ZOOM && this.zoomTrigger((currentTrigger as ZoomTrigger), index)}
       {data.id === TRIGGER_ID.PAN && this.cameraPanTrigger((currentTrigger as CameraPanTrigger), index)}
       {data.id === TRIGGER_ID.FOCUS && this.cameraFocusTrigger((currentTrigger as CameraFocusTrigger), index)}
@@ -299,22 +264,6 @@ export default class App {
         </div>;
       })}
     </div>;
-  }
-
-  captureButton(index: number, triggerType: TRIGGER_ID) {
-    const { root } = this;
-
-    return <button
-      style={{
-        ...STYLES.button.embedded,
-        fontSize: "22px",
-        position: "absolute",
-        right: "25px"
-      }}
-      onClick={() => root.onCameraDataCapture(index, triggerType)}
-    >
-      <span>{FICONS.CAMERA}</span>
-    </button>;
   }
 
   zoomTrigger(data: ZoomTrigger, index: number) {
@@ -491,12 +440,11 @@ export default class App {
     const alphaValue = parseInt(state.skinEditorSelectedColor.substring(7), 16) / 255;
 
     return <div style={STYLES.skinEditor.toolbar}>
-      <button
-        style={{ ...STYLES.button.embedded, fontSize: "32px", position: "absolute", right: "10px" }}
+      <EmbeddedButton
         onClick={() => root.onResetSkin(index)}
-      >
-        {FICONS.TRASH2}
-      </button>
+        icon={FICONS.TRASH2}
+        style={{position: "absolute", right: "10px"}}
+      />
       <div style={{ ...STYLES.skinEditor.toolbarItem, ...STYLES.alpha.container, fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] }}>
         <label htmlFor="alphaSlider">Transparency</label>
         <div style={STYLES.alpha.sliderContainer}>
