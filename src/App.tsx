@@ -220,17 +220,17 @@ export default class App {
       }}
     >
       <div style={STYLES.trigger.buttonContainer}>
+        {(data.id === TRIGGER_ID.ZOOM || data.id === TRIGGER_ID.PAN) && (
+          <EmbeddedButton
+            onClick={() => root.onCaptureCamera(index, data.id as TRIGGER_ID)}
+            icon={FICONS.CAMERA}
+          />
+        )}
         <EmbeddedButton
           onClick={() => root.onDeleteTrigger(index)}
           icon={FICONS.X}
           disabled={index === 0}
         />
-        {data.id === TRIGGER_ID.ZOOM || data.id === TRIGGER_ID.PAN && (
-          <EmbeddedButton
-            onClick={() => root.onCaptureCamera(index, data.id as TRIGGER_ID)}
-            icon={FICONS.CAMERA}
-          />)
-        }
       </div>
       
       {this.timeStamp((currentTrigger as TimedTrigger)[0], index)}
