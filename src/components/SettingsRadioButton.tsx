@@ -10,7 +10,7 @@ export default function SettingsRadioButton(
       border: "2px solid black",
       borderRadius: "5px",
       margin: "5px",
-      backgroundColor: current === target ? GLOBAL_STYLES.light_gray1 : GLOBAL_STYLES.dark_gray1
+      backgroundColor: current === target ? GLOBAL_STYLES.light_gray : GLOBAL_STYLES.dark_gray
     }}
     onClick={() => onClick(target)}
   >

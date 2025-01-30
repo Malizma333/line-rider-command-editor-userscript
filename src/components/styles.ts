@@ -1,38 +1,26 @@
 import { FONT_SIZE_SETTING } from "../lib/settings-storage.types";
 
-export const GLOBAL_STYLES = {
+export const THEME = {
   black: "#000000",
-  dark_gray1: "#b7b7b7",
-  dark_gray2: "#999999",
-  dark_gray3: "#666666",
-  dark_gray4: "#434343",
+  dark_gray: "#b7b7b7",
   gray: "#cccccc",
-  light_gray1: "#d9d9d9",
-  light_gray2: "#efefef",
-  light_gray3: "#f3f3f3",
+  light_gray: "#d9d9d9",
   white: "#ffffff",
-  text: {
-    fontFamily: "Helvetica",
-    fontWeight: "bold"
-  },
-  textSizes: {
-    S: {[FONT_SIZE_SETTING.SMALL]: "12px", [FONT_SIZE_SETTING.MEDIUM]: "14px", [FONT_SIZE_SETTING.LARGE]: "18px"},
-    M: {[FONT_SIZE_SETTING.SMALL]: "18px", [FONT_SIZE_SETTING.MEDIUM]: "22px", [FONT_SIZE_SETTING.LARGE]: "24px"},
-    L: {[FONT_SIZE_SETTING.SMALL]: "28px", [FONT_SIZE_SETTING.MEDIUM]: "32px", [FONT_SIZE_SETTING.LARGE]: "36px"}
-  },
-  centerX: {
-    left: "0px",
-    right: "0px",
-    marginLeft: "auto",
-    marginRight: "auto"
-  }
+} as const;
+
+export const TEXT_SIZES = {
+  S: {[FONT_SIZE_SETTING.SMALL]: "12px", [FONT_SIZE_SETTING.MEDIUM]: "14px", [FONT_SIZE_SETTING.LARGE]: "18px"},
+  M: {[FONT_SIZE_SETTING.SMALL]: "18px", [FONT_SIZE_SETTING.MEDIUM]: "22px", [FONT_SIZE_SETTING.LARGE]: "24px"},
+  L: {[FONT_SIZE_SETTING.SMALL]: "28px", [FONT_SIZE_SETTING.MEDIUM]: "32px", [FONT_SIZE_SETTING.LARGE]: "36px"}
 } as const;
 
 export const STYLES = {
   root: {
-    backgroundColor: GLOBAL_STYLES.light_gray3,
+    backgroundColor: THEME.white,
     transition: "opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
     border: "2px solid black",
+    fontFamily: "Helvetica",
+    fontWeight: "bold",
     left: "50px",
     opacity: 0,
     overflow: "hidden",
@@ -61,7 +49,7 @@ export const STYLES = {
   },
   settings: {
     window: {
-      backgroundColor: GLOBAL_STYLES.white,
+      backgroundColor: THEME.white,
       border: "2px solid black",
       display: "flex",
       flexDirection: "column",
@@ -114,7 +102,7 @@ export const STYLES = {
   smooth: {
     container: {
       alignItems: "center",
-      backgroundColor: GLOBAL_STYLES.white,
+      backgroundColor: THEME.white,
       borderBottom: "1px solid black",
       display: "flex",
       height: "3em",
@@ -122,7 +110,7 @@ export const STYLES = {
       padding: ".5em"
     },
     input: {
-      backgroundColor: GLOBAL_STYLES.white,
+      backgroundColor: THEME.white,
       overflow: "hidden",
       textAlign: "center",
       width: "3em",
@@ -156,7 +144,7 @@ export const STYLES = {
     }
   },
   window: {
-    backgroundColor: GLOBAL_STYLES.white,
+    backgroundColor: THEME.white,
     border: "2px solid black",
     display: "flex",
     flexDirection: "column",
@@ -201,16 +189,19 @@ export const STYLES = {
       margin: "0em .5em"
     },
     createButton: {
-      ...GLOBAL_STYLES.centerX,
       alignItems: "center",
-      backgroundColor: GLOBAL_STYLES.white,
+      backgroundColor: THEME.white,
       bottom: "-0.75em",
       border: "2px solid black",
       display: "flex",
       fontSize: "18px",
       height: "1.5em",
       justifyContent: "center",
+      left: "0px",
+      marginLeft: "auto",
+      marginRight: "auto",
       position: "absolute",
+      right: "0px",
       userSelect: "none",
       width: "1.5em",
       zIndex: 1

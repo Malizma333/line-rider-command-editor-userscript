@@ -1,4 +1,4 @@
-import { STYLES, GLOBAL_STYLES } from "./components/styles";
+import { STYLES, THEME, TEXT_SIZES } from "./components/styles";
 import { TRIGGER_METADATA } from "./lib/TriggerDataManager";
 import { TRIGGER_ID, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, TimeRemapTrigger, GravityTrigger, SkinCssTrigger } from "./lib/TriggerDataManager.types";
 import { FONT_SIZE_SETTING, VIEWPORT_SETTING } from "./lib/settings-storage.types";
@@ -23,7 +23,7 @@ export default class App {
 
   main() {
     const state = this.root.state;
-    return <div style={GLOBAL_STYLES.text}>
+    return <div>
       {this.toolbar()}
       {state.active && <div style={STYLES.content}>
         {state.settingsActive && this.settingsContainer()}
@@ -80,17 +80,15 @@ export default class App {
         icon={FICONS.X}
         style={{position: "absolute", right: "0px"}}
       />
-      <text style={{ fontSize: GLOBAL_STYLES.textSizes.L[state.fontSize] }}>
+      <text style={{ fontSize: TEXT_SIZES.L[state.fontSize] }}>
         Settings
       </text>
       <button
         style={{
-          fontSize: GLOBAL_STYLES.textSizes.M[state.fontSize],
+          fontSize: TEXT_SIZES.M[state.fontSize],
           position: "absolute",
           left: "0px",
-          background: state.settingsDirty
-            ? GLOBAL_STYLES.light_gray3
-            : GLOBAL_STYLES.dark_gray1
+          background: state.settingsDirty ? THEME.light_gray : THEME.dark_gray
         }}
         disabled={!(state.settingsDirty)}
         onClick={() => root.onApplySettings()}
@@ -104,22 +102,22 @@ export default class App {
     const root = this.root;
     const state = this.root.state;
 
-    return <div style={{ fontSize: GLOBAL_STYLES.textSizes.M[state.fontSize] }}>
+    return <div style={{ fontSize: TEXT_SIZES.M[state.fontSize] }}>
       <div style={STYLES.settings.row}>
-        <text style={{ ...STYLES.settings.label, fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] }}>
+        <text style={{ ...STYLES.settings.label, fontSize: TEXT_SIZES.S[state.fontSize] }}>
           Font Sizes
         </text>
-        <div style={{ ...STYLES.settings.parameter, fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] }}>
+        <div style={{ ...STYLES.settings.parameter, fontSize: TEXT_SIZES.S[state.fontSize] }}>
           <SettingsRadioButton current={state.fontSizeSetting} target={FONT_SIZE_SETTING.SMALL} label="Small" onClick={(e: number) => root.onChangeFontSize(e as number)} />
           <SettingsRadioButton current={state.fontSizeSetting} target={FONT_SIZE_SETTING.MEDIUM} label="Medium" onClick={(e: number) => root.onChangeFontSize(e as number)} />
           <SettingsRadioButton current={state.fontSizeSetting} target={FONT_SIZE_SETTING.LARGE} label="Large" onClick={(e: number) => root.onChangeFontSize(e as number)} />
         </div>
       </div>
       <div style={STYLES.settings.row}>
-        <text style={{ ...STYLES.settings.label, fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] }}>
+        <text style={{ ...STYLES.settings.label, fontSize: TEXT_SIZES.S[state.fontSize] }}>
           Viewport
         </text>
-        <div style={{ ...STYLES.settings.parameter, fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] }}>
+        <div style={{ ...STYLES.settings.parameter, fontSize: TEXT_SIZES.S[state.fontSize] }}>
           <SettingsRadioButton current={state.fontSizeSetting} target={VIEWPORT_SETTING.HD} label="720p" onClick={(e: number) => root.onChangeViewport(e as number)} />
           <SettingsRadioButton current={state.fontSizeSetting} target={VIEWPORT_SETTING.FHD} label="1080p" onClick={(e: number) => root.onChangeViewport(e as number)} />
           <SettingsRadioButton current={state.fontSizeSetting} target={VIEWPORT_SETTING.QHD} label="1440p" onClick={(e: number) => root.onChangeViewport(e as number)} />
@@ -138,14 +136,11 @@ export default class App {
         return <div>
           <button
             style={{...STYLES.tabs.button,
-              backgroundColor:
-              state.activeTab === command
-                ? GLOBAL_STYLES.light_gray1
-                : GLOBAL_STYLES.dark_gray1
+              backgroundColor: state.activeTab === command ? THEME.light_gray : THEME.dark_gray
             }}
             onClick={() => root.onChangeTab(command as TRIGGER_ID)}
           >
-            <text style={{ fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] }}>
+            <text style={{ fontSize: TEXT_SIZES.S[state.fontSize] }}>
               {TRIGGER_METADATA[command as TRIGGER_ID].DISPLAY_NAME}
             </text>
           </button>
@@ -177,17 +172,14 @@ export default class App {
     const data = root.triggerManager.data[state.activeTab];
 
     return <div style={STYLES.smooth.container}>
-      <label
-        htmlFor="smoothTextInput"
-        style={{ fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize] }}
-      >
+      <label htmlFor="smoothTextInput" style={{ fontSize: TEXT_SIZES.S[state.fontSize] }}>
         Smoothing
       </label>
       {data.id !== TRIGGER_ID.TIME ? <IntPicker
         id="smoothTextInput"
         style={{
           ...STYLES.smooth.input,
-          fontSize: GLOBAL_STYLES.textSizes.S[state.fontSize],
+          fontSize: TEXT_SIZES.S[state.fontSize],
         }}
         value={data.smoothing || 0}
         min={CONSTRAINTS.SMOOTH.MIN}
@@ -214,8 +206,8 @@ export default class App {
     return <div
       style={{
         ...STYLES.trigger.container,
-        fontSize: GLOBAL_STYLES.textSizes.M[state.fontSize],
-        backgroundColor: GLOBAL_STYLES.white
+        fontSize: TEXT_SIZES.M[state.fontSize],
+        backgroundColor: THEME.white
       }}
     >
       <div style={STYLES.trigger.buttonContainer}>

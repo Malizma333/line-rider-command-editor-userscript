@@ -1,5 +1,5 @@
 const { React } = window;
-import { GLOBAL_STYLES } from "./styles";
+import { THEME } from "./styles";
 
 enum BUTTON_MODE {
   BLURRED = 0,
@@ -25,8 +25,8 @@ const style: React.CSSProperties = {
 
 const modeBackgroundColors = {
   [BUTTON_MODE.BLURRED]: "transparent",
-  [BUTTON_MODE.HOVER]: GLOBAL_STYLES.dark_gray1,
-  [BUTTON_MODE.PRESSED]: GLOBAL_STYLES.light_gray1
+  [BUTTON_MODE.HOVER]: THEME.dark_gray,
+  [BUTTON_MODE.PRESSED]: THEME.light_gray
 };
 
 export default class EmbeddedButton extends React.Component<Props, State> {
@@ -55,7 +55,7 @@ export default class EmbeddedButton extends React.Component<Props, State> {
       onClick={onClick}
       disabled={disabled}
     >
-      <span style={{ color: disabled ? GLOBAL_STYLES.gray : GLOBAL_STYLES.black }}>{icon}</span>
+      <span style={{ color: disabled ? THEME.gray : THEME.black }}>{icon}</span>
     </button>;
   }
 }
