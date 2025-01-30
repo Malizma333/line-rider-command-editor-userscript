@@ -37,12 +37,6 @@ export const CONSTRAINTS = {
   TIME_SPEED: {
     DEFAULT: 1, MIN: 0.01, MAX: 10, INT: false
   },
-  SKIN_ZOOM: {
-    DEFAULT: 1, MIN: 1, MAX: 4, INT: false
-  },
-  ALPHA_SLIDER: {
-    DEFAULT: 1, MIN: 0, MAX: 1, INT: false
-  },
   GRAVITY_X: {
     DEFAULT: 0.175, MIN: -100, MAX: 100, INT: false
   },

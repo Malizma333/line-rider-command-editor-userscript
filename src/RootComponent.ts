@@ -7,7 +7,7 @@ import { getSetting, saveSetting } from "./lib/settings-storage";
 import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from "./lib/settings-storage.types";
 import * as Actions from "./lib/redux-actions";
 import * as Selectors from "./lib/redux-selectors";
-import { validateTimes, CONSTRAINTS } from "./lib/validation";
+import { validateTimes } from "./lib/validation";
 import App from "./App";
 
 const { store, React } = window;
@@ -18,9 +18,6 @@ export interface RootState {
   triggerUpdateFlag: boolean
   focusDDIndices: number[]
   gravityDDIndices: number[]
-  skinEditorSelectedRider: number
-  skinEditorSelectedColor: string
-  skinEditorZoom: [number, number, number]
   settingsActive: boolean
   settingsDirty: boolean
   fontSize: FONT_SIZE_SETTING
@@ -45,9 +42,6 @@ export class RootComponent extends React.Component {
       triggerUpdateFlag: false,
       focusDDIndices: [0],
       gravityDDIndices: [0],
-      skinEditorSelectedRider: 0,
-      skinEditorSelectedColor: "#000000ff",
-      skinEditorZoom: [1, 0, 0],
       settingsActive: false,
       settingsDirty: false,
       fontSize: getSetting(SETTINGS_KEY.FONT_SIZE),
@@ -69,11 +63,7 @@ export class RootComponent extends React.Component {
 
     if (this.lastRiderCount !== riderCount) {
       this.lastRiderCount = riderCount;
-      const { skinEditorSelectedRider, focusDDIndices, gravityDDIndices } = this.state;
-
-      if (skinEditorSelectedRider >= riderCount) {
-        this.setState({ skinEditorSelectedRider: riderCount - 1 });
-      }
+      const { focusDDIndices, gravityDDIndices } = this.state;
 
       this.triggerManager.updateRiderCount(riderCount);
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
@@ -324,21 +314,6 @@ export class RootComponent extends React.Component {
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
   }
 
-  onChangeColor(color?: string, alpha?: string): void {
-    const { skinEditorSelectedColor } = this.state;
-
-    const hexAlpha: string = alpha != null
-      ? Math.round(Math.min(Math.max(parseFloat(alpha), 0), 1) * 255)
-        .toString(16).padStart(2, "0")
-      : skinEditorSelectedColor.substring(7);
-
-    const hexColor = color != null
-      ? color + hexAlpha
-      : skinEditorSelectedColor.substring(0, 7) + hexAlpha;
-
-    this.setState({ skinEditorSelectedColor: hexColor });
-  }
-
   onToggleActive(): void {
     const { active } = this.state;
     const sidebarOpen = Selectors.getSidebarOpen(store.getState());
@@ -433,38 +408,6 @@ export class RootComponent extends React.Component {
     const nextGravityDDIndices = [...gravityDDIndices];
     nextGravityDDIndices[index] = parseInt(value, 10);
     this.setState({ gravityDDIndices: nextGravityDDIndices });
-  }
-
-  onChangeSkinDD(value: string): void {
-    this.setState({ skinEditorSelectedRider: parseInt(value, 10) });
-  }
-
-  onZoomSkinEditor(e: React.ChangeEvent | React.WheelEvent, isMouseAction: boolean): void {
-    const { skinEditorZoom } = this.state;
-    const rect = (document.getElementById("skinElementContainer") as HTMLElement).getBoundingClientRect();
-    const [scale, xOffset, yOffset] = skinEditorZoom;
-    let newScale = scale;
-    let newXOffset = xOffset;
-    let newYOffset = yOffset;
-
-    if (isMouseAction) {
-      const eWheel = e as React.WheelEvent;
-      if (scale < CONSTRAINTS.SKIN_ZOOM.MAX) {
-        newXOffset = (eWheel.clientX - rect.x) / scale;
-        newYOffset = (eWheel.clientY - rect.y) / scale;
-      }
-      newScale = Math.max(Math.min(
-        scale - eWheel.deltaY * 1e-3,
-        CONSTRAINTS.SKIN_ZOOM.MAX
-      ), CONSTRAINTS.SKIN_ZOOM.MIN);
-    } else {
-      newScale = Math.max(Math.min(
-        parseInt((e.target as HTMLInputElement).value),
-        CONSTRAINTS.SKIN_ZOOM.MAX
-      ), CONSTRAINTS.SKIN_ZOOM.MIN);
-    }
-
-    this.setState({ skinEditorZoom: [newScale, newXOffset, newYOffset] });
   }
 
   onCaptureCamera(index: number, triggerType: TRIGGER_ID) {
