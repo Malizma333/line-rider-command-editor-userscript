@@ -1,5 +1,5 @@
 const { React } = window;
-import { GLOBAL_STYLES } from "./styles";
+import { THEME } from "./styles";
 
 export default function SettingsRadioButton(
   {current, target, label, onClick}:
@@ -10,7 +10,7 @@ export default function SettingsRadioButton(
       border: "2px solid black",
       borderRadius: "5px",
       margin: "5px",
-      backgroundColor: current === target ? GLOBAL_STYLES.light_gray : GLOBAL_STYLES.dark_gray
+      backgroundColor: current === target ? THEME.half_light : THEME.half_dark
     }}
     onClick={() => onClick(target)}
   >

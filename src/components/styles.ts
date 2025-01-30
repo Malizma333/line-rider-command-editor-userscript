@@ -1,11 +1,11 @@
 import { FONT_SIZE_SETTING } from "../lib/settings-storage.types";
 
 export const THEME = {
-  black: "#000000",
-  dark_gray: "#b7b7b7",
-  gray: "#cccccc",
-  light_gray: "#d9d9d9",
-  white: "#ffffff",
+  dark: "#000000",
+  half_dark: "#b7b7b7",
+  half: "#cccccc",
+  half_light: "#d9d9d9",
+  light: "#ffffff",
 } as const;
 
 export const TEXT_SIZES = {
@@ -14,9 +14,9 @@ export const TEXT_SIZES = {
   L: {[FONT_SIZE_SETTING.SMALL]: "28px", [FONT_SIZE_SETTING.MEDIUM]: "32px", [FONT_SIZE_SETTING.LARGE]: "36px"}
 } as const;
 
-export const STYLES = {
+export const GLOBAL_STYLES = {
   root: {
-    backgroundColor: THEME.white,
+    backgroundColor: THEME.light,
     transition: "opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
     border: "2px solid black",
     fontFamily: "Helvetica",
@@ -38,18 +38,16 @@ export const STYLES = {
     paddingTop: "1vh",
     width: "clamp(425px, 40vw, 650px)"
   },
-  toolbar: {
-    container: {
-      alignItems: "start",
-      display: "flex",
-      flex: 1,
-      fontSize: "25px",
-      width: "100%"
-    }
+  toolbarContainer: {
+    alignItems: "start",
+    display: "flex",
+    flex: 1,
+    fontSize: "25px",
+    width: "100%"
   },
   settings: {
     window: {
-      backgroundColor: THEME.white,
+      backgroundColor: THEME.light,
       border: "2px solid black",
       display: "flex",
       flexDirection: "column",
@@ -83,39 +81,36 @@ export const STYLES = {
       right: "5px"
     }
   },
-  tabs: {
-    container: {
-      alignItems: "end",
-      display: "flex",
-      justifyContent: "start",
-      flexDirection: "row",
-      overflowX: "auto",
-      width: "100%"
-    },
-    button: {
-      border: "2px solid black",
-      borderBottom: "0px solid black",
-      borderTopLeftRadius: "8px",
-      borderTopRightRadius: "8px"
-    }
+  tabContainer: {
+    alignItems: "end",
+    display: "flex",
+    justifyContent: "start",
+    flexDirection: "row",
+    overflowX: "auto",
+    width: "100%"
   },
-  smooth: {
-    container: {
-      alignItems: "center",
-      backgroundColor: THEME.white,
-      borderBottom: "1px solid black",
-      display: "flex",
-      height: "3em",
-      justifyContent: "start",
-      padding: ".5em"
-    },
-    input: {
-      backgroundColor: THEME.white,
-      overflow: "hidden",
-      textAlign: "center",
-      width: "3em",
-      marginLeft: "5px"
-    }
+  tab: {
+    border: "2px solid black",
+    borderBottom: "0px solid black",
+    borderTopLeftRadius: "8px",
+    borderTopRightRadius: "8px"
+  },
+  smoothContainer: {
+    alignItems: "center",
+    backgroundColor: THEME.light,
+    borderBottom: "1px solid black",
+    display: "flex",
+    height: "3em",
+    justifyContent: "start",
+    padding: ".5em"
+  },
+  numberInput: {
+    backgroundColor: THEME.light,
+    height: "2ch",
+    padding: "5px",
+    textAlign: "right",
+    width: "3em",
+    marginLeft: "5px"
   },
   checkbox: {
     container: {
@@ -144,7 +139,7 @@ export const STYLES = {
     }
   },
   window: {
-    backgroundColor: THEME.white,
+    backgroundColor: THEME.light,
     border: "2px solid black",
     display: "flex",
     flexDirection: "column",
@@ -179,18 +174,12 @@ export const STYLES = {
       width: "100%",
       whiteSpace: "nowrap"
     },
-    input: {
-      height: "2ch",
-      padding: "5px",
-      textAlign: "right",
-      width: "3em"
-    },
     text: {
       margin: "0em .5em"
     },
     createButton: {
       alignItems: "center",
-      backgroundColor: THEME.white,
+      backgroundColor: THEME.light,
       bottom: "-0.75em",
       border: "2px solid black",
       display: "flex",

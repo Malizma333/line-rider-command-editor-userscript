@@ -1,4 +1,4 @@
-import { STYLES, THEME, TEXT_SIZES } from "./components/styles";
+import { GLOBAL_STYLES, THEME, TEXT_SIZES } from "./components/styles";
 import { TRIGGER_METADATA } from "./lib/TriggerDataManager";
 import { TRIGGER_ID, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, TimeRemapTrigger, GravityTrigger, SkinCssTrigger } from "./lib/TriggerDataManager.types";
 import { FONT_SIZE_SETTING, VIEWPORT_SETTING } from "./lib/settings-storage.types";
@@ -25,7 +25,7 @@ export default class App {
     const state = this.root.state;
     return <div>
       {this.toolbar()}
-      {state.active && <div style={STYLES.content}>
+      {state.active && <div style={GLOBAL_STYLES.content}>
         {state.settingsActive && this.settingsContainer()}
         {!(state.settingsActive) && this.tabContainer()}
         {!(state.settingsActive) && this.window()}
@@ -37,9 +37,9 @@ export default class App {
     const root = this.root;
     const state = this.root.state;
 
-    return <div style={STYLES.toolbar.container}>
+    return <div style={GLOBAL_STYLES.toolbarContainer}>
       {!state.active && <EmbeddedButton title="Maximize" onClick={() => root.onToggleActive()} icon={FICONS.MAXIMIZE}/>}
-      {state.active && <div style={{ ...STYLES.toolbar.container, justifyContent: "start" }}>
+      {state.active && <div style={{ ...GLOBAL_STYLES.toolbarContainer, justifyContent: "start" }}>
         <EmbeddedButton title="Minimize" onClick={() => root.onToggleActive()} icon={FICONS.MINIMIZE}/>
         <EmbeddedButton title="Download" onClick={() => root.onDownload()} icon={FICONS.DOWNLOAD}/>
         <EmbeddedButton title="Upload" onClick={() => root.onUpload()} icon={FICONS.UPLOAD}/>
@@ -47,7 +47,7 @@ export default class App {
         <EmbeddedButton title="Run" onClick={() => root.onTest()} icon={FICONS.PLAY} disabled={state.invalidTimes.some(i => i)}/>
         <EmbeddedButton title="Copy Script" onClick={async () => await root.onCopy()} icon={FICONS.COPY}/>
       </div>}
-      {state.active && <div style={{ ...STYLES.toolbar.container, justifyContent: "end" }}>
+      {state.active && <div style={{ ...GLOBAL_STYLES.toolbarContainer, justifyContent: "end" }}>
         <EmbeddedButton title="Undo" onClick={() => root.onUndo()} icon={FICONS.ARROW_LEFT} disabled={root.triggerManager.undoLen === 0}/>
         <EmbeddedButton title="Redo" onClick={() => root.onRedo()} icon={FICONS.ARROW_RIGHT} disabled={root.triggerManager.redoLen === 0}/>
         <EmbeddedButton title="Settings" onClick={() => root.onToggleSettings()} icon={FICONS.SETTINGS}/>
@@ -64,7 +64,7 @@ export default class App {
   }
 
   settingsContainer() {
-    return <div style={STYLES.settings.window}>
+    return <div style={GLOBAL_STYLES.settings.window}>
       {this.settingsHeader()}
       {this.settings()}
     </div>;
@@ -74,7 +74,7 @@ export default class App {
     const root = this.root;
     const state = this.root.state;
 
-    return <div style={STYLES.settings.header}>
+    return <div style={GLOBAL_STYLES.settings.header}>
       <EmbeddedButton
         onClick={() => root.onToggleSettings()}
         icon={FICONS.X}
@@ -88,7 +88,7 @@ export default class App {
           fontSize: TEXT_SIZES.M[state.fontSize],
           position: "absolute",
           left: "0px",
-          background: state.settingsDirty ? THEME.light_gray : THEME.dark_gray
+          background: state.settingsDirty ? THEME.half_light : THEME.half_dark
         }}
         disabled={!(state.settingsDirty)}
         onClick={() => root.onApplySettings()}
@@ -103,21 +103,21 @@ export default class App {
     const state = this.root.state;
 
     return <div style={{ fontSize: TEXT_SIZES.M[state.fontSize] }}>
-      <div style={STYLES.settings.row}>
-        <text style={{ ...STYLES.settings.label, fontSize: TEXT_SIZES.S[state.fontSize] }}>
+      <div style={GLOBAL_STYLES.settings.row}>
+        <text style={{ ...GLOBAL_STYLES.settings.label, fontSize: TEXT_SIZES.S[state.fontSize] }}>
           Font Sizes
         </text>
-        <div style={{ ...STYLES.settings.parameter, fontSize: TEXT_SIZES.S[state.fontSize] }}>
+        <div style={{ ...GLOBAL_STYLES.settings.parameter, fontSize: TEXT_SIZES.S[state.fontSize] }}>
           <SettingsRadioButton current={state.fontSizeSetting} target={FONT_SIZE_SETTING.SMALL} label="Small" onClick={(e: number) => root.onChangeFontSize(e as number)} />
           <SettingsRadioButton current={state.fontSizeSetting} target={FONT_SIZE_SETTING.MEDIUM} label="Medium" onClick={(e: number) => root.onChangeFontSize(e as number)} />
           <SettingsRadioButton current={state.fontSizeSetting} target={FONT_SIZE_SETTING.LARGE} label="Large" onClick={(e: number) => root.onChangeFontSize(e as number)} />
         </div>
       </div>
-      <div style={STYLES.settings.row}>
-        <text style={{ ...STYLES.settings.label, fontSize: TEXT_SIZES.S[state.fontSize] }}>
+      <div style={GLOBAL_STYLES.settings.row}>
+        <text style={{ ...GLOBAL_STYLES.settings.label, fontSize: TEXT_SIZES.S[state.fontSize] }}>
           Viewport
         </text>
-        <div style={{ ...STYLES.settings.parameter, fontSize: TEXT_SIZES.S[state.fontSize] }}>
+        <div style={{ ...GLOBAL_STYLES.settings.parameter, fontSize: TEXT_SIZES.S[state.fontSize] }}>
           <SettingsRadioButton current={state.fontSizeSetting} target={VIEWPORT_SETTING.HD} label="720p" onClick={(e: number) => root.onChangeViewport(e as number)} />
           <SettingsRadioButton current={state.fontSizeSetting} target={VIEWPORT_SETTING.FHD} label="1080p" onClick={(e: number) => root.onChangeViewport(e as number)} />
           <SettingsRadioButton current={state.fontSizeSetting} target={VIEWPORT_SETTING.QHD} label="1440p" onClick={(e: number) => root.onChangeViewport(e as number)} />
@@ -131,13 +131,11 @@ export default class App {
     const root = this.root;
     const state = this.root.state;
 
-    return <div style={STYLES.tabs.container}>
+    return <div style={GLOBAL_STYLES.tabContainer}>
       {...Object.keys(TRIGGER_METADATA).map((command: string) => {
         return <div>
           <button
-            style={{...STYLES.tabs.button,
-              backgroundColor: state.activeTab === command ? THEME.light_gray : THEME.dark_gray
-            }}
+            style={{...GLOBAL_STYLES.tab, backgroundColor: state.activeTab === command ? THEME.half_light : THEME.half_dark }}
             onClick={() => root.onChangeTab(command as TRIGGER_ID)}
           >
             <text style={{ fontSize: TEXT_SIZES.S[state.fontSize] }}>
@@ -155,12 +153,10 @@ export default class App {
     const data = root.triggerManager.data[state.activeTab];
 
     if (data.id === TRIGGER_ID.SKIN) {
-      return <div style={STYLES.window}>
-        <SkinEditor root={root} skinTriggers={data.triggers as SkinCssTrigger[]}/>
-      </div>;
+      return <SkinEditor root={root} skinTriggers={data.triggers as SkinCssTrigger[]}/>;
     }
 
-    return <div style={STYLES.window}>
+    return <div style={GLOBAL_STYLES.window}>
       {data.id !== TRIGGER_ID.GRAVITY && this.smoothTab()}
       {Object.keys(data.triggers).map((i) => this.trigger(parseInt(i, 10)))}
     </div>;
@@ -171,28 +167,25 @@ export default class App {
     const state = this.root.state;
     const data = root.triggerManager.data[state.activeTab];
 
-    return <div style={STYLES.smooth.container}>
-      <label htmlFor="smoothTextInput" style={{ fontSize: TEXT_SIZES.S[state.fontSize] }}>
+    return <div style={GLOBAL_STYLES.smoothContainer}>
+      <label htmlFor="smoothInput" style={{ fontSize: TEXT_SIZES.S[state.fontSize] }}>
         Smoothing
       </label>
       {data.id !== TRIGGER_ID.TIME ? <IntPicker
-        id="smoothTextInput"
-        style={{
-          ...STYLES.smooth.input,
-          fontSize: TEXT_SIZES.S[state.fontSize],
-        }}
+        id="smoothInput"
+        style={{ ...GLOBAL_STYLES.numberInput, fontSize: TEXT_SIZES.S[state.fontSize] }}
         value={data.smoothing || 0}
         min={CONSTRAINTS.SMOOTH.MIN}
         max={CONSTRAINTS.SMOOTH.MAX}
         onChange={(v: number | string) => root.onUpdateTrigger(v, ["smoothing"])}
-      /> : <div style={STYLES.checkbox.container }>
+      /> : <div style={GLOBAL_STYLES.checkbox.container }>
         <input
-          id="smoothTextInput"
-          style={STYLES.checkbox.primary}
+          id="smoothInput"
+          style={GLOBAL_STYLES.checkbox.primary}
           type="checkbox"
           onChange={() => root.onUpdateTrigger(!root.triggerManager.data[state.activeTab].interpolate, ["interpolate"])}
         />
-        {data.interpolate as boolean && <div style={STYLES.checkbox.fill }></div>}
+        {data.interpolate as boolean && <div style={GLOBAL_STYLES.checkbox.fill }></div>}
       </div>}
     </div>;
   }
@@ -205,12 +198,12 @@ export default class App {
 
     return <div
       style={{
-        ...STYLES.trigger.container,
+        ...GLOBAL_STYLES.trigger.container,
         fontSize: TEXT_SIZES.M[state.fontSize],
-        backgroundColor: THEME.white
+        backgroundColor: THEME.light
       }}
     >
-      <div style={STYLES.trigger.buttonContainer}>
+      <div style={GLOBAL_STYLES.trigger.buttonContainer}>
         {(data.id === TRIGGER_ID.ZOOM || data.id === TRIGGER_ID.PAN) && (
           <EmbeddedButton
             onClick={() => root.onCaptureCamera(index, data.id as TRIGGER_ID)}
@@ -230,7 +223,7 @@ export default class App {
       {data.id === TRIGGER_ID.FOCUS && this.cameraFocusTrigger((currentTrigger as CameraFocusTrigger), index)}
       {data.id === TRIGGER_ID.TIME && this.timeRemapTrigger((currentTrigger as TimeRemapTrigger), index)}
       {data.id === TRIGGER_ID.GRAVITY && this.gravityTrigger((currentTrigger as GravityTrigger), index)}
-      <button style={STYLES.trigger.createButton} onClick={() => root.onCreateTrigger(index)}>
+      <button style={GLOBAL_STYLES.trigger.createButton} onClick={() => root.onCreateTrigger(index)}>
         <span>{FICONS.PLUS}</span>
       </button>
     </div>;
@@ -241,7 +234,7 @@ export default class App {
     const cProps = [CONSTRAINTS.MINUTE, CONSTRAINTS.SECOND, CONSTRAINTS.FRAME];
     const labels = ["Time", ":", ":"];
 
-    return <div style={STYLES.trigger.property}>
+    return <div style={GLOBAL_STYLES.trigger.property}>
       {...data.map((timeValue, timeIndex) => {
         return <div>
           {this.triggerProp(
@@ -258,7 +251,7 @@ export default class App {
   }
 
   zoomTrigger(data: ZoomTrigger, index: number) {
-    return <div style={STYLES.trigger.property}>
+    return <div style={GLOBAL_STYLES.trigger.property}>
       {this.triggerProp(
         "Zoom To",
         data[1],
@@ -276,7 +269,7 @@ export default class App {
       {...[["w", "h"], ["x", "y"]].map((pair, pairIndex) => {
         return <div style={{ display: "flex", flexDirection: "row" }}>
           {...pair.map((prop, propIndex) => {
-            return <div style={STYLES.trigger.property}>
+            return <div style={GLOBAL_STYLES.trigger.property}>
               {this.triggerProp(
                 labels[propIndex + 2 * pairIndex],
                 data[1][prop as "w" | "h" | "x" | "y"],
@@ -295,14 +288,14 @@ export default class App {
     const state = this.root.state;
     const dropdownIndex = state.focusDDIndices[index];
 
-    return <div style={STYLES.trigger.property}>
+    return <div style={GLOBAL_STYLES.trigger.property}>
       <select
-        style={STYLES.dropdown.head}
+        style={GLOBAL_STYLES.dropdown.head}
         value={dropdownIndex}
         onChange={(e: React.ChangeEvent) => root.onChangeFocusDD(index, (e.target as HTMLInputElement).value)}
       >
         {...Object.keys(data[1]).map((riderIndex) => {
-          return <option style={STYLES.dropdown.option} value={parseInt(riderIndex, 10)}>
+          return <option style={GLOBAL_STYLES.dropdown.option} value={parseInt(riderIndex, 10)}>
             <text>Rider {1 + parseInt(riderIndex, 10)}</text>
           </option>;
         })}
@@ -317,7 +310,7 @@ export default class App {
   }
 
   timeRemapTrigger(data: TimeRemapTrigger, index: number) {
-    return <div style={STYLES.trigger.property}>
+    return <div style={GLOBAL_STYLES.trigger.property}>
       {this.triggerProp(
         "Speed",
         data[1],
@@ -336,18 +329,18 @@ export default class App {
 
     return <div style={{ display: "flex", flexDirection: "row" }}>
       <select
-        style={STYLES.dropdown.head}
+        style={GLOBAL_STYLES.dropdown.head}
         value={dropdownIndex}
         onChange={(e: React.ChangeEvent) => root.onChangeGravityDD(index, (e.target as HTMLInputElement).value)}
       >
         {...Object.keys(data[1]).map((riderIndex) => {
-          return <option style={STYLES.dropdown.option} value={parseInt(riderIndex, 10)}>
+          return <option style={GLOBAL_STYLES.dropdown.option} value={parseInt(riderIndex, 10)}>
             <text>Rider {1 + parseInt(riderIndex, 10)}</text>
           </option>;
         })}
       </select>
       {...["x", "y"].map((prop, propIndex) => {
-        return <div style={STYLES.trigger.property}>
+        return <div style={GLOBAL_STYLES.trigger.property}>
           {this.triggerProp(
             labels[propIndex],
             data[1][dropdownIndex][prop as "x" | "y"],
@@ -365,11 +358,11 @@ export default class App {
 
     return <div>
       <label
-        style={STYLES.trigger.text}
+        style={GLOBAL_STYLES.trigger.text}
         htmlFor={propPath.join("_")}
       >{labelText}</label>
       <NumberPicker
-        style={{ ...STYLES.trigger.input, color: color || "black" }}
+        style={{ ...GLOBAL_STYLES.numberInput, color: color || "black" }}
         id={propPath.join("_")}
         value={value}
         min={constraints.MIN}

@@ -1,4 +1,4 @@
-import { STYLES } from "./components/styles";
+import { GLOBAL_STYLES } from "./components/styles";
 import { RootComponent } from "./RootComponent";
 import { getPlayerRunning, getWindowFocused } from "./lib/redux-selectors";
 import { CameraFocusTrigger, CameraPanTrigger, GravityTrigger, TimeRemapTrigger, ZoomTrigger } from "./lib/TriggerDataManager.types";
@@ -29,7 +29,7 @@ function main (): void {
   const content = document.getElementById("content") as HTMLElement;
   const parent = document.createElement("div");
 
-  Object.assign(parent.style, STYLES.root);
+  Object.assign(parent.style, GLOBAL_STYLES.root);
 
   window.ReactDOM.render(React.createElement(RootComponent), parent);
 

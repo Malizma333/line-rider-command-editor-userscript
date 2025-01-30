@@ -25,8 +25,8 @@ const style: React.CSSProperties = {
 
 const modeBackgroundColors = {
   [BUTTON_MODE.BLURRED]: "transparent",
-  [BUTTON_MODE.HOVER]: THEME.dark_gray,
-  [BUTTON_MODE.PRESSED]: THEME.light_gray
+  [BUTTON_MODE.HOVER]: THEME.half_dark,
+  [BUTTON_MODE.PRESSED]: THEME.half_light
 };
 
 export default class EmbeddedButton extends React.Component<Props, State> {
@@ -55,7 +55,7 @@ export default class EmbeddedButton extends React.Component<Props, State> {
       onClick={onClick}
       disabled={disabled}
     >
-      <span style={{ color: disabled ? THEME.gray : THEME.black }}>{icon}</span>
+      <span style={{ color: disabled ? THEME.half : THEME.dark }}>{icon}</span>
     </button>;
   }
 }
