@@ -1,11 +1,10 @@
-import { FONT_SIZE_SETTING } from "../lib/settings-storage.types";
+import { FONT_SIZE_SETTING } from "./lib/settings-storage.types";
 
 export const THEME = {
-  dark: "#000000",
-  half_dark: "#b7b7b7",
-  half: "#cccccc",
-  half_light: "#d9d9d9",
-  light: "#ffffff",
+  dark: "#0D1321",
+  midDark: "#7F838B",
+  midLight: "#B7BBC0",
+  light: "#F0F0F1",
 } as const;
 
 export const TEXT_SIZES = {

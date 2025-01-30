@@ -1,4 +1,4 @@
-import { GLOBAL_STYLES, THEME, TEXT_SIZES } from "./components/styles";
+import { GLOBAL_STYLES, THEME, TEXT_SIZES } from "./styles";
 import { TRIGGER_METADATA } from "./lib/TriggerDataManager";
 import { TRIGGER_ID, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, CameraPanTrigger, TimeRemapTrigger, GravityTrigger, SkinCssTrigger } from "./lib/TriggerDataManager.types";
 import { FONT_SIZE_SETTING, VIEWPORT_SETTING } from "./lib/settings-storage.types";
@@ -88,7 +88,7 @@ export default class App {
           fontSize: TEXT_SIZES.M[state.fontSize],
           position: "absolute",
           left: "0px",
-          background: state.settingsDirty ? THEME.half_light : THEME.half_dark
+          background: state.settingsDirty ? THEME.midLight : THEME.midDark
         }}
         disabled={!(state.settingsDirty)}
         onClick={() => root.onApplySettings()}
@@ -118,10 +118,10 @@ export default class App {
           Viewport
         </text>
         <div style={{ ...GLOBAL_STYLES.settings.parameter, fontSize: TEXT_SIZES.S[state.fontSize] }}>
-          <SettingsRadioButton current={state.fontSizeSetting} target={VIEWPORT_SETTING.HD} label="720p" onClick={(e: number) => root.onChangeViewport(e as number)} />
-          <SettingsRadioButton current={state.fontSizeSetting} target={VIEWPORT_SETTING.FHD} label="1080p" onClick={(e: number) => root.onChangeViewport(e as number)} />
-          <SettingsRadioButton current={state.fontSizeSetting} target={VIEWPORT_SETTING.QHD} label="1440p" onClick={(e: number) => root.onChangeViewport(e as number)} />
-          <SettingsRadioButton current={state.fontSizeSetting} target={VIEWPORT_SETTING.UHD} label="4K" onClick={(e: number) => root.onChangeViewport(e as number)} />
+          <SettingsRadioButton current={state.resolutionSetting} target={VIEWPORT_SETTING.HD} label="720p" onClick={(e: number) => root.onChangeViewport(e as number)} />
+          <SettingsRadioButton current={state.resolutionSetting} target={VIEWPORT_SETTING.FHD} label="1080p" onClick={(e: number) => root.onChangeViewport(e as number)} />
+          <SettingsRadioButton current={state.resolutionSetting} target={VIEWPORT_SETTING.QHD} label="1440p" onClick={(e: number) => root.onChangeViewport(e as number)} />
+          <SettingsRadioButton current={state.resolutionSetting} target={VIEWPORT_SETTING.UHD} label="4K" onClick={(e: number) => root.onChangeViewport(e as number)} />
         </div>
       </div>
     </div>;
@@ -135,7 +135,7 @@ export default class App {
       {...Object.keys(TRIGGER_METADATA).map((command: string) => {
         return <div>
           <button
-            style={{...GLOBAL_STYLES.tab, backgroundColor: state.activeTab === command ? THEME.half_light : THEME.half_dark }}
+            style={{...GLOBAL_STYLES.tab, backgroundColor: state.activeTab === command ? THEME.midLight : THEME.midDark }}
             onClick={() => root.onChangeTab(command as TRIGGER_ID)}
           >
             <text style={{ fontSize: TEXT_SIZES.S[state.fontSize] }}>

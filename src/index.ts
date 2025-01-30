@@ -1,4 +1,4 @@
-import { GLOBAL_STYLES } from "./components/styles";
+import { GLOBAL_STYLES } from "./styles";
 import { RootComponent } from "./RootComponent";
 import { getPlayerRunning, getWindowFocused } from "./lib/redux-selectors";
 import { CameraFocusTrigger, CameraPanTrigger, GravityTrigger, TimeRemapTrigger, ZoomTrigger } from "./lib/TriggerDataManager.types";

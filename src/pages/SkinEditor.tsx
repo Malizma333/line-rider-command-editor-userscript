@@ -1,6 +1,6 @@
 const { React, store } = window;
 import EmbeddedButton from "../components/EmbeddedButton";
-import { GLOBAL_STYLES, THEME, TEXT_SIZES } from "../components/styles";
+import { GLOBAL_STYLES, THEME, TEXT_SIZES } from "../styles";
 import * as FICONS from "../components/Icons";
 import { SkinCssTrigger, TRIGGER_ID } from "../lib/TriggerDataManager.types";
 import { RootComponent } from "../RootComponent";
