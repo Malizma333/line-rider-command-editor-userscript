@@ -3,3 +3,4 @@ Break up trigger data file
 Break up root component
 Refactor get path to be more specific or directly modify path
 global styles
+add blue too pallette/replace with newer components (shoelace?)
