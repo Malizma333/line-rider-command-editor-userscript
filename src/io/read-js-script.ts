@@ -6,7 +6,7 @@ import { CONSTRAINTS } from "../lib/validation";
  * Parses text from the script field into a trigger data object, reverting to the original
  * value if an error occurs
  */
-export default function readJsScript(scriptText: string, currentTriggerData: TriggerDataLookup): TriggerDataLookup {
+export function readJsScript(scriptText: string, currentTriggerData: TriggerDataLookup): TriggerDataLookup {
   const triggerData = TriggerDataManager.initialTriggerData;
 
   /**

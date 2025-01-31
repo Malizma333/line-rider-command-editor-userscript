@@ -1,12 +1,12 @@
 import { GLOBAL_STYLES } from "./styles";
-import { RootComponent } from "./RootComponent";
+import { App } from "./App";
 import { getPlayerRunning, getWindowFocused } from "./lib/redux-selectors";
 import { CameraFocusTrigger, CameraPanTrigger, GravityTrigger, TimeRemapTrigger, ZoomTrigger } from "./lib/TriggerDataManager.types";
 import type { Store } from "redux";
 
 declare global {
   interface Window {
-    ReactDOM: { render: (child: React.ComponentElement<object, RootComponent>, parent: HTMLElement) => void }
+    ReactDOM: { render: (child: React.ComponentElement<object, App>, parent: HTMLElement) => void }
     store: Store
     CMD_EDITOR_DEBUG: boolean
     onAppReady: () => void
@@ -31,7 +31,7 @@ function main (): void {
 
   Object.assign(parent.style, GLOBAL_STYLES.root);
 
-  window.ReactDOM.render(React.createElement(RootComponent), parent);
+  window.ReactDOM.render(React.createElement(App), parent);
 
   content.appendChild(parent);
 

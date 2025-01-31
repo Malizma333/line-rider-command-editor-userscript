@@ -3,7 +3,7 @@ import EmbeddedButton from "../components/EmbeddedButton";
 import { GLOBAL_STYLES, THEME, TEXT_SIZES } from "../styles";
 import * as FICONS from "../components/Icons";
 import { SkinCssTrigger, TRIGGER_ID } from "../lib/TriggerDataManager.types";
-import { RootComponent } from "../RootComponent";
+import { App } from "../App";
 import * as Selectors from "../lib/redux-selectors";
 
 const styles: Record<string, React.CSSProperties> = {
@@ -96,7 +96,7 @@ const styles: Record<string, React.CSSProperties> = {
   }
 };
 
-function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: RootComponent}) {
+function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: App}) {
   const data = root.triggerManager.data[TRIGGER_ID.SKIN].triggers;
   const colorValue = skinEditor.state.selectedColor.substring(0, 7);
   const alphaValue = parseInt(skinEditor.state.selectedColor.substring(7), 16) / 255;
@@ -165,7 +165,7 @@ const svgProps: Record<string, React.SVGProps<SVGPathElement & SVGRectElement & 
   armSleeve: {strokeWidth: "0.3", transform: "translate(15, 10) rotate(5)", d: "M5,0.7H0c-0.4,0-0.7-0.3-0.7-0.7S-0.4-0.7,0-0.7h5"}
 };
 
-function SkinEditorCanvas({skinEditor, root, skinTriggers}: {skinEditor: SkinEditor, root: RootComponent, skinTriggers: SkinCssTrigger[]}) {
+function SkinEditorCanvas({skinEditor, root, skinTriggers}: {skinEditor: SkinEditor, root: App, skinTriggers: SkinCssTrigger[]}) {
   const currentSkinTrigger = skinTriggers[skinEditor.state.selectedRider];
   const updateColor = (target: string, stroke = false) => {
     root.onUpdateTrigger(skinEditor.state.selectedColor, ["triggers", skinEditor.state.selectedRider.toString(), target, stroke ? "stroke" : "fill"]);
@@ -218,7 +218,7 @@ function SkinEditorCanvas({skinEditor, root, skinTriggers}: {skinEditor: SkinEdi
   </div>;
 }
 
-interface Props { root: RootComponent, skinTriggers: SkinCssTrigger[] }
+interface Props { root: App, skinTriggers: SkinCssTrigger[] }
 interface State { selectedRider: number, selectedColor: string, zoom: number, xOffset: number, yOffset: number }
 
 export default class SkinEditor extends React.Component<Props, State> {
