@@ -1,6 +1,6 @@
 const { React, store } = window;
 import EmbeddedButton from "../components/EmbeddedButton";
-import { GLOBAL_STYLES, THEME, TEXT_SIZES } from "../styles";
+import { GLOBAL_STYLES, TEXT_SIZES, THEME } from "../styles";
 import * as FICONS from "../components/Icons";
 import { SkinCssTrigger, TRIGGER_ID } from "../lib/TriggerDataManager.types";
 import { App } from "../App";
@@ -107,7 +107,7 @@ function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: Ap
       icon={FICONS.TRASH2}
       style={{position: "absolute", right: "10px"}}
     />
-    <div style={{ ...styles.toolbarItem, ...styles.alphaContainer, fontSize: TEXT_SIZES.S[root.state.fontSize] }}>
+    <div style={{ ...styles.toolbarItem, ...styles.alphaContainer }}>
       <label htmlFor="alphaSlider">Transparency</label>
       <div style={styles.alphaSliderContainer}>
         <input
@@ -129,7 +129,7 @@ function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: Ap
       onChange={(e: React.ChangeEvent) => skinEditor.onChangeColor((e.target as HTMLInputElement).value, undefined)}
     ></input>
     <select
-      style={{ ...styles.toolbarItem, ...GLOBAL_STYLES.dropdown.head, fontSize: TEXT_SIZES.M[root.state.fontSize] }}
+      style={{ ...styles.toolbarItem, ...GLOBAL_STYLES.dropdown.head }}
       value={skinEditor.state.selectedRider}
       onChange={(e: React.ChangeEvent) => skinEditor.onChooseRider((e.target as HTMLInputElement).value)}
     >
@@ -289,7 +289,7 @@ export default class SkinEditor extends React.Component<Props, State> {
       skinTriggers
     } = this.props;
 
-    return <div style={GLOBAL_STYLES.window}>
+    return <div style={{ ...GLOBAL_STYLES.window, fontSize: TEXT_SIZES.M[root.state.fontSize] }}>
       <SkinEditorToolbar skinEditor={this} root={root}/>
       <div style={styles.container}>
         <div style={styles.gridBackground}></div>
@@ -304,12 +304,12 @@ export default class SkinEditor extends React.Component<Props, State> {
             value={this.state.zoom}
             onChange={(e: React.ChangeEvent) => this.onZoom(e, false)}
           ></input>
-          <text style={{ fontSize: TEXT_SIZES.S[root.state.fontSize] }}>
+          <text>
             x{Math.round(this.state.zoom * 10) / 10}
           </text>
         </div>
         <div style={styles.outlineContainer}>
-          <text style={{ fontSize: TEXT_SIZES.S[root.state.fontSize] }}>Outline</text>
+          <text>Outline</text>
           <div
             style={{ ...styles.colorInput, backgroundColor: skinTriggers[this.state.selectedRider].outline.stroke }}
             onClick={() => root.onUpdateTrigger(this.state.selectedColor, ["triggers", this.state.selectedRider.toString(), "outline", "stroke"])}

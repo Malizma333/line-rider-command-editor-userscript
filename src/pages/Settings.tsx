@@ -27,8 +27,10 @@ const styles: Record<string, React.CSSProperties> = {
     position: "relative"
   },
   applyButton: {
-    position: "absolute",
+    border: "2px solid black",
+    borderRadius: "5px",
     left: "0px",
+    position: "absolute",
   },
   row: {
     alignItems: "center",

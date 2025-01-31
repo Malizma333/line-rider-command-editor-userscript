@@ -442,14 +442,14 @@ export class App extends React.Component {
   }
 
   renderTabContainer() {
-    return <div style={GLOBAL_STYLES.tabContainer}>
+    return <div style={{ ...GLOBAL_STYLES.tabContainer, fontSize: TEXT_SIZES.S[this.state.fontSize] }}>
       {...Object.keys(TRIGGER_METADATA).map((command: string) => {
         return <div>
           <button
             style={{...GLOBAL_STYLES.tab, backgroundColor: this.state.activeTab === command ? THEME.midLight : THEME.midDark }}
             onClick={() => this.onChangeTab(command as TRIGGER_ID)}
           >
-            <text style={{ fontSize: TEXT_SIZES.S[this.state.fontSize] }}>
+            <text>
               {TRIGGER_METADATA[command as TRIGGER_ID].DISPLAY_NAME}
             </text>
           </button>
@@ -461,14 +461,12 @@ export class App extends React.Component {
   renderWindow() {
     const data = this.triggerManager.data[this.state.activeTab];
 
-    if (data.id === TRIGGER_ID.SKIN) {
-      return <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}/>;
-    }
-
-    return <div style={GLOBAL_STYLES.window}>
-      {data.id !== TRIGGER_ID.GRAVITY && this.renderWindowHead()}
-      {Object.keys(data.triggers).map((i) => this.renderTrigger(parseInt(i, 10)))}
-    </div>;
+    return data.id === TRIGGER_ID.SKIN ?
+      <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}/> :
+      <div style={{ ...GLOBAL_STYLES.window, fontSize: TEXT_SIZES.M[this.state.fontSize] }}>
+        {data.id !== TRIGGER_ID.GRAVITY && this.renderWindowHead()}
+        {Object.keys(data.triggers).map((i) => this.renderTrigger(parseInt(i, 10)))}
+      </div>;
   }
 
   renderWindowHead() {
@@ -478,7 +476,7 @@ export class App extends React.Component {
       {data.id !== TRIGGER_ID.TIME ?
         this.renderTriggerProp("Smoothing", data.smoothing || 0, ["smoothing"], CONSTRAINTS.SMOOTH, undefined, true) :
         <React.Fragment>
-          <label htmlFor="smoothInput" style={{ fontSize: TEXT_SIZES.S[this.state.fontSize] }}>
+          <label htmlFor="smoothInput">
             Smoothing
           </label>
           <div style={GLOBAL_STYLES.checkbox.container }>
@@ -499,13 +497,7 @@ export class App extends React.Component {
     const data = this.triggerManager.data[this.state.activeTab];
     const currentTrigger = data.triggers[index];
 
-    return <div
-      style={{
-        ...GLOBAL_STYLES.triggerContainer,
-        fontSize: TEXT_SIZES.M[this.state.fontSize],
-        backgroundColor: THEME.light
-      }}
-    >
+    return <div style={GLOBAL_STYLES.triggerContainer}>
       <div style={GLOBAL_STYLES.triggerActionContainer}>
         {(data.id === TRIGGER_ID.ZOOM || data.id === TRIGGER_ID.PAN) && (
           <EmbeddedButton

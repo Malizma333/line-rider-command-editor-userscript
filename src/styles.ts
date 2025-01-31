@@ -114,6 +114,7 @@ export const GLOBAL_STYLES = {
   },
   triggerContainer: {
     alignItems: "start",
+    backgroundColor: THEME.light,
     borderBottom: "2px solid black",
     display: "flex",
     flexDirection: "column",
