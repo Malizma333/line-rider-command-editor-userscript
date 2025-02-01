@@ -394,21 +394,27 @@ export class App extends React.Component {
   }
 
   render() {
+    const data = this.triggerManager.data[this.state.activeTab];
+
     return <div>
-      {this.renderToolbar()}
+      {this.renderActions()}
       {this.state.active && <div style={GLOBAL_STYLES.content}>
         {this.state.settingsActive ?
           <Settings root={this}/> :
-          <React.Fragment>
+          <div style={GLOBAL_STYLES.windowContainer}>
             {this.renderTabContainer()}
-            {this.renderWindow()}
-          </React.Fragment>
-        }
+            {data.id === TRIGGER_ID.SKIN && <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}/>}
+            {data.id !== TRIGGER_ID.SKIN && this.renderWindowHead()}
+            {data.id !== TRIGGER_ID.SKIN &&
+            <div style={{...GLOBAL_STYLES.window, fontSize: TEXT_SIZES.M[this.state.fontSize]}}>
+              {Object.keys(data.triggers).map((i) => this.renderTrigger(parseInt(i, 10)))}
+            </div>}
+          </div>}
       </div>}
     </div>;
   }
 
-  renderToolbar() {
+  renderActions() {
     const runDisabled = this.state.invalidTimes.some((i) => i);
     const undoDisabled = this.triggerManager.undoLen === 0;
     const redoDisabled = this.triggerManager.redoLen === 0;
@@ -461,21 +467,10 @@ export class App extends React.Component {
     </div>;
   }
 
-  renderWindow() {
-    const data = this.triggerManager.data[this.state.activeTab];
-
-    return data.id === TRIGGER_ID.SKIN ?
-      <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}/> :
-      <div style={{...GLOBAL_STYLES.window, fontSize: TEXT_SIZES.M[this.state.fontSize]}}>
-        {this.renderWindowHead()}
-        {Object.keys(data.triggers).map((i) => this.renderTrigger(parseInt(i, 10)))}
-      </div>;
-  }
-
   renderWindowHead() {
     const data = this.triggerManager.data[this.state.activeTab];
 
-    return <div style={{...GLOBAL_STYLES.smoothContainer, fontSize: TEXT_SIZES.S[this.state.fontSize]}}>
+    return <div style={{...GLOBAL_STYLES.windowHead, fontSize: TEXT_SIZES.S[this.state.fontSize]}}>
       {data.id === TRIGGER_ID.ZOOM &&
         this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)
       }

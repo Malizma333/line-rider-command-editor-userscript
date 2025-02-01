@@ -39,7 +39,7 @@ export const GLOBAL_STYLES = {
     height: '50vh',
     flexDirection: 'column',
     justifyContent: 'center',
-    paddingTop: '10px',
+    padding: '10px',
     width: 'max(37.5vw, 480px)',
   },
   toolbarContainer: {
@@ -51,6 +51,7 @@ export const GLOBAL_STYLES = {
   tabContainer: {
     alignItems: 'end',
     display: 'flex',
+    flex: 1,
     justifyContent: 'start',
     flexDirection: 'row',
     overflowX: 'auto',
@@ -62,23 +63,30 @@ export const GLOBAL_STYLES = {
     borderTopLeftRadius: '5px',
     borderTopRightRadius: '5px',
   },
-  smoothContainer: {
+  windowContainer: {
+    display: 'flex',
+    height: '100%',
+    flexDirection: 'column',
+    width: '100%',
+  },
+  windowHead: {
     alignItems: 'center',
     backgroundColor: THEME.light,
-    borderBottom: '2px solid black',
+    border: '2px solid black',
+    borderBottom: 'none',
     display: 'flex',
-    height: '30px',
+    flex: 1,
     justifyContent: 'start',
-    padding: '.5em',
+    padding: '10px',
   },
   window: {
     backgroundColor: THEME.light,
     border: '2px solid black',
     display: 'flex',
-    flexDirection: 'column',
     flex: 9,
+    flexDirection: 'column',
     overflowY: 'scroll',
-    width: '100%',
+    paddingBottom: '10px',
   },
   triggerContainer: {
     alignItems: 'start',
@@ -86,7 +94,7 @@ export const GLOBAL_STYLES = {
     borderBottom: '2px solid black',
     display: 'flex',
     flexDirection: 'column',
-    padding: '12px',
+    padding: '10px',
     position: 'relative',
   },
   triggerActionContainer: {
