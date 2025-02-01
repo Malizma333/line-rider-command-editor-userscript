@@ -7,7 +7,7 @@ import { App } from "../App";
 import { FONT_SIZE_SETTING, VIEWPORT_SETTING, SETTINGS_KEY } from "../lib/settings-storage.types";
 import { getSetting, saveSetting } from "../lib/settings-storage";
 
-const styles: Record<string, React.CSSProperties> = {
+const styles = {
   window: {
     backgroundColor: THEME.light,
     border: "2px solid black",
@@ -48,7 +48,7 @@ const styles: Record<string, React.CSSProperties> = {
     position: "absolute",
     right: "5px"
   }
-};
+} satisfies Record<string, React.CSSProperties>;
 
 function SettingsHeader({root, settings}: {root: App, settings: Settings}) {
   return <div style={styles.header}>

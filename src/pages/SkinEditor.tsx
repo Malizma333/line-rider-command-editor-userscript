@@ -6,7 +6,7 @@ import { SkinCssTrigger, TRIGGER_ID } from "../lib/TriggerDataManager.types";
 import { App } from "../App";
 import * as Selectors from "../lib/redux-selectors";
 
-const styles: Record<string, React.CSSProperties> = {
+const styles = {
   container: {
     alignItems: "center",
     display: "flex",
@@ -96,7 +96,7 @@ const styles: Record<string, React.CSSProperties> = {
     height: "2ch",
     textAlign: "center"
   }
-};
+} satisfies Record<string, React.CSSProperties>;
 
 function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: App}) {
   const data = root.triggerManager.data[TRIGGER_ID.SKIN].triggers;
@@ -144,7 +144,7 @@ function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: Ap
   </div>;
 }
 
-const svgProps: Record<string, React.SVGProps<SVGPathElement & SVGRectElement & SVGPolygonElement & SVGLineElement & SVGCircleElement>> = {
+const svgProps = {
   flag: { transform: "translate(-5, -3)", d: "M6,3A1,1 0 0,1 7,4V4.88C8.06,4.44 9.5,4 11,4C14,4 14,6 16,6C19,6 20,4 20,4V12C20,12 19,14 16,14C13,14 13,12 11,12C8,12 7,14 7,14V21H5V4A1,1 0 0,1 6,3Z" },
   flagOutline: { transform: "translate(-5, -3)", d: "M6,3A1,1 0 0,1 7,4V4.88C8.06,4.44 9.5,4 11,4C14,4 14,6 16,6C19,6 20,4 20,4V12C20,12 19,14 16,14C13,14 13,12 11,12C8,12 7,14 7,14V21H5V4A1,1 0 0,1 6,3M7,7.25V11.5C7,11.5 9,10 11,10C13,10 14,12 16,12C18,12 18,11 18,11V7.5C18,7.5 17,8 16,8C14,8 13,6 11,6C9,6 7,7.25 7,7.25Z" },
   skinFill: {transform: "translate(13,8) rotate(-90)", width: "3.1", height: "4.5"},
@@ -165,7 +165,7 @@ const svgProps: Record<string, React.SVGProps<SVGPathElement & SVGRectElement & 
   hatBottom: {transform: "translate(14.8,5) rotate(-90) translate(-10,0)", strokeWidth: "1", strokeLinecap: "round", d: "M10.6-2.6 v5.2"},
   hatBall: {transform: "translate(14.8,5) rotate(-90) translate(-10,0)", cx: "13.9", cy: "0", r: "0.7"},
   armSleeve: {strokeWidth: "0.3", transform: "translate(15, 10) rotate(5)", d: "M5,0.7H0c-0.4,0-0.7-0.3-0.7-0.7S-0.4-0.7,0-0.7h5"}
-};
+} satisfies Record<string, React.SVGProps<SVGPathElement & SVGRectElement & SVGPolygonElement & SVGLineElement & SVGCircleElement>>;
 
 function SkinEditorCanvas({skinEditor, root, skinTriggers}: {skinEditor: SkinEditor, root: App, skinTriggers: SkinCssTrigger[]}) {
   const currentSkinTrigger = skinTriggers[skinEditor.state.selectedRider];

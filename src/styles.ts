@@ -12,7 +12,7 @@ export const TEXT_SIZES = {
   M: {[FONT_SIZE_SETTING.SMALL]: "18px", [FONT_SIZE_SETTING.MEDIUM]: "22px", [FONT_SIZE_SETTING.LARGE]: "24px"},
 } as const;
 
-export const GLOBAL_STYLES: Record<string, React.CSSProperties> = {
+export const GLOBAL_STYLES = {
   rowCenter: {
     alignItems: "center",
     display: "flex",
@@ -120,4 +120,4 @@ export const GLOBAL_STYLES: Record<string, React.CSSProperties> = {
     transform: "translateY(50%)",
     zIndex: 1
   }
-} as const;
+} satisfies Record<string, React.CSSProperties>;

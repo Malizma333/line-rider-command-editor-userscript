@@ -1,6 +1,6 @@
 const { React } = window;
 
-const styles: Record<string, React.CSSProperties> = {
+const styles = {
   container: {
     alignItems: "center",
     display: "flex",
@@ -25,7 +25,7 @@ const styles: Record<string, React.CSSProperties> = {
     position: "absolute",
     width: "60%"
   }
-};
+} satisfies Record<string, React.CSSProperties>;
 
 export default function Checkbox(
   {customStyle, id, value, onCheck}:
