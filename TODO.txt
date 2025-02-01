@@ -1,2 +1,0 @@
-Replace dropdowns in triggers
-Docs?
