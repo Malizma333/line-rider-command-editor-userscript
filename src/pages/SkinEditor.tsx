@@ -71,6 +71,13 @@ const styles: Record<string, React.CSSProperties> = {
     top: "20px",
     height: "0px"
   },
+  zoomSlider: {
+    accentColor: "black",
+    appearance: "none",
+    border: "2px solid black",
+    borderRadius: "5px",
+    height: "10px"
+  },
   alphaContainer: {
     alignItems: "center",
     display: "flex",
@@ -84,15 +91,27 @@ const styles: Record<string, React.CSSProperties> = {
     position: "relative"
   },
   alphaSlider: {
+    accentColor: "black",
     appearance: "none",
     background: "linear-gradient(to left, black, white)",
-    border: "1px solid black",
+    border: "2px solid black",
     borderRadius: "5px",
-    height: "8px",
+    height: "10px",
     margin: "5px",
     marginTop: "10px",
-    opacity: 0.7,
     width: "100px"
+  },
+  dropdownHead: {
+    border: "2px solid black",
+    borderRadius: "5px",
+    height: "3ch",
+    marginRight: "10px",
+    textAlign: "right"
+  },
+  dropdownOption: {
+    border: "2px solid black",
+    height: "2ch",
+    textAlign: "center"
   }
 };
 
@@ -129,12 +148,12 @@ function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: Ap
       onChange={(e: React.ChangeEvent) => skinEditor.onChangeColor((e.target as HTMLInputElement).value, undefined)}
     ></input>
     <select
-      style={{ ...styles.toolbarItem, ...GLOBAL_STYLES.dropdownHead }}
+      style={{ ...styles.toolbarItem, ...styles.dropdownHead }}
       value={skinEditor.state.selectedRider}
       onChange={(e: React.ChangeEvent) => skinEditor.onChooseRider((e.target as HTMLInputElement).value)}
     >
       {...Object.keys(data).map((riderIndex) =>
-        <option style={GLOBAL_STYLES.dropdownOption} value={parseInt(riderIndex, 10)}>
+        <option style={styles.dropdownOption} value={parseInt(riderIndex, 10)}>
           Rider {1 + parseInt(riderIndex, 10)}
         </option>
       )}
@@ -296,7 +315,7 @@ export default class SkinEditor extends React.Component<Props, State> {
         <SkinEditorCanvas skinEditor={this} root={root} skinTriggers={skinTriggers}/>
         <div style={styles.zoomContainer}>
           <input
-            style={{ height: "10px" }}
+            style={styles.zoomSlider}
             type="range"
             min={1}
             max={4}

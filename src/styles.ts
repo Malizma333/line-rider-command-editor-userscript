@@ -127,15 +127,5 @@ export const GLOBAL_STYLES: Record<string, React.CSSProperties> = {
     userSelect: "none",
     width: "1.5em",
     zIndex: 1
-  },
-  dropdownHead: {
-    border: "2px solid black",
-    height: "3ch",
-    marginRight: "10px",
-    textAlign: "right"
-  },
-  dropdownOption: {
-    height: "2ch",
-    textAlign: "center"
   }
 } as const;

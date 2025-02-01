@@ -569,7 +569,7 @@ export class App extends React.Component {
     const dropdownIndex = this.state.focusDDIndices[index];
 
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      <select
+      {/* <select
         style={GLOBAL_STYLES.dropdownHead}
         value={dropdownIndex}
         onChange={(e: React.ChangeEvent) => this.onChangeFocusDD(index, (e.target as HTMLInputElement).value)}
@@ -579,7 +579,7 @@ export class App extends React.Component {
             <text>Rider {1 + parseInt(riderIndex, 10)}</text>
           </option>;
         })}
-      </select>
+      </select> */}
       {this.renderTriggerProp(
         "Weight",
         data[1][dropdownIndex],
@@ -606,7 +606,7 @@ export class App extends React.Component {
     const labels = ["X", "Y"];
 
     return <div style={{ display: "flex", flexDirection: "row" }}>
-      <select
+      {/* <select
         style={GLOBAL_STYLES.dropdownHead}
         value={dropdownIndex}
         onChange={(e: React.ChangeEvent) => this.onChangeGravityDD(index, (e.target as HTMLInputElement).value)}
@@ -616,7 +616,7 @@ export class App extends React.Component {
             <text>Rider {1 + parseInt(riderIndex, 10)}</text>
           </option>;
         })}
-      </select>
+      </select> */}
       {...["x", "y"].map((prop, propIndex) => {
         return <div style={GLOBAL_STYLES.triggerPropContainer}>
           {this.renderTriggerProp(
@@ -640,17 +640,17 @@ export class App extends React.Component {
     const NumberPicker = constraint.TYPE === CONSTRAINT_TYPE.FLOAT ? FloatPicker : IntPicker;
 
     return <div style={GLOBAL_STYLES.rowCenter}>
-      <label style={{ margin: "0em .5em" }} htmlFor={propPath.join("_")}>
+      <label style={{ margin: "0em .25em" }} htmlFor={propPath.join("_")}>
         {labelText}
       </label>
       {constraint.TYPE === CONSTRAINT_TYPE.BOOL ?
       <Checkbox
-        customStyle={{ marginLeft: ".5em" }}
+        customStyle={{ margin: "0em .25em" }}
         id={propPath.join("_")}
         value={value as boolean}
         onCheck={() => this.onUpdateTrigger(!value, propPath)}
       /> : <NumberPicker
-        customStyle={{ marginLeft: ".5em", color: color || "black" }}
+        customStyle={{ margin: "0em .25em", color: color || "black" }}
         id={propPath.join("_")}
         value={value as number | string}
         min={constraint.MIN}
