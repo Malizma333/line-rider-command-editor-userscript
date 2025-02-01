@@ -54,7 +54,6 @@ const rules = {
   ],
   'key-spacing': 2,
   'keyword-spacing': 2,
-  'linebreak-style': 2,
   'max-len': [2, {
     code: 120,
     tabWidth: 2,
