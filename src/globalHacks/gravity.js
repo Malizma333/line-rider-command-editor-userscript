@@ -1,10 +1,10 @@
-window.setCustomGravity = (function () {
+window.setCustomGravity = (function() {
   const numIters = window.store.getState().simulator.engine.getFrame(0).snapshot.entities[0].entities[0].points.length;
   let init = false;
   let numRiders = window.store.getState().simulator.engine.engine.state.riders.length;
   let currentIter = 0;
   let currentRider = 0;
-  let triggers = [];
+  const triggers = [];
 
   window.store.subscribe(() => {
     if (numRiders !== window.store.getState().simulator.engine.engine.state.riders.length) {
@@ -12,25 +12,31 @@ window.setCustomGravity = (function () {
     }
   });
 
+  /**
+   *
+   */
   function reset() {
-    window.store.dispatch({ type: "STOP_PLAYER" });
+    window.store.dispatch({type: 'STOP_PLAYER'});
 
     numRiders = window.store.getState().simulator.engine.engine.state.riders.length;
     currentIter = 0;
     currentRider = 0;
 
     window.requestAnimationFrame(() => {
-      window.store.getState().camera.playbackFollower._frames.length = 0
-      window.store.getState().simulator.engine.engine._computed._frames.length = 1
+      window.store.getState().camera.playbackFollower._frames.length = 0;
+      window.store.getState().simulator.engine.engine._computed._frames.length = 1;
     });
   }
 
+  /**
+   *
+   */
   function getGravity() {
     if (triggers.length === 0) {
-      return { x: 0, y: 0.175 }
+      return {x: 0, y: 0.175};
     }
 
-    let currentFrame = window.store.getState().simulator.engine.engine._computed._frames.length - 1;
+    const currentFrame = window.store.getState().simulator.engine.engine._computed._frames.length - 1;
     let gravity = triggers[triggers.length - 1][1][currentRider];
 
     if (currentFrame < triggers[triggers.length - 1][0]) {
@@ -38,7 +44,7 @@ window.setCustomGravity = (function () {
       let low = 0;
       let high = triggers.length - 1;
       while (low < high) {
-        let mid = Math.ceil((high + low) / 2);
+        const mid = Math.ceil((high + low) / 2);
 
         if (currentFrame < triggers[mid][0]) {
           high = mid - 1;
@@ -51,7 +57,7 @@ window.setCustomGravity = (function () {
     }
 
     if (gravity === undefined) {
-      gravity = { x: 0, y: 0.175 };
+      gravity = {x: 0, y: 0.175};
     }
 
     currentIter += 1;
@@ -70,10 +76,10 @@ window.setCustomGravity = (function () {
 
   return function(newTriggers) {
     triggers.length = 0;
-    for (let i = 0; i < newTriggers.length; i++) {
+    for (const trigger of newTriggers) {
       triggers.push([
-        newTriggers[i][0][0] * 2400 + newTriggers[i][0][1] * 40 + newTriggers[i][0][2],
-        newTriggers[i][1] // This is a reference, be careful
+        trigger[0][0] * 2400 + trigger[0][1] * 40 + trigger[0][2],
+        trigger[1], // This is a reference, be careful
       ]);
     }
 
@@ -81,7 +87,7 @@ window.setCustomGravity = (function () {
 
     if (!init) {
       init = true;
-      Object.defineProperty(window.$ENGINE_PARAMS, "gravity", { get: getGravity });
+      Object.defineProperty(window.$ENGINE_PARAMS, 'gravity', {get: getGravity});
     }
-  }
+  };
 })();
