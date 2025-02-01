@@ -111,7 +111,7 @@ export class App extends React.Component {
 
     const newTriggerArray = this.triggerManager.data[activeTab].triggers;
 
-    if (activeTab === TRIGGER_ID.FOCUS) {
+    if (activeTab === TRIGGER_ID.FOCUS && focusDDIndices.length < newTriggerArray.length) {
       this.setState({
         focusDDIndices: focusDDIndices
             .slice(0, index + 1)
@@ -120,7 +120,7 @@ export class App extends React.Component {
       });
     }
 
-    if (activeTab === TRIGGER_ID.GRAVITY) {
+    if (activeTab === TRIGGER_ID.GRAVITY && gravityDDIndices.length < newTriggerArray.length) {
       this.setState({
         gravityDDIndices: gravityDDIndices
             .slice(0, index + 1)
@@ -146,7 +146,7 @@ export class App extends React.Component {
   }
 
   onDeleteTrigger(index: number): void {
-    const {activeTab, focusDDIndices, gravityDDIndices} = this.state;
+    const {activeTab} = this.state;
 
     if (activeTab === TRIGGER_ID.SKIN) return;
 
@@ -156,14 +156,6 @@ export class App extends React.Component {
     this.setState({triggerUpdateFlag: !this.state.triggerUpdateFlag});
 
     const newTriggerArray = this.triggerManager.data[activeTab].triggers;
-
-    if (activeTab === TRIGGER_ID.FOCUS) {
-      this.setState({focusDDIndices: focusDDIndices.slice(0, index).concat(focusDDIndices.slice(index + 1))});
-    }
-
-    if (activeTab === TRIGGER_ID.FOCUS) {
-      this.setState({gravityDDIndices: gravityDDIndices.slice(0, index).concat(gravityDDIndices.slice(index + 1))});
-    }
 
     this.setState({invalidTimes: validateTimes(newTriggerArray as TimedTrigger[])});
   }
