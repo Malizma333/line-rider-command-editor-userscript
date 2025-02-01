@@ -29,7 +29,7 @@ const styles: Record<string, React.CSSProperties> = {
   toolbar: {
     alignItems: "center",
     backgroundColor: THEME.light,
-    borderBottom: "3px solid black",
+    borderBottom: "2px solid black",
     flex: 1,
     display: "flex",
     justifyContent: "left",
@@ -37,7 +37,7 @@ const styles: Record<string, React.CSSProperties> = {
     userSelect: "none"
   },
   toolbarItem: {
-    margin: "0px 5px"
+    margin: "0px 10px"
   },
   canvas: {
     alignItems: "center",
@@ -58,7 +58,6 @@ const styles: Record<string, React.CSSProperties> = {
     border: "1px solid black",
     borderRadius: "10px",
     height: "20px",
-    marginLeft: "5px",
     width: "20px"
   },
   alphaContainer: {
@@ -80,7 +79,6 @@ const styles: Record<string, React.CSSProperties> = {
     border: "2px solid black",
     borderRadius: "5px",
     height: "10px",
-    margin: "5px",
     marginTop: "10px",
     width: "100px"
   },
@@ -88,7 +86,6 @@ const styles: Record<string, React.CSSProperties> = {
     border: "2px solid black",
     borderRadius: "5px",
     height: "3ch",
-    marginRight: "10px",
     textAlign: "right"
   },
   dropdownOption: {
