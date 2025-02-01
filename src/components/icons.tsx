@@ -1,5 +1,15 @@
 const { React } = window;
-const svgStyle = { style: {display: "block"}, width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round" };
+const svgStyle = {
+  fill: "none",
+  height: "1em",
+  stroke: "currentColor",
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+  strokeWidth: "2",
+  style: { position: "absolute" },
+  viewBox: "0 0 24 24",
+  width: "1em",
+} as React.SVGAttributes<SVGElement>;
 
 export const DOWNLOAD = <svg {...svgStyle}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>;
 export const CORNER_UP_RIGHT = <svg {...svgStyle}><polyline points="15 14 20 9 15 4"></polyline><path d="M4 20v-7a4 4 0 0 1 4-4h12"></path></svg>;
