@@ -55,9 +55,9 @@ function SettingsHeader({root, settings}: {root: App, settings: Settings}) {
     <EmbeddedButton
       onClick={() => root.onToggleSettings()}
       icon={FICONS.X}
-      style={{position: "absolute", right: "0px"}}
+      customStyle={{position: "absolute", right: "0px"}}
     />
-    <text style={{ fontSize: TEXT_SIZES.L[root.state.fontSize] }}>
+    <text style={{ fontSize: TEXT_SIZES.M[root.state.fontSize] }}>
       Settings
     </text>
     <button

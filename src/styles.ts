@@ -10,7 +10,6 @@ export const THEME = {
 export const TEXT_SIZES = {
   S: {[FONT_SIZE_SETTING.SMALL]: "12px", [FONT_SIZE_SETTING.MEDIUM]: "14px", [FONT_SIZE_SETTING.LARGE]: "18px"},
   M: {[FONT_SIZE_SETTING.SMALL]: "18px", [FONT_SIZE_SETTING.MEDIUM]: "22px", [FONT_SIZE_SETTING.LARGE]: "24px"},
-  L: {[FONT_SIZE_SETTING.SMALL]: "28px", [FONT_SIZE_SETTING.MEDIUM]: "32px", [FONT_SIZE_SETTING.LARGE]: "36px"}
 } as const;
 
 export const GLOBAL_STYLES: Record<string, React.CSSProperties> = {
@@ -47,7 +46,6 @@ export const GLOBAL_STYLES: Record<string, React.CSSProperties> = {
     alignItems: "start",
     display: "flex",
     flex: 1,
-    fontSize: "25px",
     width: "100%"
   },
   tabContainer: {
@@ -110,22 +108,16 @@ export const GLOBAL_STYLES: Record<string, React.CSSProperties> = {
     whiteSpace: "nowrap",
   },
   newTriggerButton: {
-    alignItems: "center",
     backgroundColor: THEME.light,
-    bottom: "-0.75em",
     border: "2px solid black",
-    borderRadius: "5px",
-    display: "flex",
-    fontSize: "18px",
-    height: "1.5em",
-    justifyContent: "center",
+    borderRadius: "50%",
+    bottom: "0px",
     left: "0px",
     marginLeft: "auto",
     marginRight: "auto",
     position: "absolute",
     right: "0px",
-    userSelect: "none",
-    width: "1.5em",
+    transform: "translateY(50%)",
     zIndex: 1
   }
 } as const;

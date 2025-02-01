@@ -507,9 +507,12 @@ export class App extends React.Component {
       {data.id === TRIGGER_ID.FOCUS && this.renderFocusTrigger((currentTrigger as CameraFocusTrigger), index)}
       {data.id === TRIGGER_ID.TIME && this.renderRemapTrigger((currentTrigger as TimeRemapTrigger), index)}
       {data.id === TRIGGER_ID.GRAVITY && this.renderGravityTrigger((currentTrigger as GravityTrigger), index)}
-      <button style={GLOBAL_STYLES.newTriggerButton} onClick={() => this.onCreateTrigger(index)}>
-        <span>{FICONS.PLUS}</span>
-      </button>
+      <EmbeddedButton
+        customStyle={GLOBAL_STYLES.newTriggerButton}
+        size="15px"
+        icon={FICONS.PLUS}
+        onClick={() => this.onCreateTrigger(index)}
+      />
     </div>;
   }
 
@@ -569,17 +572,13 @@ export class App extends React.Component {
     const dropdownIndex = this.state.focusDDIndices[index];
 
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {/* <select
-        style={GLOBAL_STYLES.dropdownHead}
-        value={dropdownIndex}
-        onChange={(e: React.ChangeEvent) => this.onChangeFocusDD(index, (e.target as HTMLInputElement).value)}
-      >
+      <select value={dropdownIndex} onChange={(e: React.ChangeEvent) => this.onChangeFocusDD(index, (e.target as HTMLInputElement).value)}>
         {...Object.keys(data[1]).map((riderIndex) => {
-          return <option style={GLOBAL_STYLES.dropdownOption} value={parseInt(riderIndex, 10)}>
+          return <option value={parseInt(riderIndex, 10)}>
             <text>Rider {1 + parseInt(riderIndex, 10)}</text>
           </option>;
         })}
-      </select> */}
+      </select>
       {this.renderTriggerProp(
         "Weight",
         data[1][dropdownIndex],
@@ -606,17 +605,13 @@ export class App extends React.Component {
     const labels = ["X", "Y"];
 
     return <div style={{ display: "flex", flexDirection: "row" }}>
-      {/* <select
-        style={GLOBAL_STYLES.dropdownHead}
-        value={dropdownIndex}
-        onChange={(e: React.ChangeEvent) => this.onChangeGravityDD(index, (e.target as HTMLInputElement).value)}
-      >
+      <select value={dropdownIndex} onChange={(e: React.ChangeEvent) => this.onChangeGravityDD(index, (e.target as HTMLInputElement).value)}>
         {...Object.keys(data[1]).map((riderIndex) => {
-          return <option style={GLOBAL_STYLES.dropdownOption} value={parseInt(riderIndex, 10)}>
+          return <option value={parseInt(riderIndex, 10)}>
             <text>Rider {1 + parseInt(riderIndex, 10)}</text>
           </option>;
-        })}
-      </select> */}
+        })}  
+      </select>
       {...["x", "y"].map((prop, propIndex) => {
         return <div style={GLOBAL_STYLES.triggerPropContainer}>
           {this.renderTriggerProp(

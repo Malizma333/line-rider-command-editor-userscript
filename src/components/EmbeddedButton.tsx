@@ -7,16 +7,22 @@ enum BUTTON_MODE {
   PRESSED = 2
 }
 
-interface Props { title?: string, disabled?: boolean, style?: React.CSSProperties, onClick: () => void, icon: React.JSX.Element }
+interface Props {
+  title?: string,
+  disabled?: boolean,
+  customStyle?: React.CSSProperties,
+  size?: string
+  onClick: () => void,
+  icon: React.JSX.Element
+}
+
 interface State { mode: BUTTON_MODE }
 
 const style: React.CSSProperties = {
   alignItems: "center",
-  background: "none",
   borderRadius: "0.5em",
   border: "none",
   display: "flex",
-  fontSize: "22px",
   height: "1.5em",
   justifyContent: "center",
   userSelect: "none",
@@ -24,10 +30,10 @@ const style: React.CSSProperties = {
 };
 
 const modeBackgroundColors = {
-  [BUTTON_MODE.BLURRED]: "transparent",
+  [BUTTON_MODE.BLURRED]: THEME.light,
   [BUTTON_MODE.HOVER]: THEME.midDark,
   [BUTTON_MODE.PRESSED]: THEME.midLight
-};
+} as const;
 
 export default class EmbeddedButton extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -39,7 +45,7 @@ export default class EmbeddedButton extends React.Component<Props, State> {
   }
 
   render () {
-    const { title, disabled, onClick, icon } = this.props;
+    const { title, disabled, onClick, icon, size } = this.props;
 
     if (disabled && this.state.mode !== BUTTON_MODE.BLURRED) {
       this.setState({ mode: BUTTON_MODE.BLURRED });
@@ -47,7 +53,12 @@ export default class EmbeddedButton extends React.Component<Props, State> {
 
     return <button
       title={title}
-      style={{ ...style, ...this.props.style, backgroundColor: modeBackgroundColors[this.state.mode] }}
+      style={{
+        ...style,
+        ...this.props.customStyle,
+        backgroundColor: modeBackgroundColors[this.state.mode],
+        fontSize: size || "25px"
+      }}
       onMouseOver={() => !disabled && this.setState({ mode: BUTTON_MODE.HOVER })}
       onMouseOut={() => !disabled && this.setState({ mode: BUTTON_MODE.BLURRED })}
       onMouseDown={() => !disabled && this.setState({ mode: BUTTON_MODE.PRESSED })}
@@ -55,7 +66,7 @@ export default class EmbeddedButton extends React.Component<Props, State> {
       onClick={onClick}
       disabled={disabled}
     >
-      <span style={{ color: disabled ? THEME.midDark : THEME.dark }}>{icon}</span>
+      <span style={{ color: disabled ? THEME.midDark : THEME.dark, fontSize: size || "25px" }}>{icon}</span>
     </button>;
   }
 }

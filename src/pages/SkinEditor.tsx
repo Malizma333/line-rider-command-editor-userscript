@@ -104,7 +104,7 @@ function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: Ap
     <EmbeddedButton
       onClick={() => root.onResetSkin(skinEditor.state.selectedRider)}
       icon={FICONS.TRASH2}
-      style={{position: "absolute", right: "10px"}}
+      customStyle={{position: "absolute", right: "10px"}}
     />
     <div style={{ ...styles.toolbarItem, ...styles.alphaContainer }}>
       <label htmlFor="alphaSlider">Transparency</label>
