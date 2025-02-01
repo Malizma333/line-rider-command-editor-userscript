@@ -509,7 +509,7 @@ export class App extends React.Component {
       {data.id === TRIGGER_ID.GRAVITY && this.renderGravityTrigger((currentTrigger as GravityTrigger), index)}
       <EmbeddedButton
         customStyle={GLOBAL_STYLES.newTriggerButton}
-        size="20px"
+        size="18px"
         icon={FICONS.PLUS}
         onClick={() => this.onCreateTrigger(index)}
       />

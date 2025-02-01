@@ -31,8 +31,8 @@ const style: React.CSSProperties = {
 
 const modeBackgroundColors = {
   [BUTTON_MODE.BLURRED]: "#00000000",
-  [BUTTON_MODE.HOVER]: "#00000099",
-  [BUTTON_MODE.PRESSED]: "#00000066"
+  [BUTTON_MODE.HOVER]: "#00000066",
+  [BUTTON_MODE.PRESSED]: "#00000033"
 } as const;
 
 export default class EmbeddedButton extends React.Component<Props, State> {

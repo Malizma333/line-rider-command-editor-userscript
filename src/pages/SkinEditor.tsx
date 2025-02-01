@@ -87,13 +87,13 @@ const styles = {
     backgroundColor: THEME.light,
     border: "2px solid black",
     borderRadius: "5px",
-    height: "3ch",
+    height: "1.5em",
     textAlign: "right"
   },
   dropdownOption: {
     backgroundColor: THEME.light,
     border: "2px solid black",
-    height: "2ch",
+    height: "1.25em",
     textAlign: "center"
   }
 } satisfies Record<string, React.CSSProperties>;

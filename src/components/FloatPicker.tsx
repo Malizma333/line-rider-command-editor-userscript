@@ -24,7 +24,7 @@ const style: React.CSSProperties = {
   backgroundColor: THEME.light,
   border: "2px solid black",
   borderRadius: "5px",
-  height: "2ch",
+  height: "1.25em",
   padding: "5px",
   textAlign: "right",
   width: "3em"
