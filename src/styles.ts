@@ -40,7 +40,7 @@ export const GLOBAL_STYLES = {
     flexDirection: 'column',
     justifyContent: 'center',
     paddingTop: '10px',
-    width: '37.5vw',
+    width: 'max(37.5vw, 480px)',
   },
   toolbarContainer: {
     alignItems: 'start',
