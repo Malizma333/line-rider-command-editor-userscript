@@ -11,12 +11,12 @@ export type TimedTrigger = ZoomTrigger | CameraPanTrigger | CameraFocusTrigger |
 export type Trigger = TimedTrigger | SkinCssTrigger
 
 export enum TRIGGER_ID {
-  ZOOM = "ZOOM",
-  PAN = "CAMERA_PAN",
-  FOCUS = "CAMERA_FOCUS",
-  TIME = "TIME_REMAP",
-  SKIN = "CUSTOM_SKIN",
-  GRAVITY = "GRAVITY"
+  ZOOM = 'ZOOM',
+  PAN = 'CAMERA_PAN',
+  FOCUS = 'CAMERA_FOCUS',
+  TIME = 'TIME_REMAP',
+  SKIN = 'CUSTOM_SKIN',
+  GRAVITY = 'GRAVITY'
 }
 
 export type PathValue = object | number | string | boolean

@@ -1,6 +1,10 @@
-import { TimedTrigger } from "../lib/TriggerDataManager.types";
+import {TimedTrigger} from '../lib/TriggerDataManager.types';
 
-export function validateTimes (triggers: TimedTrigger[]): boolean[] {
+/**
+ *
+ * @param triggers
+ */
+export function validateTimes(triggers: TimedTrigger[]): boolean[] {
   const invalidIndices = Array(triggers.length).map(() => false);
 
   const firstTime = triggers[0][0];

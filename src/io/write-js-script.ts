@@ -1,15 +1,17 @@
-import { TRIGGER_METADATA } from "../lib/TriggerDataManager";
-import { TRIGGER_ID, TriggerDataLookup, SkinCssTrigger } from "../lib/TriggerDataManager.types";
+import {TRIGGER_METADATA} from '../lib/TriggerDataManager';
+import {TRIGGER_ID, TriggerDataLookup, SkinCssTrigger} from '../lib/TriggerDataManager.types';
 
 /**
  * Generates a Line Rider Web script from trigger data and a specific command id
+ * @param command
+ * @param triggerData
  */
-export function writeScript (command: TRIGGER_ID, triggerData: TriggerDataLookup): string {
+export function writeScript(command: TRIGGER_ID, triggerData: TriggerDataLookup): string {
   const currentData = triggerData[command];
   const currentHeader = (TRIGGER_METADATA[command]).FUNC;
 
   if (currentHeader === undefined) {
-    return "";
+    return '';
   }
 
   switch (command) {
@@ -17,28 +19,29 @@ export function writeScript (command: TRIGGER_ID, triggerData: TriggerDataLookup
     case TRIGGER_ID.PAN:
     case TRIGGER_ID.ZOOM:
       return currentHeader
-        .replace("{0}", JSON.stringify(currentData.triggers))
-        .replace("{1}", String(currentData.smoothing))
-        .replace(" ", "");
+          .replace('{0}', JSON.stringify(currentData.triggers))
+          .replace('{1}', String(currentData.smoothing))
+          .replace(' ', '');
     case TRIGGER_ID.TIME:
       return currentHeader
-        .replace("{0}", JSON.stringify(currentData.triggers))
-        .replace("{1}", String(currentData.interpolate))
-        .replace(" ", "");
+          .replace('{0}', JSON.stringify(currentData.triggers))
+          .replace('{1}', String(currentData.interpolate))
+          .replace(' ', '');
     case TRIGGER_ID.SKIN:
       return currentHeader
-        .replace("{0}", JSON.stringify(formatSkins(currentData.triggers as SkinCssTrigger[])))
-        .replace(" ", "");
+          .replace('{0}', JSON.stringify(formatSkins(currentData.triggers as SkinCssTrigger[])))
+          .replace(' ', '');
     default:
-      return "";
+      return '';
   }
 }
 
 /**
  * Formats a list of `SkinCSSTriggers` into an array of css strings
+ * @param customSkinData
  */
-export function formatSkins (customSkinData: SkinCssTrigger[]): string[] {
-  const nullColor = "#ffffffff";
+export function formatSkins(customSkinData: SkinCssTrigger[]): string[] {
+  const nullColor = '#ffffffff';
   const customSkinStrings = customSkinData.map((customSkin: SkinCssTrigger) => [
     ` .outline {stroke: ${customSkin.outline.stroke ?? nullColor}}`,
     ` .skin {fill: ${customSkin.skin.fill ?? nullColor}}`,
@@ -66,11 +69,11 @@ export function formatSkins (customSkinData: SkinCssTrigger[]): string[] {
     ` .hat .top {fill: ${customSkin.hatTop.fill ?? nullColor}}`,
     ` .hat .bottom {stroke: ${customSkin.hatBottom.stroke ?? nullColor}}`,
     ` .hat .ball {fill: ${customSkin.hatBall.fill ?? nullColor}}`,
-    ` .flag {fill: ${customSkin.flag.fill ?? nullColor}}`
-  ].join("").replace(/\n/g, ""));
+    ` .flag {fill: ${customSkin.flag.fill ?? nullColor}}`,
+  ].join('').replace(/\n/g, ''));
 
   // For some reason, the skin css array input is indexed +1 mod n
-  customSkinStrings.unshift(customSkinStrings.pop() ?? "");
+  customSkinStrings.unshift(customSkinStrings.pop() ?? '');
 
   return customSkinStrings;
 }

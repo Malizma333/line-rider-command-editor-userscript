@@ -1,18 +1,22 @@
-import { TriggerDataManager, TRIGGER_METADATA } from "../lib/TriggerDataManager";
-import { TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, GravityTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
-import { CONSTRAINT } from "../lib/constraints";
+import {TriggerDataManager, TRIGGER_METADATA} from '../lib/TriggerDataManager';
+import {TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, GravityTrigger, SkinCssTrigger} from '../lib/TriggerDataManager.types';
+import {CONSTRAINT} from '../lib/constraints';
 
 /**
  * Parses file from the script file format into a trigger data object, reverting to the original
  * value if an error occurs
+ * @param fileObject
+ * @param currentTriggerData
  */
 export function readJsonScript(fileObject: TriggerDataLookup, currentTriggerData: TriggerDataLookup): TriggerDataLookup {
   const triggerData = TriggerDataManager.initialTriggerData;
 
   /**
    * Parses an individual command given its id and applies the parsed file data to the trigger data
+   * @param commandId
+   * @param fileObject
    */
-  function parseCommand (commandId: TRIGGER_ID, fileObject: TriggerDataLookup): void {
+  function parseCommand(commandId: TRIGGER_ID, fileObject: TriggerDataLookup): void {
     if (fileObject[commandId] === undefined) {
       throw new Error(`Command ${commandId} not found!`);
     }
@@ -21,18 +25,18 @@ export function readJsonScript(fileObject: TriggerDataLookup, currentTriggerData
       case TRIGGER_ID.ZOOM:
       case TRIGGER_ID.PAN:
       case TRIGGER_ID.FOCUS:
-        parseTriggers(commandId, fileObject[commandId]["triggers"] as TimedTrigger[]);
-        parseSmoothing(commandId, fileObject[commandId]["smoothing"]);
+        parseTriggers(commandId, fileObject[commandId]['triggers'] as TimedTrigger[]);
+        parseSmoothing(commandId, fileObject[commandId]['smoothing']);
         break;
       case TRIGGER_ID.TIME:
-        parseTriggers(commandId, fileObject[commandId]["triggers"] as TimedTrigger[]);
-        parseSmoothing(commandId, fileObject[commandId]["interpolate"]);
+        parseTriggers(commandId, fileObject[commandId]['triggers'] as TimedTrigger[]);
+        parseSmoothing(commandId, fileObject[commandId]['interpolate']);
         break;
       case TRIGGER_ID.SKIN:
-        parseSkinTriggers(fileObject[commandId]["triggers"] as SkinCssTrigger[]);
+        parseSkinTriggers(fileObject[commandId]['triggers'] as SkinCssTrigger[]);
         break;
       case TRIGGER_ID.GRAVITY:
-        parseTriggers(commandId, fileObject[commandId]["triggers"] as TimedTrigger[]);
+        parseTriggers(commandId, fileObject[commandId]['triggers'] as TimedTrigger[]);
         break;
       default:
         break;
@@ -41,15 +45,17 @@ export function readJsonScript(fileObject: TriggerDataLookup, currentTriggerData
 
   /**
    * Parses a potential new Trigger[], not necessarily a complete definition of one
+   * @param commandId
+   * @param triggerArray
    */
-  function parseTriggers (commandId: TRIGGER_ID, triggerArray: TimedTrigger[]): void {
+  function parseTriggers(commandId: TRIGGER_ID, triggerArray: TimedTrigger[]): void {
     const triggers: TimedTrigger[] = [];
 
     for (const timedTrigger of triggerArray) {
       const timeTrigger: TimedTrigger = structuredClone(timedTrigger);
       const timeProp = timedTrigger[0] as number | number[];
 
-      if (typeof timeProp === "number") {
+      if (typeof timeProp === 'number') {
         const index = timeProp;
         timeTrigger[0] = retrieveTimestamp(index);
       } else if (timeProp.length === 1) {
@@ -61,7 +67,7 @@ export function readJsonScript(fileObject: TriggerDataLookup, currentTriggerData
       } else {
         const index = timeProp[0] * 2400 +
          timeProp[1] * 40 + timeProp[2];
-         timeTrigger[0] = retrieveTimestamp(index);
+        timeTrigger[0] = retrieveTimestamp(index);
       }
 
       if (commandId === TRIGGER_ID.GRAVITY && (timeTrigger[1] as GravityTrigger[1]).length === undefined) {
@@ -76,8 +82,10 @@ export function readJsonScript(fileObject: TriggerDataLookup, currentTriggerData
 
   /**
    * Parses integer or boolean smoothing for a command if its available
+   * @param commandId
+   * @param smoothingValue
    */
-  function parseSmoothing (commandId: TRIGGER_ID, smoothingValue?: boolean | number): void {
+  function parseSmoothing(commandId: TRIGGER_ID, smoothingValue?: boolean | number): void {
     if (commandId === TRIGGER_ID.TIME) {
       const constraints = CONSTRAINT.INTERPOLATE;
 
@@ -89,7 +97,7 @@ export function readJsonScript(fileObject: TriggerDataLookup, currentTriggerData
       if (smoothingValue === true || smoothingValue === false) {
         triggerData[commandId].interpolate = smoothingValue;
       } else {
-        throw new Error("Invalid boolean!");
+        throw new Error('Invalid boolean!');
       }
     } else {
       const constraints = CONSTRAINT.SMOOTH;
@@ -99,8 +107,8 @@ export function readJsonScript(fileObject: TriggerDataLookup, currentTriggerData
         return;
       }
 
-      if (typeof smoothingValue !== "number") {
-        throw new Error("Invalid integer!");
+      if (typeof smoothingValue !== 'number') {
+        throw new Error('Invalid integer!');
       }
 
       if (smoothingValue > constraints.MAX) {
@@ -115,15 +123,16 @@ export function readJsonScript(fileObject: TriggerDataLookup, currentTriggerData
 
   /**
    * Parses a string of CSS into a skin trigger array
+   * @param skinMapArray
    */
-  function parseSkinTriggers (skinMapArray: SkinCssTrigger[]): void {
+  function parseSkinTriggers(skinMapArray: SkinCssTrigger[]): void {
     const triggers = [] as SkinCssTrigger[];
 
     for (const skinMap of skinMapArray) {
       const defaultSkinMap = structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE);
       for (const key of Object.keys(defaultSkinMap)) {
         if (skinMap[key] === undefined) continue;
-        
+
         if (skinMap[key].fill !== undefined) {
           defaultSkinMap[key].fill = skinMap[key].fill;
         }
@@ -140,8 +149,9 @@ export function readJsonScript(fileObject: TriggerDataLookup, currentTriggerData
 
   /**
    * Converts a player index to a trigger timestamp
+   * @param index
    */
-  function retrieveTimestamp (index: number): TriggerTime {
+  function retrieveTimestamp(index: number): TriggerTime {
     const frames = index % 40;
     const seconds = Math.floor(index / 40) % 60;
     const minutes = Math.floor(index / 2400);
@@ -156,7 +166,7 @@ export function readJsonScript(fileObject: TriggerDataLookup, currentTriggerData
       if (error instanceof Error) {
         console.warn(`[ScriptParser.parseScript()] ${error.message}`);
         triggerData[commandId as TRIGGER_ID] = structuredClone(
-          currentTriggerData[commandId as TRIGGER_ID]
+            currentTriggerData[commandId as TRIGGER_ID],
         );
       }
     }

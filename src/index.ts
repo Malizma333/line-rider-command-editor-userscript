@@ -1,8 +1,8 @@
-import { GLOBAL_STYLES } from "./styles";
-import { App } from "./App";
-import { getPlayerRunning, getWindowFocused } from "./lib/redux-selectors";
-import { CameraFocusTrigger, CameraPanTrigger, GravityTrigger, TimeRemapTrigger, ZoomTrigger } from "./lib/TriggerDataManager.types";
-import type { Store } from "redux";
+import {GLOBAL_STYLES} from './styles';
+import {App} from './App';
+import {getPlayerRunning, getWindowFocused} from './lib/redux-selectors';
+import {CameraFocusTrigger, CameraPanTrigger, GravityTrigger, TimeRemapTrigger, ZoomTrigger} from './lib/TriggerDataManager.types';
+import type {Store} from 'redux';
 
 declare global {
   interface Window {
@@ -24,10 +24,13 @@ declare global {
   }
 }
 
-function main (): void {
-  const { React, store } = window;
-  const content = document.getElementById("content") as HTMLElement;
-  const parent = document.createElement("div");
+/**
+ *
+ */
+function main(): void {
+  const {React, store} = window;
+  const content = document.getElementById('content') as HTMLElement;
+  const parent = document.createElement('div');
 
   Object.assign(parent.style, GLOBAL_STYLES.root);
 
@@ -40,16 +43,16 @@ function main (): void {
     const windowFocused = getWindowFocused(store.getState());
     const shouldBeVisible = window.CMD_EDITOR_DEBUG || (!playerRunning && windowFocused);
 
-    parent.style.opacity = shouldBeVisible ? "1" : "0";
-    parent.style.pointerEvents = shouldBeVisible ? "auto" : "none";
+    parent.style.opacity = shouldBeVisible ? '1' : '0';
+    parent.style.pointerEvents = shouldBeVisible ? 'auto' : 'none';
   });
 
   const timerId = setInterval(() => {
-    const errorContainer = content.querySelector("div[style=\"margin: 16px;\"]");
+    const errorContainer = content.querySelector('div[style="margin: 16px;"]');
     if (errorContainer) {
-      const errorHeader = errorContainer.querySelector("h1");
-      if (errorHeader && errorHeader.innerHTML === "An error occured!") {
-        console.warn("[index.main()] Crash detected...");
+      const errorHeader = errorContainer.querySelector('h1');
+      if (errorHeader && errorHeader.innerHTML === 'An error occured!') {
+        console.warn('[index.main()] Crash detected...');
         window.saveCommands();
         clearInterval(timerId);
       }
