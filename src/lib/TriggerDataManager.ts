@@ -1,4 +1,4 @@
-import { CONSTRAINTS } from "./validation";
+import { CONSTRAINT } from "./constraints";
 import { GravityTrigger, TRIGGER_ID, TriggerDataLookup, TriggerMetadataLookup, HistoryItem, CameraFocusTrigger, PathValue } from "./TriggerDataManager.types";
 
 export const TRIGGER_METADATA: TriggerMetadataLookup = {
@@ -77,22 +77,22 @@ export class TriggerDataManager {
       [TRIGGER_ID.ZOOM]: {
         id: TRIGGER_ID.ZOOM,
         triggers: [structuredClone(TRIGGER_METADATA[TRIGGER_ID.ZOOM].TEMPLATE)],
-        smoothing: CONSTRAINTS.SMOOTH.DEFAULT
+        smoothing: CONSTRAINT.SMOOTH.DEFAULT
       },
       [TRIGGER_ID.PAN]: {
         id: TRIGGER_ID.PAN,
         triggers: [structuredClone(TRIGGER_METADATA[TRIGGER_ID.PAN].TEMPLATE)],
-        smoothing: CONSTRAINTS.SMOOTH.DEFAULT
+        smoothing: CONSTRAINT.SMOOTH.DEFAULT
       },
       [TRIGGER_ID.FOCUS]: {
         id: TRIGGER_ID.FOCUS,
         triggers: [structuredClone(TRIGGER_METADATA[TRIGGER_ID.FOCUS].TEMPLATE)],
-        smoothing: CONSTRAINTS.SMOOTH.DEFAULT
+        smoothing: CONSTRAINT.SMOOTH.DEFAULT
       },
       [TRIGGER_ID.TIME]: {
         id: TRIGGER_ID.TIME,
         triggers: [structuredClone(TRIGGER_METADATA[TRIGGER_ID.TIME].TEMPLATE)],
-        interpolate: CONSTRAINTS.INTERPOLATE.DEFAULT
+        interpolate: CONSTRAINT.INTERPOLATE.DEFAULT
       },
       [TRIGGER_ID.SKIN]: {
         id: TRIGGER_ID.SKIN,

@@ -129,12 +129,12 @@ function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: Ap
       onChange={(e: React.ChangeEvent) => skinEditor.onChangeColor((e.target as HTMLInputElement).value, undefined)}
     ></input>
     <select
-      style={{ ...styles.toolbarItem, ...GLOBAL_STYLES.dropdown.head }}
+      style={{ ...styles.toolbarItem, ...GLOBAL_STYLES.dropdownHead }}
       value={skinEditor.state.selectedRider}
       onChange={(e: React.ChangeEvent) => skinEditor.onChooseRider((e.target as HTMLInputElement).value)}
     >
       {...Object.keys(data).map((riderIndex) =>
-        <option style={GLOBAL_STYLES.dropdown.option} value={parseInt(riderIndex, 10)}>
+        <option style={GLOBAL_STYLES.dropdownOption} value={parseInt(riderIndex, 10)}>
           Rider {1 + parseInt(riderIndex, 10)}
         </option>
       )}

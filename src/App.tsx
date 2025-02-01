@@ -5,8 +5,8 @@ import { readJsonScript } from "./io/read-json-script";
 import { formatSkins, writeScript } from "./io/write-js-script";
 import { getSetting } from "./lib/settings-storage";
 import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from "./lib/settings-storage.types";
-import { validateTimes, CONSTRAINTS } from "./lib/validation";
-import { Constraint } from "./lib/validation.types";
+import { validateTimes } from "./lib/validation";
+import { CONSTRAINT } from "./lib/constraints";
 import { GLOBAL_STYLES, THEME, TEXT_SIZES } from "./styles";
 
 import * as Actions from "./lib/redux-actions";
@@ -18,6 +18,8 @@ import IntPicker from "./components/IntPicker";
 import EmbeddedButton from "./components/EmbeddedButton";
 import SkinEditor from "./pages/SkinEditor";
 import Settings from "./pages/Settings";
+import Checkbox from "./components/Checkbox";
+import { Constraint, CONSTRAINT_TYPE } from "./lib/constraints.types";
 
 const { store, React } = window;
 
@@ -474,21 +476,8 @@ export class App extends React.Component {
 
     return <div style={GLOBAL_STYLES.smoothContainer}>
       {data.id !== TRIGGER_ID.TIME ?
-        this.renderTriggerProp("Smoothing", data.smoothing || 0, ["smoothing"], CONSTRAINTS.SMOOTH, undefined, true) :
-        <React.Fragment>
-          <label htmlFor="smoothInput">
-            Smoothing
-          </label>
-          <div style={GLOBAL_STYLES.checkbox.container }>
-            <input
-              id="smoothInput"
-              style={GLOBAL_STYLES.checkbox.primary}
-              type="checkbox"
-              onChange={() => this.onUpdateTrigger(!this.triggerManager.data[this.state.activeTab].interpolate, ["interpolate"])}
-            />
-            {data.interpolate as boolean && <div style={GLOBAL_STYLES.checkbox.fill }></div>}
-          </div>
-        </React.Fragment>
+        this.renderTriggerProp("Smoothing", data.smoothing || 0, ["smoothing"], CONSTRAINT.SMOOTH) :
+        this.renderTriggerProp("Smoothing", data.interpolate || false, ["interpolate"], CONSTRAINT.INTERPOLATE)
       }
     </div>;
   }
@@ -525,7 +514,7 @@ export class App extends React.Component {
   }
 
   renderTimeInput(data: TriggerTime, index: number) {
-    const cProps = [CONSTRAINTS.MINUTE, CONSTRAINTS.SECOND, CONSTRAINTS.FRAME];
+    const cProps = [CONSTRAINT.MINUTE, CONSTRAINT.SECOND, CONSTRAINT.FRAME];
     const labels = ["Time", ":", ":"];
 
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
@@ -537,7 +526,6 @@ export class App extends React.Component {
             ["triggers", index.toString(), "0", timeIndex.toString()],
             cProps[timeIndex],
             this.state.invalidTimes[index] ? "red" : "black",
-            true
           )}
         </div>;
       })}
@@ -550,13 +538,13 @@ export class App extends React.Component {
         "Zoom To",
         data[1],
         ["triggers", index.toString(), "1"],
-        CONSTRAINTS.ZOOM
+        CONSTRAINT.ZOOM
       )}
     </div>;
   }
 
   renderPanTrigger(data: CameraPanTrigger, index: number) {
-    const cProps = [CONSTRAINTS.PAN_WIDTH, CONSTRAINTS.PAN_HEIGHT, CONSTRAINTS.PAN_X, CONSTRAINTS.PAN_Y];
+    const cProps = [CONSTRAINT.PAN_WIDTH, CONSTRAINT.PAN_HEIGHT, CONSTRAINT.PAN_X, CONSTRAINT.PAN_Y];
     const labels = ["Width", "Height", "Offset X", "Y"];
 
     return <div>
@@ -582,12 +570,12 @@ export class App extends React.Component {
 
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
       <select
-        style={GLOBAL_STYLES.dropdown.head}
+        style={GLOBAL_STYLES.dropdownHead}
         value={dropdownIndex}
         onChange={(e: React.ChangeEvent) => this.onChangeFocusDD(index, (e.target as HTMLInputElement).value)}
       >
         {...Object.keys(data[1]).map((riderIndex) => {
-          return <option style={GLOBAL_STYLES.dropdown.option} value={parseInt(riderIndex, 10)}>
+          return <option style={GLOBAL_STYLES.dropdownOption} value={parseInt(riderIndex, 10)}>
             <text>Rider {1 + parseInt(riderIndex, 10)}</text>
           </option>;
         })}
@@ -596,7 +584,7 @@ export class App extends React.Component {
         "Weight",
         data[1][dropdownIndex],
         ["triggers", index.toString(), "1", dropdownIndex.toString()],
-        CONSTRAINTS.FOCUS_WEIGHT
+        CONSTRAINT.FOCUS_WEIGHT
       )}
     </div>;
   }
@@ -607,24 +595,24 @@ export class App extends React.Component {
         "Speed",
         data[1],
         ["triggers", index.toString(), "1"],
-        CONSTRAINTS.TIME_SPEED
+        CONSTRAINT.TIME_SPEED
       )}
     </div>;
   }
 
   renderGravityTrigger(data: GravityTrigger, index: number) {
     const dropdownIndex = this.state.gravityDDIndices[index];
-    const cProps = [CONSTRAINTS.GRAVITY_X, CONSTRAINTS.GRAVITY_Y];
+    const cProps = [CONSTRAINT.GRAVITY_X, CONSTRAINT.GRAVITY_Y];
     const labels = ["X", "Y"];
 
     return <div style={{ display: "flex", flexDirection: "row" }}>
       <select
-        style={GLOBAL_STYLES.dropdown.head}
+        style={GLOBAL_STYLES.dropdownHead}
         value={dropdownIndex}
         onChange={(e: React.ChangeEvent) => this.onChangeGravityDD(index, (e.target as HTMLInputElement).value)}
       >
         {...Object.keys(data[1]).map((riderIndex) => {
-          return <option style={GLOBAL_STYLES.dropdown.option} value={parseInt(riderIndex, 10)}>
+          return <option style={GLOBAL_STYLES.dropdownOption} value={parseInt(riderIndex, 10)}>
             <text>Rider {1 + parseInt(riderIndex, 10)}</text>
           </option>;
         })}
@@ -642,22 +630,33 @@ export class App extends React.Component {
     </div>;
   }
 
-  renderTriggerProp(labelText: string, value: string | number, propPath: string[], constraints: Constraint, color?: string, isInt = false) {
-    const NumberPicker = isInt ? IntPicker : FloatPicker;
+  renderTriggerProp(
+    labelText: string,
+    value: string | number | boolean,
+    propPath: string[],
+    constraint: Constraint,
+    color?: string
+  ) {
+    const NumberPicker = constraint.TYPE === CONSTRAINT_TYPE.FLOAT ? FloatPicker : IntPicker;
 
-    return <div>
-      <label
-        style={GLOBAL_STYLES.propLabel}
-        htmlFor={propPath.join("_")}
-      >{labelText}</label>
-      <NumberPicker
-        style={{ ...GLOBAL_STYLES.numberInput, color: color || "black" }}
+    return <div style={GLOBAL_STYLES.rowCenter}>
+      <label style={{ margin: "0em .5em" }} htmlFor={propPath.join("_")}>
+        {labelText}
+      </label>
+      {constraint.TYPE === CONSTRAINT_TYPE.BOOL ?
+      <Checkbox
+        customStyle={{ marginLeft: ".5em" }}
         id={propPath.join("_")}
-        value={value}
-        min={constraints.MIN}
-        max={constraints.MAX}
+        value={value as boolean}
+        onCheck={() => this.onUpdateTrigger(!value, propPath)}
+      /> : <NumberPicker
+        customStyle={{ marginLeft: ".5em", color: color || "black" }}
+        id={propPath.join("_")}
+        value={value as number | string}
+        min={constraint.MIN}
+        max={constraint.MAX}
         onChange={(v: number | string) => this.onUpdateTrigger(v, propPath)}
-      />
+      />}
     </div>;
   }
 }

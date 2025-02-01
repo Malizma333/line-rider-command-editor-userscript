@@ -1,6 +1,6 @@
 import { TriggerDataManager, TRIGGER_METADATA } from "../lib/TriggerDataManager";
 import { TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, GravityTrigger, SkinCssTrigger } from "../lib/TriggerDataManager.types";
-import { CONSTRAINTS } from "../lib/validation";
+import { CONSTRAINT } from "../lib/constraints";
 
 /**
  * Parses file from the script file format into a trigger data object, reverting to the original
@@ -79,7 +79,7 @@ export function readJsonScript(fileObject: TriggerDataLookup, currentTriggerData
    */
   function parseSmoothing (commandId: TRIGGER_ID, smoothingValue?: boolean | number): void {
     if (commandId === TRIGGER_ID.TIME) {
-      const constraints = CONSTRAINTS.INTERPOLATE;
+      const constraints = CONSTRAINT.INTERPOLATE;
 
       if (smoothingValue == null) {
         triggerData[commandId].interpolate = constraints.DEFAULT;
@@ -92,7 +92,7 @@ export function readJsonScript(fileObject: TriggerDataLookup, currentTriggerData
         throw new Error("Invalid boolean!");
       }
     } else {
-      const constraints = CONSTRAINTS.SMOOTH;
+      const constraints = CONSTRAINT.SMOOTH;
 
       if (smoothingValue == null) {
         triggerData[commandId].smoothing = constraints.DEFAULT;

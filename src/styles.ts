@@ -13,7 +13,13 @@ export const TEXT_SIZES = {
   L: {[FONT_SIZE_SETTING.SMALL]: "28px", [FONT_SIZE_SETTING.MEDIUM]: "32px", [FONT_SIZE_SETTING.LARGE]: "36px"}
 } as const;
 
-export const GLOBAL_STYLES = {
+export const GLOBAL_STYLES: Record<string, React.CSSProperties> = {
+  rowCenter: {
+    alignItems: "center",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center"
+  },
   root: {
     backgroundColor: THEME.light,
     transition: "opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
@@ -35,7 +41,7 @@ export const GLOBAL_STYLES = {
     flexDirection: "column",
     justifyContent: "center",
     paddingTop: "1vh",
-    width: "clamp(425px, 40vw, 650px)"
+    width: "clamp(475px, 40vw, 650px)"
   },
   toolbarContainer: {
     alignItems: "start",
@@ -66,42 +72,6 @@ export const GLOBAL_STYLES = {
     height: "5vh",
     justifyContent: "start",
     padding: ".5em"
-  },
-  numberInput: {
-    backgroundColor: THEME.light,
-    border: "2px solid black",
-    borderRadius: "5px",
-    height: "2ch",
-    padding: "5px",
-    textAlign: "right",
-    width: "3em",
-    marginLeft: "5px"
-  },
-  checkbox: {
-    container: {
-      alignItems: "center",
-      display: "flex",
-      height: "20px",
-      justifyContent: "center",
-      marginLeft: "5px",
-      position: "relative",
-      width: "20px"
-    },
-    primary: {
-      appearance: "none",
-      background: "#FFF",
-      border: "2px solid black",
-      height: "100%",
-      position: "absolute",
-      width: "100%"
-    },
-    fill: {
-      backgroundColor: "#000",
-      height: "60%",
-      pointerEvents: "none",
-      position: "absolute",
-      width: "60%"
-    }
   },
   window: {
     backgroundColor: THEME.light,
@@ -139,9 +109,6 @@ export const GLOBAL_STYLES = {
     width: "100%",
     whiteSpace: "nowrap",
   },
-  propLabel: {
-    margin: "0em .5em"
-  },
   newTriggerButton: {
     alignItems: "center",
     backgroundColor: THEME.light,
@@ -161,15 +128,14 @@ export const GLOBAL_STYLES = {
     width: "1.5em",
     zIndex: 1
   },
-  dropdown: {
-    head: {
-      height: "3ch",
-      marginRight: "10px",
-      textAlign: "right"
-    },
-    option: {
-      height: "2ch",
-      textAlign: "center"
-    }
+  dropdownHead: {
+    border: "2px solid black",
+    height: "3ch",
+    marginRight: "10px",
+    textAlign: "right"
+  },
+  dropdownOption: {
+    height: "2ch",
+    textAlign: "center"
   }
 } as const;
