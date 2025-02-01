@@ -123,7 +123,7 @@ function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: Ap
       onChange={(e: React.ChangeEvent) => skinEditor.onChangeColor((e.target as HTMLInputElement).value, undefined)}
     ></input>
     <Dropdown
-      customStyles={{...styles.toolbarItem, fontSize: TEXT_SIZES.M[root.state.fontSize]}}
+      customStyle={{...styles.toolbarItem, fontSize: TEXT_SIZES.M[root.state.fontSize]}}
       value={skinEditor.state.selectedRider}
       count={root.state.numRiders}
       label="Rider"

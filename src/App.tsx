@@ -32,8 +32,8 @@ export interface AppState {
   activeTab: TRIGGER_ID
   triggerUpdateFlag: boolean
   numRiders: number
-  focusDDIndices: number[]
-  gravityDDIndices: number[]
+  focusDropdown: number
+  gravityDropdown: number
   settingsActive: boolean
   fontSize: FONT_SIZE_SETTING
   resolution: VIEWPORT_SETTING
@@ -52,8 +52,8 @@ export class App extends React.Component {
       activeTab: TRIGGER_ID.ZOOM,
       triggerUpdateFlag: false,
       numRiders: 1,
-      focusDDIndices: [0],
-      gravityDDIndices: [0],
+      focusDropdown: 0,
+      gravityDropdown: 0,
       settingsActive: false,
       fontSize: getSetting(SETTINGS_KEY.FONT_SIZE),
       resolution: getSetting(SETTINGS_KEY.VIEWPORT),
@@ -71,12 +71,12 @@ export class App extends React.Component {
     const riderCount = Selectors.getNumRiders(store.getState());
 
     if (this.state.numRiders !== riderCount) {
-      const {focusDDIndices, gravityDDIndices} = this.state;
+      const {focusDropdown, gravityDropdown} = this.state;
 
       this.triggerManager.updateRiderCount(riderCount);
       this.setState({triggerUpdateFlag: !this.state.triggerUpdateFlag});
-      this.setState({focusDDIndices: focusDDIndices.map((ddIndex) => Math.min(riderCount - 1, ddIndex))});
-      this.setState({gravityDDIndices: gravityDDIndices.map((ddIndex) => Math.min(riderCount - 1, ddIndex))});
+      this.setState({focusDropdown: Math.min(riderCount - 1, focusDropdown)});
+      this.setState({gravityDropdown: Math.min(riderCount - 1, gravityDropdown)});
       this.setState({numRiders: riderCount});
     }
 
@@ -88,7 +88,7 @@ export class App extends React.Component {
   }
 
   onCreateTrigger(index: number): void {
-    const {activeTab, focusDDIndices, gravityDDIndices} = this.state;
+    const {activeTab} = this.state;
 
     if (activeTab === TRIGGER_ID.SKIN) return;
 
@@ -110,24 +110,6 @@ export class App extends React.Component {
     this.setState({triggerUpdateFlag: !this.state.triggerUpdateFlag});
 
     const newTriggerArray = this.triggerManager.data[activeTab].triggers;
-
-    if (activeTab === TRIGGER_ID.FOCUS && focusDDIndices.length < newTriggerArray.length) {
-      this.setState({
-        focusDDIndices: focusDDIndices
-            .slice(0, index + 1)
-            .concat([0])
-            .concat(focusDDIndices.slice(index + 1)),
-      });
-    }
-
-    if (activeTab === TRIGGER_ID.GRAVITY && gravityDDIndices.length < newTriggerArray.length) {
-      this.setState({
-        gravityDDIndices: gravityDDIndices
-            .slice(0, index + 1)
-            .concat([0])
-            .concat(gravityDDIndices.slice(index + 1)),
-      });
-    }
 
     this.setState({invalidTimes: validateTimes(newTriggerArray as TimedTrigger[])});
   }
@@ -207,12 +189,6 @@ export class App extends React.Component {
   onLoad(nextTriggerData: TriggerDataLookup): void {
     const {activeTab} = this.state;
     try {
-      const focusTriggers = nextTriggerData[TRIGGER_ID.FOCUS].triggers as CameraFocusTrigger[];
-      const focusDDIndices = Array(focusTriggers.length).fill(0) as number[];
-
-      const gravityTriggers = nextTriggerData[TRIGGER_ID.GRAVITY].triggers as GravityTrigger[];
-      const gravityDDIndices = Array(gravityTriggers.length).fill(0) as number[];
-
       this.triggerManager.updateFromPath([], nextTriggerData, TRIGGER_ID.ZOOM);
 
       if (activeTab !== TRIGGER_ID.SKIN) {
@@ -220,8 +196,6 @@ export class App extends React.Component {
         this.setState({invalidTimes: validateTimes(newTriggerArray as TimedTrigger[])});
       }
 
-      this.setState({focusDDIndices});
-      this.setState({gravityDDIndices});
       this.setState({triggerUpdateFlag: !this.state.triggerUpdateFlag});
     } catch (error) {
       if (error instanceof Error) {
@@ -388,18 +362,12 @@ export class App extends React.Component {
     this.setState({triggerUpdateFlag: !this.state.triggerUpdateFlag});
   }
 
-  onChangeFocusDD(index: number, value: number): void {
-    const {focusDDIndices} = this.state;
-    const nextFocusDDIndices = [...focusDDIndices];
-    nextFocusDDIndices[index] = value;
-    this.setState({focusDDIndices: nextFocusDDIndices});
+  onChangeFocusDD(value: number): void {
+    this.setState({focusDropdown: value});
   }
 
-  onChangeGravityDD(index: number, value: number): void {
-    const {gravityDDIndices} = this.state;
-    const nextGravityDDIndices = [...gravityDDIndices];
-    nextGravityDDIndices[index] = value;
-    this.setState({gravityDDIndices: nextGravityDDIndices});
+  onChangeGravityDD(value: number): void {
+    this.setState({gravityDropdown: value});
   }
 
   onCaptureCamera(index: number, triggerType: TRIGGER_ID) {
@@ -499,7 +467,7 @@ export class App extends React.Component {
     return data.id === TRIGGER_ID.SKIN ?
       <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}/> :
       <div style={{...GLOBAL_STYLES.window, fontSize: TEXT_SIZES.M[this.state.fontSize]}}>
-        {data.id !== TRIGGER_ID.GRAVITY && this.renderWindowHead()}
+        {this.renderWindowHead()}
         {Object.keys(data.triggers).map((i) => this.renderTrigger(parseInt(i, 10)))}
       </div>;
   }
@@ -508,10 +476,32 @@ export class App extends React.Component {
     const data = this.triggerManager.data[this.state.activeTab];
 
     return <div style={{...GLOBAL_STYLES.smoothContainer, fontSize: TEXT_SIZES.S[this.state.fontSize]}}>
-      {data.id !== TRIGGER_ID.TIME ?
-        this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH) :
+      {data.id === TRIGGER_ID.ZOOM &&
+        this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)
+      }
+      {data.id === TRIGGER_ID.PAN &&
+        this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)
+      }
+      {data.id === TRIGGER_ID.FOCUS &&
+        this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)
+      }
+      {data.id === TRIGGER_ID.TIME &&
         this.renderTriggerProp('Smoothing', data.interpolate || false, ['interpolate'], CONSTRAINT.INTERPOLATE)
       }
+      {data.id === TRIGGER_ID.FOCUS && <Dropdown
+        customStyle={{margin: '0em .25em'}}
+        value={this.state.focusDropdown}
+        count={this.state.numRiders}
+        label="Rider"
+        onChange={(e: number) => this.onChangeFocusDD(e)}
+      />}
+      {data.id === TRIGGER_ID.GRAVITY && <Dropdown
+        customStyle={{margin: '0em .25em'}}
+        value={this.state.gravityDropdown}
+        count={this.state.numRiders}
+        label="Rider"
+        onChange={(e: number) => this.onChangeGravityDD(e)}
+      />}
     </div>;
   }
 
@@ -602,15 +592,9 @@ export class App extends React.Component {
   }
 
   renderFocusTrigger(data: CameraFocusTrigger, index: number) {
-    const dropdownIndex = this.state.focusDDIndices[index];
+    const dropdownIndex = this.state.focusDropdown;
 
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      <Dropdown
-        value={dropdownIndex}
-        count={this.state.numRiders}
-        label="Rider"
-        onChange={(e: number) => this.onChangeFocusDD(index, e)}
-      />
       {this.renderTriggerProp(
           'Weight',
           data[1][dropdownIndex],
@@ -632,17 +616,11 @@ export class App extends React.Component {
   }
 
   renderGravityTrigger(data: GravityTrigger, index: number) {
-    const dropdownIndex = this.state.gravityDDIndices[index];
+    const dropdownIndex = this.state.gravityDropdown;
     const cProps = [CONSTRAINT.GRAVITY_X, CONSTRAINT.GRAVITY_Y];
     const labels = ['X', 'Y'];
 
     return <div style={{display: 'flex', flexDirection: 'row'}}>
-      <Dropdown
-        value={dropdownIndex}
-        count={this.state.numRiders}
-        label="Rider"
-        onChange={(e: number) => this.onChangeGravityDD(index, e)}
-      />
       {...['x', 'y'].map((prop, propIndex) => {
         return <div style={GLOBAL_STYLES.triggerPropContainer}>
           {this.renderTriggerProp(
