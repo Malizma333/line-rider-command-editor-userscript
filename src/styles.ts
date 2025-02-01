@@ -28,7 +28,7 @@ export const GLOBAL_STYLES: Record<string, React.CSSProperties> = {
     left: "50px",
     opacity: 0,
     overflow: "hidden",
-    padding: "1vh",
+    padding: "10px",
     pointerEvents: "none",
     position: "fixed",
     top: "12.5px"
@@ -36,11 +36,11 @@ export const GLOBAL_STYLES: Record<string, React.CSSProperties> = {
   content: {
     alignItems: "center",
     display: "flex",
-    height: "clamp(250px, 60vh, 450px)",
+    height: "50vh",
     flexDirection: "column",
     justifyContent: "center",
-    paddingTop: "1vh",
-    width: "clamp(475px, 40vw, 650px)"
+    paddingTop: "10px",
+    width: "37.5vw"
   },
   toolbarContainer: {
     alignItems: "start",
@@ -67,7 +67,7 @@ export const GLOBAL_STYLES: Record<string, React.CSSProperties> = {
     backgroundColor: THEME.light,
     borderBottom: "2px solid black",
     display: "flex",
-    height: "5vh",
+    height: "30px",
     justifyContent: "start",
     padding: ".5em"
   },

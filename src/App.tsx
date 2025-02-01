@@ -474,7 +474,7 @@ export class App extends React.Component {
   renderWindowHead() {
     const data = this.triggerManager.data[this.state.activeTab];
 
-    return <div style={GLOBAL_STYLES.smoothContainer}>
+    return <div style={{ ...GLOBAL_STYLES.smoothContainer, fontSize: TEXT_SIZES.S[this.state.fontSize] }}>
       {data.id !== TRIGGER_ID.TIME ?
         this.renderTriggerProp("Smoothing", data.smoothing || 0, ["smoothing"], CONSTRAINT.SMOOTH) :
         this.renderTriggerProp("Smoothing", data.interpolate || false, ["interpolate"], CONSTRAINT.INTERPOLATE)

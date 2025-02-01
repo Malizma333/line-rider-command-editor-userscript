@@ -21,10 +21,10 @@ const styles: Record<string, React.CSSProperties> = {
     background: "linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%), " +
     "linear-gradient(-45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%)",
     backgroundSize: "10px 10px",
-    height: "100vh",
+    height: "1000px",
     position: "absolute",
     transform: "rotate(45deg)",
-    width: "100vw"
+    width: "1000px"
   },
   toolbar: {
     alignItems: "center",
@@ -49,15 +49,16 @@ const styles: Record<string, React.CSSProperties> = {
   },
   outlineContainer: {
     alignItems: "center",
+    bottom: "10px",
     display: "flex",
     position: "absolute",
-    bottom: "10px",
     left: "10px"
   },
-  colorInput: {
+  outlineInput: {
     border: "1px solid black",
     borderRadius: "10px",
     height: "20px",
+    marginLeft: "3px",
     width: "20px"
   },
   alphaContainer: {
@@ -79,16 +80,18 @@ const styles: Record<string, React.CSSProperties> = {
     border: "2px solid black",
     borderRadius: "5px",
     height: "10px",
-    marginTop: "10px",
+    marginTop: "3px",
     width: "100px"
   },
   dropdownHead: {
+    backgroundColor: THEME.light,
     border: "2px solid black",
     borderRadius: "5px",
     height: "3ch",
     textAlign: "right"
   },
   dropdownOption: {
+    backgroundColor: THEME.light,
     border: "2px solid black",
     height: "2ch",
     textAlign: "center"
@@ -128,7 +131,7 @@ function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: Ap
       onChange={(e: React.ChangeEvent) => skinEditor.onChangeColor((e.target as HTMLInputElement).value, undefined)}
     ></input>
     <select
-      style={{ ...styles.toolbarItem, ...styles.dropdownHead }}
+      style={{ ...styles.toolbarItem, ...styles.dropdownHead, fontSize: TEXT_SIZES.M[root.state.fontSize] }}
       value={skinEditor.state.selectedRider}
       onChange={(e: React.ChangeEvent) => skinEditor.onChooseRider((e.target as HTMLInputElement).value)}
     >
@@ -179,12 +182,12 @@ function SkinEditorCanvas({skinEditor, root, skinTriggers}: {skinEditor: SkinEdi
     }}
     onWheel={(e: React.WheelEvent) => skinEditor.onZoom(e)}
   >
-    <svg height="18" width="15" style={{ transform: "scale(5)" }}>
+    <svg height="18" width="15" style={{ transform: "scale(8)" }}>
       <path {...svgProps.flag} fill={currentSkinTrigger.flag.fill} onClick={() => updateColor("flag")} />
       <path {...svgProps.flagOutline} fill={currentSkinTrigger.flag.fill} onClick={() => updateColor("flag")} />
     </svg>
-    <svg width="10vw"></svg>
-    <svg height="25" width="31" style={{ transform: "scale(5)" }}>
+    <svg width="200"></svg>
+    <svg height="25" width="31" style={{ transform: "scale(8)" }}>
       <rect {...svgProps.skinFill} fill={currentSkinTrigger.skin.fill} onClick={() => updateColor("skin")} />
       <path {...svgProps.skinOutlineFill} stroke={currentSkinTrigger.outline.stroke} fill={currentSkinTrigger.skin.fill} onClick={() => updateColor("skin")} />
       <rect {...svgProps.hair} fill={currentSkinTrigger.hair.fill} onClick={() => updateColor("hair")} />
@@ -283,7 +286,7 @@ export default class SkinEditor extends React.Component<Props, State> {
       skinTriggers
     } = this.props;
 
-    return <div style={{ ...GLOBAL_STYLES.window, fontSize: TEXT_SIZES.M[root.state.fontSize] }}>
+    return <div style={{ ...GLOBAL_STYLES.window, fontSize: TEXT_SIZES.S[root.state.fontSize] }}>
       <SkinEditorToolbar skinEditor={this} root={root}/>
       <div style={styles.container}>
         <div style={styles.gridBackground}></div>
@@ -291,7 +294,7 @@ export default class SkinEditor extends React.Component<Props, State> {
         <div style={styles.outlineContainer}>
           <text>Outline</text>
           <div
-            style={{ ...styles.colorInput, backgroundColor: skinTriggers[this.state.selectedRider].outline.stroke }}
+            style={{ ...styles.outlineInput, backgroundColor: skinTriggers[this.state.selectedRider].outline.stroke }}
             onClick={() => root.onUpdateTrigger(this.state.selectedColor, ["triggers", this.state.selectedRider.toString(), "outline", "stroke"])}
           ></div>
         </div>

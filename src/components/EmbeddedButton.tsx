@@ -30,9 +30,9 @@ const style: React.CSSProperties = {
 };
 
 const modeBackgroundColors = {
-  [BUTTON_MODE.BLURRED]: THEME.light,
-  [BUTTON_MODE.HOVER]: THEME.midDark,
-  [BUTTON_MODE.PRESSED]: THEME.midLight
+  [BUTTON_MODE.BLURRED]: "#00000000",
+  [BUTTON_MODE.HOVER]: "#00000099",
+  [BUTTON_MODE.PRESSED]: "#00000066"
 } as const;
 
 export default class EmbeddedButton extends React.Component<Props, State> {
@@ -55,8 +55,8 @@ export default class EmbeddedButton extends React.Component<Props, State> {
       title={title}
       style={{
         ...style,
-        ...this.props.customStyle,
         backgroundColor: modeBackgroundColors[this.state.mode],
+        ...this.props.customStyle,
         fontSize: size || "25px"
       }}
       onMouseOver={() => !disabled && this.setState({ mode: BUTTON_MODE.HOVER })}
