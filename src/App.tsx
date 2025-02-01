@@ -1,5 +1,8 @@
 import {TriggerDataManager, TRIGGER_METADATA} from './lib/TriggerDataManager';
-import {TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, GravityTrigger, SkinCssTrigger, CameraPanTrigger, TimeRemapTrigger} from './lib/TriggerDataManager.types';
+import {
+  TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, GravityTrigger,
+  SkinCssTrigger, CameraPanTrigger, TimeRemapTrigger,
+} from './lib/TriggerDataManager.types';
 import {readJsScript} from './io/read-js-script';
 import {readJsonScript} from './io/read-json-script';
 import {formatSkins, writeScript} from './io/write-js-script';
@@ -99,18 +102,31 @@ export class App extends React.Component {
     const currentTriggers = this.triggerManager.data[activeTab].triggers;
     const newTriggerData = structuredClone((currentTriggers[index] as TimedTrigger)[1]);
     const newTrigger = [triggerTime, newTriggerData] as TimedTrigger;
-    const newTriggers = currentTriggers.slice(0, index + 1).concat([newTrigger]).concat(currentTriggers.slice(index + 1));
+    const newTriggers = currentTriggers
+        .slice(0, index + 1)
+        .concat([newTrigger])
+        .concat(currentTriggers.slice(index + 1));
     this.triggerManager.updateFromPath([activeTab, 'triggers'], newTriggers, activeTab);
     this.setState({triggerUpdateFlag: !this.state.triggerUpdateFlag});
 
     const newTriggerArray = this.triggerManager.data[activeTab].triggers;
 
     if (activeTab === TRIGGER_ID.FOCUS) {
-      this.setState({focusDDIndices: focusDDIndices.slice(0, index + 1).concat([0]).concat(focusDDIndices.slice(index + 1))});
+      this.setState({
+        focusDDIndices: focusDDIndices
+            .slice(0, index + 1)
+            .concat([0])
+            .concat(focusDDIndices.slice(index + 1)),
+      });
     }
 
     if (activeTab === TRIGGER_ID.GRAVITY) {
-      this.setState({gravityDDIndices: gravityDDIndices.slice(0, index + 1).concat([0]).concat(gravityDDIndices.slice(index + 1))});
+      this.setState({
+        gravityDDIndices: gravityDDIndices
+            .slice(0, index + 1)
+            .concat([0])
+            .concat(gravityDDIndices.slice(index + 1)),
+      });
     }
 
     this.setState({invalidTimes: validateTimes(newTriggerArray as TimedTrigger[])});
@@ -233,16 +249,28 @@ export class App extends React.Component {
 
       switch (activeTab) {
         case TRIGGER_ID.ZOOM:
-          window.getAutoZoom = window.createZoomer(currentData.triggers as ZoomTrigger[], currentData.smoothing);
+          window.getAutoZoom = window.createZoomer(
+            currentData.triggers as ZoomTrigger[],
+            currentData.smoothing,
+          );
           break;
         case TRIGGER_ID.PAN:
-          window.getCamBounds = window.createBoundsPanner(currentData.triggers as CameraPanTrigger[], currentData.smoothing);
+          window.getCamBounds = window.createBoundsPanner(
+            currentData.triggers as CameraPanTrigger[],
+            currentData.smoothing,
+          );
           break;
         case TRIGGER_ID.FOCUS:
-          window.getCamFocus = window.createFocuser(currentData.triggers as CameraFocusTrigger[], currentData.smoothing);
+          window.getCamFocus = window.createFocuser(
+            currentData.triggers as CameraFocusTrigger[],
+            currentData.smoothing,
+          );
           break;
         case TRIGGER_ID.TIME:
-          window.timeRemapper = window.createTimeRemapper(currentData.triggers as TimeRemapTrigger[], currentData.interpolate);
+          window.timeRemapper = window.createTimeRemapper(
+            currentData.triggers as TimeRemapTrigger[],
+            currentData.interpolate,
+          );
           break;
         case TRIGGER_ID.SKIN:
           window.setCustomRiders(formatSkins(currentData.triggers as SkinCssTrigger[]));
@@ -361,7 +389,9 @@ export class App extends React.Component {
     store.dispatch(Actions.setPlaybackDimensions(resolutionPixels[newResolution]));
 
     const zoomTriggers = this.triggerManager.data[TRIGGER_ID.ZOOM].triggers as ZoomTrigger[];
-    const newZoomTriggers = zoomTriggers.map((trigger) => [trigger[0], Math.round((trigger[1] + factor + Number.EPSILON) * 1e7) / 1e7]);
+    const newZoomTriggers = zoomTriggers.map(
+        (trigger) => [trigger[0], Math.round((trigger[1] + factor + Number.EPSILON) * 1e7) / 1e7],
+    );
     this.triggerManager.updateFromPath([TRIGGER_ID.ZOOM, 'triggers'], newZoomTriggers, TRIGGER_ID.ZOOM);
     this.setState({triggerUpdateFlag: !this.state.triggerUpdateFlag});
   }
@@ -419,19 +449,25 @@ export class App extends React.Component {
   }
 
   renderToolbar() {
+    const runDisabled = this.state.invalidTimes.some((i) => i);
+    const undoDisabled = this.triggerManager.undoLen === 0;
+    const redoDisabled = this.triggerManager.redoLen === 0;
+
     return <div style={GLOBAL_STYLES.toolbarContainer}>
-      {!this.state.active && <EmbeddedButton title="Maximize" onClick={() => this.onToggleActive()} icon={FICONS.MAXIMIZE}/>}
+      {!this.state.active &&
+        <EmbeddedButton title="Maximize" onClick={() => this.onToggleActive()} icon={FICONS.MAXIMIZE}/>
+      }
       {this.state.active && <div style={{...GLOBAL_STYLES.toolbarContainer, justifyContent: 'start'}}>
         <EmbeddedButton title="Minimize" onClick={() => this.onToggleActive()} icon={FICONS.MINIMIZE}/>
         <EmbeddedButton title="Download" onClick={() => this.onDownload()} icon={FICONS.DOWNLOAD}/>
         <EmbeddedButton title="Upload" onClick={() => this.onUpload()} icon={FICONS.UPLOAD}/>
         <EmbeddedButton title="Load From Script" onClick={() => this.onLoadScript()} icon={FICONS.CORNER_UP_RIGHT}/>
-        <EmbeddedButton title="Run" onClick={() => this.onTest()} icon={FICONS.PLAY} disabled={this.state.invalidTimes.some((i) => i)}/>
+        <EmbeddedButton title="Run" onClick={() => this.onTest()} icon={FICONS.PLAY} disabled={runDisabled}/>
         <EmbeddedButton title="Copy Script" onClick={async () => await this.onCopy()} icon={FICONS.COPY}/>
       </div>}
       {this.state.active && <div style={{...GLOBAL_STYLES.toolbarContainer, justifyContent: 'end'}}>
-        <EmbeddedButton title="Undo" onClick={() => this.onUndo()} icon={FICONS.ARROW_LEFT} disabled={this.triggerManager.undoLen === 0}/>
-        <EmbeddedButton title="Redo" onClick={() => this.onRedo()} icon={FICONS.ARROW_RIGHT} disabled={this.triggerManager.redoLen === 0}/>
+        <EmbeddedButton title="Undo" onClick={() => this.onUndo()} icon={FICONS.ARROW_LEFT} disabled={undoDisabled}/>
+        <EmbeddedButton title="Redo" onClick={() => this.onRedo()} icon={FICONS.ARROW_RIGHT} disabled={redoDisabled}/>
         <EmbeddedButton title="Settings" onClick={() => this.onToggleSettings()} icon={FICONS.SETTINGS}/>
         <EmbeddedButton title="Help" onClick={() => this.onHelp()} icon={FICONS.HELP_CIRCLE}/>
       </div>}
@@ -450,7 +486,10 @@ export class App extends React.Component {
       {...Object.keys(TRIGGER_METADATA).map((command: string) => {
         return <div>
           <button
-            style={{...GLOBAL_STYLES.tab, backgroundColor: this.state.activeTab === command ? THEME.midLight : THEME.midDark}}
+            style={{
+              ...GLOBAL_STYLES.tab,
+              backgroundColor: this.state.activeTab === command ? THEME.midLight : THEME.midDark,
+            }}
             onClick={() => this.onChangeTab(command as TRIGGER_ID)}
           >
             <text>

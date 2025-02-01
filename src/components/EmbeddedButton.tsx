@@ -1,11 +1,7 @@
 const {React} = window;
 import {THEME} from '../styles';
 
-enum BUTTON_MODE {
-  BLURRED = 0,
-  HOVER = 1,
-  PRESSED = 2
-}
+enum BUTTON_MODE { BLURRED, HOVER, PRESSED }
 
 interface Props {
   title?: string,

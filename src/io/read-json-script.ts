@@ -1,5 +1,7 @@
 import {TriggerDataManager, TRIGGER_METADATA} from '../lib/TriggerDataManager';
-import {TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, GravityTrigger, SkinCssTrigger} from '../lib/TriggerDataManager.types';
+import {
+  TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, GravityTrigger, SkinCssTrigger,
+} from '../lib/TriggerDataManager.types';
 import {CONSTRAINT} from '../lib/constraints';
 
 /**
@@ -8,7 +10,9 @@ import {CONSTRAINT} from '../lib/constraints';
  * @param fileObject
  * @param currentTriggerData
  */
-export function readJsonScript(fileObject: TriggerDataLookup, currentTriggerData: TriggerDataLookup): TriggerDataLookup {
+export function readJsonScript(
+    fileObject: TriggerDataLookup, currentTriggerData: TriggerDataLookup,
+): TriggerDataLookup {
   const triggerData = TriggerDataManager.initialTriggerData;
 
   /**

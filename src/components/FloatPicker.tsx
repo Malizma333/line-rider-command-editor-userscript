@@ -10,7 +10,9 @@ const {React} = window;
  * @param min
  * @param max
  */
-function clampFloat(prevValue: string | number, newValue: string, bounded: boolean, min: number, max: number): number | string {
+function clampFloat(
+    prevValue: string | number, newValue: string, bounded: boolean, min: number, max: number,
+): number | string {
   const parsedValue = Number(newValue);
 
   if (Number.isNaN(parsedValue)) {
@@ -50,7 +52,8 @@ const style: React.CSSProperties = {
  */
 export default function FloatPicker(
     {customStyle, id, value, min, max, onChange}:
-  { customStyle: React.CSSProperties, id: string, value: (number | string), min: number, max: number, onChange: (v: number | string) => void },
+  { customStyle: React.CSSProperties, id: string, value: (number | string), min: number, max: number,
+    onChange: (v: number | string) => void },
 ) {
   return (
     <input
@@ -59,8 +62,12 @@ export default function FloatPicker(
       value={value}
       min={min}
       max={max}
-      onChange={(e: React.ChangeEvent) => onChange(clampFloat(value, (e.target as HTMLInputElement).value, false, min, max))}
-      onBlur={(e: React.ChangeEvent) => onChange(clampFloat(value, (e.target as HTMLInputElement).value, true, min, max))}
+      onChange={(e: React.ChangeEvent) => onChange(
+          clampFloat(value, (e.target as HTMLInputElement).value, false, min, max),
+      )}
+      onBlur={(e: React.ChangeEvent) => onChange(
+          clampFloat(value, (e.target as HTMLInputElement).value, true, min, max),
+      )}
     />
   );
 }

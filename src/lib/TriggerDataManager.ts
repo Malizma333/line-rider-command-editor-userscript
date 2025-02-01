@@ -1,5 +1,7 @@
 import {CONSTRAINT} from './constraints';
-import {GravityTrigger, TRIGGER_ID, TriggerDataLookup, TriggerMetadataLookup, HistoryItem, CameraFocusTrigger, PathValue} from './TriggerDataManager.types';
+import {
+  GravityTrigger, TRIGGER_ID, TriggerDataLookup, TriggerMetadataLookup, HistoryItem, CameraFocusTrigger, PathValue,
+} from './TriggerDataManager.types';
 
 export const TRIGGER_METADATA: TriggerMetadataLookup = {
   [TRIGGER_ID.ZOOM]: {
@@ -213,6 +215,7 @@ export class TriggerDataManager {
    * @param value
    */
   private setAtPointer(path: string[], value: PathValue): PathValue {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let pathPointer: any = this.triggerData;
 
     for (let i = 0; i < path.length - 1; i += 1) {

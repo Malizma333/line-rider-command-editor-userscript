@@ -1,5 +1,7 @@
 import {TriggerDataManager, TRIGGER_METADATA} from '../lib/TriggerDataManager';
-import {TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, SkinCssTrigger} from '../lib/TriggerDataManager.types';
+import {
+  TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, SkinCssTrigger,
+} from '../lib/TriggerDataManager.types';
 import {CONSTRAINT} from '../lib/constraints';
 
 /**

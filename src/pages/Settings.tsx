@@ -105,7 +105,8 @@ const LABEL_MAP = {
  */
 function SettingsSection(
     {root, current, onClick, title, lkey}:
-  {root: App, current: FONT_SIZE_SETTING | VIEWPORT_SETTING, onClick: (e: number) => void, title: string, lkey: SETTINGS_KEY},
+  {root: App, current: FONT_SIZE_SETTING | VIEWPORT_SETTING, onClick: (e: number) => void, title: string,
+    lkey: SETTINGS_KEY},
 ) {
   return <div style={styles.row}>
     <text style={{...styles.label, fontSize: TEXT_SIZES.S[root.state.fontSize]}}>

@@ -19,7 +19,6 @@ const rules = {
   'no-throw-literal': 2,
   'no-with': 2,
   'prefer-promise-reject-errors': 2,
-  'no-unused-vars': [2, {args: 'none'}],
   'array-bracket-newline': 0,
   'array-bracket-spacing': [2, 'never'],
   'array-element-newline': 0,
@@ -57,10 +56,10 @@ const rules = {
   'keyword-spacing': 2,
   'linebreak-style': 2,
   'max-len': [2, {
-    code: 80,
+    code: 120,
     tabWidth: 2,
     ignoreUrls: true,
-    ignorePattern: 'goog\.(module|require)',
+    ignoreStrings: true,
   }],
   'new-cap': 2,
   'no-array-constructor': 2,
@@ -106,6 +105,7 @@ export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.strict,
   tseslint.configs.stylistic,
+  tseslint.configs.recommended,
   jsdoc.configs['flat/recommended'],
   {
     languageOptions: {
