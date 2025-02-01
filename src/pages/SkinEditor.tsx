@@ -2,9 +2,10 @@ const { React, store } = window;
 import EmbeddedButton from "../components/EmbeddedButton";
 import { GLOBAL_STYLES, TEXT_SIZES, THEME } from "../styles";
 import * as FICONS from "../components/Icons";
-import { SkinCssTrigger, TRIGGER_ID } from "../lib/TriggerDataManager.types";
+import { SkinCssTrigger } from "../lib/TriggerDataManager.types";
 import { App } from "../App";
 import * as Selectors from "../lib/redux-selectors";
+import Dropdown from "../components/Dropdown";
 
 const styles = {
   container: {
@@ -82,24 +83,10 @@ const styles = {
     height: "10px",
     marginTop: "3px",
     width: "100px"
-  },
-  dropdownHead: {
-    backgroundColor: THEME.light,
-    border: "2px solid black",
-    borderRadius: "5px",
-    height: "1.5em",
-    textAlign: "right"
-  },
-  dropdownOption: {
-    backgroundColor: THEME.light,
-    border: "2px solid black",
-    height: "1.25em",
-    textAlign: "center"
   }
 } satisfies Record<string, React.CSSProperties>;
 
 function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: App}) {
-  const data = root.triggerManager.data[TRIGGER_ID.SKIN].triggers;
   const colorValue = skinEditor.state.selectedColor.substring(0, 7);
   const alphaValue = parseInt(skinEditor.state.selectedColor.substring(7), 16) / 255;
 
@@ -130,17 +117,13 @@ function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: Ap
       value={colorValue}
       onChange={(e: React.ChangeEvent) => skinEditor.onChangeColor((e.target as HTMLInputElement).value, undefined)}
     ></input>
-    <select
-      style={{ ...styles.toolbarItem, ...styles.dropdownHead, fontSize: TEXT_SIZES.M[root.state.fontSize] }}
+    <Dropdown
+      customStyles={{ ...styles.toolbarItem, fontSize: TEXT_SIZES.M[root.state.fontSize] }}
       value={skinEditor.state.selectedRider}
-      onChange={(e: React.ChangeEvent) => skinEditor.onChooseRider((e.target as HTMLInputElement).value)}
-    >
-      {...Object.keys(data).map((riderIndex) =>
-        <option style={styles.dropdownOption} value={parseInt(riderIndex, 10)}>
-          Rider {1 + parseInt(riderIndex, 10)}
-        </option>
-      )}
-    </select>
+      count={root.state.numRiders}
+      label="Rider"
+      onChange={(e: number) => skinEditor.onChooseRider(e)}
+    />
   </div>;
 }
 
@@ -245,8 +228,8 @@ export default class SkinEditor extends React.Component<Props, State> {
     }
   }
 
-  onChooseRider(value: string): void {
-    this.setState({ selectedRider: parseInt(value, 10) });
+  onChooseRider(value: number): void {
+    this.setState({ selectedRider: value });
   }
 
   onChangeColor(color?: string, alpha?: string): void {

@@ -20,6 +20,7 @@ import SkinEditor from "./pages/SkinEditor";
 import Settings from "./pages/Settings";
 import Checkbox from "./components/Checkbox";
 import { Constraint, CONSTRAINT_TYPE } from "./lib/constraints.types";
+import Dropdown from "./components/Dropdown";
 
 const { store, React } = window;
 
@@ -27,6 +28,7 @@ export interface AppState {
   active: boolean
   activeTab: TRIGGER_ID
   triggerUpdateFlag: boolean
+  numRiders: number
   focusDDIndices: number[]
   gravityDDIndices: number[]
   settingsActive: boolean
@@ -38,7 +40,6 @@ export interface AppState {
 export class App extends React.Component {
   readonly triggerManager = new TriggerDataManager();
   readonly state: AppState;
-  lastRiderCount: number | undefined;
 
   constructor(props: object) {
     super(props);
@@ -47,6 +48,7 @@ export class App extends React.Component {
       active: false,
       activeTab: TRIGGER_ID.ZOOM,
       triggerUpdateFlag: false,
+      numRiders: 1,
       focusDDIndices: [0],
       gravityDDIndices: [0],
       settingsActive: false,
@@ -65,14 +67,14 @@ export class App extends React.Component {
   updateStore(): void {
     const riderCount = Selectors.getNumRiders(store.getState());
 
-    if (this.lastRiderCount !== riderCount) {
-      this.lastRiderCount = riderCount;
+    if (this.state.numRiders !== riderCount) {
       const { focusDDIndices, gravityDDIndices } = this.state;
 
       this.triggerManager.updateRiderCount(riderCount);
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
       this.setState({ focusDDIndices: focusDDIndices.map((ddIndex) => Math.min(riderCount - 1, ddIndex)) });
       this.setState({ gravityDDIndices: gravityDDIndices.map((ddIndex) => Math.min(riderCount - 1, ddIndex)) });
+      this.setState({ numRiders: riderCount });
     }
 
     const sidebarOpen = Selectors.getSidebarOpen(store.getState());
@@ -364,17 +366,17 @@ export class App extends React.Component {
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
   }
 
-  onChangeFocusDD(index: number, value: string): void {
+  onChangeFocusDD(index: number, value: number): void {
     const { focusDDIndices } = this.state;
     const nextFocusDDIndices = [...focusDDIndices];
-    nextFocusDDIndices[index] = parseInt(value, 10);
+    nextFocusDDIndices[index] = value;
     this.setState({ focusDDIndices: nextFocusDDIndices });
   }
 
-  onChangeGravityDD(index: number, value: string): void {
+  onChangeGravityDD(index: number, value: number): void {
     const { gravityDDIndices } = this.state;
     const nextGravityDDIndices = [...gravityDDIndices];
-    nextGravityDDIndices[index] = parseInt(value, 10);
+    nextGravityDDIndices[index] = value;
     this.setState({ gravityDDIndices: nextGravityDDIndices });
   }
 
@@ -572,13 +574,12 @@ export class App extends React.Component {
     const dropdownIndex = this.state.focusDDIndices[index];
 
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      <select value={dropdownIndex} onChange={(e: React.ChangeEvent) => this.onChangeFocusDD(index, (e.target as HTMLInputElement).value)}>
-        {...Object.keys(data[1]).map((riderIndex) => {
-          return <option value={parseInt(riderIndex, 10)}>
-            <text>Rider {1 + parseInt(riderIndex, 10)}</text>
-          </option>;
-        })}
-      </select>
+      <Dropdown
+        value={dropdownIndex}
+        count={this.state.numRiders}
+        label="Rider"
+        onChange={(e: number) => this.onChangeFocusDD(index, e)}
+      />
       {this.renderTriggerProp(
         "Weight",
         data[1][dropdownIndex],
@@ -605,13 +606,12 @@ export class App extends React.Component {
     const labels = ["X", "Y"];
 
     return <div style={{ display: "flex", flexDirection: "row" }}>
-      <select value={dropdownIndex} onChange={(e: React.ChangeEvent) => this.onChangeGravityDD(index, (e.target as HTMLInputElement).value)}>
-        {...Object.keys(data[1]).map((riderIndex) => {
-          return <option value={parseInt(riderIndex, 10)}>
-            <text>Rider {1 + parseInt(riderIndex, 10)}</text>
-          </option>;
-        })}  
-      </select>
+      <Dropdown
+        value={dropdownIndex}
+        count={this.state.numRiders}
+        label="Rider"
+        onChange={(e: number) => this.onChangeGravityDD(index, e)}
+      />
       {...["x", "y"].map((prop, propIndex) => {
         return <div style={GLOBAL_STYLES.triggerPropContainer}>
           {this.renderTriggerProp(
