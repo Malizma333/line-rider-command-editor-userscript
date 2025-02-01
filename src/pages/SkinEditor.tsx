@@ -61,23 +61,6 @@ const styles: Record<string, React.CSSProperties> = {
     marginLeft: "5px",
     width: "20px"
   },
-  zoomContainer: {
-    alignItems: "center",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    left: "20px",
-    position: "absolute",
-    top: "20px",
-    height: "0px"
-  },
-  zoomSlider: {
-    accentColor: "black",
-    appearance: "none",
-    border: "2px solid black",
-    borderRadius: "5px",
-    height: "10px"
-  },
   alphaContainer: {
     alignItems: "center",
     display: "flex",
@@ -197,7 +180,7 @@ function SkinEditorCanvas({skinEditor, root, skinTriggers}: {skinEditor: SkinEdi
       transform: `scale(${skinEditor.state.zoom})`,
       transformOrigin: `${skinEditor.state.xOffset}px ${skinEditor.state.yOffset}px`
     }}
-    onWheel={(e: React.WheelEvent) => skinEditor.onZoom(e, true)}
+    onWheel={(e: React.WheelEvent) => skinEditor.onZoom(e)}
   >
     <svg height="18" width="15" style={{ transform: "scale(5)" }}>
       <path {...svgProps.flag} fill={currentSkinTrigger.flag.fill} onClick={() => updateColor("flag")} />
@@ -281,23 +264,18 @@ export default class SkinEditor extends React.Component<Props, State> {
     this.setState({ selectedColor: hexColor });
   }
 
-  onZoom(e: React.ChangeEvent | React.WheelEvent, isMouseAction: boolean): void {
+  onZoom(e: React.WheelEvent): void {
     const ZOOM_MIN = 1, ZOOM_MAX = 4;
-
     const { zoom, xOffset, yOffset } = this.state;
     const rect = (document.getElementById("skinElementContainer") as HTMLElement).getBoundingClientRect();
     const newState = { zoom, xOffset, yOffset };
 
-    if (isMouseAction) {
-      const eWheel = e as React.WheelEvent;
-      if (zoom < ZOOM_MAX) {
-        newState.xOffset = (eWheel.clientX - rect.x) / zoom;
-        newState.yOffset = (eWheel.clientY - rect.y) / zoom;
-      }
-      newState.zoom = Math.max(Math.min(zoom - eWheel.deltaY * 1e-3, ZOOM_MAX), ZOOM_MIN);
-    } else {
-      newState.zoom = Math.max(Math.min(parseInt((e.target as HTMLInputElement).value), ZOOM_MAX), ZOOM_MIN);
+    if (zoom < ZOOM_MAX) {
+      newState.xOffset = (e.clientX - rect.x) / zoom;
+      newState.yOffset = (e.clientY - rect.y) / zoom;
     }
+
+    newState.zoom = Math.max(Math.min(zoom - e.deltaY * 1e-3, ZOOM_MAX), ZOOM_MIN);
 
     this.setState(newState);
   }
@@ -313,20 +291,6 @@ export default class SkinEditor extends React.Component<Props, State> {
       <div style={styles.container}>
         <div style={styles.gridBackground}></div>
         <SkinEditorCanvas skinEditor={this} root={root} skinTriggers={skinTriggers}/>
-        <div style={styles.zoomContainer}>
-          <input
-            style={styles.zoomSlider}
-            type="range"
-            min={1}
-            max={4}
-            step={0.1}
-            value={this.state.zoom}
-            onChange={(e: React.ChangeEvent) => this.onZoom(e, false)}
-          ></input>
-          <text>
-            x{Math.round(this.state.zoom * 10) / 10}
-          </text>
-        </div>
         <div style={styles.outlineContainer}>
           <text>Outline</text>
           <div
