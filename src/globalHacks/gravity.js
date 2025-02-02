@@ -13,7 +13,7 @@ window.setCustomGravity = (function() {
   });
 
   /**
-   *
+   * Resets physics and camera frame caches
    */
   function reset() {
     window.store.dispatch({type: 'STOP_PLAYER'});
@@ -29,7 +29,8 @@ window.setCustomGravity = (function() {
   }
 
   /**
-   *
+   * Called by gravity get method, retrieves computed gravity for the current physics frame
+   * @returns {{x: number, y: number}} Gravity for the current subiteration
    */
   function getGravity() {
     if (triggers.length === 0) {
