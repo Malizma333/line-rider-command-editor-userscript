@@ -51,10 +51,11 @@ const styles = {
 } satisfies Record<string, React.CSSProperties>;
 
 /**
- *
- * @param root0
- * @param root0.root
- * @param root0.settings
+ * Creates settings header
+ * @param root0 Settings head properties
+ * @param root0.root Root app component
+ * @param root0.settings Root settings component
+ * @returns Settings header component at top of settings page
  */
 function SettingsHeader({root, settings}: {root: App, settings: Settings}) {
   return <div style={{...styles.header, fontSize: '1.5em'}}>
@@ -92,13 +93,13 @@ const LABEL_MAP = {
 } as const;
 
 /**
- *
- * @param root0
- * @param root0.root
- * @param root0.current
- * @param root0.onClick
- * @param root0.title
- * @param root0.lkey
+ * Creates settings section component
+ * @param root0 Settings section properties
+ * @param root0.current Currently selected setting value
+ * @param root0.onClick Function ran when a new value is selected
+ * @param root0.title Title for the section
+ * @param root0.lkey Label key corresponding to which setting is being rendered
+ * @returns Row of settings page populated with properties
  */
 function SettingsSection(
     {current, onClick, title, lkey}:

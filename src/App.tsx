@@ -3,9 +3,9 @@ import {
   TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, GravityTrigger,
   SkinCssTrigger, CameraPanTrigger, TimeRemapTrigger,
 } from './lib/TriggerDataManager.types';
-import {readJsScript} from './io/read-js-script';
-import {readJsonScript} from './io/read-json-script';
-import {formatSkins, writeScript} from './io/write-js-script';
+import {readJsScript} from './lib/io/read-js-script';
+import {readJsonScript} from './lib/io/read-json-script';
+import {formatSkins, writeScript} from './lib/io/write-js-script';
 import {getSetting, TEXT_SIZES} from './lib/settings-storage';
 import {FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING} from './lib/settings-storage.types';
 import {validateTimes} from './lib/validation';

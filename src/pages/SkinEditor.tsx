@@ -78,10 +78,11 @@ const styles = {
 } satisfies Record<string, React.CSSProperties>;
 
 /**
- *
- * @param root0
- * @param root0.skinEditor
- * @param root0.root
+ * Creates the skin editor toolbar
+ * @param root0 Component properties
+ * @param root0.skinEditor Skin editor component
+ * @param root0.root Root app component
+ * @returns Skin editor toolbar component rendered above the editor canvas
  */
 function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: App}) {
   const colorValue = skinEditor.state.selectedColor.substring(0, 7);
@@ -148,19 +149,20 @@ const svgProps = {
   sleeve: {strokeWidth: '0.3', transform: 'translate(15, 10) rotate(5)', d: 'M5,0.7H0c-0.4,0-0.7-0.3-0.7-0.7S-0.4-0.7,0-0.7h5'},
 } satisfies Record<string, React.SVGProps<SVGElement>>;
 
+
 /**
- *
- * @param root0
- * @param root0.skinEditor
- * @param root0.root
- * @param root0.skinTriggers
+ * Creates the skin editor canvas
+ * @param root0 Component properties
+ * @param root0.skinEditor Skin editor component
+ * @param root0.root Root app component
+ * @param root0.skinCss Custom skin CSS to be rendered on the canvas
+ * @returns Skin editor canvas component where skins can be colored
  */
 function SkinEditorCanvas(
-    {skinEditor, root, skinTriggers}:
-  {skinEditor: SkinEditor, root: App, skinTriggers: SkinCssTrigger[]},
+    {skinEditor, root, skinCss}:
+  {skinEditor: SkinEditor, root: App, skinCss: SkinCssTrigger},
 ) {
-  const cur = skinTriggers[skinEditor.state.selectedRider];
-  const stroke = cur.outline.stroke;
+  const stroke = skinCss.outline.stroke;
   const updateColor = (target: string, stroke = false) => {
     root.onUpdateTrigger(
         skinEditor.state.selectedColor,
@@ -178,39 +180,39 @@ function SkinEditorCanvas(
     onWheel={(e: React.WheelEvent) => skinEditor.onZoom(e)}
   >
     <svg height="18" width="15" style={{transform: 'scale(8)'}}>
-      <path {...svgProps.flag} fill={cur.flag.fill} onClick={() => updateColor('flag')}/>
-      <path {...svgProps.flagOutline} fill={cur.flag.fill} onClick={() => updateColor('flag')}/>
+      <path {...svgProps.flag} fill={skinCss.flag.fill} onClick={() => updateColor('flag')}/>
+      <path {...svgProps.flagOutline} fill={skinCss.flag.fill} onClick={() => updateColor('flag')}/>
     </svg>
     <svg width="200"></svg>
     <svg height="25" width="31" style={{transform: 'scale(8)'}}>
-      <rect {...svgProps.skin} fill={cur.skin.fill} onClick={() => updateColor('skin')}/>
-      <path {...svgProps.skin2} stroke={stroke} fill={cur.skin.fill} onClick={() => updateColor('skin')}/>
-      <rect {...svgProps.hair} fill={cur.hair.fill} onClick={() => updateColor('hair')}/>
-      <rect {...svgProps.hair2} fill={cur.hair.fill} onClick={() => updateColor('hair')}/>
-      <rect {...svgProps.fill} fill={cur.fill.fill} onClick={() => updateColor('fill')}/>
-      <polygon {...svgProps.eye} fill={cur.eye.fill} onClick={() => updateColor('eye')}/>
-      <path {...svgProps.sled} stroke={stroke} fill={cur.sled.fill} onClick={() => updateColor('sled')}/>
-      <line {...svgProps.string} stroke={cur.string.stroke} onClick={() => updateColor('string', true)}/>
-      <path {...svgProps.hand} stroke={stroke} fill={cur.armHand.fill} onClick={() => updateColor('armHand')}/>
-      <path {...svgProps.pants} stroke={stroke} fill={cur.legPants.fill} onClick={() => updateColor('legPants')}/>
-      <path {...svgProps.foot} stroke={stroke} fill={cur.legFoot.fill} onClick={() => updateColor('legFoot')}/>
-      <rect {...svgProps.idScarf} x="2" fill={cur.id_scarf0.fill} onClick={() => updateColor('id_scarf0')}/>
-      <rect {...svgProps.idScarf} x="0" fill={cur.id_scarf0.fill} onClick={() => updateColor('id_scarf0')}/>
-      <rect {...svgProps.idScarf} x="-2" fill={cur.id_scarf1.fill} onClick={() => updateColor('id_scarf1')}/>
-      <rect {...svgProps.idScarf} x="-4" fill={cur.id_scarf2.fill} onClick={() => updateColor('id_scarf2')}/>
-      <rect {...svgProps.idScarf} x="-6" fill={cur.id_scarf3.fill} onClick={() => updateColor('id_scarf3')}/>
-      <rect {...svgProps.idScarf} x="-8" fill={cur.id_scarf4.fill} onClick={() => updateColor('id_scarf4')}/>
-      <rect {...svgProps.idScarf} x="-10" fill={cur.id_scarf5.fill} onClick={() => updateColor('id_scarf5')}/>
-      <rect {...svgProps.torso} stroke={stroke} fill={cur.torso.fill} onClick={() => updateColor('torso')}/>
-      <rect {...svgProps.scarf} y="1.5" fill={cur.scarf1.fill} onClick={() => updateColor('scarf1')}/>
-      <rect {...svgProps.scarf} y="0.5" fill={cur.scarf2.fill} onClick={() => updateColor('scarf2')}/>
-      <rect {...svgProps.scarf} y="-0.5" fill={cur.scarf3.fill} onClick={() => updateColor('scarf3')}/>
-      <rect {...svgProps.scarf} y="-1.5" fill={cur.scarf4.fill} onClick={() => updateColor('scarf4')}/>
-      <rect {...svgProps.scarf} y="-2.5" fill={cur.scarf5.fill} onClick={() => updateColor('scarf5')}/>
-      <path {...svgProps.hatTop} stroke={stroke} fill={cur.hatTop.fill} onClick={() => updateColor('hatTop')}/>
-      <path {...svgProps.hatBottom} stroke={cur.hatBottom.stroke} onClick={() => updateColor('hatBottom', true)}/>
-      <circle {...svgProps.hatBall} fill={cur.hatBall.fill} onClick={() => updateColor('hatBall')}/>
-      <path {...svgProps.sleeve} stroke={stroke} fill={cur.armSleeve.fill} onClick={() => updateColor('armSleeve')}/>
+      <rect {...svgProps.skin} fill={skinCss.skin.fill} onClick={() => updateColor('skin')}/>
+      <path {...svgProps.skin2} stroke={stroke} fill={skinCss.skin.fill} onClick={() => updateColor('skin')}/>
+      <rect {...svgProps.hair} fill={skinCss.hair.fill} onClick={() => updateColor('hair')}/>
+      <rect {...svgProps.hair2} fill={skinCss.hair.fill} onClick={() => updateColor('hair')}/>
+      <rect {...svgProps.fill} fill={skinCss.fill.fill} onClick={() => updateColor('fill')}/>
+      <polygon {...svgProps.eye} fill={skinCss.eye.fill} onClick={() => updateColor('eye')}/>
+      <path {...svgProps.sled} stroke={stroke} fill={skinCss.sled.fill} onClick={() => updateColor('sled')}/>
+      <line {...svgProps.string} stroke={skinCss.string.stroke} onClick={() => updateColor('string', true)}/>
+      <path {...svgProps.hand} stroke={stroke} fill={skinCss.armHand.fill} onClick={() => updateColor('armHand')}/>
+      <path {...svgProps.pants} stroke={stroke} fill={skinCss.legPants.fill} onClick={() => updateColor('legPants')}/>
+      <path {...svgProps.foot} stroke={stroke} fill={skinCss.legFoot.fill} onClick={() => updateColor('legFoot')}/>
+      <rect {...svgProps.idScarf} x="2" fill={skinCss.id_scarf0.fill} onClick={() => updateColor('id_scarf0')}/>
+      <rect {...svgProps.idScarf} x="0" fill={skinCss.id_scarf0.fill} onClick={() => updateColor('id_scarf0')}/>
+      <rect {...svgProps.idScarf} x="-2" fill={skinCss.id_scarf1.fill} onClick={() => updateColor('id_scarf1')}/>
+      <rect {...svgProps.idScarf} x="-4" fill={skinCss.id_scarf2.fill} onClick={() => updateColor('id_scarf2')}/>
+      <rect {...svgProps.idScarf} x="-6" fill={skinCss.id_scarf3.fill} onClick={() => updateColor('id_scarf3')}/>
+      <rect {...svgProps.idScarf} x="-8" fill={skinCss.id_scarf4.fill} onClick={() => updateColor('id_scarf4')}/>
+      <rect {...svgProps.idScarf} x="-10" fill={skinCss.id_scarf5.fill} onClick={() => updateColor('id_scarf5')}/>
+      <rect {...svgProps.torso} stroke={stroke} fill={skinCss.torso.fill} onClick={() => updateColor('torso')}/>
+      <rect {...svgProps.scarf} y="1.5" fill={skinCss.scarf1.fill} onClick={() => updateColor('scarf1')}/>
+      <rect {...svgProps.scarf} y="0.5" fill={skinCss.scarf2.fill} onClick={() => updateColor('scarf2')}/>
+      <rect {...svgProps.scarf} y="-0.5" fill={skinCss.scarf3.fill} onClick={() => updateColor('scarf3')}/>
+      <rect {...svgProps.scarf} y="-1.5" fill={skinCss.scarf4.fill} onClick={() => updateColor('scarf4')}/>
+      <rect {...svgProps.scarf} y="-2.5" fill={skinCss.scarf5.fill} onClick={() => updateColor('scarf5')}/>
+      <path {...svgProps.hatTop} stroke={stroke} fill={skinCss.hatTop.fill} onClick={() => updateColor('hatTop')}/>
+      <path {...svgProps.hatBottom} stroke={skinCss.hatBottom.stroke} onClick={() => updateColor('hatBottom', true)}/>
+      <circle {...svgProps.hatBall} fill={skinCss.hatBall.fill} onClick={() => updateColor('hatBall')}/>
+      <path {...svgProps.sleeve} stroke={stroke} fill={skinCss.armSleeve.fill} onClick={() => updateColor('armSleeve')}/>
     </svg>
   </div>;
 }
@@ -285,7 +287,7 @@ export default class SkinEditor extends React.Component<Props, State> {
       <SkinEditorToolbar skinEditor={this} root={root}/>
       <div style={{...GLOBAL_STYLES.windowBody, ...styles.container}}>
         <div style={styles.gridBackground}></div>
-        <SkinEditorCanvas skinEditor={this} root={root} skinTriggers={skinTriggers}/>
+        <SkinEditorCanvas skinEditor={this} root={root} skinCss={skinTriggers[this.state.selectedRider]}/>
         <div style={styles.outlineContainer}>
           <text>Outline</text>
           <div
