@@ -9,6 +9,14 @@ import * as Selectors from '../lib/redux-selectors';
 import Dropdown from '../components/Dropdown';
 
 const styles = {
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    position: 'relative',
+    userSelect: 'none',
+    width: '100%',
+  },
   gridBackground: {
     background: 'linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%), linear-gradient(-45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%)',
     backgroundSize: '10px 10px',
@@ -16,9 +24,6 @@ const styles = {
     position: 'absolute',
     transform: 'rotate(45deg)',
     width: '1000px',
-  },
-  toolbarItem: {
-    margin: '0px 10px',
   },
   canvas: {
     alignItems: 'center',
@@ -88,7 +93,7 @@ function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: Ap
       icon={FICONS.TRASH2}
       customStyle={{position: 'absolute', right: '10px'}}
     />
-    <div style={{...styles.toolbarItem, ...styles.alphaContainer}}>
+    <div style={{...GLOBAL_STYLES.spacedProperty, ...styles.alphaContainer}}>
       <label htmlFor="alphaSlider">Transparency</label>
       <div style={styles.alphaSliderContainer}>
         <input
@@ -104,13 +109,13 @@ function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: Ap
       </div>
     </div>
     <input
-      style={{...styles.toolbarItem, ...styles.colorPicker}}
+      style={{...GLOBAL_STYLES.spacedProperty, ...styles.colorPicker}}
       type="color"
       value={colorValue}
       onChange={(e: React.ChangeEvent) => skinEditor.onChangeColor((e.target as HTMLInputElement).value, undefined)}
     ></input>
     <Dropdown
-      customStyle={{...styles.toolbarItem, fontSize: '1.5em'}}
+      customStyle={{...GLOBAL_STYLES.spacedProperty, fontSize: '1.5em'}}
       value={skinEditor.state.selectedRider}
       count={root.state.numRiders}
       label="Rider"
@@ -278,7 +283,7 @@ export default class SkinEditor extends React.Component<Props, State> {
 
     return <React.Fragment>
       <SkinEditorToolbar skinEditor={this} root={root}/>
-      <div style={{...GLOBAL_STYLES.window, justifyContent: 'center', alignItems: 'center', overflow: 'hidden', position: 'relative', userSelect: 'none', width: '100%'}}>
+      <div style={{...GLOBAL_STYLES.windowBody, ...styles.container}}>
         <div style={styles.gridBackground}></div>
         <SkinEditorCanvas skinEditor={this} root={root} skinTriggers={skinTriggers}/>
         <div style={styles.outlineContainer}>

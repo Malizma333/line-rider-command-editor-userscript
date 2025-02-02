@@ -20,12 +20,12 @@ export const GLOBAL_STYLES = {
     position: 'fixed',
     top: '8px',
   },
-  toolbarContainer: {
+  actionContainer: {
     alignItems: 'center',
     display: 'flex',
     width: '100%',
   },
-  content: {
+  mainContent: {
     alignItems: 'center',
     display: 'flex',
     height: '50vh',
@@ -63,11 +63,11 @@ export const GLOBAL_STYLES = {
     justifyContent: 'start',
     padding: '10px',
   },
-  window: {
+  windowBody: {
     backgroundColor: THEME.light,
     border: '2px solid black',
     display: 'flex',
-    flex: 9,
+    flex: 10,
     flexDirection: 'column',
   },
   triggerContainer: {
@@ -86,7 +86,7 @@ export const GLOBAL_STYLES = {
     direction: 'ltr',
     justifyContent: 'space-between',
     position: 'absolute',
-    right: '5px',
+    right: '0px',
   },
   triggerRowContainer: {
     alignItems: 'center',
@@ -99,9 +99,12 @@ export const GLOBAL_STYLES = {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'start',
-    marginBottom: '0.25em',
+    marginBottom: '5px',
     width: '100%',
     whiteSpace: 'nowrap',
+  },
+  spacedProperty: {
+    margin: '0 5px',
   },
   newTriggerButton: {
     backgroundColor: THEME.light,

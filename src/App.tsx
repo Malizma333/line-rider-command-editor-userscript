@@ -398,7 +398,7 @@ export class App extends React.Component {
 
     return <div style={{fontSize: TEXT_SIZES[this.state.fontSize]}}>
       {this.renderActions()}
-      {this.state.active && <div style={GLOBAL_STYLES.content}>
+      {this.state.active && <div style={GLOBAL_STYLES.mainContent}>
         {this.state.settingsActive ?
           <Settings root={this}/> :
           <div style={GLOBAL_STYLES.windowContainer}>
@@ -407,7 +407,7 @@ export class App extends React.Component {
               <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}/> :
               <React.Fragment>
                 {this.renderWindowHead()}
-                {<div style={{...GLOBAL_STYLES.window, overflowY: 'scroll', paddingBottom: '10px'}}>
+                {<div style={{...GLOBAL_STYLES.windowBody, overflowY: 'scroll', paddingBottom: '10px'}}>
                   {Object.keys(data.triggers).map((i) => this.renderTrigger(parseInt(i, 10)))}
                 </div>}
               </React.Fragment>
@@ -422,10 +422,10 @@ export class App extends React.Component {
     const undoDisabled = this.triggerManager.undoLen === 0;
     const redoDisabled = this.triggerManager.redoLen === 0;
 
-    return !this.state.active ? <div style={GLOBAL_STYLES.toolbarContainer}>
+    return !this.state.active ? <div style={GLOBAL_STYLES.actionContainer}>
       <EmbeddedButton title="Maximize" onClick={() => this.onToggleActive()} icon={FICONS.MAXIMIZE}/>
-    </div> : <div style={GLOBAL_STYLES.toolbarContainer}>
-      <div style={{...GLOBAL_STYLES.toolbarContainer, justifyContent: 'start'}}>
+    </div> : <div style={GLOBAL_STYLES.actionContainer}>
+      <div style={{...GLOBAL_STYLES.actionContainer, justifyContent: 'start'}}>
         <EmbeddedButton title="Minimize" onClick={() => this.onToggleActive()} icon={FICONS.MINIMIZE}/>
         <EmbeddedButton title="Download" onClick={() => this.onDownload()} icon={FICONS.DOWNLOAD}/>
         <EmbeddedButton title="Upload" onClick={() => this.onUpload()} icon={FICONS.UPLOAD}/>
@@ -433,7 +433,7 @@ export class App extends React.Component {
         <EmbeddedButton title="Run" onClick={() => this.onTest()} icon={FICONS.PLAY} disabled={runDisabled}/>
         <EmbeddedButton title="Copy Script" onClick={async () => await this.onCopy()} icon={FICONS.COPY}/>
       </div>
-      <div style={{...GLOBAL_STYLES.toolbarContainer, justifyContent: 'end'}}>
+      <div style={{...GLOBAL_STYLES.actionContainer, justifyContent: 'end'}}>
         <EmbeddedButton title="Undo" onClick={() => this.onUndo()} icon={FICONS.ARROW_LEFT} disabled={undoDisabled}/>
         <EmbeddedButton title="Redo" onClick={() => this.onRedo()} icon={FICONS.ARROW_RIGHT} disabled={redoDisabled}/>
         <EmbeddedButton title="Settings" onClick={() => this.onToggleSettings()} icon={FICONS.SETTINGS}/>
@@ -638,17 +638,17 @@ export class App extends React.Component {
     const NumberPicker = constraint.TYPE === CONSTRAINT_TYPE.FLOAT ? FloatPicker : IntPicker;
 
     return <div style={GLOBAL_STYLES.triggerRowContainer}>
-      <label style={{margin: '0em .25em'}} htmlFor={propPath.join('_')}>
+      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={propPath.join('_')}>
         {labelText}
       </label>
       {constraint.TYPE === CONSTRAINT_TYPE.BOOL ?
       <Checkbox
-        customStyle={{margin: '0em .25em'}}
+        customStyle={GLOBAL_STYLES.spacedProperty}
         id={propPath.join('_')}
         value={value as boolean}
         onCheck={() => this.onUpdateTrigger(!value, propPath)}
       /> : <NumberPicker
-        customStyle={{margin: '0em .25em', color: color || 'black'}}
+        customStyle={{...GLOBAL_STYLES.spacedProperty, color: color || 'black'}}
         id={propPath.join('_')}
         value={value as number | string}
         min={constraint.MIN}

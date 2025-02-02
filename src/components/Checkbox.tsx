@@ -4,10 +4,10 @@ const styles = {
   container: {
     alignItems: 'center',
     display: 'flex',
-    height: '1em',
+    height: '1.25em',
     justifyContent: 'center',
     position: 'relative',
-    width: '1em',
+    width: '1.25em',
   },
   primary: {
     appearance: 'none',
