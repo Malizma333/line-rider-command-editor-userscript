@@ -1,5 +1,4 @@
-
-
+/* eslint-disable max-len */
 const {React} = window;
 const svgStyle = {
   fill: 'none',

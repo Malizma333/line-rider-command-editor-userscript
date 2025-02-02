@@ -18,14 +18,14 @@ const styles = {
 } satisfies Record<string, React.CSSProperties>;
 
 /**
- *
- * @param root0
- * @param root0.customStyles
- * @param root0.value
- * @param root0.count
- * @param root0.label
- * @param root0.onChange
- * @param root0.customStyle
+ * Creates a custom dropdown selecting between a list of numbered items
+ * @param root0 Custom dropdown properties
+ * @param root0.customStyle Custom styles to apply to this dropdown
+ * @param root0.value Currently selected dropdown item
+ * @param root0.count Count of values to choose from
+ * @param root0.label Label to prefix each value with
+ * @param root0.onChange Function ran whenever item is selected
+ * @returns Custom select input dropdown populated with options
  */
 export default function Dropdown(
     {customStyle, value, count, label, onChange}:

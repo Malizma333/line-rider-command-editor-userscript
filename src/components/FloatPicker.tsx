@@ -3,12 +3,13 @@ import {THEME} from '../styles';
 const {React} = window;
 
 /**
- *
- * @param prevValue
- * @param newValue
- * @param bounded
- * @param min
- * @param max
+ * Validates the number for a custom float picker
+ * @param prevValue Value that this field previously took on
+ * @param newValue Proposed value of this field
+ * @param bounded Whether this value is bounded by minimum, maximum, and valid number constraints
+ * @param min Minimum amount this value can take on
+ * @param max Maximum amount this value can take on
+ * @returns The validated value
  */
 function clampFloat(
     prevValue: string | number, newValue: string, bounded: boolean, min: number, max: number,

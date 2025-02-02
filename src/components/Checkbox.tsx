@@ -30,12 +30,13 @@ const styles = {
 } satisfies Record<string, React.CSSProperties>;
 
 /**
- *
- * @param root0
- * @param root0.customStyle
- * @param root0.id
- * @param root0.value
- * @param root0.onCheck
+ * Custom circular checkbox with a label included
+ * @param root0 Custom checkbox properties
+ * @param root0.customStyle Custom styles to apply to the checkbox
+ * @param root0.id Id corresponding to this checkbox form field
+ * @param root0.value Value that this checkbox displays
+ * @param root0.onCheck Function ran whenever this checkbox is interacted with
+ * @returns Custom checkbox field
  */
 export default function Checkbox(
     {customStyle, id, value, onCheck}:

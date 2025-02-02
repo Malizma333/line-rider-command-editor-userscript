@@ -8,12 +8,13 @@ const style: React.CSSProperties = {
 };
 
 /**
- *
- * @param root0
- * @param root0.current
- * @param root0.target
- * @param root0.label
- * @param root0.onClick
+ * A custom radio button created for a radio button group
+ * @param root0 Custom radio button properties
+ * @param root0.current Current value within the radio group
+ * @param root0.target Target value this radio button corresponds to
+ * @param root0.label Label to put on this radio button option
+ * @param root0.onClick Function ran whenever this button is clicked
+ * @returns Custom radio button with label inside
  */
 export default function SettingsRadioButton(
     {current, target, label, onClick}:

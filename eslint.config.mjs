@@ -104,7 +104,7 @@ export default tseslint.config(
   tseslint.configs.strict,
   tseslint.configs.stylistic,
   tseslint.configs.recommended,
-  jsdoc.configs['flat/recommended'],
+  jsdoc.configs['flat/recommended-typescript'],
   {
     languageOptions: {
       globals: {
@@ -112,7 +112,9 @@ export default tseslint.config(
         myCustomGlobal: "readonly"
       }
     },
-    rules,
-    ignores: ["*.min.js", "*.config.*"]
+    rules
+  },
+  {
+    ignores: ["command-editor.min.js", "**/*.config.*"]
   }
 );

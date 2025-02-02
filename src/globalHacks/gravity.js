@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/no-types */
 window.setCustomGravity = (function() {
   const numIters = window.store.getState().simulator.engine.getFrame(0).snapshot.entities[0].entities[0].points.length;
   let init = false;

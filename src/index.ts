@@ -24,6 +24,8 @@ declare global {
     setCustomRiders: (cssList: string[]) => void
     setCustomGravity?: (gravity: GravityTrigger[]) => void
   }
+
+  type RootState = ReturnType<typeof window.store.getState>
 }
 
 /**
