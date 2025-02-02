@@ -1,44 +1,42 @@
-import {TRIGGER_METADATA} from '../lib/TriggerDataManager';
-import {TRIGGER_ID, TriggerDataLookup, SkinCssTrigger} from '../lib/TriggerDataManager.types';
+import { TimedTrigger, TriggerTime, SkinCssTrigger } from '../lib/TriggerDataManager.types';
 
 /**
- * Generates a Line Rider Web script from trigger data and a specific command id
- * @param command
- * @param triggerData
+ * Validates the times in a list of triggers
+ * - First trigger must be at time 0
+ * - Each trigger after should have a later time than the trigger before it
+ * @param triggers List of triggers to check timestamps of
+ * @returns Which times in the trigger array are invalid
  */
-export function writeScript(command: TRIGGER_ID, triggerData: TriggerDataLookup): string {
-  const currentData = triggerData[command];
-  const currentHeader = (TRIGGER_METADATA[command]).FUNC;
+export function validateTimes(triggers: TimedTrigger[]): boolean[] {
+  const invalidIndices = Array(triggers.length).map(() => false);
 
-  if (currentHeader === undefined) {
-    return '';
+  const firstTime = triggers[0][0];
+  if (firstTime[0] !== 0 || firstTime[1] !== 0 || firstTime[2] !== 0) {
+    invalidIndices[0] = true;
   }
 
-  switch (command) {
-    case TRIGGER_ID.FOCUS:
-    case TRIGGER_ID.PAN:
-    case TRIGGER_ID.ZOOM:
-      return currentHeader
-          .replace('{0}', JSON.stringify(currentData.triggers))
-          .replace('{1}', String(currentData.smoothing))
-          .replace(' ', '');
-    case TRIGGER_ID.TIME:
-      return currentHeader
-          .replace('{0}', JSON.stringify(currentData.triggers))
-          .replace('{1}', String(currentData.interpolate))
-          .replace(' ', '');
-    case TRIGGER_ID.SKIN:
-      return currentHeader
-          .replace('{0}', JSON.stringify(formatSkins(currentData.triggers as SkinCssTrigger[])))
-          .replace(' ', '');
-    default:
-      return '';
+  for (let i = 0; i < triggers.length - 1; i += 1) {
+    const time1 = triggers[i][0] as number[];
+    const time2 = triggers[i + 1][0] as number[];
+    const index1 = (
+      time1[0] * 60 + time1[1]
+    ) * 40 + time1[2];
+    const index2 = (
+      time2[0] * 60 + time2[1]
+    ) * 40 + time2[2];
+
+    if (index1 >= index2) {
+      invalidIndices[i + 1] = true;
+    }
   }
+
+  return invalidIndices;
 }
 
 /**
  * Formats a list of `SkinCSSTriggers` into an array of css strings
- * @param customSkinData
+ * @param customSkinData List of CSS triggers to convert to a string array
+ * @returns The array of css properties
  */
 export function formatSkins(customSkinData: SkinCssTrigger[]): string[] {
   const nullColor = '#ffffffff';
@@ -76,4 +74,16 @@ export function formatSkins(customSkinData: SkinCssTrigger[]): string[] {
   customSkinStrings.unshift(customSkinStrings.pop() ?? '');
 
   return customSkinStrings;
+}
+
+/**
+ * Converts a player index to a trigger timestamp
+ * @param index Frame to convert to a timestamp
+ * @returns A timestamp array containing [minutes, seconds, frames]
+ */
+export function retrieveTimestamp(index: number): TriggerTime {
+  const frames = index % 40;
+  const seconds = Math.floor(index / 40) % 60;
+  const minutes = Math.floor(index / 2400);
+  return [minutes, seconds, frames];
 }

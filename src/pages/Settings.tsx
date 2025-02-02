@@ -1,11 +1,11 @@
-const {React} = window;
-import {THEME} from '../styles';
+const { React } = window;
+import { THEME } from '../styles';
 import SettingsRadioButton from '../components/SettingsRadioButton';
 import EmbeddedButton from '../components/EmbeddedButton';
 import * as FICONS from '../components/Icons';
-import {App} from '../App';
-import {FONT_SIZE_SETTING, VIEWPORT_SETTING, SETTINGS_KEY} from '../lib/settings-storage.types';
-import {getSetting, saveSetting} from '../lib/settings-storage';
+import { App } from '../App';
+import { FONT_SIZE_SETTING, VIEWPORT_SETTING, SETTINGS_KEY } from '../lib/settings-storage.types';
+import { getSetting, saveSetting } from '../lib/settings-storage';
 
 const styles = {
   window: {
@@ -51,17 +51,18 @@ const styles = {
 } satisfies Record<string, React.CSSProperties>;
 
 /**
- *
- * @param root0
- * @param root0.root
- * @param root0.settings
+ * Creates settings header
+ * @param root0 Settings head properties
+ * @param root0.root Root app component
+ * @param root0.settings Root settings component
+ * @returns Settings header component at top of settings page
  */
-function SettingsHeader({root, settings}: {root: App, settings: Settings}) {
-  return <div style={{...styles.header, fontSize: '1.5em'}}>
+function SettingsHeader({ root, settings }: {root: App, settings: Settings}) {
+  return <div style={{ ...styles.header, fontSize: '1.5em' }}>
     <EmbeddedButton
       onClick={() => root.onToggleSettings()}
       icon={FICONS.X}
-      customStyle={{position: 'absolute', right: '0px'}}
+      customStyle={{ position: 'absolute', right: '0px' }}
     />
     Settings
     <button
@@ -92,16 +93,16 @@ const LABEL_MAP = {
 } as const;
 
 /**
- *
- * @param root0
- * @param root0.root
- * @param root0.current
- * @param root0.onClick
- * @param root0.title
- * @param root0.lkey
+ * Creates settings section component
+ * @param root0 Settings section properties
+ * @param root0.current Currently selected setting value
+ * @param root0.onClick Function ran when a new value is selected
+ * @param root0.title Title for the section
+ * @param root0.lkey Label key corresponding to which setting is being rendered
+ * @returns Row of settings page populated with properties
  */
 function SettingsSection(
-    {current, onClick, title, lkey}:
+    { current, onClick, title, lkey }:
   {current: FONT_SIZE_SETTING | VIEWPORT_SETTING, onClick: (e: number) => void, title: string,
     lkey: SETTINGS_KEY},
 ) {
@@ -141,36 +142,36 @@ export default class Settings extends React.Component<Props, State> {
   }
 
   onChangeFontSize(newFontSize: number): void {
-    const {fontSize} = this.state;
+    const { fontSize } = this.state;
 
     if (newFontSize !== fontSize) {
-      this.setState({dirty: true});
+      this.setState({ dirty: true });
     }
 
-    this.setState({fontSize: newFontSize});
+    this.setState({ fontSize: newFontSize });
   }
 
   onChangeViewport(newResolution: number): void {
-    const {resolution} = this.state;
+    const { resolution } = this.state;
 
     if (resolution !== newResolution) {
-      this.setState({dirty: true});
+      this.setState({ dirty: true });
     }
 
-    this.setState({resolution: newResolution});
+    this.setState({ resolution: newResolution });
   }
 
   onApply(): void {
-    const {resolution, fontSize} = this.state;
-    const {root} = this.props;
+    const { resolution, fontSize } = this.state;
+    const { root } = this.props;
 
     root.onApplyViewport(resolution);
 
     saveSetting(SETTINGS_KEY.FONT_SIZE, fontSize);
     saveSetting(SETTINGS_KEY.VIEWPORT, resolution);
 
-    root.setState({fontSize, resolution});
-    this.setState({dirty: false});
+    root.setState({ fontSize, resolution });
+    this.setState({ dirty: false });
   }
 
   render() {

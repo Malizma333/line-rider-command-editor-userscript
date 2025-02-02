@@ -1,22 +1,23 @@
-import {TriggerDataManager, TRIGGER_METADATA} from '../lib/TriggerDataManager';
+import { TriggerDataManager, TRIGGER_METADATA } from '../TriggerDataManager';
 import {
-  TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, SkinCssTrigger,
-} from '../lib/TriggerDataManager.types';
-import {CONSTRAINT} from '../lib/constraints';
+  TRIGGER_ID, TriggerDataLookup, TimedTrigger, SkinCssTrigger,
+} from '../TriggerDataManager.types';
+import { CONSTRAINT } from '../constraints';
+import { retrieveTimestamp } from '../util';
 
 /**
- * Parses text from the script field into a trigger data object, reverting to the original
- * value if an error occurs
- * @param scriptText
- * @param currentTriggerData
+ * Parses text from the script field into a trigger data object, reverting to the original value if an error occurs
+ * @param scriptText The script text that needs to be parsed
+ * @param currentTriggerData The current trigger data in case there is an issue with the new data
+ * @returns The formatted trigger data object
  */
 export function readJsScript(scriptText: string, currentTriggerData: TriggerDataLookup): TriggerDataLookup {
   const triggerData = TriggerDataManager.initialTriggerData;
 
   /**
    * Parses an individual command given its id and applies the parsed script to the trigger data
-   * @param commandId
-   * @param scriptSection
+   * @param commandId The id of the command being parsed
+   * @param scriptSection The section of script that needs parsing
    */
   function parseCommand(commandId: TRIGGER_ID, scriptSection: string): void {
     if (commandId === TRIGGER_ID.GRAVITY) {
@@ -71,8 +72,8 @@ export function readJsScript(scriptText: string, currentTriggerData: TriggerData
 
   /**
    * Parses a potential new Trigger[], not necessarily a complete definition of one
-   * @param commandId
-   * @param commandArray
+   * @param commandId The trigger type being parsed
+   * @param commandArray The list of triggers being parsed
    */
   function parseTriggers(commandId: TRIGGER_ID, commandArray: TimedTrigger[]): void {
     const triggers: TimedTrigger[] = [];
@@ -102,8 +103,8 @@ export function readJsScript(scriptText: string, currentTriggerData: TriggerData
 
   /**
    * Parses integer or boolean smoothing for a command if its available
-   * @param commandId
-   * @param smoothingValue
+   * @param commandId The trigger type being parsed
+   * @param smoothingValue The proposed value for smoothing
    */
   function parseSmoothing(commandId: TRIGGER_ID, smoothingValue?: boolean | number): void {
     if (commandId === TRIGGER_ID.TIME) {
@@ -143,7 +144,7 @@ export function readJsScript(scriptText: string, currentTriggerData: TriggerData
 
   /**
    * Parses a string of CSS into a skin trigger array
-   * @param skinCSSArray
+   * @param skinCSSArray The css array that needs parsing
    */
   function parseSkinCss(skinCSSArray: string[]): void {
     skinCSSArray.forEach((skinCSS: string, skinIndex: number) => {
@@ -178,8 +179,8 @@ export function readJsScript(scriptText: string, currentTriggerData: TriggerData
 
   /**
    * Parses a specific property of a skin css string
-   * @param cssString
-   * @param skinIndex
+   * @param cssString The css property as a string
+   * @param skinIndex The corresponding index of the skin this property is being parsed for
    */
   function parseSkinProp(cssString: string, skinIndex: number): void {
     const wordRegex = /(['"])?([#]?[a-z0-9A-Z_-]+)(['"])?/g;
@@ -234,20 +235,10 @@ export function readJsScript(scriptText: string, currentTriggerData: TriggerData
   }
 
   /**
-   * Converts a player index to a trigger timestamp
-   * @param index
-   */
-  function retrieveTimestamp(index: number): TriggerTime {
-    const frames = index % 40;
-    const seconds = Math.floor(index / 40) % 60;
-    const minutes = Math.floor(index / 2400);
-    return [minutes, seconds, frames];
-  }
-
-  /**
-   * Removes the leading zeros from numbers within the script
-   * @param script
-   * @param commandId
+   * Removes the leading zeroes from numbers within the script
+   * @param script Script to remove leading zeroes from
+   * @param commandId Type of trigger this script portion is being parsed for
+   * @returns Script with leading zeroes removed
    */
   function removeLeadingZeroes(script: string, commandId: TRIGGER_ID): string {
     if (commandId === TRIGGER_ID.SKIN) return script;

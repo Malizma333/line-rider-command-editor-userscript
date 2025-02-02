@@ -1,6 +1,5 @@
-
-
-const {React} = window;
+/* eslint-disable max-len */
+const { React } = window;
 const svgStyle = {
   fill: 'none',
   height: '1em',
@@ -8,7 +7,7 @@ const svgStyle = {
   strokeLinecap: 'round',
   strokeLinejoin: 'round',
   strokeWidth: '2',
-  style: {position: 'absolute'},
+  style: { position: 'absolute' },
   viewBox: '0 0 24 24',
   width: '1em',
 } as React.SVGAttributes<SVGElement>;
