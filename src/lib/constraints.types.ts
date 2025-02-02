@@ -1,8 +1,4 @@
-export enum CONSTRAINT_TYPE {
-  INT = 0,
-  FLOAT = 1,
-  BOOL = 2
-}
+export enum CONSTRAINT_TYPE { INT, FLOAT, BOOL }
 
 interface NumContraint {
   DEFAULT: number

@@ -6,11 +6,11 @@ import {
 import {readJsScript} from './io/read-js-script';
 import {readJsonScript} from './io/read-json-script';
 import {formatSkins, writeScript} from './io/write-js-script';
-import {getSetting} from './lib/settings-storage';
+import {getSetting, TEXT_SIZES} from './lib/settings-storage';
 import {FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING} from './lib/settings-storage.types';
 import {validateTimes} from './lib/validation';
 import {CONSTRAINT} from './lib/constraints';
-import {GLOBAL_STYLES, THEME, TEXT_SIZES} from './styles';
+import {GLOBAL_STYLES, THEME} from './styles';
 
 import * as Actions from './lib/redux-actions';
 import * as Selectors from './lib/redux-selectors';
@@ -32,8 +32,8 @@ export interface AppState {
   activeTab: TRIGGER_ID
   triggerUpdateFlag: boolean
   numRiders: number
-  focusDDIndices: number[]
-  gravityDDIndices: number[]
+  focusDropdown: number
+  gravityDropdown: number
   settingsActive: boolean
   fontSize: FONT_SIZE_SETTING
   resolution: VIEWPORT_SETTING
@@ -52,8 +52,8 @@ export class App extends React.Component {
       activeTab: TRIGGER_ID.ZOOM,
       triggerUpdateFlag: false,
       numRiders: 1,
-      focusDDIndices: [0],
-      gravityDDIndices: [0],
+      focusDropdown: 0,
+      gravityDropdown: 0,
       settingsActive: false,
       fontSize: getSetting(SETTINGS_KEY.FONT_SIZE),
       resolution: getSetting(SETTINGS_KEY.VIEWPORT),
@@ -71,12 +71,12 @@ export class App extends React.Component {
     const riderCount = Selectors.getNumRiders(store.getState());
 
     if (this.state.numRiders !== riderCount) {
-      const {focusDDIndices, gravityDDIndices} = this.state;
+      const {focusDropdown, gravityDropdown} = this.state;
 
       this.triggerManager.updateRiderCount(riderCount);
       this.setState({triggerUpdateFlag: !this.state.triggerUpdateFlag});
-      this.setState({focusDDIndices: focusDDIndices.map((ddIndex) => Math.min(riderCount - 1, ddIndex))});
-      this.setState({gravityDDIndices: gravityDDIndices.map((ddIndex) => Math.min(riderCount - 1, ddIndex))});
+      this.setState({focusDropdown: Math.min(riderCount - 1, focusDropdown)});
+      this.setState({gravityDropdown: Math.min(riderCount - 1, gravityDropdown)});
       this.setState({numRiders: riderCount});
     }
 
@@ -88,7 +88,7 @@ export class App extends React.Component {
   }
 
   onCreateTrigger(index: number): void {
-    const {activeTab, focusDDIndices, gravityDDIndices} = this.state;
+    const {activeTab} = this.state;
 
     if (activeTab === TRIGGER_ID.SKIN) return;
 
@@ -110,24 +110,6 @@ export class App extends React.Component {
     this.setState({triggerUpdateFlag: !this.state.triggerUpdateFlag});
 
     const newTriggerArray = this.triggerManager.data[activeTab].triggers;
-
-    if (activeTab === TRIGGER_ID.FOCUS && focusDDIndices.length < newTriggerArray.length) {
-      this.setState({
-        focusDDIndices: focusDDIndices
-            .slice(0, index + 1)
-            .concat([0])
-            .concat(focusDDIndices.slice(index + 1)),
-      });
-    }
-
-    if (activeTab === TRIGGER_ID.GRAVITY && gravityDDIndices.length < newTriggerArray.length) {
-      this.setState({
-        gravityDDIndices: gravityDDIndices
-            .slice(0, index + 1)
-            .concat([0])
-            .concat(gravityDDIndices.slice(index + 1)),
-      });
-    }
 
     this.setState({invalidTimes: validateTimes(newTriggerArray as TimedTrigger[])});
   }
@@ -207,12 +189,6 @@ export class App extends React.Component {
   onLoad(nextTriggerData: TriggerDataLookup): void {
     const {activeTab} = this.state;
     try {
-      const focusTriggers = nextTriggerData[TRIGGER_ID.FOCUS].triggers as CameraFocusTrigger[];
-      const focusDDIndices = Array(focusTriggers.length).fill(0) as number[];
-
-      const gravityTriggers = nextTriggerData[TRIGGER_ID.GRAVITY].triggers as GravityTrigger[];
-      const gravityDDIndices = Array(gravityTriggers.length).fill(0) as number[];
-
       this.triggerManager.updateFromPath([], nextTriggerData, TRIGGER_ID.ZOOM);
 
       if (activeTab !== TRIGGER_ID.SKIN) {
@@ -220,8 +196,6 @@ export class App extends React.Component {
         this.setState({invalidTimes: validateTimes(newTriggerArray as TimedTrigger[])});
       }
 
-      this.setState({focusDDIndices});
-      this.setState({gravityDDIndices});
       this.setState({triggerUpdateFlag: !this.state.triggerUpdateFlag});
     } catch (error) {
       if (error instanceof Error) {
@@ -388,18 +362,12 @@ export class App extends React.Component {
     this.setState({triggerUpdateFlag: !this.state.triggerUpdateFlag});
   }
 
-  onChangeFocusDD(index: number, value: number): void {
-    const {focusDDIndices} = this.state;
-    const nextFocusDDIndices = [...focusDDIndices];
-    nextFocusDDIndices[index] = value;
-    this.setState({focusDDIndices: nextFocusDDIndices});
+  onChangeFocusDD(value: number): void {
+    this.setState({focusDropdown: value});
   }
 
-  onChangeGravityDD(index: number, value: number): void {
-    const {gravityDDIndices} = this.state;
-    const nextGravityDDIndices = [...gravityDDIndices];
-    nextGravityDDIndices[index] = value;
-    this.setState({gravityDDIndices: nextGravityDDIndices});
+  onChangeGravityDD(value: number): void {
+    this.setState({gravityDropdown: value});
   }
 
   onCaptureCamera(index: number, triggerType: TRIGGER_ID) {
@@ -426,55 +394,58 @@ export class App extends React.Component {
   }
 
   render() {
-    return <div>
-      {this.renderToolbar()}
-      {this.state.active && <div style={GLOBAL_STYLES.content}>
+    const data = this.triggerManager.data[this.state.activeTab];
+
+    return <div style={{fontSize: TEXT_SIZES[this.state.fontSize]}}>
+      {this.renderActions()}
+      {this.state.active && <div style={GLOBAL_STYLES.mainContent}>
         {this.state.settingsActive ?
           <Settings root={this}/> :
-          <React.Fragment>
+          <div style={GLOBAL_STYLES.windowContainer}>
             {this.renderTabContainer()}
-            {this.renderWindow()}
-          </React.Fragment>
-        }
+            {data.id === TRIGGER_ID.SKIN ?
+              <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}/> :
+              <React.Fragment>
+                {this.renderWindowHead()}
+                {<div style={{...GLOBAL_STYLES.windowBody, overflowY: 'scroll', paddingBottom: '10px'}}>
+                  {Object.keys(data.triggers).map((i) => this.renderTrigger(parseInt(i, 10)))}
+                </div>}
+              </React.Fragment>
+            }
+          </div>}
       </div>}
     </div>;
   }
 
-  renderToolbar() {
+  renderActions() {
     const runDisabled = this.state.invalidTimes.some((i) => i);
     const undoDisabled = this.triggerManager.undoLen === 0;
     const redoDisabled = this.triggerManager.redoLen === 0;
 
-    return <div style={GLOBAL_STYLES.toolbarContainer}>
-      {!this.state.active &&
-        <EmbeddedButton title="Maximize" onClick={() => this.onToggleActive()} icon={FICONS.MAXIMIZE}/>
-      }
-      {this.state.active && <div style={{...GLOBAL_STYLES.toolbarContainer, justifyContent: 'start'}}>
+    return !this.state.active ? <div style={GLOBAL_STYLES.actionContainer}>
+      <EmbeddedButton title="Maximize" onClick={() => this.onToggleActive()} icon={FICONS.MAXIMIZE}/>
+    </div> : <div style={GLOBAL_STYLES.actionContainer}>
+      <div style={{...GLOBAL_STYLES.actionContainer, justifyContent: 'start'}}>
         <EmbeddedButton title="Minimize" onClick={() => this.onToggleActive()} icon={FICONS.MINIMIZE}/>
         <EmbeddedButton title="Download" onClick={() => this.onDownload()} icon={FICONS.DOWNLOAD}/>
         <EmbeddedButton title="Upload" onClick={() => this.onUpload()} icon={FICONS.UPLOAD}/>
         <EmbeddedButton title="Load From Script" onClick={() => this.onLoadScript()} icon={FICONS.CORNER_UP_RIGHT}/>
         <EmbeddedButton title="Run" onClick={() => this.onTest()} icon={FICONS.PLAY} disabled={runDisabled}/>
         <EmbeddedButton title="Copy Script" onClick={async () => await this.onCopy()} icon={FICONS.COPY}/>
-      </div>}
-      {this.state.active && <div style={{...GLOBAL_STYLES.toolbarContainer, justifyContent: 'end'}}>
+      </div>
+      <div style={{...GLOBAL_STYLES.actionContainer, justifyContent: 'end'}}>
         <EmbeddedButton title="Undo" onClick={() => this.onUndo()} icon={FICONS.ARROW_LEFT} disabled={undoDisabled}/>
         <EmbeddedButton title="Redo" onClick={() => this.onRedo()} icon={FICONS.ARROW_RIGHT} disabled={redoDisabled}/>
         <EmbeddedButton title="Settings" onClick={() => this.onToggleSettings()} icon={FICONS.SETTINGS}/>
         <EmbeddedButton title="Help" onClick={() => this.onHelp()} icon={FICONS.HELP_CIRCLE}/>
-      </div>}
-      <input
-        id="trigger-file-upload"
-        style={{display: 'none'}}
-        type="file"
-        accept=".json"
-        onChange={(e: React.ChangeEvent) => this.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])}
-      />
+      </div>
+      <input id="trigger-file-upload" style={{display: 'none'}} type="file" accept=".json"
+        onChange={(e: React.ChangeEvent) => this.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])} />
     </div>;
   }
 
   renderTabContainer() {
-    return <div style={{...GLOBAL_STYLES.tabContainer, fontSize: TEXT_SIZES.S[this.state.fontSize]}}>
+    return <div style={GLOBAL_STYLES.tabContainer}>
       {...Object.keys(TRIGGER_METADATA).map((command: string) => {
         return <div>
           <button
@@ -484,34 +455,43 @@ export class App extends React.Component {
             }}
             onClick={() => this.onChangeTab(command as TRIGGER_ID)}
           >
-            <text>
-              {TRIGGER_METADATA[command as TRIGGER_ID].DISPLAY_NAME}
-            </text>
+            {TRIGGER_METADATA[command as TRIGGER_ID].DISPLAY_NAME}
           </button>
         </div>;
       })}
     </div>;
   }
 
-  renderWindow() {
-    const data = this.triggerManager.data[this.state.activeTab];
-
-    return data.id === TRIGGER_ID.SKIN ?
-      <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}/> :
-      <div style={{...GLOBAL_STYLES.window, fontSize: TEXT_SIZES.M[this.state.fontSize]}}>
-        {data.id !== TRIGGER_ID.GRAVITY && this.renderWindowHead()}
-        {Object.keys(data.triggers).map((i) => this.renderTrigger(parseInt(i, 10)))}
-      </div>;
-  }
-
   renderWindowHead() {
     const data = this.triggerManager.data[this.state.activeTab];
 
-    return <div style={{...GLOBAL_STYLES.smoothContainer, fontSize: TEXT_SIZES.S[this.state.fontSize]}}>
-      {data.id !== TRIGGER_ID.TIME ?
-        this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH) :
+    return <div style={{...GLOBAL_STYLES.windowHead, fontSize: '1.5em'}}>
+      {data.id === TRIGGER_ID.ZOOM &&
+        this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)
+      }
+      {data.id === TRIGGER_ID.PAN &&
+        this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)
+      }
+      {data.id === TRIGGER_ID.FOCUS &&
+        this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)
+      }
+      {data.id === TRIGGER_ID.FOCUS && <Dropdown
+        customStyle={{margin: '0em .25em'}}
+        value={this.state.focusDropdown}
+        count={this.state.numRiders}
+        label="Rider"
+        onChange={(e: number) => this.onChangeFocusDD(e)}
+      />}
+      {data.id === TRIGGER_ID.TIME &&
         this.renderTriggerProp('Smoothing', data.interpolate || false, ['interpolate'], CONSTRAINT.INTERPOLATE)
       }
+      {data.id === TRIGGER_ID.GRAVITY && <Dropdown
+        customStyle={{margin: '0em .25em'}}
+        value={this.state.gravityDropdown}
+        count={this.state.numRiders}
+        label="Rider"
+        onChange={(e: number) => this.onChangeGravityDD(e)}
+      />}
     </div>;
   }
 
@@ -519,7 +499,11 @@ export class App extends React.Component {
     const data = this.triggerManager.data[this.state.activeTab];
     const currentTrigger = data.triggers[index];
 
-    return <div style={GLOBAL_STYLES.triggerContainer}>
+    return <div style={{
+      ...GLOBAL_STYLES.triggerContainer,
+      fontSize: '1.5em',
+      backgroundColor: index === 0 ? THEME.midLight : THEME.light,
+    }}>
       <div style={GLOBAL_STYLES.triggerActionContainer}>
         {(data.id === TRIGGER_ID.ZOOM || data.id === TRIGGER_ID.PAN) && (
           <EmbeddedButton
@@ -542,7 +526,7 @@ export class App extends React.Component {
       {data.id === TRIGGER_ID.GRAVITY && this.renderGravityTrigger((currentTrigger as GravityTrigger), index)}
       <EmbeddedButton
         customStyle={GLOBAL_STYLES.newTriggerButton}
-        size="18px"
+        size="16px"
         icon={FICONS.PLUS}
         onClick={() => this.onCreateTrigger(index)}
       />
@@ -602,15 +586,9 @@ export class App extends React.Component {
   }
 
   renderFocusTrigger(data: CameraFocusTrigger, index: number) {
-    const dropdownIndex = this.state.focusDDIndices[index];
+    const dropdownIndex = this.state.focusDropdown;
 
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      <Dropdown
-        value={dropdownIndex}
-        count={this.state.numRiders}
-        label="Rider"
-        onChange={(e: number) => this.onChangeFocusDD(index, e)}
-      />
       {this.renderTriggerProp(
           'Weight',
           data[1][dropdownIndex],
@@ -632,17 +610,11 @@ export class App extends React.Component {
   }
 
   renderGravityTrigger(data: GravityTrigger, index: number) {
-    const dropdownIndex = this.state.gravityDDIndices[index];
+    const dropdownIndex = this.state.gravityDropdown;
     const cProps = [CONSTRAINT.GRAVITY_X, CONSTRAINT.GRAVITY_Y];
     const labels = ['X', 'Y'];
 
     return <div style={{display: 'flex', flexDirection: 'row'}}>
-      <Dropdown
-        value={dropdownIndex}
-        count={this.state.numRiders}
-        label="Rider"
-        onChange={(e: number) => this.onChangeGravityDD(index, e)}
-      />
       {...['x', 'y'].map((prop, propIndex) => {
         return <div style={GLOBAL_STYLES.triggerPropContainer}>
           {this.renderTriggerProp(
@@ -665,18 +637,18 @@ export class App extends React.Component {
   ) {
     const NumberPicker = constraint.TYPE === CONSTRAINT_TYPE.FLOAT ? FloatPicker : IntPicker;
 
-    return <div style={GLOBAL_STYLES.rowCenter}>
-      <label style={{margin: '0em .25em'}} htmlFor={propPath.join('_')}>
+    return <div style={GLOBAL_STYLES.triggerRowContainer}>
+      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={propPath.join('_')}>
         {labelText}
       </label>
       {constraint.TYPE === CONSTRAINT_TYPE.BOOL ?
       <Checkbox
-        customStyle={{margin: '0em .25em'}}
+        customStyle={GLOBAL_STYLES.spacedProperty}
         id={propPath.join('_')}
         value={value as boolean}
         onCheck={() => this.onUpdateTrigger(!value, propPath)}
       /> : <NumberPicker
-        customStyle={{margin: '0em .25em', color: color || 'black'}}
+        customStyle={{...GLOBAL_STYLES.spacedProperty, color: color || 'black'}}
         id={propPath.join('_')}
         value={value as number | string}
         min={constraint.MIN}

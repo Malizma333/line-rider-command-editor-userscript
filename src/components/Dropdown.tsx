@@ -25,13 +25,14 @@ const styles = {
  * @param root0.count
  * @param root0.label
  * @param root0.onChange
+ * @param root0.customStyle
  */
 export default function Dropdown(
-    {customStyles, value, count, label, onChange}:
-  {customStyles?: React.CSSProperties, value: number, count: number, label: string, onChange: (e: number) => void},
+    {customStyle, value, count, label, onChange}:
+  {customStyle?: React.CSSProperties, value: number, count: number, label: string, onChange: (e: number) => void},
 ) {
   return <select
-    style={{...styles.head, ...customStyles}}
+    style={{...styles.head, ...customStyle}}
     value={value}
     onChange={(e: React.ChangeEvent) => onChange(parseInt((e.target as HTMLInputElement).value))}
   >

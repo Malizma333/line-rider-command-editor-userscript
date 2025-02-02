@@ -1,5 +1,3 @@
-import {FONT_SIZE_SETTING} from './lib/settings-storage.types';
-
 export const THEME = {
   dark: '#0D1321',
   midDark: '#7F838B',
@@ -7,78 +5,70 @@ export const THEME = {
   light: '#FCFCFC',
 } as const;
 
-export const TEXT_SIZES = {
-  S: {[FONT_SIZE_SETTING.SMALL]: '12px', [FONT_SIZE_SETTING.MEDIUM]: '14px', [FONT_SIZE_SETTING.LARGE]: '16px'},
-  M: {[FONT_SIZE_SETTING.SMALL]: '18px', [FONT_SIZE_SETTING.MEDIUM]: '22px', [FONT_SIZE_SETTING.LARGE]: '24px'},
-} as const;
-
 export const GLOBAL_STYLES = {
-  rowCenter: {
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
   root: {
     backgroundColor: THEME.light,
     transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
     border: '2px solid black',
     fontFamily: 'Helvetica',
     fontWeight: 'bold',
-    left: '50px',
+    left: '64px',
     opacity: 0,
     overflow: 'hidden',
-    padding: '10px',
+    padding: '3px',
     pointerEvents: 'none',
     position: 'fixed',
-    top: '12.5px',
+    top: '8px',
   },
-  content: {
+  actionContainer: {
+    alignItems: 'center',
+    display: 'flex',
+    width: '100%',
+  },
+  mainContent: {
     alignItems: 'center',
     display: 'flex',
     height: '50vh',
     flexDirection: 'column',
     justifyContent: 'center',
-    paddingTop: '10px',
     width: 'max(37.5vw, 480px)',
-  },
-  toolbarContainer: {
-    alignItems: 'start',
-    display: 'flex',
-    flex: 1,
-    width: '100%',
   },
   tabContainer: {
     alignItems: 'end',
     display: 'flex',
     justifyContent: 'start',
     flexDirection: 'row',
+    marginTop: '3px',
     overflowX: 'auto',
     width: '100%',
   },
   tab: {
     border: '2px solid black',
     borderBottom: 'none',
-    borderTopLeftRadius: '5px',
-    borderTopRightRadius: '5px',
+    borderRadius: '5px 5px 0 0',
   },
-  smoothContainer: {
+  windowContainer: {
+    display: 'flex',
+    height: '100%',
+    flexDirection: 'column',
+    width: '100%',
+  },
+  windowHead: {
     alignItems: 'center',
     backgroundColor: THEME.light,
-    borderBottom: '2px solid black',
+    border: '2px solid black',
+    borderBottom: 'none',
     display: 'flex',
-    height: '30px',
+    flex: 1,
     justifyContent: 'start',
-    padding: '.5em',
+    padding: '10px',
   },
-  window: {
+  windowBody: {
     backgroundColor: THEME.light,
     border: '2px solid black',
     display: 'flex',
+    flex: 10,
     flexDirection: 'column',
-    flex: 9,
-    overflowY: 'scroll',
-    width: '100%',
   },
   triggerContainer: {
     alignItems: 'start',
@@ -86,7 +76,7 @@ export const GLOBAL_STYLES = {
     borderBottom: '2px solid black',
     display: 'flex',
     flexDirection: 'column',
-    padding: '12px',
+    padding: '10px',
     position: 'relative',
   },
   triggerActionContainer: {
@@ -96,16 +86,25 @@ export const GLOBAL_STYLES = {
     direction: 'ltr',
     justifyContent: 'space-between',
     position: 'absolute',
-    right: '5px',
+    right: '0px',
+  },
+  triggerRowContainer: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   triggerPropContainer: {
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'start',
-    marginBottom: '0.25em',
+    marginBottom: '5px',
     width: '100%',
     whiteSpace: 'nowrap',
+  },
+  spacedProperty: {
+    margin: '0 5px',
   },
   newTriggerButton: {
     backgroundColor: THEME.light,
