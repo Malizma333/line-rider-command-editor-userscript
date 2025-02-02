@@ -1,4 +1,4 @@
-import type {AnyAction} from 'redux';
+import type { AnyAction } from 'redux';
 
 /**
  * Returns a dispatch object to set the dimensions of the playback camera
@@ -21,7 +21,7 @@ export function setPlaybackDimensions(dimension: {width: number, height: number}
 export function closeSidebar(): AnyAction {
   return {
     type: 'SET_VIEWS',
-    payload: {Sidebar: null},
-    meta: {name: 'SET_SIDEBAR_PAGE', auto: false},
+    payload: { Sidebar: null },
+    meta: { name: 'SET_SIDEBAR_PAGE', auto: false },
   };
 }

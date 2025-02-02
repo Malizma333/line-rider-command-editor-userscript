@@ -1,4 +1,4 @@
-import {CONSTRAINT} from './constraints';
+import { CONSTRAINT } from './constraints';
 import {
   GravityTrigger, TRIGGER_ID, TriggerDataLookup, TriggerMetadataLookup, HistoryItem, CameraFocusTrigger, PathValue,
 } from './TriggerDataManager.types';
@@ -12,7 +12,7 @@ export const TRIGGER_METADATA: TriggerMetadataLookup = {
   [TRIGGER_ID.PAN]: {
     DISPLAY_NAME: 'Pan',
     FUNC: 'getCamBounds=createBoundsPanner({0},{1});',
-    TEMPLATE: [[0, 0, 0], {w: 0.4, h: 0.4, x: 0, y: 0}],
+    TEMPLATE: [[0, 0, 0], { w: 0.4, h: 0.4, x: 0, y: 0 }],
   },
   [TRIGGER_ID.FOCUS]: {
     DISPLAY_NAME: 'Focus',
@@ -28,38 +28,38 @@ export const TRIGGER_METADATA: TriggerMetadataLookup = {
     DISPLAY_NAME: 'Skin',
     FUNC: 'setCustomRiders({0});',
     TEMPLATE: {
-      outline: {stroke: 'black'},
-      flag: {fill: '#00000066'},
-      skin: {fill: 'white'},
-      hair: {fill: 'black'},
-      fill: {fill: 'black'},
-      eye: {fill: 'black'},
-      sled: {fill: 'white'},
-      string: {stroke: 'black'},
-      armSleeve: {fill: 'black'},
-      armHand: {fill: 'white'},
-      legPants: {fill: 'black'},
-      legFoot: {fill: 'white'},
-      torso: {fill: 'white'},
-      hatTop: {fill: 'white'},
-      hatBottom: {stroke: 'black'},
-      hatBall: {fill: 'black'},
-      scarf1: {fill: '#FD4F38'},
-      scarf2: {fill: 'white'},
-      scarf3: {fill: '#06A725'},
-      scarf4: {fill: 'white'},
-      scarf5: {fill: '#3995FD'},
-      id_scarf0: {fill: 'white'},
-      id_scarf1: {fill: '#FD4F38'},
-      id_scarf2: {fill: 'white'},
-      id_scarf3: {fill: '#06A725'},
-      id_scarf4: {fill: 'white'},
-      id_scarf5: {fill: '#3995FD'},
+      outline: { stroke: 'black' },
+      flag: { fill: '#00000066' },
+      skin: { fill: 'white' },
+      hair: { fill: 'black' },
+      fill: { fill: 'black' },
+      eye: { fill: 'black' },
+      sled: { fill: 'white' },
+      string: { stroke: 'black' },
+      armSleeve: { fill: 'black' },
+      armHand: { fill: 'white' },
+      legPants: { fill: 'black' },
+      legFoot: { fill: 'white' },
+      torso: { fill: 'white' },
+      hatTop: { fill: 'white' },
+      hatBottom: { stroke: 'black' },
+      hatBall: { fill: 'black' },
+      scarf1: { fill: '#FD4F38' },
+      scarf2: { fill: 'white' },
+      scarf3: { fill: '#06A725' },
+      scarf4: { fill: 'white' },
+      scarf5: { fill: '#3995FD' },
+      id_scarf0: { fill: 'white' },
+      id_scarf1: { fill: '#FD4F38' },
+      id_scarf2: { fill: 'white' },
+      id_scarf3: { fill: '#06A725' },
+      id_scarf4: { fill: 'white' },
+      id_scarf5: { fill: '#3995FD' },
     },
   },
   [TRIGGER_ID.GRAVITY]: {
     DISPLAY_NAME: 'Gravity',
-    TEMPLATE: [[0, 0, 0], [{x: 0, y: 0.175}]],
+    TEMPLATE: [[0, 0, 0], [{ x: 0, y: 0.175 }]],
   },
 };
 
@@ -122,7 +122,7 @@ export class TriggerDataManager {
   /**
    * Resizes the focuser trigger weight arrays to match the number of riders
    * Also resizes the skin array to match the number of riders
-   * @param riderCount
+   * @param riderCount New number of riders in the track
    */
   updateRiderCount(riderCount: number): void {
     const focusTriggers = this.triggerData[TRIGGER_ID.FOCUS].triggers as CameraFocusTrigger[];
@@ -146,7 +146,7 @@ export class TriggerDataManager {
       const oldLength = trigger[1].length;
 
       if (oldLength < riderCount) {
-        trigger[1].push(...Array(riderCount - oldLength).fill(null).map(() => ({x: 0, y: 0.175})));
+        trigger[1].push(...Array(riderCount - oldLength).fill(null).map(() => ({ x: 0, y: 0.175 })));
       }
       if (oldLength > riderCount) {
         trigger[1].splice(riderCount, oldLength - riderCount);
@@ -175,7 +175,7 @@ export class TriggerDataManager {
     const HISTORY_LIMIT = 30;
     this.redoStack = [];
     const oldValue = this.setAtPointer(path, newValue);
-    this.undoStack.push({modificationPath: path, oldValue: oldValue, activeTab: location});
+    this.undoStack.push({ modificationPath: path, oldValue: oldValue, activeTab: location });
     if (this.undoStack.length > HISTORY_LIMIT) {
       this.undoStack.shift();
     }
@@ -188,9 +188,9 @@ export class TriggerDataManager {
       return null;
     }
 
-    const {modificationPath, oldValue, activeTab} = previous;
+    const { modificationPath, oldValue, activeTab } = previous;
     const newValue = this.setAtPointer(modificationPath, oldValue);
-    this.redoStack.push({modificationPath, oldValue: newValue, activeTab});
+    this.redoStack.push({ modificationPath, oldValue: newValue, activeTab });
 
     return activeTab;
   }
@@ -202,17 +202,18 @@ export class TriggerDataManager {
       return null;
     }
 
-    const {modificationPath, oldValue, activeTab} = next;
+    const { modificationPath, oldValue, activeTab } = next;
     const newValue = this.setAtPointer(modificationPath, oldValue);
-    this.undoStack.push({modificationPath, oldValue: newValue, activeTab});
+    this.undoStack.push({ modificationPath, oldValue: newValue, activeTab });
 
     return activeTab;
   }
 
   /**
    * Updates value at a given path and returns the old value
-   * @param path
-   * @param value
+   * @param path Path to value that needs updating
+   * @param value Value to update with
+   * @returns The value before the update
    */
   private setAtPointer(path: string[], value: PathValue): PathValue {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

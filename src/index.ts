@@ -1,10 +1,10 @@
-import {GLOBAL_STYLES} from './styles';
-import {App} from './App';
-import {getPlayerRunning, getWindowFocused} from './lib/redux-selectors';
+import { GLOBAL_STYLES } from './styles';
+import { App } from './App';
+import { getPlayerRunning, getWindowFocused } from './lib/redux-selectors';
 import {
   CameraFocusTrigger, CameraPanTrigger, GravityTrigger, TimeRemapTrigger, ZoomTrigger,
 } from './lib/TriggerDataManager.types';
-import type {Store} from 'redux';
+import type { Store } from 'redux';
 
 declare global {
   interface Window {
@@ -29,10 +29,10 @@ declare global {
 }
 
 /**
- *
+ * Main function to run when the page is ready
  */
 function main(): void {
-  const {React, store} = window;
+  const { React, store } = window;
   const content = document.getElementById('content') as HTMLElement;
   const parent = document.createElement('div');
 

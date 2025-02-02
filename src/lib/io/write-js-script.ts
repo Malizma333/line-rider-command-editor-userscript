@@ -1,10 +1,12 @@
-import {TRIGGER_METADATA} from '../lib/TriggerDataManager';
-import {TRIGGER_ID, TriggerDataLookup, SkinCssTrigger} from '../lib/TriggerDataManager.types';
+import { TRIGGER_METADATA } from '../TriggerDataManager';
+import { TRIGGER_ID, TriggerDataLookup, SkinCssTrigger } from '../TriggerDataManager.types';
+import { formatSkins } from '../util';
 
 /**
  * Generates a Line Rider Web script from trigger data and a specific command id
- * @param command
- * @param triggerData
+ * @param command Command to generate a script for
+ * @param triggerData Template information to use for the command
+ * @returns The script as a string
  */
 export function writeScript(command: TRIGGER_ID, triggerData: TriggerDataLookup): string {
   const currentData = triggerData[command];
@@ -34,46 +36,4 @@ export function writeScript(command: TRIGGER_ID, triggerData: TriggerDataLookup)
     default:
       return '';
   }
-}
-
-/**
- * Formats a list of `SkinCSSTriggers` into an array of css strings
- * @param customSkinData
- */
-export function formatSkins(customSkinData: SkinCssTrigger[]): string[] {
-  const nullColor = '#ffffffff';
-  const customSkinStrings = customSkinData.map((customSkin: SkinCssTrigger) => [
-    ` .outline {stroke: ${customSkin.outline.stroke ?? nullColor}}`,
-    ` .skin {fill: ${customSkin.skin.fill ?? nullColor}}`,
-    ` .hair {fill: ${customSkin.hair.fill ?? nullColor}}`,
-    ` .fill {fill: ${customSkin.fill.fill ?? nullColor}}`,
-    ` #eye {fill: ${customSkin.eye.fill ?? nullColor}}`,
-    ` .sled {fill: ${customSkin.sled.fill ?? nullColor}}`,
-    ` #string {stroke: ${customSkin.string.stroke ?? nullColor}}`,
-    ` .arm .sleeve {fill: ${customSkin.armSleeve.fill ?? nullColor}}`,
-    ` .arm .hand {fill: ${customSkin.armHand.fill ?? nullColor}}`,
-    ` .leg .pants {fill: ${customSkin.legPants.fill ?? nullColor}}`,
-    ` .leg .foot {fill: ${customSkin.legFoot.fill ?? nullColor}}`,
-    ` .torso {fill: ${customSkin.torso.fill ?? nullColor}}`,
-    ` .scarf1 {fill: ${customSkin.scarf1.fill ?? nullColor}}`,
-    ` .scarf2 {fill: ${customSkin.scarf2.fill ?? nullColor}}`,
-    ` .scarf3 {fill: ${customSkin.scarf3.fill ?? nullColor}}`,
-    ` .scarf4 {fill: ${customSkin.scarf4.fill ?? nullColor}}`,
-    ` .scarf5 {fill: ${customSkin.scarf5.fill ?? nullColor}}`,
-    ` #scarf0 {fill: ${customSkin.id_scarf0.fill ?? nullColor}}`,
-    ` #scarf1 {fill: ${customSkin.id_scarf1.fill ?? nullColor}}`,
-    ` #scarf2 {fill: ${customSkin.id_scarf2.fill ?? nullColor}}`,
-    ` #scarf3 {fill: ${customSkin.id_scarf3.fill ?? nullColor}}`,
-    ` #scarf4 {fill: ${customSkin.id_scarf4.fill ?? nullColor}}`,
-    ` #scarf5 {fill: ${customSkin.id_scarf5.fill ?? nullColor}}`,
-    ` .hat .top {fill: ${customSkin.hatTop.fill ?? nullColor}}`,
-    ` .hat .bottom {stroke: ${customSkin.hatBottom.stroke ?? nullColor}}`,
-    ` .hat .ball {fill: ${customSkin.hatBall.fill ?? nullColor}}`,
-    ` .flag {fill: ${customSkin.flag.fill ?? nullColor}}`,
-  ].join('').replace(/\n/g, ''));
-
-  // For some reason, the skin css array input is indexed +1 mod n
-  customSkinStrings.unshift(customSkinStrings.pop() ?? '');
-
-  return customSkinStrings;
 }

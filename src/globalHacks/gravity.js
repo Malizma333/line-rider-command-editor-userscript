@@ -17,7 +17,7 @@ window.setCustomGravity = (function() {
    * Resets physics and camera frame caches
    */
   function reset() {
-    window.store.dispatch({type: 'STOP_PLAYER'});
+    window.store.dispatch({ type: 'STOP_PLAYER' });
 
     numRiders = window.store.getState().simulator.engine.engine.state.riders.length;
     currentIter = 0;
@@ -35,7 +35,7 @@ window.setCustomGravity = (function() {
    */
   function getGravity() {
     if (triggers.length === 0) {
-      return {x: 0, y: 0.175};
+      return { x: 0, y: 0.175 };
     }
 
     const currentFrame = window.store.getState().simulator.engine.engine._computed._frames.length - 1;
@@ -59,7 +59,7 @@ window.setCustomGravity = (function() {
     }
 
     if (gravity === undefined) {
-      gravity = {x: 0, y: 0.175};
+      gravity = { x: 0, y: 0.175 };
     }
 
     currentIter += 1;
@@ -89,7 +89,7 @@ window.setCustomGravity = (function() {
 
     if (!init) {
       init = true;
-      Object.defineProperty(window.$ENGINE_PARAMS, 'gravity', {get: getGravity});
+      Object.defineProperty(window.$ENGINE_PARAMS, 'gravity', { get: getGravity });
     }
   };
 })();

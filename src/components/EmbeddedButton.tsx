@@ -1,5 +1,5 @@
-const {React} = window;
-import {THEME} from '../styles';
+const { React } = window;
+import { THEME } from '../styles';
 
 enum BUTTON_MODE { BLURRED, HOVER, PRESSED }
 
@@ -41,10 +41,10 @@ export default class EmbeddedButton extends React.Component<Props, State> {
   }
 
   render() {
-    const {title, disabled, onClick, icon, size} = this.props;
+    const { title, disabled, onClick, icon, size } = this.props;
 
     if (disabled && this.state.mode !== BUTTON_MODE.BLURRED) {
-      this.setState({mode: BUTTON_MODE.BLURRED});
+      this.setState({ mode: BUTTON_MODE.BLURRED });
     }
 
     return <button
@@ -56,10 +56,10 @@ export default class EmbeddedButton extends React.Component<Props, State> {
         fontSize: size || '25px',
         color: disabled ? THEME.midDark : THEME.dark,
       }}
-      onMouseOver={() => !disabled && this.setState({mode: BUTTON_MODE.HOVER})}
-      onMouseOut={() => !disabled && this.setState({mode: BUTTON_MODE.BLURRED})}
-      onMouseDown={() => !disabled && this.setState({mode: BUTTON_MODE.PRESSED})}
-      onMouseUp={() => !disabled && this.setState({mode: BUTTON_MODE.HOVER})}
+      onMouseOver={() => !disabled && this.setState({ mode: BUTTON_MODE.HOVER })}
+      onMouseOut={() => !disabled && this.setState({ mode: BUTTON_MODE.BLURRED })}
+      onMouseDown={() => !disabled && this.setState({ mode: BUTTON_MODE.PRESSED })}
+      onMouseUp={() => !disabled && this.setState({ mode: BUTTON_MODE.HOVER })}
       onClick={onClick}
       disabled={disabled}
     >

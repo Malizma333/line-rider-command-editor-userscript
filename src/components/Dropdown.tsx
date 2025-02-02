@@ -1,5 +1,5 @@
-const {React} = window;
-import {THEME} from '../styles';
+const { React } = window;
+import { THEME } from '../styles';
 
 const styles = {
   head: {
@@ -28,11 +28,11 @@ const styles = {
  * @returns Custom select input dropdown populated with options
  */
 export default function Dropdown(
-    {customStyle, value, count, label, onChange}:
+    { customStyle, value, count, label, onChange }:
   {customStyle?: React.CSSProperties, value: number, count: number, label: string, onChange: (e: number) => void},
 ) {
   return <select
-    style={{...styles.head, ...customStyle}}
+    style={{ ...styles.head, ...customStyle }}
     value={value}
     onChange={(e: React.ChangeEvent) => onChange(parseInt((e.target as HTMLInputElement).value))}
   >

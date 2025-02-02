@@ -1,6 +1,6 @@
-import {THEME} from '../styles';
+import { THEME } from '../styles';
 
-const {React} = window;
+const { React } = window;
 
 /**
  * Validates the number for a custom float picker
@@ -41,24 +41,26 @@ const style: React.CSSProperties = {
   width: '3em',
 };
 
+
 /**
- *
- * @param root0
- * @param root0.customStyle
- * @param root0.id
- * @param root0.value
- * @param root0.min
- * @param root0.max
- * @param root0.onChange
+ * Creates a custom float picker
+ * @param root0 Custom properties for this input
+ * @param root0.customStyle Custom styles to apply to this input
+ * @param root0.id Id corresponding to this number form field
+ * @param root0.value Current value of this field
+ * @param root0.min Minimum amount this value can take on
+ * @param root0.max Maximum amount this value can take on
+ * @param root0.onChange Function ran whenever this value changes
+ * @returns Custom float input
  */
 export default function FloatPicker(
-    {customStyle, id, value, min, max, onChange}:
+    { customStyle, id, value, min, max, onChange }:
   { customStyle: React.CSSProperties, id: string, value: (number | string), min: number, max: number,
     onChange: (v: number | string) => void },
 ) {
   return (
     <input
-      style={{...style, ...customStyle}}
+      style={{ ...style, ...customStyle }}
       id={id}
       value={value}
       min={min}

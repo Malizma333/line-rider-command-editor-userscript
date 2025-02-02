@@ -66,7 +66,7 @@ const rules = {
   'no-new-object': 2,
   'no-tabs': 2,
   'no-trailing-spaces': 2,
-  'object-curly-spacing': 2,
+  'object-curly-spacing': [2, 'always'],
   'one-var': [2, {
     var: 'never',
     let: 'never',

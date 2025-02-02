@@ -1,14 +1,16 @@
-import {TriggerDataManager, TRIGGER_METADATA} from '../lib/TriggerDataManager';
+import { TriggerDataManager, TRIGGER_METADATA } from '../TriggerDataManager';
 import {
-  TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, GravityTrigger, SkinCssTrigger,
-} from '../lib/TriggerDataManager.types';
-import {CONSTRAINT} from '../lib/constraints';
+  TRIGGER_ID, TriggerDataLookup, TimedTrigger, GravityTrigger, SkinCssTrigger,
+} from '../TriggerDataManager.types';
+import { CONSTRAINT } from '../constraints';
+import { retrieveTimestamp } from '../util';
 
 /**
  * Parses file from the script file format into a trigger data object, reverting to the original
  * value if an error occurs
- * @param fileObject
- * @param currentTriggerData
+ * @param fileObject The json object needing to be validated
+ * @param currentTriggerData The current trigger data in case data needs be reverted
+ * @returns The validated trigger data
  */
 export function readJsonScript(
     fileObject: TriggerDataLookup, currentTriggerData: TriggerDataLookup,
@@ -17,8 +19,8 @@ export function readJsonScript(
 
   /**
    * Parses an individual command given its id and applies the parsed file data to the trigger data
-   * @param commandId
-   * @param fileObject
+   * @param commandId The type of command being parsed
+   * @param fileObject The object that needs parsing
    */
   function parseCommand(commandId: TRIGGER_ID, fileObject: TriggerDataLookup): void {
     if (fileObject[commandId] === undefined) {
@@ -49,8 +51,8 @@ export function readJsonScript(
 
   /**
    * Parses a potential new Trigger[], not necessarily a complete definition of one
-   * @param commandId
-   * @param triggerArray
+   * @param commandId The trigger type being parsed
+   * @param triggerArray The list of triggers being parsed
    */
   function parseTriggers(commandId: TRIGGER_ID, triggerArray: TimedTrigger[]): void {
     const triggers: TimedTrigger[] = [];
@@ -86,8 +88,8 @@ export function readJsonScript(
 
   /**
    * Parses integer or boolean smoothing for a command if its available
-   * @param commandId
-   * @param smoothingValue
+   * @param commandId The trigger type being parsed
+   * @param smoothingValue The proposed value for smoothing
    */
   function parseSmoothing(commandId: TRIGGER_ID, smoothingValue?: boolean | number): void {
     if (commandId === TRIGGER_ID.TIME) {
@@ -127,7 +129,7 @@ export function readJsonScript(
 
   /**
    * Parses a string of CSS into a skin trigger array
-   * @param skinMapArray
+   * @param skinMapArray The css array that needs parsing
    */
   function parseSkinTriggers(skinMapArray: SkinCssTrigger[]): void {
     const triggers = [] as SkinCssTrigger[];
@@ -149,17 +151,6 @@ export function readJsonScript(
     }
 
     triggerData[TRIGGER_ID.SKIN].triggers = triggers;
-  }
-
-  /**
-   * Converts a player index to a trigger timestamp
-   * @param index
-   */
-  function retrieveTimestamp(index: number): TriggerTime {
-    const frames = index % 40;
-    const seconds = Math.floor(index / 40) % 60;
-    const minutes = Math.floor(index / 2400);
-    return [minutes, seconds, frames];
   }
 
   Object.keys(TRIGGER_METADATA).forEach((commandId: string) => {

@@ -1,6 +1,6 @@
-import {THEME} from '../styles';
+import { THEME } from '../styles';
 
-const {React} = window;
+const { React } = window;
 
 /**
  * Validates the number for a custom integer picker
@@ -53,13 +53,13 @@ const style: React.CSSProperties = {
  * @returns Custom integer input
  */
 export default function IntPicker(
-    {customStyle, id, value, min, max, onChange}:
+    { customStyle, id, value, min, max, onChange }:
   { customStyle: React.CSSProperties, id: string, value: (number | string), min: number, max: number,
     onChange: (v: number | string) => void },
 ) {
   return (
     <input
-      style={{...style, ...customStyle}}
+      style={{ ...style, ...customStyle }}
       id={id}
       value={value}
       min={min}

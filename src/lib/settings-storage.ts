@@ -1,4 +1,4 @@
-import {FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING} from './settings-storage.types';
+import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from './settings-storage.types';
 
 const LOCAL_STORAGE_PREFIX = 'CMD_EDITOR_MOD_';
 
@@ -14,8 +14,9 @@ export const TEXT_SIZES = {
 } as const;
 
 /**
- *
- * @param key
+ * Gets the localstorage setting based on a key value
+ * @param key The key of the setting to retrieve
+ * @returns The value that the setting is set to
  */
 export function getSetting(key: SETTINGS_KEY): number {
   const item = window.localStorage.getItem(LOCAL_STORAGE_PREFIX + key);
@@ -34,9 +35,9 @@ export function getSetting(key: SETTINGS_KEY): number {
 }
 
 /**
- *
- * @param key
- * @param value
+ * Sets the value of a localstorage setting based on its key and a new value
+ * @param key The key of the setting to set
+ * @param value The new value to assign to the setting
  */
 export function saveSetting(key: SETTINGS_KEY, value: number): void {
   window.localStorage.setItem(LOCAL_STORAGE_PREFIX + key, String(value));

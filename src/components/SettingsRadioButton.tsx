@@ -1,5 +1,5 @@
-const {React} = window;
-import {THEME} from '../styles';
+const { React } = window;
+import { THEME } from '../styles';
 
 const style: React.CSSProperties = {
   border: '2px solid black',
@@ -17,7 +17,7 @@ const style: React.CSSProperties = {
  * @returns Custom radio button with label inside
  */
 export default function SettingsRadioButton(
-    {current, target, label, onClick}:
+    { current, target, label, onClick }:
   {current: number, target: number, label: string, onClick: (e: number) => void},
 ) {
   return <button
