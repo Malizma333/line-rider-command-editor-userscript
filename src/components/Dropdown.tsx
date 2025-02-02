@@ -25,6 +25,7 @@ const styles = {
  * @param root0.count
  * @param root0.label
  * @param root0.onChange
+ * @param root0.customStyle
  */
 export default function Dropdown(
     {customStyle, value, count, label, onChange}:

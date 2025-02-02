@@ -13,25 +13,24 @@ export const TEXT_SIZES = {
 } as const;
 
 export const GLOBAL_STYLES = {
-  rowCenter: {
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
   root: {
     backgroundColor: THEME.light,
     transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
     border: '2px solid black',
     fontFamily: 'Helvetica',
     fontWeight: 'bold',
-    left: '50px',
+    left: '64px',
     opacity: 0,
     overflow: 'hidden',
-    padding: '10px',
+    padding: '3px',
     pointerEvents: 'none',
     position: 'fixed',
-    top: '12.5px',
+    top: '8px',
+  },
+  toolbarContainer: {
+    alignItems: 'center',
+    display: 'flex',
+    width: '100%',
   },
   content: {
     alignItems: 'center',
@@ -39,29 +38,21 @@ export const GLOBAL_STYLES = {
     height: '50vh',
     flexDirection: 'column',
     justifyContent: 'center',
-    padding: '10px',
     width: 'max(37.5vw, 480px)',
-  },
-  toolbarContainer: {
-    alignItems: 'start',
-    display: 'flex',
-    flex: 1,
-    width: '100%',
   },
   tabContainer: {
     alignItems: 'end',
     display: 'flex',
-    flex: 1,
     justifyContent: 'start',
     flexDirection: 'row',
+    marginTop: '3px',
     overflowX: 'auto',
     width: '100%',
   },
   tab: {
     border: '2px solid black',
     borderBottom: 'none',
-    borderTopLeftRadius: '5px',
-    borderTopRightRadius: '5px',
+    borderRadius: '5px 5px 0 0',
   },
   windowContainer: {
     display: 'flex',
@@ -105,6 +96,12 @@ export const GLOBAL_STYLES = {
     justifyContent: 'space-between',
     position: 'absolute',
     right: '5px',
+  },
+  triggerRowContainer: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   triggerPropContainer: {
     alignItems: 'center',

@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const {React, store} = window;
 import EmbeddedButton from '../components/EmbeddedButton';
 import {GLOBAL_STYLES, TEXT_SIZES, THEME} from '../styles';

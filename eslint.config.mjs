@@ -58,7 +58,6 @@ const rules = {
     code: 120,
     tabWidth: 2,
     ignoreUrls: true,
-    ignoreStrings: true,
   }],
   'new-cap': 2,
   'no-array-constructor': 2,

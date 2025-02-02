@@ -419,31 +419,25 @@ export class App extends React.Component {
     const undoDisabled = this.triggerManager.undoLen === 0;
     const redoDisabled = this.triggerManager.redoLen === 0;
 
-    return <div style={GLOBAL_STYLES.toolbarContainer}>
-      {!this.state.active &&
-        <EmbeddedButton title="Maximize" onClick={() => this.onToggleActive()} icon={FICONS.MAXIMIZE}/>
-      }
-      {this.state.active && <div style={{...GLOBAL_STYLES.toolbarContainer, justifyContent: 'start'}}>
+    return !this.state.active ? <div style={GLOBAL_STYLES.toolbarContainer}>
+      <EmbeddedButton title="Maximize" onClick={() => this.onToggleActive()} icon={FICONS.MAXIMIZE}/>
+    </div> : <div style={GLOBAL_STYLES.toolbarContainer}>
+      <div style={{...GLOBAL_STYLES.toolbarContainer, justifyContent: 'start'}}>
         <EmbeddedButton title="Minimize" onClick={() => this.onToggleActive()} icon={FICONS.MINIMIZE}/>
         <EmbeddedButton title="Download" onClick={() => this.onDownload()} icon={FICONS.DOWNLOAD}/>
         <EmbeddedButton title="Upload" onClick={() => this.onUpload()} icon={FICONS.UPLOAD}/>
         <EmbeddedButton title="Load From Script" onClick={() => this.onLoadScript()} icon={FICONS.CORNER_UP_RIGHT}/>
         <EmbeddedButton title="Run" onClick={() => this.onTest()} icon={FICONS.PLAY} disabled={runDisabled}/>
         <EmbeddedButton title="Copy Script" onClick={async () => await this.onCopy()} icon={FICONS.COPY}/>
-      </div>}
-      {this.state.active && <div style={{...GLOBAL_STYLES.toolbarContainer, justifyContent: 'end'}}>
+      </div>
+      <div style={{...GLOBAL_STYLES.toolbarContainer, justifyContent: 'end'}}>
         <EmbeddedButton title="Undo" onClick={() => this.onUndo()} icon={FICONS.ARROW_LEFT} disabled={undoDisabled}/>
         <EmbeddedButton title="Redo" onClick={() => this.onRedo()} icon={FICONS.ARROW_RIGHT} disabled={redoDisabled}/>
         <EmbeddedButton title="Settings" onClick={() => this.onToggleSettings()} icon={FICONS.SETTINGS}/>
         <EmbeddedButton title="Help" onClick={() => this.onHelp()} icon={FICONS.HELP_CIRCLE}/>
-      </div>}
-      <input
-        id="trigger-file-upload"
-        style={{display: 'none'}}
-        type="file"
-        accept=".json"
-        onChange={(e: React.ChangeEvent) => this.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])}
-      />
+      </div>
+      <input id="trigger-file-upload" style={{display: 'none'}} type="file" accept=".json"
+        onChange={(e: React.ChangeEvent) => this.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])} />
     </div>;
   }
 
@@ -458,9 +452,7 @@ export class App extends React.Component {
             }}
             onClick={() => this.onChangeTab(command as TRIGGER_ID)}
           >
-            <text>
-              {TRIGGER_METADATA[command as TRIGGER_ID].DISPLAY_NAME}
-            </text>
+            {TRIGGER_METADATA[command as TRIGGER_ID].DISPLAY_NAME}
           </button>
         </div>;
       })}
@@ -480,9 +472,6 @@ export class App extends React.Component {
       {data.id === TRIGGER_ID.FOCUS &&
         this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)
       }
-      {data.id === TRIGGER_ID.TIME &&
-        this.renderTriggerProp('Smoothing', data.interpolate || false, ['interpolate'], CONSTRAINT.INTERPOLATE)
-      }
       {data.id === TRIGGER_ID.FOCUS && <Dropdown
         customStyle={{margin: '0em .25em'}}
         value={this.state.focusDropdown}
@@ -490,6 +479,9 @@ export class App extends React.Component {
         label="Rider"
         onChange={(e: number) => this.onChangeFocusDD(e)}
       />}
+      {data.id === TRIGGER_ID.TIME &&
+        this.renderTriggerProp('Smoothing', data.interpolate || false, ['interpolate'], CONSTRAINT.INTERPOLATE)
+      }
       {data.id === TRIGGER_ID.GRAVITY && <Dropdown
         customStyle={{margin: '0em .25em'}}
         value={this.state.gravityDropdown}
@@ -504,7 +496,10 @@ export class App extends React.Component {
     const data = this.triggerManager.data[this.state.activeTab];
     const currentTrigger = data.triggers[index];
 
-    return <div style={GLOBAL_STYLES.triggerContainer}>
+    return <div style={{
+      ...GLOBAL_STYLES.triggerContainer,
+      backgroundColor: index === 0 ? THEME.midLight : THEME.light,
+    }}>
       <div style={GLOBAL_STYLES.triggerActionContainer}>
         {(data.id === TRIGGER_ID.ZOOM || data.id === TRIGGER_ID.PAN) && (
           <EmbeddedButton
@@ -638,7 +633,7 @@ export class App extends React.Component {
   ) {
     const NumberPicker = constraint.TYPE === CONSTRAINT_TYPE.FLOAT ? FloatPicker : IntPicker;
 
-    return <div style={GLOBAL_STYLES.rowCenter}>
+    return <div style={GLOBAL_STYLES.triggerRowContainer}>
       <label style={{margin: '0em .25em'}} htmlFor={propPath.join('_')}>
         {labelText}
       </label>
