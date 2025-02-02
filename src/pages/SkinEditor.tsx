@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 const {React, store} = window;
 import EmbeddedButton from '../components/EmbeddedButton';
-import {GLOBAL_STYLES, TEXT_SIZES, THEME} from '../styles';
+import {GLOBAL_STYLES} from '../styles';
 import * as FICONS from '../components/Icons';
 import {SkinCssTrigger} from '../lib/TriggerDataManager.types';
 import {App} from '../App';
@@ -9,16 +9,6 @@ import * as Selectors from '../lib/redux-selectors';
 import Dropdown from '../components/Dropdown';
 
 const styles = {
-  container: {
-    alignItems: 'center',
-    display: 'flex',
-    flex: 5,
-    justifyContent: 'center',
-    overflow: 'hidden',
-    position: 'relative',
-    userSelect: 'none',
-    width: '100%',
-  },
   gridBackground: {
     background: 'linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%), linear-gradient(-45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%)',
     backgroundSize: '10px 10px',
@@ -26,16 +16,6 @@ const styles = {
     position: 'absolute',
     transform: 'rotate(45deg)',
     width: '1000px',
-  },
-  toolbar: {
-    alignItems: 'center',
-    backgroundColor: THEME.light,
-    borderBottom: '2px solid black',
-    flex: 1,
-    display: 'flex',
-    justifyContent: 'left',
-    position: 'relative',
-    userSelect: 'none',
   },
   toolbarItem: {
     margin: '0px 10px',
@@ -84,6 +64,12 @@ const styles = {
     marginTop: '3px',
     width: '100px',
   },
+  colorPicker: {
+    border: '2px solid black',
+    borderRadius: '5px',
+    height: '2.25em',
+    width: '2.25em',
+  },
 } satisfies Record<string, React.CSSProperties>;
 
 /**
@@ -96,7 +82,7 @@ function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: Ap
   const colorValue = skinEditor.state.selectedColor.substring(0, 7);
   const alphaValue = parseInt(skinEditor.state.selectedColor.substring(7), 16) / 255;
 
-  return <div style={styles.toolbar}>
+  return <div style={GLOBAL_STYLES.windowHead}>
     <EmbeddedButton
       onClick={() => root.onResetSkin(skinEditor.state.selectedRider)}
       icon={FICONS.TRASH2}
@@ -118,13 +104,13 @@ function SkinEditorToolbar({skinEditor, root}: {skinEditor: SkinEditor, root: Ap
       </div>
     </div>
     <input
-      style={{...styles.toolbarItem, height: '40px', width: '40px'}}
+      style={{...styles.toolbarItem, ...styles.colorPicker}}
       type="color"
       value={colorValue}
       onChange={(e: React.ChangeEvent) => skinEditor.onChangeColor((e.target as HTMLInputElement).value, undefined)}
     ></input>
     <Dropdown
-      customStyle={{...styles.toolbarItem, fontSize: TEXT_SIZES.M[root.state.fontSize]}}
+      customStyle={{...styles.toolbarItem, fontSize: '1.5em'}}
       value={skinEditor.state.selectedRider}
       count={root.state.numRiders}
       label="Rider"
@@ -290,9 +276,9 @@ export default class SkinEditor extends React.Component<Props, State> {
       skinTriggers,
     } = this.props;
 
-    return <div style={{...GLOBAL_STYLES.window, fontSize: TEXT_SIZES.S[root.state.fontSize]}}>
+    return <React.Fragment>
       <SkinEditorToolbar skinEditor={this} root={root}/>
-      <div style={styles.container}>
+      <div style={{...GLOBAL_STYLES.window, justifyContent: 'center', alignItems: 'center', overflow: 'hidden', position: 'relative', userSelect: 'none', width: '100%'}}>
         <div style={styles.gridBackground}></div>
         <SkinEditorCanvas skinEditor={this} root={root} skinTriggers={skinTriggers}/>
         <div style={styles.outlineContainer}>
@@ -306,6 +292,6 @@ export default class SkinEditor extends React.Component<Props, State> {
           ></div>
         </div>
       </div>
-    </div>;
+    </React.Fragment>;
   }
 }

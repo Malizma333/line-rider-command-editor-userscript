@@ -6,11 +6,11 @@ import {
 import {readJsScript} from './io/read-js-script';
 import {readJsonScript} from './io/read-json-script';
 import {formatSkins, writeScript} from './io/write-js-script';
-import {getSetting} from './lib/settings-storage';
+import {getSetting, TEXT_SIZES} from './lib/settings-storage';
 import {FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING} from './lib/settings-storage.types';
 import {validateTimes} from './lib/validation';
 import {CONSTRAINT} from './lib/constraints';
-import {GLOBAL_STYLES, THEME, TEXT_SIZES} from './styles';
+import {GLOBAL_STYLES, THEME} from './styles';
 
 import * as Actions from './lib/redux-actions';
 import * as Selectors from './lib/redux-selectors';
@@ -396,19 +396,22 @@ export class App extends React.Component {
   render() {
     const data = this.triggerManager.data[this.state.activeTab];
 
-    return <div>
+    return <div style={{fontSize: TEXT_SIZES[this.state.fontSize]}}>
       {this.renderActions()}
       {this.state.active && <div style={GLOBAL_STYLES.content}>
         {this.state.settingsActive ?
           <Settings root={this}/> :
           <div style={GLOBAL_STYLES.windowContainer}>
             {this.renderTabContainer()}
-            {data.id === TRIGGER_ID.SKIN && <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}/>}
-            {data.id !== TRIGGER_ID.SKIN && this.renderWindowHead()}
-            {data.id !== TRIGGER_ID.SKIN &&
-            <div style={{...GLOBAL_STYLES.window, fontSize: TEXT_SIZES.M[this.state.fontSize]}}>
-              {Object.keys(data.triggers).map((i) => this.renderTrigger(parseInt(i, 10)))}
-            </div>}
+            {data.id === TRIGGER_ID.SKIN ?
+              <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}/> :
+              <React.Fragment>
+                {this.renderWindowHead()}
+                {<div style={{...GLOBAL_STYLES.window, overflowY: 'scroll', paddingBottom: '10px'}}>
+                  {Object.keys(data.triggers).map((i) => this.renderTrigger(parseInt(i, 10)))}
+                </div>}
+              </React.Fragment>
+            }
           </div>}
       </div>}
     </div>;
@@ -442,7 +445,7 @@ export class App extends React.Component {
   }
 
   renderTabContainer() {
-    return <div style={{...GLOBAL_STYLES.tabContainer, fontSize: TEXT_SIZES.S[this.state.fontSize]}}>
+    return <div style={GLOBAL_STYLES.tabContainer}>
       {...Object.keys(TRIGGER_METADATA).map((command: string) => {
         return <div>
           <button
@@ -462,7 +465,7 @@ export class App extends React.Component {
   renderWindowHead() {
     const data = this.triggerManager.data[this.state.activeTab];
 
-    return <div style={{...GLOBAL_STYLES.windowHead, fontSize: TEXT_SIZES.S[this.state.fontSize]}}>
+    return <div style={{...GLOBAL_STYLES.windowHead, fontSize: '1.5em'}}>
       {data.id === TRIGGER_ID.ZOOM &&
         this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)
       }
@@ -498,6 +501,7 @@ export class App extends React.Component {
 
     return <div style={{
       ...GLOBAL_STYLES.triggerContainer,
+      fontSize: '1.5em',
       backgroundColor: index === 0 ? THEME.midLight : THEME.light,
     }}>
       <div style={GLOBAL_STYLES.triggerActionContainer}>
@@ -522,7 +526,7 @@ export class App extends React.Component {
       {data.id === TRIGGER_ID.GRAVITY && this.renderGravityTrigger((currentTrigger as GravityTrigger), index)}
       <EmbeddedButton
         customStyle={GLOBAL_STYLES.newTriggerButton}
-        size="18px"
+        size="16px"
         icon={FICONS.PLUS}
         onClick={() => this.onCreateTrigger(index)}
       />

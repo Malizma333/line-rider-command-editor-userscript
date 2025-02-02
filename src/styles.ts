@@ -1,15 +1,8 @@
-import {FONT_SIZE_SETTING} from './lib/settings-storage.types';
-
 export const THEME = {
   dark: '#0D1321',
   midDark: '#7F838B',
   midLight: '#B7BBC0',
   light: '#FCFCFC',
-} as const;
-
-export const TEXT_SIZES = {
-  S: {[FONT_SIZE_SETTING.SMALL]: '12px', [FONT_SIZE_SETTING.MEDIUM]: '14px', [FONT_SIZE_SETTING.LARGE]: '16px'},
-  M: {[FONT_SIZE_SETTING.SMALL]: '18px', [FONT_SIZE_SETTING.MEDIUM]: '22px', [FONT_SIZE_SETTING.LARGE]: '24px'},
 } as const;
 
 export const GLOBAL_STYLES = {
@@ -76,8 +69,6 @@ export const GLOBAL_STYLES = {
     display: 'flex',
     flex: 9,
     flexDirection: 'column',
-    overflowY: 'scroll',
-    paddingBottom: '10px',
   },
   triggerContainer: {
     alignItems: 'start',

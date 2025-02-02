@@ -7,6 +7,12 @@ const DEFAULTS = {
   [SETTINGS_KEY.VIEWPORT]: VIEWPORT_SETTING.HD,
 } as const;
 
+export const TEXT_SIZES = {
+  [FONT_SIZE_SETTING.SMALL]: '12px',
+  [FONT_SIZE_SETTING.MEDIUM]: '14px',
+  [FONT_SIZE_SETTING.LARGE]: '16px',
+} as const;
+
 /**
  *
  * @param key

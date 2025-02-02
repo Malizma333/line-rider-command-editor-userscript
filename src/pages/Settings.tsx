@@ -1,5 +1,5 @@
 const {React} = window;
-import {THEME, TEXT_SIZES} from '../styles';
+import {THEME} from '../styles';
 import SettingsRadioButton from '../components/SettingsRadioButton';
 import EmbeddedButton from '../components/EmbeddedButton';
 import * as FICONS from '../components/Icons';
@@ -57,19 +57,16 @@ const styles = {
  * @param root0.settings
  */
 function SettingsHeader({root, settings}: {root: App, settings: Settings}) {
-  return <div style={styles.header}>
+  return <div style={{...styles.header, fontSize: '1.5em'}}>
     <EmbeddedButton
       onClick={() => root.onToggleSettings()}
       icon={FICONS.X}
       customStyle={{position: 'absolute', right: '0px'}}
     />
-    <text style={{fontSize: TEXT_SIZES.M[root.state.fontSize]}}>
-      Settings
-    </text>
+    Settings
     <button
       style={{
         ...styles.applyButton,
-        fontSize: TEXT_SIZES.M[root.state.fontSize],
         background: settings.state.dirty ? THEME.midLight : THEME.midDark,
       }}
       disabled={!settings.state.dirty}
@@ -104,15 +101,15 @@ const LABEL_MAP = {
  * @param root0.lkey
  */
 function SettingsSection(
-    {root, current, onClick, title, lkey}:
-  {root: App, current: FONT_SIZE_SETTING | VIEWPORT_SETTING, onClick: (e: number) => void, title: string,
+    {current, onClick, title, lkey}:
+  {current: FONT_SIZE_SETTING | VIEWPORT_SETTING, onClick: (e: number) => void, title: string,
     lkey: SETTINGS_KEY},
 ) {
   return <div style={styles.row}>
-    <text style={{...styles.label, fontSize: TEXT_SIZES.S[root.state.fontSize]}}>
+    <text style={styles.label}>
       {title}
     </text>
-    <div style={{...styles.parameter, fontSize: TEXT_SIZES.S[root.state.fontSize]}}>
+    <div style={styles.parameter}>
       {...LABEL_MAP[lkey].map(([target, label]) => {
         return <SettingsRadioButton
           current={current}
@@ -183,16 +180,14 @@ export default class Settings extends React.Component<Props, State> {
 
     return <div style={styles.window}>
       <SettingsHeader root={root} settings={this}/>
-      <div style={{fontSize: TEXT_SIZES.M[root.state.fontSize]}}>
+      <div>
         <SettingsSection
-          root={root}
           current={this.state.fontSize}
           onClick={(e: number) => this.onChangeFontSize(e)}
           title={'Font Sizes'}
           lkey={SETTINGS_KEY.FONT_SIZE}
         />
         <SettingsSection
-          root={root}
           current={this.state.resolution}
           onClick={(e: number) => this.onChangeViewport(e)}
           title={'Viewport'}

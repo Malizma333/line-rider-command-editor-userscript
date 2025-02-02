@@ -4,26 +4,28 @@ const styles = {
   container: {
     alignItems: 'center',
     display: 'flex',
-    height: '20px',
+    height: '1em',
     justifyContent: 'center',
-    marginLeft: '5px',
     position: 'relative',
-    width: '20px',
+    width: '1em',
   },
   primary: {
     appearance: 'none',
     background: '#FFF',
     border: '2px solid black',
+    borderRadius: '50%',
+    boxSizing: 'border-box',
     height: '100%',
     position: 'absolute',
     width: '100%',
   },
   fill: {
     backgroundColor: '#000',
-    height: '60%',
+    borderRadius: '50%',
+    height: '50%',
     pointerEvents: 'none',
     position: 'absolute',
-    width: '60%',
+    width: '50%',
   },
 } satisfies Record<string, React.CSSProperties>;
 
@@ -46,6 +48,6 @@ export default function Checkbox(
       type="checkbox"
       onChange={() => onCheck()}
     />
-    {value as boolean && <div style={styles.fill}></div>}
+    {value && <div style={styles.fill}></div>}
   </div>;
 }
