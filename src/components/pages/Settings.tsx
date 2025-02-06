@@ -1,11 +1,11 @@
 const { React } = window;
-import { THEME } from '../styles';
-import SettingsRadioButton from '../components/SettingsRadioButton';
-import EmbeddedButton from '../components/EmbeddedButton';
-import * as FICONS from '../components/Icons';
-import { App } from '../App';
-import { FONT_SIZE_SETTING, VIEWPORT_SETTING, SETTINGS_KEY } from '../lib/settings-storage.types';
-import { getSetting, saveSetting } from '../lib/settings-storage';
+import { THEME } from '../../styles';
+import SettingsRadioButton from '../SettingsRadioButton';
+import EmbeddedButton from '../EmbeddedButton';
+import * as FICONS from '../Icons';
+import { App } from '../../App';
+import { FONT_SIZE_SETTING, VIEWPORT_SETTING, SETTINGS_KEY } from '../../lib/settings-storage.types';
+import { getSetting, saveSetting } from '../../lib/settings-storage';
 
 const styles = {
   window: {
