@@ -8,7 +8,7 @@ import { formatSkins } from '../util';
  * @param triggerData Template information to use for the command
  * @returns The script as a string
  */
-export function writeScript(command: TRIGGER_ID, triggerData: TriggerDataLookup): string {
+export function writeJsScript(command: TRIGGER_ID, triggerData: TriggerDataLookup): string {
   const currentData = triggerData[command];
   const currentHeader = (TRIGGER_METADATA[command]).FUNC;
 

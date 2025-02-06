@@ -5,7 +5,7 @@ import {
 } from './lib/TriggerDataManager.types';
 import { readJsScript } from './lib/io/read-js-script';
 import { readJsonScript } from './lib/io/read-json-script';
-import { writeScript } from './lib/io/write-js-script';
+import { writeJsScript } from './lib/io/write-js-script';
 import { getSetting, TEXT_SIZES } from './lib/settings-storage';
 import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from './lib/settings-storage.types';
 import { validateTimes, formatSkins } from './lib/util';
@@ -263,7 +263,7 @@ export class App extends React.Component {
         throw new Error('Triggers contain invalid times!');
       }
 
-      const script = writeScript(activeTab, this.triggerManager.data as TriggerDataLookup);
+      const script = writeJsScript(activeTab, this.triggerManager.data as TriggerDataLookup);
       return await navigator.clipboard.writeText(script);
     } catch (error) {
       if (error instanceof Error) {
