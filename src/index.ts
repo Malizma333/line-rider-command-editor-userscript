@@ -61,7 +61,7 @@ function main(): void {
         clearInterval(timerId);
       }
     }
-  }, 100);
+  }, 1000);
 }
 
 if (window.store) {
