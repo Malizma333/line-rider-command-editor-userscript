@@ -220,12 +220,10 @@ export class TriggerDataManager {
   updateLayerMap(layerMap: number[]): void {
     const layerTriggers = this.triggerData[TRIGGER_ID.LAYER].triggers as LayerTrigger[];
 
-    console.log(layerTriggers, layerMap);
-
     const existing = new Set(layerMap);
     const visited = new Set<number>();
 
-    const filteredTriggers = layerTriggers.filter((layer) => !existing.has(layer[1].id));
+    const filteredTriggers = layerTriggers.filter((layer) => existing.has(layer[1].id));
 
     for (const layerTrigger of filteredTriggers) {
       visited.add(layerTrigger[1].id);
@@ -240,8 +238,6 @@ export class TriggerDataManager {
     }
 
     this.triggerData[TRIGGER_ID.LAYER].triggers = filteredTriggers;
-
-    console.log(filteredTriggers);
   }
 
   updateFromPath(path: string[], newValue: PathValue, location: TRIGGER_ID): void {

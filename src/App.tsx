@@ -3,6 +3,7 @@ import {
   TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, GravityTrigger,
   SkinCssTrigger, CameraPanTrigger, TimeRemapTrigger,
   LayerTrigger,
+  Trigger,
 } from './lib/TriggerDataManager.types';
 import { readJsScript } from './lib/io/read-js-script';
 import { readJsonScript } from './lib/io/read-json-script';
@@ -430,6 +431,15 @@ export class App extends React.Component {
   render() {
     const data = this.triggerManager.data[this.state.activeTab];
 
+    // TODO this is kind of awful, refactor
+    let computeIndex = 0;
+    const computedTriggers = [] as [Trigger, number, number][];
+    for (let i = 0; i < data.triggers.length; i++) {
+      if (!isLayerTrigger(data.triggers[i]) || (data.triggers[i] as LayerTrigger)[1].id === this.state.layerDropdown) {
+        computedTriggers.push([data.triggers[i], i, computeIndex++]);
+      }
+    }
+
     return <div style={{ fontSize: TEXT_SIZES[this.state.fontSize] }}>
       {this.renderActions()}
       {this.state.active && <div style={GLOBAL_STYLES.mainContent}>
@@ -442,7 +452,9 @@ export class App extends React.Component {
               <React.Fragment>
                 {this.renderWindowHead()}
                 {<div style={{ ...GLOBAL_STYLES.windowBody, overflowY: 'scroll', paddingBottom: '10px' }}>
-                  {Object.keys(data.triggers).map((i) => this.renderTrigger(parseInt(i, 10)))}
+                  {computedTriggers.map(
+                      (computeData) => this.renderTrigger(computeData[0], computeData[1], computeData[2]),
+                  )}
                 </div>}
               </React.Fragment>
             }
@@ -536,14 +548,8 @@ export class App extends React.Component {
     </div>;
   }
 
-  renderTrigger(index: number) {
+  renderTrigger(currentTrigger: Trigger, realIndex: number, index: number) {
     const data = this.triggerManager.data[this.state.activeTab];
-    const currentTrigger = data.triggers[index];
-    const layerDropdown = this.state.layerDropdown;
-
-    if (data.id === TRIGGER_ID.LAYER && (currentTrigger as LayerTrigger)[1].id !== layerDropdown) {
-      return null;
-    }
 
     return <div style={{
       ...GLOBAL_STYLES.triggerContainer,
@@ -553,29 +559,29 @@ export class App extends React.Component {
       <div style={GLOBAL_STYLES.triggerActionContainer}>
         {(data.id === TRIGGER_ID.ZOOM || data.id === TRIGGER_ID.PAN) && (
           <EmbeddedButton
-            onClick={() => this.onCaptureCamera(index, data.id as TRIGGER_ID)}
+            onClick={() => this.onCaptureCamera(realIndex, data.id as TRIGGER_ID)}
             icon={FICONS.CAMERA}
           />
         )}
         <EmbeddedButton
-          onClick={() => this.onDeleteTrigger(index)}
+          onClick={() => this.onDeleteTrigger(realIndex)}
           icon={FICONS.X}
           disabled={index === 0}
         />
       </div>
 
-      {this.renderTimeInput((currentTrigger as TimedTrigger)[0], index)}
-      {data.id === TRIGGER_ID.ZOOM && this.renderZoomTrigger((currentTrigger as ZoomTrigger), index)}
-      {data.id === TRIGGER_ID.PAN && this.renderPanTrigger((currentTrigger as CameraPanTrigger), index)}
-      {data.id === TRIGGER_ID.FOCUS && this.renderFocusTrigger((currentTrigger as CameraFocusTrigger), index)}
-      {data.id === TRIGGER_ID.TIME && this.renderRemapTrigger((currentTrigger as TimeRemapTrigger), index)}
-      {data.id === TRIGGER_ID.GRAVITY && this.renderGravityTrigger((currentTrigger as GravityTrigger), index)}
-      {data.id === TRIGGER_ID.LAYER && this.renderLayerTrigger((currentTrigger as LayerTrigger), index)}
+      {this.renderTimeInput((currentTrigger as TimedTrigger)[0], realIndex)}
+      {data.id === TRIGGER_ID.ZOOM && this.renderZoomTrigger((currentTrigger as ZoomTrigger), realIndex)}
+      {data.id === TRIGGER_ID.PAN && this.renderPanTrigger((currentTrigger as CameraPanTrigger), realIndex)}
+      {data.id === TRIGGER_ID.FOCUS && this.renderFocusTrigger((currentTrigger as CameraFocusTrigger), realIndex)}
+      {data.id === TRIGGER_ID.TIME && this.renderRemapTrigger((currentTrigger as TimeRemapTrigger), realIndex)}
+      {data.id === TRIGGER_ID.GRAVITY && this.renderGravityTrigger((currentTrigger as GravityTrigger), realIndex)}
+      {data.id === TRIGGER_ID.LAYER && this.renderLayerTrigger((currentTrigger as LayerTrigger), realIndex)}
       <EmbeddedButton
         customStyle={GLOBAL_STYLES.newTriggerButton}
         size="16px"
         icon={FICONS.PLUS}
-        onClick={() => this.onCreateTrigger(index)}
+        onClick={() => this.onCreateTrigger(realIndex)}
       />
     </div>;
   }
