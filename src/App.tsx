@@ -179,7 +179,7 @@ export class App extends React.Component {
         this.onLoad(
             readJsonScript(
                 JSON.parse(reader.result as string),
-            this.triggerManager.data as TriggerDataLookup,
+                this.triggerManager.data as TriggerDataLookup,
             ),
         );
       } catch (error) {
@@ -203,7 +203,9 @@ export class App extends React.Component {
   onLoad(nextTriggerData: TriggerDataLookup): void {
     const { activeTab } = this.state;
     try {
-      this.triggerManager.updateFromPath([], nextTriggerData, TRIGGER_ID.ZOOM);
+      Object.keys(TRIGGER_METADATA).forEach((commandId: string) => {
+        this.triggerManager.updateFromPath([commandId], nextTriggerData[commandId as TRIGGER_ID], activeTab);
+      });
 
       if (activeTab !== TRIGGER_ID.SKIN) {
         const newTriggerArray = nextTriggerData[activeTab].triggers;
@@ -656,22 +658,21 @@ export class App extends React.Component {
   }
 
   renderLayerTrigger(data: LayerTrigger, index: number) {
-    const dropdownIndex = this.state.layerDropdown;
-    const cProps = [CONSTRAINT.GRAVITY_X, CONSTRAINT.GRAVITY_Y];
-    const labels = ['X', 'Y'];
+    const cProps = [CONSTRAINT.LAYER_ON, CONSTRAINT.LAYER_OFF, CONSTRAINT.LAYER_OFFSET];
+    const labels = ['ON', 'OFF', 'OFFSET'];
 
     return <div style={{ display: 'flex', flexDirection: 'row' }}>
-    {...['x', 'y'].map((prop, propIndex) => {
-      return <div style={GLOBAL_STYLES.triggerPropContainer}>
-        {this.renderTriggerProp(
-            labels[propIndex],
-            data[1][dropdownIndex][prop as 'x' | 'y'],
-            ['triggers', index.toString(), '1', dropdownIndex.toString(), prop],
-            cProps[propIndex],
-        )}
-      </div>;
-    })}
-  </div>;
+      {...['on', 'off', 'offset'].map((prop, propIndex) => {
+        return <div style={GLOBAL_STYLES.triggerPropContainer}>
+          {this.renderTriggerProp(
+              labels[propIndex],
+              data[1][prop as 'on' | 'off' | 'offset'],
+              ['triggers', index.toString(), '1', prop],
+              cProps[propIndex],
+          )}
+        </div>;
+      })}
+    </div>;
   }
 
   renderTriggerProp(
