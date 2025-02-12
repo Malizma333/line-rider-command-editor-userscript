@@ -2,6 +2,11 @@ import { CONSTRAINT } from './constraints';
 import {
   GravityTrigger, TRIGGER_ID, TriggerDataLookup, TriggerMetadataLookup, HistoryItem, CameraFocusTrigger, PathValue,
   LayerTrigger,
+  Trigger,
+  TimedTrigger,
+  CameraPanTrigger,
+  ZoomTrigger,
+  TimeRemapTrigger,
 } from './TriggerDataManager.types';
 
 export const TRIGGER_METADATA: TriggerMetadataLookup = {
@@ -68,8 +73,31 @@ export const TRIGGER_METADATA: TriggerMetadataLookup = {
   },
 };
 
+const isTrigger = (x: unknown): x is Trigger => typeof x === 'object' && x !== null;
+const isTimedTrigger = (x: unknown): x is TimedTrigger => isTrigger(x) && 'length' in x && x.length === 2;
+
+export const isTimeOrZoomTrigger = (x: unknown): x is (TimeRemapTrigger | ZoomTrigger) => (
+  isTimedTrigger(x) && x[1] !== null && typeof x[1] === 'number'
+);
+
+export const isPanTrigger = (x: unknown): x is CameraPanTrigger => (
+  isTimedTrigger(x) && x[1] !== null && typeof x[1] === 'object' && 'w' in x[1]
+);
+
+export const isFocusTrigger = (x: unknown): x is CameraFocusTrigger => (
+  isTimedTrigger(x) && x[1] !== null && typeof x[1] === 'object' && 'length' in x[1] && (
+    x[1].length === 0 || x[1].length === 1 && typeof x[1][0] === 'number'
+  )
+);
+
+export const isGravityTrigger = (x: unknown): x is GravityTrigger => (
+  isTimedTrigger(x) && x[1] !== null && typeof x[1] === 'object' && 'length' in x[1] && (
+    x[1].length === 0 || x[1].length === 1 && typeof x[1][0] === 'object'
+  )
+);
+
 export const isLayerTrigger = (x: unknown): x is LayerTrigger => (
-  typeof x === 'object' && x !== null && 'id' in x && x.id === TRIGGER_ID.LAYER
+  isTimedTrigger(x) && x[1] !== null && typeof x[1] === 'object' && 'id' in x[1]
 );
 
 export class TriggerDataManager {
