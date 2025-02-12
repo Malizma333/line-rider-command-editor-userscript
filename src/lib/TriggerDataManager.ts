@@ -212,6 +212,38 @@ export class TriggerDataManager {
     this.triggerData[TRIGGER_ID.SKIN].triggers = skinTriggers;
   }
 
+  /**
+   * Creates a new layer trigger for any new layer ids
+   * Also removes any triggers that don't exist in the id map
+   * @param layerMap Indices mapping to layer ids
+   */
+  updateLayerMap(layerMap: number[]): void {
+    const layerTriggers = this.triggerData[TRIGGER_ID.LAYER].triggers as LayerTrigger[];
+
+    console.log(layerTriggers, layerMap);
+
+    const existing = new Set(layerMap);
+    const visited = new Set<number>();
+
+    const filteredTriggers = layerTriggers.filter((layer) => !existing.has(layer[1].id));
+
+    for (const layerTrigger of filteredTriggers) {
+      visited.add(layerTrigger[1].id);
+    }
+
+    for (const id of layerMap) {
+      if (!visited.has(id)) {
+        const newTrigger = structuredClone(TRIGGER_METADATA[TRIGGER_ID.LAYER].TEMPLATE);
+        newTrigger[1].id = id;
+        filteredTriggers.push(newTrigger);
+      }
+    }
+
+    this.triggerData[TRIGGER_ID.LAYER].triggers = filteredTriggers;
+
+    console.log(filteredTriggers);
+  }
+
   updateFromPath(path: string[], newValue: PathValue, location: TRIGGER_ID): void {
     const HISTORY_LIMIT = 30;
     this.redoStack = [];

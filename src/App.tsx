@@ -90,6 +90,8 @@ export class App extends React.Component {
     if (this.state.layerMap.length !== layerIds.length) {
       const { layerDropdown } = this.state;
 
+      this.triggerManager.updateLayerMap(layerIds);
+      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
       if (!layerIds.includes(layerDropdown)) {
         this.setState({ layerDropdown: layerIds[0] });
       }
@@ -132,24 +134,22 @@ export class App extends React.Component {
 
     const newTriggerArray = this.triggerManager.data[activeTab].triggers;
 
-    this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) });
+    this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[], layerDropdown) });
   }
 
   onUpdateTrigger(newValue: number | string | boolean, path: string[]): void {
-    const { activeTab } = this.state;
+    const { activeTab, layerDropdown } = this.state;
 
     this.triggerManager.updateFromPath([activeTab, ...path], newValue, activeTab);
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
 
     const newTriggerArray = this.triggerManager.data[activeTab].triggers;
 
-    if (activeTab !== TRIGGER_ID.SKIN) {
-      this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) });
-    }
+    this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[], layerDropdown) });
   }
 
   onDeleteTrigger(index: number): void {
-    const { activeTab } = this.state;
+    const { activeTab, layerDropdown } = this.state;
 
     if (activeTab === TRIGGER_ID.SKIN) return;
 
@@ -160,7 +160,7 @@ export class App extends React.Component {
 
     const newTriggerArray = this.triggerManager.data[activeTab].triggers;
 
-    this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) });
+    this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[], layerDropdown) });
   }
 
   onDownload(): void {
@@ -208,7 +208,7 @@ export class App extends React.Component {
   }
 
   onLoad(nextTriggerData: TriggerDataLookup): void {
-    const { activeTab } = this.state;
+    const { activeTab, layerDropdown } = this.state;
     try {
       Object.keys(TRIGGER_METADATA).forEach((commandId: string) => {
         this.triggerManager.updateFromPath([commandId], nextTriggerData[commandId as TRIGGER_ID], activeTab);
@@ -216,7 +216,7 @@ export class App extends React.Component {
 
       if (activeTab !== TRIGGER_ID.SKIN) {
         const newTriggerArray = nextTriggerData[activeTab].triggers;
-        this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) });
+        this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[], layerDropdown) });
       }
 
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
@@ -301,7 +301,7 @@ export class App extends React.Component {
   }
 
   onUndo(): void {
-    const { activeTab } = this.state;
+    const { activeTab, layerDropdown } = this.state;
 
     const tabChange = this.triggerManager.undo();
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
@@ -312,12 +312,12 @@ export class App extends React.Component {
 
     if (activeTab !== TRIGGER_ID.SKIN) {
       const newTriggerArray = this.triggerManager.data[activeTab].triggers;
-      this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) });
+      this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[], layerDropdown) });
     }
   }
 
   onRedo(): void {
-    const { activeTab } = this.state;
+    const { activeTab, layerDropdown } = this.state;
 
     const tabChange = this.triggerManager.redo();
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
@@ -328,7 +328,7 @@ export class App extends React.Component {
 
     if (activeTab !== TRIGGER_ID.SKIN) {
       const newTriggerArray = this.triggerManager.data[activeTab].triggers;
-      this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) });
+      this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[], layerDropdown) });
     }
   }
 
@@ -354,11 +354,13 @@ export class App extends React.Component {
   }
 
   onChangeTab(tabName: TRIGGER_ID): void {
+    const { layerDropdown } = this.state;
+
     this.setState({ activeTab: tabName });
 
     if (tabName !== TRIGGER_ID.SKIN) {
       const newTriggerArray = this.triggerManager.data[tabName].triggers;
-      this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[]) });
+      this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[], layerDropdown) });
     }
   }
 
