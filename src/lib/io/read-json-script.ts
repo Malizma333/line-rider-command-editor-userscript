@@ -42,6 +42,7 @@ export function readJsonScript(
         parseSkinTriggers(fileObject[commandId]['triggers'] as SkinCssTrigger[]);
         break;
       case TRIGGER_ID.GRAVITY:
+      case TRIGGER_ID.LAYER:
         parseTriggers(commandId, fileObject[commandId]['triggers'] as TimedTrigger[]);
         break;
       default:

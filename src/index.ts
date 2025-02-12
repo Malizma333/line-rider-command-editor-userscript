@@ -2,7 +2,7 @@ import { GLOBAL_STYLES } from './styles';
 import { App } from './App';
 import { getPlayerRunning, getWindowFocused } from './lib/redux-selectors';
 import {
-  CameraFocusTrigger, CameraPanTrigger, GravityTrigger, TimeRemapTrigger, ZoomTrigger,
+  CameraFocusTrigger, CameraPanTrigger, GravityTrigger, LayerTrigger, TimeRemapTrigger, ZoomTrigger,
 } from './lib/TriggerDataManager.types';
 import type { Store } from 'redux';
 
@@ -23,6 +23,7 @@ declare global {
     createTimeRemapper: (timeRemap: TimeRemapTrigger[], smoothing?: boolean) => typeof window.timeRemapper
     setCustomRiders: (cssList: string[]) => void
     setCustomGravity?: (gravity: GravityTrigger[]) => void
+    createLayerAutomator?: (layerTriggers: LayerTrigger[]) => void
   }
 
   type RootState = ReturnType<typeof window.store.getState>

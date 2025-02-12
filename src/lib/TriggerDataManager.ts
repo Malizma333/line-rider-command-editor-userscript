@@ -61,6 +61,10 @@ export const TRIGGER_METADATA: TriggerMetadataLookup = {
     DISPLAY_NAME: 'Gravity',
     TEMPLATE: [[0, 0, 0], [{ x: 0, y: 0.175 }]],
   },
+  [TRIGGER_ID.LAYER]: {
+    DISPLAY_NAME: 'Layer',
+    TEMPLATE: [[0, 0, 0], { id: -1, on: 1, off: 0, offset: 0 }],
+  },
 };
 
 export class TriggerDataManager {
@@ -103,6 +107,10 @@ export class TriggerDataManager {
       [TRIGGER_ID.GRAVITY]: {
         id: TRIGGER_ID.GRAVITY,
         triggers: [structuredClone(TRIGGER_METADATA[TRIGGER_ID.GRAVITY].TEMPLATE)],
+      },
+      [TRIGGER_ID.LAYER]: {
+        id: TRIGGER_ID.LAYER,
+        triggers: [structuredClone(TRIGGER_METADATA[TRIGGER_ID.LAYER].TEMPLATE)],
       },
     };
   }

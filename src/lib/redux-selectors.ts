@@ -106,3 +106,12 @@ export function getPlaybackZoom(state: RootState): number {
 export function getPlaybackDimensions(state: RootState): {width: number, height: number} {
   return state.camera.playbackDimensions || state.camera.editorDimensions;
 }
+
+/**
+ * Selects the number of track layers
+ * @param state Redux store state
+ * @returns Number of layers
+ */
+export function getNumLayers(state: RootState): number {
+  return state.simulator.committedEngine.engine.state.layers.size();
+}

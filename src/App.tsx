@@ -2,6 +2,7 @@ import { TriggerDataManager, TRIGGER_METADATA } from './lib/TriggerDataManager';
 import {
   TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, GravityTrigger,
   SkinCssTrigger, CameraPanTrigger, TimeRemapTrigger,
+  LayerTrigger,
 } from './lib/TriggerDataManager.types';
 import { readJsScript } from './lib/io/read-js-script';
 import { readJsonScript } from './lib/io/read-json-script';
@@ -32,8 +33,10 @@ export interface AppState {
   activeTab: TRIGGER_ID
   triggerUpdateFlag: boolean
   numRiders: number
+  numLayers: number
   focusDropdown: number
   gravityDropdown: number
+  layerDropdown: number
   settingsActive: boolean
   fontSize: FONT_SIZE_SETTING
   resolution: VIEWPORT_SETTING
@@ -52,8 +55,10 @@ export class App extends React.Component {
       activeTab: TRIGGER_ID.ZOOM,
       triggerUpdateFlag: false,
       numRiders: 1,
+      numLayers: 1,
       focusDropdown: 0,
       gravityDropdown: 0,
+      layerDropdown: 0,
       settingsActive: false,
       fontSize: getSetting(SETTINGS_KEY.FONT_SIZE),
       resolution: getSetting(SETTINGS_KEY.VIEWPORT),
@@ -78,6 +83,15 @@ export class App extends React.Component {
       this.setState({ focusDropdown: Math.min(riderCount - 1, focusDropdown) });
       this.setState({ gravityDropdown: Math.min(riderCount - 1, gravityDropdown) });
       this.setState({ numRiders: riderCount });
+    }
+
+    const layerCount = Selectors.getNumLayers(store.getState());
+
+    if (this.state.numLayers !== layerCount) {
+      const { layerDropdown } = this.state;
+
+      this.setState({ layerDropdown: Math.min(layerCount - 1, layerDropdown) });
+      this.setState({ numLayers: layerCount });
     }
 
     const sidebarOpen = Selectors.getSidebarOpen(store.getState());
@@ -244,6 +258,11 @@ export class App extends React.Component {
         case TRIGGER_ID.GRAVITY:
           if (window.setCustomGravity !== undefined) {
             window.setCustomGravity(currentData.triggers as GravityTrigger[]);
+          }
+          break;
+        case TRIGGER_ID.LAYER:
+          if (window.createLayerAutomator !== undefined) {
+            window.createLayerAutomator(currentData.triggers as LayerTrigger[]);
           }
           break;
         default:
@@ -492,6 +511,13 @@ export class App extends React.Component {
         label="Rider"
         onChange={(e: number) => this.onChangeGravityDD(e)}
       />}
+      {data.id === TRIGGER_ID.LAYER && <Dropdown // TODO: Fix this to select ids
+        customStyle={{ margin: '0em .25em' }}
+        value={this.state.layerDropdown}
+        count={this.state.numLayers}
+        label="Layer"
+        onChange={(e: number) => this.onChangeGravityDD(e)}
+      />}
     </div>;
   }
 
@@ -524,6 +550,7 @@ export class App extends React.Component {
       {data.id === TRIGGER_ID.FOCUS && this.renderFocusTrigger((currentTrigger as CameraFocusTrigger), index)}
       {data.id === TRIGGER_ID.TIME && this.renderRemapTrigger((currentTrigger as TimeRemapTrigger), index)}
       {data.id === TRIGGER_ID.GRAVITY && this.renderGravityTrigger((currentTrigger as GravityTrigger), index)}
+      {data.id === TRIGGER_ID.LAYER && this.renderLayerTrigger((currentTrigger as LayerTrigger), index)}
       <EmbeddedButton
         customStyle={GLOBAL_STYLES.newTriggerButton}
         size="16px"
@@ -626,6 +653,25 @@ export class App extends React.Component {
         </div>;
       })}
     </div>;
+  }
+
+  renderLayerTrigger(data: LayerTrigger, index: number) {
+    const dropdownIndex = this.state.layerDropdown;
+    const cProps = [CONSTRAINT.GRAVITY_X, CONSTRAINT.GRAVITY_Y];
+    const labels = ['X', 'Y'];
+
+    return <div style={{ display: 'flex', flexDirection: 'row' }}>
+    {...['x', 'y'].map((prop, propIndex) => {
+      return <div style={GLOBAL_STYLES.triggerPropContainer}>
+        {this.renderTriggerProp(
+            labels[propIndex],
+            data[1][dropdownIndex][prop as 'x' | 'y'],
+            ['triggers', index.toString(), '1', dropdownIndex.toString(), prop],
+            cProps[propIndex],
+        )}
+      </div>;
+    })}
+  </div>;
   }
 
   renderTriggerProp(
