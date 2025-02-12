@@ -1,4 +1,4 @@
-import { TriggerDataManager, TRIGGER_METADATA } from './lib/TriggerDataManager';
+import { TriggerDataManager, TRIGGER_METADATA, isLayerTrigger } from './lib/TriggerDataManager';
 import {
   TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, GravityTrigger,
   SkinCssTrigger, CameraPanTrigger, TimeRemapTrigger,
@@ -102,7 +102,7 @@ export class App extends React.Component {
   }
 
   onCreateTrigger(index: number): void {
-    const { activeTab } = this.state;
+    const { activeTab, layerDropdown } = this.state;
 
     if (activeTab === TRIGGER_ID.SKIN) return;
 
@@ -115,6 +115,11 @@ export class App extends React.Component {
 
     const currentTriggers = this.triggerManager.data[activeTab].triggers;
     const newTriggerData = structuredClone((currentTriggers[index] as TimedTrigger)[1]);
+
+    if (isLayerTrigger(newTriggerData)) {
+      newTriggerData[1].id = layerDropdown;
+    }
+
     const newTrigger = [triggerTime, newTriggerData] as TimedTrigger;
     const newTriggers = currentTriggers
         .slice(0, index + 1)
@@ -526,6 +531,11 @@ export class App extends React.Component {
   renderTrigger(index: number) {
     const data = this.triggerManager.data[this.state.activeTab];
     const currentTrigger = data.triggers[index];
+    const layerDropdown = this.state.layerDropdown;
+
+    if (data.id === TRIGGER_ID.LAYER && (currentTrigger as LayerTrigger)[1].id !== layerDropdown) {
+      return null;
+    }
 
     return <div style={{
       ...GLOBAL_STYLES.triggerContainer,

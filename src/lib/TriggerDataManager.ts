@@ -1,6 +1,7 @@
 import { CONSTRAINT } from './constraints';
 import {
   GravityTrigger, TRIGGER_ID, TriggerDataLookup, TriggerMetadataLookup, HistoryItem, CameraFocusTrigger, PathValue,
+  LayerTrigger,
 } from './TriggerDataManager.types';
 
 export const TRIGGER_METADATA: TriggerMetadataLookup = {
@@ -63,9 +64,13 @@ export const TRIGGER_METADATA: TriggerMetadataLookup = {
   },
   [TRIGGER_ID.LAYER]: {
     DISPLAY_NAME: 'Layer',
-    TEMPLATE: [[0, 0, 0], { id: -1, on: 1, off: 0, offset: 0 }],
+    TEMPLATE: [[0, 0, 0], { id: 0, on: 1, off: 0, offset: 0 }],
   },
 };
+
+export const isLayerTrigger = (x: unknown): x is LayerTrigger => (
+  typeof x === 'object' && x !== null && 'id' in x && x.id === TRIGGER_ID.LAYER
+);
 
 export class TriggerDataManager {
   private triggerData: TriggerDataLookup;
