@@ -33,7 +33,7 @@ export interface AppState {
   activeTab: TRIGGER_ID
   triggerUpdateFlag: boolean
   numRiders: number
-  numLayers: number
+  layerMap: number[]
   focusDropdown: number
   gravityDropdown: number
   layerDropdown: number
@@ -55,7 +55,7 @@ export class App extends React.Component {
       activeTab: TRIGGER_ID.ZOOM,
       triggerUpdateFlag: false,
       numRiders: 1,
-      numLayers: 1,
+      layerMap: [0],
       focusDropdown: 0,
       gravityDropdown: 0,
       layerDropdown: 0,
@@ -85,13 +85,15 @@ export class App extends React.Component {
       this.setState({ numRiders: riderCount });
     }
 
-    const layerCount = Selectors.getNumLayers(store.getState());
+    const layerIds = Selectors.getLayers(store.getState());
 
-    if (this.state.numLayers !== layerCount) {
+    if (this.state.layerMap.length !== layerIds.length) {
       const { layerDropdown } = this.state;
 
-      this.setState({ layerDropdown: Math.min(layerCount - 1, layerDropdown) });
-      this.setState({ numLayers: layerCount });
+      if (!layerIds.includes(layerDropdown)) {
+        this.setState({ layerDropdown: layerIds[0] });
+      }
+      this.setState({ layerMap: layerIds });
     }
 
     const sidebarOpen = Selectors.getSidebarOpen(store.getState());
@@ -396,6 +398,10 @@ export class App extends React.Component {
     this.setState({ gravityDropdown: value });
   }
 
+  onChangeLayerDD(value: number): void {
+    this.setState({ layerDropdown: value });
+  }
+
   onCaptureCamera(index: number, triggerType: TRIGGER_ID) {
     switch (triggerType) {
       case TRIGGER_ID.ZOOM: {
@@ -504,7 +510,7 @@ export class App extends React.Component {
       {data.id === TRIGGER_ID.FOCUS && <Dropdown
         customStyle={{ margin: '0em .25em' }}
         value={this.state.focusDropdown}
-        count={this.state.numRiders}
+        mapping={[...Array(this.state.numRiders).keys()].map((x) => x + 1)}
         label="Rider"
         onChange={(e: number) => this.onChangeFocusDD(e)}
       />}
@@ -514,16 +520,16 @@ export class App extends React.Component {
       {data.id === TRIGGER_ID.GRAVITY && <Dropdown
         customStyle={{ margin: '0em .25em' }}
         value={this.state.gravityDropdown}
-        count={this.state.numRiders}
+        mapping={[...Array(this.state.numRiders).keys()].map((x) => x + 1)}
         label="Rider"
         onChange={(e: number) => this.onChangeGravityDD(e)}
       />}
-      {data.id === TRIGGER_ID.LAYER && <Dropdown // TODO: Fix this to select ids
+      {data.id === TRIGGER_ID.LAYER && <Dropdown
         customStyle={{ margin: '0em .25em' }}
         value={this.state.layerDropdown}
-        count={this.state.numLayers}
+        mapping={this.state.layerMap}
         label="Layer"
-        onChange={(e: number) => this.onChangeGravityDD(e)}
+        onChange={(e: number) => this.onChangeLayerDD(e)}
       />}
     </div>;
   }

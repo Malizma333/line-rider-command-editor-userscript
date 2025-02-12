@@ -1,5 +1,5 @@
-/* eslint-disable jsdoc/no-types */
-// window.createLayerAutomator = (function() {
-//   return function(newTriggers) {
-//   };
-// })();
+window.createLayerAutomator = (function() {
+  return function(newTriggers) {
+    console.log(newTriggers);
+  };
+})();

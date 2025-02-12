@@ -108,10 +108,10 @@ export function getPlaybackDimensions(state: RootState): {width: number, height:
 }
 
 /**
- * Selects the number of track layers
+ * Selects the mapping of the track layer indices to their ids
  * @param state Redux store state
- * @returns Number of layers
+ * @returns List of layer ids by index
  */
-export function getNumLayers(state: RootState): number {
-  return state.simulator.committedEngine.engine.state.layers.size();
+export function getLayers(state: RootState): number[] {
+  return state.simulator.committedEngine.engine.state.layers.toArray().map((l: {id: number}) => l.id);
 }
