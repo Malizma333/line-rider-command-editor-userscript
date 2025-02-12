@@ -220,6 +220,9 @@ export class App extends React.Component {
         this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[], layerDropdown) });
       }
 
+      const layerIds = Selectors.getLayers(store.getState());
+      this.triggerManager.updateLayerMap(layerIds);
+
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
     } catch (error) {
       if (error instanceof Error) {
