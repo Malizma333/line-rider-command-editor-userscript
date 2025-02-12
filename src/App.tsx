@@ -570,7 +570,7 @@ export class App extends React.Component {
         />
       </div>
 
-      {this.renderTimeInput((currentTrigger as TimedTrigger)[0], realIndex)}
+      {this.renderTimeInput((currentTrigger as TimedTrigger)[0], realIndex, index)}
       {data.id === TRIGGER_ID.ZOOM && this.renderZoomTrigger((currentTrigger as ZoomTrigger), realIndex)}
       {data.id === TRIGGER_ID.PAN && this.renderPanTrigger((currentTrigger as CameraPanTrigger), realIndex)}
       {data.id === TRIGGER_ID.FOCUS && this.renderFocusTrigger((currentTrigger as CameraFocusTrigger), realIndex)}
@@ -586,7 +586,7 @@ export class App extends React.Component {
     </div>;
   }
 
-  renderTimeInput(data: TriggerTime, index: number) {
+  renderTimeInput(data: TriggerTime, realIndex: number, index: number) {
     const cProps = [CONSTRAINT.MINUTE, CONSTRAINT.SECOND, CONSTRAINT.FRAME];
     const labels = ['Time', ':', ':'];
 
@@ -596,7 +596,7 @@ export class App extends React.Component {
           {this.renderTriggerProp(
               labels[timeIndex],
               timeValue,
-              ['triggers', index.toString(), '0', timeIndex.toString()],
+              ['triggers', realIndex.toString(), '0', timeIndex.toString()],
               cProps[timeIndex],
             this.state.invalidTimes[index] ? 'red' : 'black',
           )}

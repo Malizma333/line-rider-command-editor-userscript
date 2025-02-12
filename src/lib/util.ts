@@ -12,7 +12,7 @@ import { isLayerTrigger } from './TriggerDataManager';
 export function validateTimes(triggers: TimedTrigger[], targetLayerId?: number): boolean[] {
   // HACK: This line may not be very type safe
   const filteredTriggers = triggers.filter((t) => !isLayerTrigger(t) || t[1].id === targetLayerId);
-  const invalidIndices = Array(filteredTriggers.length).map(() => false);
+  const invalidIndices = Array(filteredTriggers.length).fill(false);
 
   const firstTime = filteredTriggers[0][0];
   if (firstTime[0] !== 0 || firstTime[1] !== 0 || firstTime[2] !== 0) {
