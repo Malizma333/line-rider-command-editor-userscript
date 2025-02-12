@@ -275,7 +275,7 @@ export class App extends React.Component {
           break;
         case TRIGGER_ID.LAYER:
           if (window.createLayerAutomator !== undefined) {
-            window.createLayerAutomator(currentData.triggers as LayerTrigger[]);
+            window.createLayerAutomator(currentData.triggers as LayerTrigger[], currentData.interpolate || false);
           }
           break;
         default:
@@ -548,6 +548,9 @@ export class App extends React.Component {
         label="Layer"
         onChange={(e: number) => this.onChangeLayerDD(e)}
       />}
+      {data.id === TRIGGER_ID.LAYER &&
+        this.renderTriggerProp('60 FPS', data.interpolate || false, ['interpolate'], CONSTRAINT.INTERPOLATE)
+      }
     </div>;
   }
 

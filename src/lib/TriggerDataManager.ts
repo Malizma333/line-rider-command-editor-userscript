@@ -144,6 +144,7 @@ export class TriggerDataManager {
       [TRIGGER_ID.LAYER]: {
         id: TRIGGER_ID.LAYER,
         triggers: [structuredClone(TRIGGER_METADATA[TRIGGER_ID.LAYER].TEMPLATE)],
+        interpolate: CONSTRAINT.INTERPOLATE.DEFAULT,
       },
     };
   }

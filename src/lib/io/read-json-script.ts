@@ -35,6 +35,7 @@ export function readJsonScript(
         parseSmoothing(commandId, fileObject[commandId]['smoothing']);
         break;
       case TRIGGER_ID.TIME:
+      case TRIGGER_ID.LAYER:
         parseTriggers(commandId, fileObject[commandId]['triggers'] as TimedTrigger[]);
         parseSmoothing(commandId, fileObject[commandId]['interpolate']);
         break;
@@ -42,7 +43,6 @@ export function readJsonScript(
         parseSkinTriggers(fileObject[commandId]['triggers'] as SkinCssTrigger[]);
         break;
       case TRIGGER_ID.GRAVITY:
-      case TRIGGER_ID.LAYER:
         parseTriggers(commandId, fileObject[commandId]['triggers'] as TimedTrigger[]);
         break;
       default:
@@ -93,7 +93,7 @@ export function readJsonScript(
    * @param smoothingValue The proposed value for smoothing
    */
   function parseSmoothing(commandId: TRIGGER_ID, smoothingValue?: boolean | number): void {
-    if (commandId === TRIGGER_ID.TIME) {
+    if (commandId === TRIGGER_ID.TIME || commandId === TRIGGER_ID.LAYER) {
       const constraints = CONSTRAINT.INTERPOLATE;
 
       if (smoothingValue == null) {

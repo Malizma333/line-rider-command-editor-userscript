@@ -1,7 +1,12 @@
 window.createLayerAutomator = (function() {
   let mapping = {};
+  let sixty = false;
 
   window.getLayerVisibleAtTime = (id, ind) => {
+    if (sixty) {
+      ind = Math.round(ind * 1.5);
+    }
+
     if (!(id in mapping)) {
       return true;
     }
@@ -36,7 +41,8 @@ window.createLayerAutomator = (function() {
     return (ind + cycle.offset) % (cycle.on + cycle.off) < cycle.on;
   };
 
-  return function(newTriggers) {
+  return function(newTriggers, sixtyFps) {
+    sixty = sixtyFps;
     mapping = {};
 
     for (const trigger of newTriggers) {
