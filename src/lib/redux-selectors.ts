@@ -106,3 +106,12 @@ export function getPlaybackZoom(state: RootState): number {
 export function getPlaybackDimensions(state: RootState): {width: number, height: number} {
   return state.camera.playbackDimensions || state.camera.editorDimensions;
 }
+
+/**
+ * Selects the mapping of the track layer indices to their ids
+ * @param state Redux store state
+ * @returns List of layer ids by index
+ */
+export function getLayers(state: RootState): number[] {
+  return state.simulator.committedEngine.engine.state.layers.toArray().map((l: {id: number}) => l.id);
+}

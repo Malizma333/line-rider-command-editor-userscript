@@ -1,23 +1,27 @@
 import { TimedTrigger, TriggerTime, SkinCssTrigger } from '../lib/TriggerDataManager.types';
+import { isLayerTrigger } from './TriggerDataManager';
 
 /**
  * Validates the times in a list of triggers
  * - First trigger must be at time 0
  * - Each trigger after should have a later time than the trigger before it
  * @param triggers List of triggers to check timestamps of
+ * @param targetLayerId Special case for filtering list of triggers by layer id
  * @returns Which times in the trigger array are invalid
  */
-export function validateTimes(triggers: TimedTrigger[]): boolean[] {
-  const invalidIndices = Array(triggers.length).map(() => false);
+export function validateTimes(triggers: TimedTrigger[], targetLayerId?: number): boolean[] {
+  // HACK: This line may not be very type safe
+  const filteredTriggers = triggers.filter((t) => !isLayerTrigger(t) || t[1].id === targetLayerId);
+  const invalidIndices = Array(filteredTriggers.length).fill(false);
 
-  const firstTime = triggers[0][0];
+  const firstTime = filteredTriggers[0][0];
   if (firstTime[0] !== 0 || firstTime[1] !== 0 || firstTime[2] !== 0) {
     invalidIndices[0] = true;
   }
 
-  for (let i = 0; i < triggers.length - 1; i += 1) {
-    const time1 = triggers[i][0] as number[];
-    const time2 = triggers[i + 1][0] as number[];
+  for (let i = 0; i < filteredTriggers.length - 1; i += 1) {
+    const time1 = filteredTriggers[i][0] as number[];
+    const time2 = filteredTriggers[i + 1][0] as number[];
     const index1 = (
       time1[0] * 60 + time1[1]
     ) * 40 + time1[2];

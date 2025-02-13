@@ -1,12 +1,12 @@
 /* eslint-disable max-len */
 const { React, store } = window;
-import EmbeddedButton from '../components/EmbeddedButton';
-import { GLOBAL_STYLES } from '../styles';
-import * as FICONS from '../components/Icons';
-import { SkinCssTrigger } from '../lib/TriggerDataManager.types';
-import { App } from '../App';
-import * as Selectors from '../lib/redux-selectors';
-import Dropdown from '../components/Dropdown';
+import EmbeddedButton from '../EmbeddedButton';
+import { GLOBAL_STYLES } from '../../styles';
+import * as FICONS from '../Icons';
+import { SkinCssTrigger } from '../../lib/TriggerDataManager.types';
+import { App } from '../../App';
+import * as Selectors from '../../lib/redux-selectors';
+import Dropdown from '../Dropdown';
 
 const styles = {
   container: {
@@ -118,7 +118,7 @@ function SkinEditorToolbar({ skinEditor, root }: {skinEditor: SkinEditor, root: 
     <Dropdown
       customStyle={{ ...GLOBAL_STYLES.spacedProperty, fontSize: '1.5em' }}
       value={skinEditor.state.selectedRider}
-      count={root.state.numRiders}
+      mapping={[...Array(root.state.numRiders).keys()].map((x) => x + 1)}
       label="Rider"
       onChange={(e: number) => skinEditor.onChooseRider(e)}
     />

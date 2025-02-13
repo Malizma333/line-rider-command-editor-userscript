@@ -24,6 +24,10 @@ export function readJsScript(scriptText: string, currentTriggerData: TriggerData
       throw new Error('Gravity parsing not supported!');
     }
 
+    if (commandId === TRIGGER_ID.LAYER) {
+      throw new Error('Layer parsing not supported!');
+    }
+
     if (TRIGGER_METADATA[commandId].FUNC === undefined) {
       throw new Error('Function undefined!');
     }

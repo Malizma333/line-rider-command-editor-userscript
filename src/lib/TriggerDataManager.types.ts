@@ -1,3 +1,10 @@
+export type PathValue = object | number | string | boolean
+export interface HistoryItem {
+  modificationPath: string[],
+  oldValue: PathValue,
+  activeTab: TRIGGER_ID
+}
+
 export type TriggerTime = [number, number, number]
 
 export type ZoomTrigger = [TriggerTime, number]
@@ -6,8 +13,10 @@ export type CameraFocusTrigger = [TriggerTime, number[]]
 export type TimeRemapTrigger = [TriggerTime, number]
 export type SkinCssTrigger = Record<string, { stroke?: string, fill?: string }>;
 export type GravityTrigger = [TriggerTime, [{ x: number, y: number }]]
+export type LayerTrigger = [TriggerTime, {id: number, on: number, off: number, offset: number}]
 
-export type TimedTrigger = ZoomTrigger | CameraPanTrigger | CameraFocusTrigger | TimeRemapTrigger | GravityTrigger
+export type TimedTrigger =
+  ZoomTrigger | CameraPanTrigger | CameraFocusTrigger | TimeRemapTrigger | GravityTrigger | LayerTrigger
 export type Trigger = TimedTrigger | SkinCssTrigger
 
 export enum TRIGGER_ID {
@@ -16,14 +25,8 @@ export enum TRIGGER_ID {
   FOCUS = 'CAMERA_FOCUS',
   TIME = 'TIME_REMAP',
   SKIN = 'CUSTOM_SKIN',
-  GRAVITY = 'GRAVITY'
-}
-
-export type PathValue = object | number | string | boolean
-export interface HistoryItem {
-  modificationPath: string[],
-  oldValue: PathValue,
-  activeTab: TRIGGER_ID
+  GRAVITY = 'GRAVITY',
+  LAYER = 'LAYER'
 }
 
 interface TriggerData {
@@ -46,6 +49,7 @@ export interface TriggerDataLookup {
   [TRIGGER_ID.TIME]: TriggerData
   [TRIGGER_ID.SKIN]: TriggerData
   [TRIGGER_ID.GRAVITY]: TriggerData
+  [TRIGGER_ID.LAYER]: TriggerData
 }
 
 export interface TriggerMetadataLookup {
@@ -55,4 +59,5 @@ export interface TriggerMetadataLookup {
   [TRIGGER_ID.TIME]: TriggerMetadata<TimeRemapTrigger>
   [TRIGGER_ID.SKIN]: TriggerMetadata<SkinCssTrigger>
   [TRIGGER_ID.GRAVITY]: TriggerMetadata<GravityTrigger>
+  [TRIGGER_ID.LAYER]: TriggerMetadata<LayerTrigger>
 }

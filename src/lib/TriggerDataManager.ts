@@ -1,6 +1,12 @@
 import { CONSTRAINT } from './constraints';
 import {
   GravityTrigger, TRIGGER_ID, TriggerDataLookup, TriggerMetadataLookup, HistoryItem, CameraFocusTrigger, PathValue,
+  LayerTrigger,
+  Trigger,
+  TimedTrigger,
+  CameraPanTrigger,
+  ZoomTrigger,
+  TimeRemapTrigger,
 } from './TriggerDataManager.types';
 
 export const TRIGGER_METADATA: TriggerMetadataLookup = {
@@ -61,7 +67,38 @@ export const TRIGGER_METADATA: TriggerMetadataLookup = {
     DISPLAY_NAME: 'Gravity',
     TEMPLATE: [[0, 0, 0], [{ x: 0, y: 0.175 }]],
   },
+  [TRIGGER_ID.LAYER]: {
+    DISPLAY_NAME: 'Layer',
+    TEMPLATE: [[0, 0, 0], { id: 0, on: 1, off: 0, offset: 0 }],
+  },
 };
+
+const isTrigger = (x: unknown): x is Trigger => typeof x === 'object' && x !== null;
+const isTimedTrigger = (x: unknown): x is TimedTrigger => isTrigger(x) && 'length' in x && x.length === 2;
+
+export const isTimeOrZoomTrigger = (x: unknown): x is (TimeRemapTrigger | ZoomTrigger) => (
+  isTimedTrigger(x) && x[1] !== null && typeof x[1] === 'number'
+);
+
+export const isPanTrigger = (x: unknown): x is CameraPanTrigger => (
+  isTimedTrigger(x) && x[1] !== null && typeof x[1] === 'object' && 'w' in x[1]
+);
+
+export const isFocusTrigger = (x: unknown): x is CameraFocusTrigger => (
+  isTimedTrigger(x) && x[1] !== null && typeof x[1] === 'object' && 'length' in x[1] && (
+    x[1].length === 0 || x[1].length === 1 && typeof x[1][0] === 'number'
+  )
+);
+
+export const isGravityTrigger = (x: unknown): x is GravityTrigger => (
+  isTimedTrigger(x) && x[1] !== null && typeof x[1] === 'object' && 'length' in x[1] && (
+    x[1].length === 0 || x[1].length === 1 && typeof x[1][0] === 'object'
+  )
+);
+
+export const isLayerTrigger = (x: unknown): x is LayerTrigger => (
+  isTimedTrigger(x) && x[1] !== null && typeof x[1] === 'object' && 'id' in x[1]
+);
 
 export class TriggerDataManager {
   private triggerData: TriggerDataLookup;
@@ -103,6 +140,11 @@ export class TriggerDataManager {
       [TRIGGER_ID.GRAVITY]: {
         id: TRIGGER_ID.GRAVITY,
         triggers: [structuredClone(TRIGGER_METADATA[TRIGGER_ID.GRAVITY].TEMPLATE)],
+      },
+      [TRIGGER_ID.LAYER]: {
+        id: TRIGGER_ID.LAYER,
+        triggers: [structuredClone(TRIGGER_METADATA[TRIGGER_ID.LAYER].TEMPLATE)],
+        interpolate: CONSTRAINT.INTERPOLATE.DEFAULT,
       },
     };
   }
@@ -169,6 +211,34 @@ export class TriggerDataManager {
     }
 
     this.triggerData[TRIGGER_ID.SKIN].triggers = skinTriggers;
+  }
+
+  /**
+   * Creates a new layer trigger for any new layer ids
+   * Also removes any triggers that don't exist in the id map
+   * @param layerMap Indices mapping to layer ids
+   */
+  updateLayerMap(layerMap: number[]): void {
+    const layerTriggers = this.triggerData[TRIGGER_ID.LAYER].triggers as LayerTrigger[];
+
+    const existing = new Set(layerMap);
+    const visited = new Set<number>();
+
+    const filteredTriggers = layerTriggers.filter((layer) => existing.has(layer[1].id));
+
+    for (const layerTrigger of filteredTriggers) {
+      visited.add(layerTrigger[1].id);
+    }
+
+    for (const id of layerMap) {
+      if (!visited.has(id)) {
+        const newTrigger = structuredClone(TRIGGER_METADATA[TRIGGER_ID.LAYER].TEMPLATE);
+        newTrigger[1].id = id;
+        filteredTriggers.push(newTrigger);
+      }
+    }
+
+    this.triggerData[TRIGGER_ID.LAYER].triggers = filteredTriggers;
   }
 
   updateFromPath(path: string[], newValue: PathValue, location: TRIGGER_ID): void {
