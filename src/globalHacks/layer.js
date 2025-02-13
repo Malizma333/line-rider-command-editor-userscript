@@ -1,8 +1,9 @@
 window.createLayerAutomator = (function() {
   let mapping = {};
   let sixty = false;
+  let triggerIndex = 0;
 
-  window.getLayerVisibleAtTime = (id, ind) => {
+  const getVisible = (id, ind) => {
     if (sixty) {
       ind = Math.round(ind * 1.5);
     }
@@ -12,9 +13,17 @@ window.createLayerAutomator = (function() {
     }
 
     const triggers = mapping[id];
-    let cycle = triggers[triggers.length - 1][1];
+    let cycle = triggers[triggerIndex][1];
 
-    if (ind < triggers[triggers.length - 1][0]) {
+    if (triggerIndex < triggers.length - 1 && triggers[triggerIndex + 1][0] <= ind) {
+      triggerIndex += 1;
+      cycle = triggers[triggerIndex][1];
+    }
+
+    if (
+      triggerIndex < triggers.length - 1 && !(triggers[triggerIndex][0] <= ind && ind < triggers[triggerIndex + 1][0])||
+      triggerIndex === triggers.length - 1 && !(triggers[triggerIndex][0] <= ind)
+    ) {
       let low = 0;
       let high = triggers.length - 1;
       while (low < high) {
@@ -27,7 +36,8 @@ window.createLayerAutomator = (function() {
         }
       }
 
-      cycle = triggers[low][1];
+      triggerIndex = low;
+      cycle = triggers[triggerIndex][1];
     }
 
     if (cycle.off === 0) {
@@ -54,6 +64,10 @@ window.createLayerAutomator = (function() {
         trigger[0][0] * 2400 + trigger[0][1] * 40 + trigger[0][2],
         { on: trigger[1].on, off: trigger[1].off, offset: trigger[1].offset },
       ]);
+    }
+
+    if (window.getLayerVisibleAtTime === undefined) {
+      window.getLayerVisibleAtTime = getVisible;
     }
   };
 })();

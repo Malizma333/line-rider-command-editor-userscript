@@ -467,26 +467,71 @@ export class App extends React.Component {
   }
 
   renderActions() {
-    const runDisabled = this.state.invalidTimes.some((i) => i);
-    const undoDisabled = this.triggerManager.undoLen === 0;
-    const redoDisabled = this.triggerManager.redoLen === 0;
-
     return !this.state.active ? <div style={GLOBAL_STYLES.actionContainer}>
-      <EmbeddedButton title="Maximize" onClick={() => this.onToggleActive()} icon={FICONS.MAXIMIZE}/>
+      <EmbeddedButton
+        title="Maximize"
+        onClick={() => this.onToggleActive()}
+        icon={FICONS.MAXIMIZE}
+      />
     </div> : <div style={GLOBAL_STYLES.actionContainer}>
       <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: 'start' }}>
-        <EmbeddedButton title="Minimize" onClick={() => this.onToggleActive()} icon={FICONS.MINIMIZE}/>
-        <EmbeddedButton title="Download" onClick={() => this.onDownload()} icon={FICONS.DOWNLOAD}/>
-        <EmbeddedButton title="Upload" onClick={() => this.onUpload()} icon={FICONS.UPLOAD}/>
-        <EmbeddedButton title="Load From Script" onClick={() => this.onLoadScript()} icon={FICONS.CORNER_UP_RIGHT}/>
-        <EmbeddedButton title="Run" onClick={() => this.onTest()} icon={FICONS.PLAY} disabled={runDisabled}/>
-        <EmbeddedButton title="Copy Script" onClick={async () => await this.onCopy()} icon={FICONS.COPY}/>
+        <EmbeddedButton
+          title="Minimize"
+          onClick={() => this.onToggleActive()}
+          icon={FICONS.MINIMIZE}
+        />
+        <EmbeddedButton
+          title="Download"
+          onClick={() => this.onDownload()}
+          icon={FICONS.DOWNLOAD}
+        />
+        <EmbeddedButton
+          title="Upload"
+          onClick={() => this.onUpload()}
+          icon={FICONS.UPLOAD}
+        />
+        <EmbeddedButton
+          title="Load From Script"
+          onClick={() => this.onLoadScript()}
+          icon={FICONS.CORNER_UP_RIGHT}
+          disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
+        />
+        <EmbeddedButton
+          title="Run"
+          onClick={() => this.onTest()}
+          icon={FICONS.PLAY}
+          disabled={this.state.invalidTimes.some((i) => i)}
+        />
+        <EmbeddedButton
+          title="Copy Script"
+          onClick={async () => await this.onCopy()}
+          icon={FICONS.COPY}
+          disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
+        />
       </div>
       <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: 'end' }}>
-        <EmbeddedButton title="Undo" onClick={() => this.onUndo()} icon={FICONS.ARROW_LEFT} disabled={undoDisabled}/>
-        <EmbeddedButton title="Redo" onClick={() => this.onRedo()} icon={FICONS.ARROW_RIGHT} disabled={redoDisabled}/>
-        <EmbeddedButton title="Settings" onClick={() => this.onToggleSettings()} icon={FICONS.SETTINGS}/>
-        <EmbeddedButton title="Help" onClick={() => this.onHelp()} icon={FICONS.HELP_CIRCLE}/>
+        <EmbeddedButton
+          title="Undo"
+          onClick={() => this.onUndo()}
+          icon={FICONS.ARROW_LEFT}
+          disabled={this.triggerManager.undoLen === 0}
+        />
+        <EmbeddedButton
+          title="Redo"
+          onClick={() => this.onRedo()}
+          icon={FICONS.ARROW_RIGHT}
+          disabled={this.triggerManager.redoLen === 0}
+        />
+        <EmbeddedButton
+          title="Settings"
+          onClick={() => this.onToggleSettings()}
+          icon={FICONS.SETTINGS}
+        />
+        <EmbeddedButton
+          title="Help"
+          onClick={() => this.onHelp()}
+          icon={FICONS.HELP_CIRCLE}
+        />
       </div>
       <input id="trigger-file-upload" style={{ display: 'none' }} type="file" accept=".json"
         onChange={(e: React.ChangeEvent) => this.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])} />
