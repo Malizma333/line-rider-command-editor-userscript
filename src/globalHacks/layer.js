@@ -2,7 +2,7 @@ window.createLayerAutomator = (function() {
   let mapping = {};
   let sixty = false;
 
-  window.getLayerVisibleAtTime = (id, ind) => {
+  const getVisible = (id, ind) => {
     if (sixty) {
       ind = Math.round(ind * 1.5);
     }
@@ -54,6 +54,10 @@ window.createLayerAutomator = (function() {
         trigger[0][0] * 2400 + trigger[0][1] * 40 + trigger[0][2],
         { on: trigger[1].on, off: trigger[1].off, offset: trigger[1].offset },
       ]);
+    }
+
+    if (window.getLayerVisibleAtTime === undefined) {
+      window.getLayerVisibleAtTime = getVisible;
     }
   };
 })();
