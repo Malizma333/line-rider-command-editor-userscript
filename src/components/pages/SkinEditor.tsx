@@ -118,8 +118,8 @@ function SkinEditorToolbar({ skinEditor, root }: {skinEditor: SkinEditor, root: 
     <Dropdown
       customStyle={{ ...GLOBAL_STYLES.spacedProperty, fontSize: '1.5em' }}
       value={skinEditor.state.selectedRider}
-      mapping={[...Array(root.state.numRiders).keys()].map((x) => x + 1)}
-      label="Rider"
+      mapping={[...Array(root.state.numRiders).keys()]}
+      label={(_, i) => `Rider ${i + 1}`}
       onChange={(e: number) => skinEditor.onChooseRider(e)}
     />
   </div>;

@@ -29,16 +29,22 @@ const styles = {
  */
 export default function Dropdown(
     { customStyle, value, mapping, label, onChange }:
-  {customStyle?: React.CSSProperties, value: number, mapping: number[], label: string, onChange: (e: number) => void},
+    {
+      customStyle?: React.CSSProperties,
+      value: number,
+      mapping: number[],
+      label: (e: number, i: number) => string,
+      onChange: (e: number) => void
+    },
 ) {
   return <select
     style={{ ...styles.head, ...customStyle }}
     value={value}
     onChange={(e: React.ChangeEvent) => onChange(parseInt((e.target as HTMLInputElement).value))}
   >
-    {...mapping.map((value) =>
+    {...mapping.map((value, index) =>
       <option style={styles.option} value={value}>
-        {label} {value}
+        {label(value, index)}
       </option>,
     )}
   </select>;

@@ -572,8 +572,8 @@ export class App extends React.Component {
       {data.id === TRIGGER_ID.FOCUS && <Dropdown
         customStyle={{ margin: '0em .25em' }}
         value={this.state.focusDropdown}
-        mapping={[...Array(this.state.numRiders).keys()].map((x) => x + 1)}
-        label="Rider"
+        mapping={[...Array(this.state.numRiders).keys()]}
+        label={(_, i) => `Rider ${i + 1}`}
         onChange={(e: number) => this.onChangeFocusDD(e)}
       />}
       {data.id === TRIGGER_ID.TIME &&
@@ -582,15 +582,15 @@ export class App extends React.Component {
       {data.id === TRIGGER_ID.GRAVITY && <Dropdown
         customStyle={{ margin: '0em .25em' }}
         value={this.state.gravityDropdown}
-        mapping={[...Array(this.state.numRiders).keys()].map((x) => x + 1)}
-        label="Rider"
+        mapping={[...Array(this.state.numRiders).keys()]}
+        label={(_, i) => `Rider ${i + 1}`}
         onChange={(e: number) => this.onChangeGravityDD(e)}
       />}
       {data.id === TRIGGER_ID.LAYER && <Dropdown
         customStyle={{ margin: '0em .25em' }}
         value={this.state.layerDropdown}
         mapping={this.state.layerMap}
-        label="Layer"
+        label={(e) => `Layer ${e}`}
         onChange={(e: number) => this.onChangeLayerDD(e)}
       />}
       {data.id === TRIGGER_ID.LAYER &&
