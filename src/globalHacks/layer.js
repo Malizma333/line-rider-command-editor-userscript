@@ -1,7 +1,7 @@
 window.createLayerAutomator = (function() {
   let mapping = {};
   let sixty = false;
-  let triggerIndex = 0;
+  let triggerIndices = {};
 
   const getVisible = (id, ind) => {
     if (sixty) {
@@ -13,16 +13,18 @@ window.createLayerAutomator = (function() {
     }
 
     const triggers = mapping[id];
-    let cycle = triggers[triggerIndex][1];
+    let cycle = triggers[triggerIndices[id]][1];
 
-    if (triggerIndex < triggers.length - 1 && triggers[triggerIndex + 1][0] <= ind) {
-      triggerIndex += 1;
-      cycle = triggers[triggerIndex][1];
+    if (triggerIndices[id] < triggers.length - 1 && triggers[triggerIndices[id] + 1][0] <= ind) {
+      triggerIndices[id] += 1;
+      cycle = triggers[triggerIndices[id]][1];
     }
 
     if (
-      triggerIndex < triggers.length - 1 && !(triggers[triggerIndex][0] <= ind && ind < triggers[triggerIndex + 1][0])||
-      triggerIndex === triggers.length - 1 && !(triggers[triggerIndex][0] <= ind)
+      triggerIndices[id] < triggers.length - 1 && !(
+        triggers[triggerIndices[id]][0] <= ind && ind < triggers[triggerIndices[id] + 1][0]
+      ) ||
+      triggerIndices[id] === triggers.length - 1 && !(triggers[triggerIndices[id]][0] <= ind)
     ) {
       let low = 0;
       let high = triggers.length - 1;
@@ -36,8 +38,8 @@ window.createLayerAutomator = (function() {
         }
       }
 
-      triggerIndex = low;
-      cycle = triggers[triggerIndex][1];
+      triggerIndices[id] = low;
+      cycle = triggers[triggerIndices[id]][1];
     }
 
     if (cycle.off === 0) {
@@ -54,10 +56,12 @@ window.createLayerAutomator = (function() {
   return function(newTriggers, sixtyFps) {
     sixty = sixtyFps;
     mapping = {};
+    triggerIndices = {};
 
     for (const trigger of newTriggers) {
       if (!(trigger[1].id in mapping)) {
         mapping[trigger[1].id] = [];
+        triggerIndices[trigger[1].id] = 0;
       }
 
       mapping[trigger[1].id].push([
