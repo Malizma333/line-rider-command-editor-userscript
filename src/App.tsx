@@ -457,14 +457,14 @@ export class App extends React.Component {
             {this.renderTabContainer()}
             {data.id === TRIGGER_ID.SKIN ?
               <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}/> :
-              <React.Fragment>
+              <>
                 {this.renderWindowHead()}
                 {<div style={{ ...GLOBAL_STYLES.windowBody, overflowY: 'scroll', paddingBottom: '10px' }}>
                   {computedTriggers.map(
                       (computeData) => this.renderTrigger(computeData[0], computeData[1], computeData[2]),
                   )}
                 </div>}
-              </React.Fragment>
+              </>
             }
           </div>}
       </div>}
@@ -569,7 +569,7 @@ export class App extends React.Component {
   renderWindowHead() {
     const data = this.triggerManager.data[this.state.activeTab];
 
-    return <div style={{ ...GLOBAL_STYLES.windowHead, fontSize: '1.5em' }}>
+    return <div style={GLOBAL_STYLES.windowHead}>
       {data.id === TRIGGER_ID.ZOOM &&
         <>
           {this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)}

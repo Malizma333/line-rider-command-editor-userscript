@@ -6,6 +6,8 @@ const styles = {
     backgroundColor: THEME.colorGray50,
     border: '2px solid black',
     borderRadius: '5px',
+    boxShadow: '0px 1px 4px -1px #000',
+    cursor: 'pointer',
     height: '1.5em',
     textAlign: 'right',
   },

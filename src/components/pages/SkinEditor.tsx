@@ -18,7 +18,7 @@ const styles = {
     width: '100%',
   },
   gridBackground: {
-    background: 'linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%), linear-gradient(-45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%)',
+    background: 'linear-gradient(45deg, #aaa 25%, transparent 25%, transparent 75%, #aaa 75%), linear-gradient(-45deg, #aaa 25%, transparent 25%, transparent 75%, #aaa 75%)',
     backgroundSize: '10px 10px',
     height: '1000px',
     position: 'absolute',
@@ -51,6 +51,7 @@ const styles = {
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
+    fontSize: '0.75em',
     justifyContent: 'center',
     position: 'relative',
   },
@@ -65,6 +66,7 @@ const styles = {
     background: 'linear-gradient(to left, black, white)',
     border: '2px solid black',
     borderRadius: '5px',
+    cursor: 'move',
     height: '10px',
     marginTop: '3px',
     width: '100px',
@@ -72,8 +74,9 @@ const styles = {
   colorPicker: {
     border: '2px solid black',
     borderRadius: '5px',
-    height: '2.25em',
-    width: '2.25em',
+    cursor: 'pointer',
+    height: '1.5em',
+    width: '1.5em',
   },
 } satisfies Record<string, React.CSSProperties>;
 
@@ -116,7 +119,7 @@ function SkinEditorToolbar({ skinEditor, root }: {skinEditor: SkinEditor, root: 
       onChange={(e: React.ChangeEvent) => skinEditor.onChangeColor((e.target as HTMLInputElement).value, undefined)}
     ></input>
     <Dropdown
-      customStyle={{ ...GLOBAL_STYLES.spacedProperty, fontSize: '1.5em' }}
+      customStyle={GLOBAL_STYLES.spacedProperty}
       value={skinEditor.state.selectedRider}
       mapping={[...Array(root.state.numRiders).keys()]}
       label={(_, i) => `Rider ${i + 1}`}
@@ -283,7 +286,7 @@ export default class SkinEditor extends React.Component<Props, State> {
       skinTriggers,
     } = this.props;
 
-    return <React.Fragment>
+    return <>
       <SkinEditorToolbar skinEditor={this} root={root}/>
       <div style={{ ...GLOBAL_STYLES.windowBody, ...styles.container }}>
         <div style={styles.gridBackground}></div>
@@ -299,6 +302,6 @@ export default class SkinEditor extends React.Component<Props, State> {
           ></div>
         </div>
       </div>
-    </React.Fragment>;
+    </>;
   }
 }

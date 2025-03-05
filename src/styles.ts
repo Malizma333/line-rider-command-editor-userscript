@@ -67,15 +67,15 @@ export const GLOBAL_STYLES = {
     border: '2px solid black',
     borderBottom: 'none',
     display: 'flex',
-    flex: 1,
+    fontSize: '1.5em',
+    height: '2.5em',
     justifyContent: 'start',
-    padding: '10px',
   },
   windowBody: {
     backgroundColor: THEME.colorGray200,
     border: '2px solid black',
     display: 'flex',
-    flex: 10,
+    flex: 1,
     flexDirection: 'column',
   },
   triggerContainer: {
