@@ -42,7 +42,7 @@ export default class EmbeddedButton extends React.Component<Props, State> {
   }
 
   render() {
-    const { title, disabled, onClick, icon, size } = this.props;
+    const { customStyle, disabled, icon, onClick, size, title } = this.props;
 
     if (disabled && this.state.mode !== BUTTON_MODE.BLURRED) {
       this.setState({ mode: BUTTON_MODE.BLURRED });
@@ -52,8 +52,8 @@ export default class EmbeddedButton extends React.Component<Props, State> {
       title={title}
       style={{
         ...style,
+        ...customStyle,
         backgroundColor: modeBackgroundColors[this.state.mode],
-        ...this.props.customStyle,
         fontSize: size || '25px',
         color: disabled ? THEME.colorGray500 : THEME.colorGray950,
       }}
@@ -61,7 +61,7 @@ export default class EmbeddedButton extends React.Component<Props, State> {
       onMouseOut={() => !disabled && this.setState({ mode: BUTTON_MODE.BLURRED })}
       onMouseDown={() => !disabled && this.setState({ mode: BUTTON_MODE.PRESSED })}
       onMouseUp={() => !disabled && this.setState({ mode: BUTTON_MODE.HOVER })}
-      onClick={onClick}
+      onClick={() => onClick()}
       disabled={disabled}
     >
       {icon}
