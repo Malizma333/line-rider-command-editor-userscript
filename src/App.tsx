@@ -79,10 +79,15 @@ export class App extends React.Component {
     if (this.state.numRiders !== riderCount) {
       const { focusDropdown, gravityDropdown } = this.state;
 
-      this.triggerManager.updateRiderCount(riderCount);
-      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
-      this.setState({ focusDropdown: Math.min(riderCount - 1, focusDropdown) });
-      this.setState({ gravityDropdown: Math.min(riderCount - 1, gravityDropdown) });
+      if (riderCount > 0) {
+        this.triggerManager.updateRiderCount(riderCount);
+        this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
+        this.setState({ focusDropdown: Math.min(riderCount - 1, focusDropdown) });
+        this.setState({ gravityDropdown: Math.min(riderCount - 1, gravityDropdown) });
+      } else if ([TRIGGER_ID.FOCUS, TRIGGER_ID.GRAVITY, TRIGGER_ID.SKIN].includes(this.state.activeTab as TRIGGER_ID)) {
+        this.setState({ activeTab: TRIGGER_ID.ZOOM });
+      }
+
       this.setState({ numRiders: riderCount });
     }
 
@@ -541,6 +546,11 @@ export class App extends React.Component {
   renderTabContainer() {
     return <div style={GLOBAL_STYLES.tabContainer}>
       {...Object.keys(TRIGGER_METADATA).map((command: string) => {
+        if (this.state.numRiders === 0 &&
+            [TRIGGER_ID.FOCUS, TRIGGER_ID.GRAVITY, TRIGGER_ID.SKIN].includes(command as TRIGGER_ID)) {
+          return null;
+        }
+
         return <div>
           <button
             style={{
@@ -561,40 +571,54 @@ export class App extends React.Component {
 
     return <div style={{ ...GLOBAL_STYLES.windowHead, fontSize: '1.5em' }}>
       {data.id === TRIGGER_ID.ZOOM &&
-        this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)
+        <>
+          {this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)}
+        </>
       }
       {data.id === TRIGGER_ID.PAN &&
-        this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)
+        <>
+          {this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)}
+        </>
       }
       {data.id === TRIGGER_ID.FOCUS &&
-        this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)
+        <>
+          {this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)}
+          <Dropdown
+            customStyle={{ margin: '0em .25em' }}
+            value={this.state.focusDropdown}
+            mapping={[...Array(this.state.numRiders).keys()]}
+            label={(_, i) => `Rider ${i + 1}`}
+            onChange={(e: number) => this.onChangeFocusDD(e)}
+          />
+        </>
       }
-      {data.id === TRIGGER_ID.FOCUS && <Dropdown
-        customStyle={{ margin: '0em .25em' }}
-        value={this.state.focusDropdown}
-        mapping={[...Array(this.state.numRiders).keys()]}
-        label={(_, i) => `Rider ${i + 1}`}
-        onChange={(e: number) => this.onChangeFocusDD(e)}
-      />}
       {data.id === TRIGGER_ID.TIME &&
-        this.renderTriggerProp('Smoothing', data.interpolate || false, ['interpolate'], CONSTRAINT.INTERPOLATE)
+        <>
+          {this.renderTriggerProp('Smoothing', data.interpolate || false, ['interpolate'], CONSTRAINT.INTERPOLATE)}
+        </>
       }
-      {data.id === TRIGGER_ID.GRAVITY && <Dropdown
-        customStyle={{ margin: '0em .25em' }}
-        value={this.state.gravityDropdown}
-        mapping={[...Array(this.state.numRiders).keys()]}
-        label={(_, i) => `Rider ${i + 1}`}
-        onChange={(e: number) => this.onChangeGravityDD(e)}
-      />}
-      {data.id === TRIGGER_ID.LAYER && <Dropdown
-        customStyle={{ margin: '0em .25em' }}
-        value={this.state.layerDropdown}
-        mapping={this.state.layerMap}
-        label={(e) => `Layer ${e}`}
-        onChange={(e: number) => this.onChangeLayerDD(e)}
-      />}
+      {data.id === TRIGGER_ID.GRAVITY &&
+        <>
+          <Dropdown
+            customStyle={{ margin: '0em .25em' }}
+            value={this.state.gravityDropdown}
+            mapping={[...Array(this.state.numRiders).keys()]}
+            label={(_, i) => `Rider ${i + 1}`}
+            onChange={(e: number) => this.onChangeGravityDD(e)}
+          />
+        </>
+      }
       {data.id === TRIGGER_ID.LAYER &&
-        this.renderTriggerProp('60 FPS', data.interpolate || false, ['interpolate'], CONSTRAINT.INTERPOLATE)
+        <>
+          <Dropdown
+            customStyle={{ margin: '0em .25em' }}
+            value={this.state.layerDropdown}
+            mapping={this.state.layerMap}
+            label={(e) => `Layer ${e}`}
+            onChange={(e: number) => this.onChangeLayerDD(e)}
+          />
+          {this.renderTriggerProp('60 FPS', data.interpolate || false, ['interpolate'], CONSTRAINT.INTERPOLATE)}
+        </>
       }
     </div>;
   }
