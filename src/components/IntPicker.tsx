@@ -35,6 +35,7 @@ const style: React.CSSProperties = {
   backgroundColor: THEME.colorGray50,
   border: '2px solid black',
   borderRadius: '5px',
+  boxShadow: 'inset 0px 1px 4px -1px #000',
   height: '1.25em',
   padding: '5px',
   textAlign: 'right',

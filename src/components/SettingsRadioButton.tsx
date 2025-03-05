@@ -23,7 +23,7 @@ export default function SettingsRadioButton(
   return <button
     style={{
       ...style,
-      backgroundColor: current === target ? THEME.colorGray200 : THEME.colorGray500,
+      backgroundColor: current === target ? THEME.colorGray100 : THEME.colorGray400,
     }}
     onClick={() => onClick(target)}
   >

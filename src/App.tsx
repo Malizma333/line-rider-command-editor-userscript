@@ -555,7 +555,7 @@ export class App extends React.Component {
           <button
             style={{
               ...GLOBAL_STYLES.tab,
-              backgroundColor: this.state.activeTab === command ? THEME.colorGray100 : THEME.colorGray300,
+              backgroundColor: this.state.activeTab === command ? THEME.colorGray100 : THEME.colorGray400,
             }}
             onClick={() => this.onChangeTab(command as TRIGGER_ID)}
           >
