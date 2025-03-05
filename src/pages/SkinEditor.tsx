@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 const { React, store } = window;
-import EmbeddedButton from '../components/EmbeddedButton';
+import IconButton from '../components/IconButton';
 import { GLOBAL_STYLES } from '../styles';
 import * as FICONS from '../components/Icons';
 import { SkinCssTrigger } from '../lib/TriggerDataManager.types';
@@ -92,11 +92,12 @@ function SkinEditorToolbar({ skinEditor, root }: {skinEditor: SkinEditor, root: 
   const alphaValue = parseInt(skinEditor.state.selectedColor.substring(7), 16) / 255;
 
   return <div style={GLOBAL_STYLES.windowHead}>
-    <EmbeddedButton
+    <IconButton
       onClick={() => root.onResetSkin(skinEditor.state.selectedRider)}
       icon={FICONS.TRASH2}
       customStyle={{ position: 'absolute', right: '10px' }}
-    ></EmbeddedButton>
+      title='Reset Skin'
+    ></IconButton>
     <div style={{ ...GLOBAL_STYLES.spacedProperty, ...styles.alphaContainer }}>
       <label htmlFor="alphaSlider">Transparency</label>
       <div style={styles.alphaSliderContainer}>

@@ -4,7 +4,7 @@ import { THEME } from '../styles';
 enum BUTTON_MODE { BLURRED, HOVER, PRESSED }
 
 interface Props {
-  title?: string
+  title: string
   disabled?: boolean
   customStyle?: React.CSSProperties
   size?: string
@@ -32,7 +32,7 @@ const modeBackgroundColors = {
   [BUTTON_MODE.PRESSED]: '#00000033',
 } as const;
 
-export default class EmbeddedButton extends React.Component<Props, State> {
+export default class IconButton extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 

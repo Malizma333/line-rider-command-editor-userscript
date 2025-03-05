@@ -1,7 +1,7 @@
 const { React } = window;
 import { THEME } from '../styles';
 import FloatingButton from '../components/FloatingButton';
-import EmbeddedButton from '../components/EmbeddedButton';
+import IconButton from '../components/IconButton';
 import * as FICONS from '../components/Icons';
 import { App } from '../App';
 import { FONT_SIZE_SETTING, VIEWPORT_SETTING, SETTINGS_KEY } from '../lib/settings-storage.types';
@@ -57,11 +57,12 @@ const styles = {
  */
 function SettingsHeader({ root, settings }: {root: App, settings: Settings}) {
   return <div style={{ ...styles.header, fontSize: '1.5em' }}>
-    <EmbeddedButton
+    <IconButton
       onClick={() => root.onToggleSettings()}
       icon={FICONS.X}
       customStyle={{ position: 'absolute', right: '0px' }}
-    ></EmbeddedButton>
+      title='Close'
+    ></IconButton>
     Settings
     <FloatingButton
       customStyle={styles.applyButton}

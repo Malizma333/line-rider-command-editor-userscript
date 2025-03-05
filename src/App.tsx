@@ -20,7 +20,7 @@ import * as FICONS from './components/Icons';
 
 import FloatPicker from './components/FloatPicker';
 import IntPicker from './components/IntPicker';
-import EmbeddedButton from './components/EmbeddedButton';
+import IconButton from './components/IconButton';
 import SkinEditor from './pages/SkinEditor';
 import Settings from './pages/Settings';
 import Checkbox from './components/Checkbox';
@@ -474,70 +474,70 @@ export class App extends React.Component {
 
   renderActions() {
     return !this.state.active ? <div style={GLOBAL_STYLES.actionContainer}>
-      <EmbeddedButton
+      <IconButton
         title="Maximize"
         onClick={() => this.onToggleActive()}
         icon={FICONS.MAXIMIZE}
-      ></EmbeddedButton>
+      ></IconButton>
     </div> : <div style={GLOBAL_STYLES.actionContainer}>
       <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: 'start' }}>
-        <EmbeddedButton
+        <IconButton
           title="Minimize"
           onClick={() => this.onToggleActive()}
           icon={FICONS.MINIMIZE}
-        ></EmbeddedButton>
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Download"
           onClick={() => this.onDownload()}
           icon={FICONS.DOWNLOAD}
-        ></EmbeddedButton>
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Upload"
           onClick={() => this.onUpload()}
           icon={FICONS.UPLOAD}
-        ></EmbeddedButton>
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Load From Script"
           onClick={() => this.onLoadScript()}
           icon={FICONS.CORNER_UP_RIGHT}
           disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
-        ></EmbeddedButton>
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Run"
           onClick={() => this.onTest()}
           icon={FICONS.PLAY}
           disabled={this.state.invalidTimes.some((i) => i)}
-        ></EmbeddedButton>
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Copy Script"
           onClick={async () => await this.onCopy()}
           icon={FICONS.COPY}
           disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
-        ></EmbeddedButton>
+        ></IconButton>
       </div>
       <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: 'end' }}>
-        <EmbeddedButton
+        <IconButton
           title="Undo"
           onClick={() => this.onUndo()}
           icon={FICONS.ARROW_LEFT}
           disabled={this.triggerManager.undoLen === 0}
-        ></EmbeddedButton>
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Redo"
           onClick={() => this.onRedo()}
           icon={FICONS.ARROW_RIGHT}
           disabled={this.triggerManager.redoLen === 0}
-        ></EmbeddedButton>
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Settings"
           onClick={() => this.onToggleSettings()}
           icon={FICONS.SETTINGS}
-        ></EmbeddedButton>
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Help"
           onClick={() => this.onHelp()}
           icon={FICONS.HELP_CIRCLE}
-        ></EmbeddedButton>
+        ></IconButton>
       </div>
       <input
         id="trigger-file-upload"
@@ -635,16 +635,18 @@ export class App extends React.Component {
     }}>
       <div style={GLOBAL_STYLES.triggerActionContainer}>
         {(data.id === TRIGGER_ID.ZOOM || data.id === TRIGGER_ID.PAN) && (
-          <EmbeddedButton
+          <IconButton
             onClick={() => this.onCaptureCamera(realIndex, data.id as TRIGGER_ID)}
             icon={FICONS.CAMERA}
-          ></EmbeddedButton>
+            title="Capture Editor Camera"
+          ></IconButton>
         )}
-        <EmbeddedButton
+        <IconButton
           onClick={() => this.onDeleteTrigger(realIndex)}
           icon={FICONS.X}
           disabled={index === 0}
-        ></EmbeddedButton>
+          title="Delete"
+        ></IconButton>
       </div>
 
       {this.renderTimeInput((currentTrigger as TimedTrigger)[0], realIndex, index)}
