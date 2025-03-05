@@ -460,7 +460,7 @@ export class App extends React.Component {
               <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}></SkinEditor> :
               <>
                 {this.renderWindowHead()}
-                {<div style={{ ...GLOBAL_STYLES.windowBody, overflowY: 'scroll', paddingBottom: '10px' }}>
+                {<div style={{ ...GLOBAL_STYLES.windowBody, paddingBottom: '10px' }}>
                   {computedTriggers.map(
                       (computeData) => this.renderTrigger(computeData[0], computeData[1], computeData[2]),
                   )}

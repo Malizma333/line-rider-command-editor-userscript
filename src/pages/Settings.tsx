@@ -11,10 +11,10 @@ const styles = {
   window: {
     backgroundColor: THEME.colorGray200,
     border: '2px solid black',
+    boxShadow: '0px 4px 8px -4px #000',
     display: 'flex',
     flexDirection: 'column',
     flex: 9,
-    overflow: 'auto',
     position: 'relative',
     width: '100%',
   },

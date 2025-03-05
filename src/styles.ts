@@ -46,7 +46,7 @@ export const GLOBAL_STYLES = {
     justifyContent: 'start',
     flexDirection: 'row',
     marginTop: '3px',
-    overflowX: 'auto',
+    overflow: 'hidden',
     width: '100%',
   },
   windowContainer: {
@@ -73,6 +73,9 @@ export const GLOBAL_STYLES = {
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
+    overflowY: 'scroll',
+    scrollbarColor: `${THEME.colorGray400} ${THEME.colorGray200}`,
+    scrollbarWidth: 'thin',
   },
   triggerContainer: {
     alignItems: 'start',
