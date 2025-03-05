@@ -96,7 +96,7 @@ function SkinEditorToolbar({ skinEditor, root }: {skinEditor: SkinEditor, root: 
       onClick={() => root.onResetSkin(skinEditor.state.selectedRider)}
       icon={FICONS.TRASH2}
       customStyle={{ position: 'absolute', right: '10px' }}
-    />
+    ></EmbeddedButton>
     <div style={{ ...GLOBAL_STYLES.spacedProperty, ...styles.alphaContainer }}>
       <label htmlFor="alphaSlider">Transparency</label>
       <div style={styles.alphaSliderContainer}>
@@ -124,7 +124,7 @@ function SkinEditorToolbar({ skinEditor, root }: {skinEditor: SkinEditor, root: 
       mapping={[...Array(root.state.numRiders).keys()]}
       label={(_, i) => `Rider ${i + 1}`}
       onChange={(e: number) => skinEditor.onChooseRider(e)}
-    />
+    ></Dropdown>
   </div>;
 }
 
@@ -297,10 +297,14 @@ export default class SkinEditor extends React.Component<Props, State> {
     } = this.props;
 
     return <>
-      <SkinEditorToolbar skinEditor={this} root={root}/>
+      <SkinEditorToolbar skinEditor={this} root={root}></SkinEditorToolbar>
       <div style={{ ...GLOBAL_STYLES.windowBody, ...styles.container }}>
         <div style={styles.gridBackground}></div>
-        <SkinEditorCanvas skinEditor={this} root={root} skinCss={skinTriggers[this.state.selectedRider]}/>
+        <SkinEditorCanvas
+          skinEditor={this}
+          root={root}
+          skinCss={skinTriggers[this.state.selectedRider]}
+        ></SkinEditorCanvas>
         <div style={styles.outlineContainer}>
           <text>Outline</text>
           <div

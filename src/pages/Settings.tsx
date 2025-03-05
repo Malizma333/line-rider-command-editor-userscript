@@ -61,7 +61,7 @@ function SettingsHeader({ root, settings }: {root: App, settings: Settings}) {
       onClick={() => root.onToggleSettings()}
       icon={FICONS.X}
       customStyle={{ position: 'absolute', right: '0px' }}
-    />
+    ></EmbeddedButton>
     Settings
     <FloatingButton
       customStyle={styles.applyButton}
@@ -112,7 +112,7 @@ function SettingsSection(
           active={current === target}
           label={label}
           onClick={() => onClick(target)}
-        />;
+        ></FloatingButton>;
       })}
     </div>
   </div>;
@@ -175,20 +175,20 @@ export default class Settings extends React.Component<Props, State> {
     } = this.props;
 
     return <div style={styles.window}>
-      <SettingsHeader root={root} settings={this}/>
+      <SettingsHeader root={root} settings={this}></SettingsHeader>
       <div>
         <SettingsSection
           current={this.state.fontSize}
           onClick={(e: number) => this.onChangeFontSize(e)}
           title={'Font Sizes'}
           lkey={SETTINGS_KEY.FONT_SIZE}
-        />
+        ></SettingsSection>
         <SettingsSection
           current={this.state.resolution}
           onClick={(e: number) => this.onChangeViewport(e)}
           title={'Viewport'}
           lkey={SETTINGS_KEY.VIEWPORT}
-        />
+        ></SettingsSection>
       </div>
     </div>;
   }

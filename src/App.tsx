@@ -453,11 +453,11 @@ export class App extends React.Component {
       {this.renderActions()}
       {this.state.active && <div style={GLOBAL_STYLES.mainContent}>
         {this.state.settingsActive ?
-          <Settings root={this}/> :
+          <Settings root={this}></Settings> :
           <div style={GLOBAL_STYLES.windowContainer}>
             {this.renderTabContainer()}
             {data.id === TRIGGER_ID.SKIN ?
-              <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}/> :
+              <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}></SkinEditor> :
               <>
                 {this.renderWindowHead()}
                 {<div style={{ ...GLOBAL_STYLES.windowBody, overflowY: 'scroll', paddingBottom: '10px' }}>
@@ -478,42 +478,42 @@ export class App extends React.Component {
         title="Maximize"
         onClick={() => this.onToggleActive()}
         icon={FICONS.MAXIMIZE}
-      />
+      ></EmbeddedButton>
     </div> : <div style={GLOBAL_STYLES.actionContainer}>
       <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: 'start' }}>
         <EmbeddedButton
           title="Minimize"
           onClick={() => this.onToggleActive()}
           icon={FICONS.MINIMIZE}
-        />
+        ></EmbeddedButton>
         <EmbeddedButton
           title="Download"
           onClick={() => this.onDownload()}
           icon={FICONS.DOWNLOAD}
-        />
+        ></EmbeddedButton>
         <EmbeddedButton
           title="Upload"
           onClick={() => this.onUpload()}
           icon={FICONS.UPLOAD}
-        />
+        ></EmbeddedButton>
         <EmbeddedButton
           title="Load From Script"
           onClick={() => this.onLoadScript()}
           icon={FICONS.CORNER_UP_RIGHT}
           disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
-        />
+        ></EmbeddedButton>
         <EmbeddedButton
           title="Run"
           onClick={() => this.onTest()}
           icon={FICONS.PLAY}
           disabled={this.state.invalidTimes.some((i) => i)}
-        />
+        ></EmbeddedButton>
         <EmbeddedButton
           title="Copy Script"
           onClick={async () => await this.onCopy()}
           icon={FICONS.COPY}
           disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
-        />
+        ></EmbeddedButton>
       </div>
       <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: 'end' }}>
         <EmbeddedButton
@@ -521,26 +521,31 @@ export class App extends React.Component {
           onClick={() => this.onUndo()}
           icon={FICONS.ARROW_LEFT}
           disabled={this.triggerManager.undoLen === 0}
-        />
+        ></EmbeddedButton>
         <EmbeddedButton
           title="Redo"
           onClick={() => this.onRedo()}
           icon={FICONS.ARROW_RIGHT}
           disabled={this.triggerManager.redoLen === 0}
-        />
+        ></EmbeddedButton>
         <EmbeddedButton
           title="Settings"
           onClick={() => this.onToggleSettings()}
           icon={FICONS.SETTINGS}
-        />
+        ></EmbeddedButton>
         <EmbeddedButton
           title="Help"
           onClick={() => this.onHelp()}
           icon={FICONS.HELP_CIRCLE}
-        />
+        ></EmbeddedButton>
       </div>
-      <input id="trigger-file-upload" style={{ display: 'none' }} type="file" accept=".json"
-        onChange={(e: React.ChangeEvent) => this.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])} />
+      <input
+        id="trigger-file-upload"
+        style={{ display: 'none' }}
+        type="file"
+        accept=".json"
+        onChange={(e: React.ChangeEvent) => this.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])}
+      />
     </div>;
   }
 
@@ -587,7 +592,7 @@ export class App extends React.Component {
             mapping={[...Array(this.state.numRiders).keys()]}
             label={(_, i) => `Rider ${i + 1}`}
             onChange={(e: number) => this.onChangeFocusDD(e)}
-          />
+          ></Dropdown>
         </>
       }
       {data.id === TRIGGER_ID.TIME &&
@@ -603,7 +608,7 @@ export class App extends React.Component {
             mapping={[...Array(this.state.numRiders).keys()]}
             label={(_, i) => `Rider ${i + 1}`}
             onChange={(e: number) => this.onChangeGravityDD(e)}
-          />
+          ></Dropdown>
         </>
       }
       {data.id === TRIGGER_ID.LAYER &&
@@ -614,7 +619,7 @@ export class App extends React.Component {
             mapping={this.state.layerMap}
             label={(e) => `Layer ${e}`}
             onChange={(e: number) => this.onChangeLayerDD(e)}
-          />
+          ></Dropdown>
           {this.renderTriggerProp('60 FPS', data.interpolate || false, ['interpolate'], CONSTRAINT.INTERPOLATE)}
         </>
       }
@@ -633,13 +638,13 @@ export class App extends React.Component {
           <EmbeddedButton
             onClick={() => this.onCaptureCamera(realIndex, data.id as TRIGGER_ID)}
             icon={FICONS.CAMERA}
-          />
+          ></EmbeddedButton>
         )}
         <EmbeddedButton
           onClick={() => this.onDeleteTrigger(realIndex)}
           icon={FICONS.X}
           disabled={index === 0}
-        />
+        ></EmbeddedButton>
       </div>
 
       {this.renderTimeInput((currentTrigger as TimedTrigger)[0], realIndex, index)}
@@ -655,7 +660,7 @@ export class App extends React.Component {
           customStyle={{ fontSize: '0.75em' }}
           label="+"
           active
-        />
+        ></FloatingButton>
       </div>
     </div>;
   }
@@ -792,14 +797,14 @@ export class App extends React.Component {
         id={propPath.join('_')}
         value={value as boolean}
         onCheck={() => this.onUpdateTrigger(!value, propPath)}
-      /> : <NumberPicker
+      ></Checkbox> : <NumberPicker
         customStyle={{ ...GLOBAL_STYLES.spacedProperty, color: color || 'black' }}
         id={propPath.join('_')}
         value={value as number | string}
         min={constraint.MIN}
         max={constraint.MAX}
         onChange={(v: number | string) => this.onUpdateTrigger(v, propPath)}
-      />}
+      ></NumberPicker>}
     </div>;
   }
 }
