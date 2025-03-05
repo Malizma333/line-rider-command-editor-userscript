@@ -1,12 +1,12 @@
 /* eslint-disable max-len */
 const { React, store } = window;
-import EmbeddedButton from '../EmbeddedButton';
-import { GLOBAL_STYLES } from '../../styles';
-import * as FICONS from '../Icons';
-import { SkinCssTrigger } from '../../lib/TriggerDataManager.types';
-import { App } from '../../App';
-import * as Selectors from '../../lib/redux-selectors';
-import Dropdown from '../Dropdown';
+import EmbeddedButton from '../components/EmbeddedButton';
+import { GLOBAL_STYLES } from '../styles';
+import * as FICONS from '../components/Icons';
+import { SkinCssTrigger } from '../lib/TriggerDataManager.types';
+import { App } from '../App';
+import * as Selectors from '../lib/redux-selectors';
+import Dropdown from '../components/Dropdown';
 
 const styles = {
   container: {

@@ -12,7 +12,7 @@ import { getSetting, TEXT_SIZES } from './lib/settings-storage';
 import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from './lib/settings-storage.types';
 import { validateTimes, formatSkins } from './lib/util';
 import { CONSTRAINT } from './lib/constraints';
-import { GLOBAL_STYLES, THEME } from './styles';
+import { GLOBAL_STYLES } from './styles';
 
 import * as Actions from './lib/redux-actions';
 import * as Selectors from './lib/redux-selectors';
@@ -21,11 +21,12 @@ import * as FICONS from './components/Icons';
 import FloatPicker from './components/FloatPicker';
 import IntPicker from './components/IntPicker';
 import EmbeddedButton from './components/EmbeddedButton';
-import SkinEditor from './components/pages/SkinEditor';
-import Settings from './components/pages/Settings';
+import SkinEditor from './pages/SkinEditor';
+import Settings from './pages/Settings';
 import Checkbox from './components/Checkbox';
 import { Constraint, CONSTRAINT_TYPE } from './lib/constraints.types';
 import Dropdown from './components/Dropdown';
+import FloatingButton from './components/FloatingButton';
 
 const { store, React } = window;
 
@@ -552,15 +553,12 @@ export class App extends React.Component {
         }
 
         return <div>
-          <button
-            style={{
-              ...GLOBAL_STYLES.tab,
-              backgroundColor: this.state.activeTab === command ? THEME.colorGray100 : THEME.colorGray400,
-            }}
+          <FloatingButton
+            customStyle={{ borderBottom: 'none', borderRadius: '5px 5px 0 0' }}
             onClick={() => this.onChangeTab(command as TRIGGER_ID)}
-          >
-            {TRIGGER_METADATA[command as TRIGGER_ID].DISPLAY_NAME}
-          </button>
+            active={this.state.activeTab === command}
+            label={TRIGGER_METADATA[command as TRIGGER_ID].DISPLAY_NAME}
+          ></FloatingButton>
         </div>;
       })}
     </div>;
@@ -651,12 +649,14 @@ export class App extends React.Component {
       {data.id === TRIGGER_ID.TIME && this.renderRemapTrigger((currentTrigger as TimeRemapTrigger), realIndex)}
       {data.id === TRIGGER_ID.GRAVITY && this.renderGravityTrigger((currentTrigger as GravityTrigger), realIndex)}
       {data.id === TRIGGER_ID.LAYER && this.renderLayerTrigger((currentTrigger as LayerTrigger), realIndex)}
-      <EmbeddedButton
-        customStyle={GLOBAL_STYLES.newTriggerButton}
-        size="16px"
-        icon={FICONS.PLUS}
-        onClick={() => this.onCreateTrigger(realIndex)}
-      />
+      <div style={GLOBAL_STYLES.createTriggerContainer}>
+        <FloatingButton
+          onClick={() => this.onCreateTrigger(realIndex)}
+          customStyle={{ fontSize: '0.75em' }}
+          label="+"
+          active
+        />
+      </div>
     </div>;
   }
 

@@ -4,11 +4,11 @@ import { THEME } from '../styles';
 enum BUTTON_MODE { BLURRED, HOVER, PRESSED }
 
 interface Props {
-  title?: string,
-  disabled?: boolean,
-  customStyle?: React.CSSProperties,
+  title?: string
+  disabled?: boolean
+  customStyle?: React.CSSProperties
   size?: string
-  onClick: () => void,
+  onClick: () => void
   icon: React.JSX.Element
 }
 

@@ -1,11 +1,11 @@
 const { React } = window;
-import { THEME } from '../../styles';
-import SettingsRadioButton from '../SettingsRadioButton';
-import EmbeddedButton from '../EmbeddedButton';
-import * as FICONS from '../Icons';
-import { App } from '../../App';
-import { FONT_SIZE_SETTING, VIEWPORT_SETTING, SETTINGS_KEY } from '../../lib/settings-storage.types';
-import { getSetting, saveSetting } from '../../lib/settings-storage';
+import { THEME } from '../styles';
+import FloatingButton from '../components/FloatingButton';
+import EmbeddedButton from '../components/EmbeddedButton';
+import * as FICONS from '../components/Icons';
+import { App } from '../App';
+import { FONT_SIZE_SETTING, VIEWPORT_SETTING, SETTINGS_KEY } from '../lib/settings-storage.types';
+import { getSetting, saveSetting } from '../lib/settings-storage';
 
 const styles = {
   window: {
@@ -27,11 +27,8 @@ const styles = {
     position: 'relative',
   },
   applyButton: {
-    border: '2px solid black',
-    borderRadius: '5px',
     left: '0px',
     position: 'absolute',
-    transition: 'background-color 0.125s ease-in-out',
   },
   row: {
     alignItems: 'center',
@@ -66,16 +63,13 @@ function SettingsHeader({ root, settings }: {root: App, settings: Settings}) {
       customStyle={{ position: 'absolute', right: '0px' }}
     />
     Settings
-    <button
-      style={{
-        ...styles.applyButton,
-        background: settings.state.dirty ? THEME.colorGray100 : THEME.colorGray400,
-      }}
+    <FloatingButton
+      customStyle={styles.applyButton}
+      active={settings.state.dirty}
       disabled={!settings.state.dirty}
       onClick={() => settings.onApply()}
-    >
-      Apply
-    </button>
+      label='Apply'
+    ></FloatingButton>
   </div>;
 }
 
@@ -113,11 +107,11 @@ function SettingsSection(
     </text>
     <div style={styles.parameter}>
       {...LABEL_MAP[lkey].map(([target, label]) => {
-        return <SettingsRadioButton
-          current={current}
-          target={target}
+        return <FloatingButton
+          customStyle={{ margin: '5px' }}
+          active={current === target}
           label={label}
-          onClick={(e: number) => onClick(e as number)}
+          onClick={() => onClick(target)}
         />;
       })}
     </div>

@@ -49,12 +49,6 @@ export const GLOBAL_STYLES = {
     overflowX: 'auto',
     width: '100%',
   },
-  tab: {
-    border: '2px solid black',
-    borderBottom: 'none',
-    borderRadius: '5px 5px 0 0',
-    transition: 'background-color 0.125s ease-in-out',
-  },
   windowContainer: {
     display: 'flex',
     height: '100%',
@@ -66,6 +60,7 @@ export const GLOBAL_STYLES = {
     backgroundColor: THEME.colorGray100,
     border: '2px solid black',
     borderBottom: 'none',
+    boxShadow: '0px 4px 8px -4px #000',
     display: 'flex',
     fontSize: '1.5em',
     height: '2.5em',
@@ -74,6 +69,7 @@ export const GLOBAL_STYLES = {
   windowBody: {
     backgroundColor: THEME.colorGray200,
     border: '2px solid black',
+    boxShadow: '0px 4px 8px -4px #000',
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
@@ -85,7 +81,7 @@ export const GLOBAL_STYLES = {
     boxShadow: '0px 4px 8px -4px #000',
     display: 'flex',
     flexDirection: 'column',
-    padding: '10px',
+    padding: '0.75em',
     position: 'relative',
   },
   triggerActionContainer: {
@@ -115,12 +111,10 @@ export const GLOBAL_STYLES = {
   spacedProperty: {
     margin: '0 5px',
   },
-  newTriggerButton: {
-    backgroundColor: THEME.colorGray50,
-    border: '2px solid black',
-    borderRadius: '50%',
+  createTriggerContainer: {
     bottom: '0px',
-    boxShadow: '0px 2px 8px 0px #000',
+    display: 'flex',
+    justifyContent: 'center',
     left: '0px',
     marginLeft: 'auto',
     marginRight: 'auto',
