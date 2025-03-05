@@ -120,8 +120,8 @@ function SettingsSection(
 
 interface Props { root: App }
 interface State {
-  dirty: boolean,
-  fontSize: FONT_SIZE_SETTING,
+  dirty: boolean
+  fontSize: FONT_SIZE_SETTING
   resolution: VIEWPORT_SETTING
 }
 

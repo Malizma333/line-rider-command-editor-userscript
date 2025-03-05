@@ -220,8 +220,18 @@ function SkinEditorCanvas(
   </div>;
 }
 
-interface Props { root: App, skinTriggers: SkinCssTrigger[] }
-interface State { selectedRider: number, selectedColor: string, zoom: number, xOffset: number, yOffset: number }
+interface Props {
+  root: App
+  skinTriggers: SkinCssTrigger[]
+}
+
+interface State {
+  selectedRider: number
+  selectedColor: string
+  zoom: number
+  xOffset: number
+  yOffset: number
+}
 
 export default class SkinEditor extends React.Component<Props, State> {
   constructor(props: Props) {
