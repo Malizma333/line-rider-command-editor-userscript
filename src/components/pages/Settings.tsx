@@ -9,7 +9,7 @@ import { getSetting, saveSetting } from '../../lib/settings-storage';
 
 const styles = {
   window: {
-    backgroundColor: THEME.light,
+    backgroundColor: THEME.colorGray300,
     border: '2px solid black',
     display: 'flex',
     flexDirection: 'column',
@@ -68,7 +68,7 @@ function SettingsHeader({ root, settings }: {root: App, settings: Settings}) {
     <button
       style={{
         ...styles.applyButton,
-        background: settings.state.dirty ? THEME.midLight : THEME.midDark,
+        background: settings.state.dirty ? THEME.colorGray200 : THEME.colorGray500,
       }}
       disabled={!settings.state.dirty}
       onClick={() => settings.onApply()}

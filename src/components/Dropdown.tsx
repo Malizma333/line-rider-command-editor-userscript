@@ -3,14 +3,14 @@ import { THEME } from '../styles';
 
 const styles = {
   head: {
-    backgroundColor: THEME.light,
+    backgroundColor: THEME.colorGray50,
     border: '2px solid black',
     borderRadius: '5px',
     height: '1.5em',
     textAlign: 'right',
   },
   option: {
-    backgroundColor: THEME.light,
+    backgroundColor: THEME.colorGray50,
     border: '2px solid black',
     height: '1.25em',
     textAlign: 'center',

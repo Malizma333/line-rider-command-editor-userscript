@@ -32,7 +32,7 @@ function clampInt(
 }
 
 const style: React.CSSProperties = {
-  backgroundColor: THEME.light,
+  backgroundColor: THEME.colorGray50,
   border: '2px solid black',
   borderRadius: '5px',
   height: '1.25em',

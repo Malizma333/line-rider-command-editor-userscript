@@ -555,7 +555,7 @@ export class App extends React.Component {
           <button
             style={{
               ...GLOBAL_STYLES.tab,
-              backgroundColor: this.state.activeTab === command ? THEME.midLight : THEME.midDark,
+              backgroundColor: this.state.activeTab === command ? THEME.colorGray100 : THEME.colorGray300,
             }}
             onClick={() => this.onChangeTab(command as TRIGGER_ID)}
           >
@@ -629,7 +629,6 @@ export class App extends React.Component {
     return <div style={{
       ...GLOBAL_STYLES.triggerContainer,
       fontSize: '1.5em',
-      backgroundColor: index === 0 ? THEME.midLight : THEME.light,
     }}>
       <div style={GLOBAL_STYLES.triggerActionContainer}>
         {(data.id === TRIGGER_ID.ZOOM || data.id === TRIGGER_ID.PAN) && (

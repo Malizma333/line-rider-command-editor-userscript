@@ -23,6 +23,7 @@ const style: React.CSSProperties = {
   justifyContent: 'center',
   userSelect: 'none',
   width: '1.5em',
+  transition: 'background-color 0.125s ease-in-out',
 };
 
 const modeBackgroundColors = {
@@ -54,7 +55,7 @@ export default class EmbeddedButton extends React.Component<Props, State> {
         backgroundColor: modeBackgroundColors[this.state.mode],
         ...this.props.customStyle,
         fontSize: size || '25px',
-        color: disabled ? THEME.midDark : THEME.dark,
+        color: disabled ? THEME.colorGray500 : THEME.colorGray950,
       }}
       onMouseOver={() => !disabled && this.setState({ mode: BUTTON_MODE.HOVER })}
       onMouseOut={() => !disabled && this.setState({ mode: BUTTON_MODE.BLURRED })}

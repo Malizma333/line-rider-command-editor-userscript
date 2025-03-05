@@ -1,13 +1,20 @@
 export const THEME = {
-  dark: '#0D1321',
-  midDark: '#7F838B',
-  midLight: '#B7BBC0',
-  light: '#FCFCFC',
+  colorGray50: 'oklch(0.985 0.002 247.839)',
+  colorGray100: 'oklch(0.967 0.003 264.542)',
+  colorGray200: 'oklch(0.928 0.006 264.531)',
+  colorGray300: 'oklch(0.872 0.01 258.338)',
+  colorGray400: 'oklch(0.707 0.022 261.325)',
+  colorGray500: 'oklch(0.551 0.027 264.364)',
+  colorGray600: 'oklch(0.446 0.03 256.802)',
+  colorGray700: 'oklch(0.373 0.034 259.733)',
+  colorGray800: 'oklch(0.278 0.033 256.848)',
+  colorGray900: 'oklch(0.21 0.034 264.665)',
+  colorGray950: 'oklch(0.13 0.028 261.692)',
 } as const;
 
 export const GLOBAL_STYLES = {
   root: {
-    backgroundColor: THEME.light,
+    backgroundColor: THEME.colorGray200,
     transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
     border: '2px solid black',
     fontFamily: 'Helvetica',
@@ -55,7 +62,7 @@ export const GLOBAL_STYLES = {
   },
   windowHead: {
     alignItems: 'center',
-    backgroundColor: THEME.light,
+    backgroundColor: THEME.colorGray100,
     border: '2px solid black',
     borderBottom: 'none',
     display: 'flex',
@@ -64,7 +71,7 @@ export const GLOBAL_STYLES = {
     padding: '10px',
   },
   windowBody: {
-    backgroundColor: THEME.light,
+    backgroundColor: THEME.colorGray200,
     border: '2px solid black',
     display: 'flex',
     flex: 10,
@@ -72,7 +79,7 @@ export const GLOBAL_STYLES = {
   },
   triggerContainer: {
     alignItems: 'start',
-    backgroundColor: THEME.light,
+    backgroundColor: THEME.colorGray100,
     borderBottom: '2px solid black',
     display: 'flex',
     flexDirection: 'column',
@@ -107,7 +114,7 @@ export const GLOBAL_STYLES = {
     margin: '0 5px',
   },
   newTriggerButton: {
-    backgroundColor: THEME.light,
+    backgroundColor: THEME.colorGray50,
     border: '2px solid black',
     borderRadius: '50%',
     bottom: '0px',
