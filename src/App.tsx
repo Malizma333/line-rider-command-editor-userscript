@@ -448,7 +448,7 @@ export class App extends React.Component {
       }
     }
 
-    return <div style={{ fontSize: TEXT_SIZES[this.state.fontSize] }}>
+    return <div style={{ fontSize: TEXT_SIZES[this.state.fontSize], transition: 'font-size 0.125s ease-in-out' }}>
       {this.renderActions()}
       {this.state.active && <div style={GLOBAL_STYLES.mainContent}>
         {this.state.settingsActive ?

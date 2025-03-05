@@ -31,6 +31,7 @@ const styles = {
     borderRadius: '5px',
     left: '0px',
     position: 'absolute',
+    transition: 'background-color 0.125s ease-in-out',
   },
   row: {
     alignItems: 'center',

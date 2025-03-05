@@ -53,6 +53,7 @@ export const GLOBAL_STYLES = {
     border: '2px solid black',
     borderBottom: 'none',
     borderRadius: '5px 5px 0 0',
+    transition: 'background-color 0.125s ease-in-out',
   },
   windowContainer: {
     display: 'flex',

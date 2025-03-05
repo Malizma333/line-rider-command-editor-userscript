@@ -5,6 +5,7 @@ const style: React.CSSProperties = {
   border: '2px solid black',
   borderRadius: '5px',
   margin: '5px',
+  transition: 'background-color 0.125s ease-in-out',
 };
 
 /**
