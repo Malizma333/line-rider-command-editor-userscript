@@ -1,5 +1,5 @@
+import { COLOR, THEME } from '../styles';
 const { React } = window;
-import { THEME } from '../styles';
 
 enum BUTTON_MODE { BLURRED, PRESSED }
 
@@ -14,7 +14,7 @@ interface Props {
 interface State { mode: BUTTON_MODE }
 
 const style: React.CSSProperties = {
-  border: '2px solid black',
+  border: THEME.primaryBorder,
   borderRadius: '5px',
   boxShadow: '',
   transition: 'background-color 0.125s ease-in-out',
@@ -46,7 +46,7 @@ export default class FloatingButton extends React.Component<Props, State> {
         ...style,
         ...customStyle,
         boxShadow: modeShadows[this.state.mode],
-        backgroundColor: !disabled && active ? THEME.colorGray100 : THEME.colorGray400,
+        backgroundColor: !disabled && active ? COLOR.gray50 : COLOR.gray400,
       }}
       onMouseDown={() => !disabled && this.setState({ mode: BUTTON_MODE.PRESSED })}
       onMouseUp={() => !disabled && this.setState({ mode: BUTTON_MODE.BLURRED })}

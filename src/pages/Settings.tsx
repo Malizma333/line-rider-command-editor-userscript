@@ -1,16 +1,16 @@
-const { React } = window;
-import { THEME } from '../styles';
+import { COLOR, THEME } from '../styles';
 import FloatingButton from '../components/FloatingButton';
 import IconButton from '../components/IconButton';
 import * as FICONS from '../components/Icons';
 import { App } from '../App';
 import { FONT_SIZE_SETTING, VIEWPORT_SETTING, SETTINGS_KEY } from '../lib/settings-storage.types';
 import { getSetting, saveSetting } from '../lib/settings-storage';
+const { React } = window;
 
 const styles = {
   window: {
-    backgroundColor: THEME.colorGray200,
-    border: '2px solid black',
+    backgroundColor: COLOR.gray100,
+    border: THEME.primaryBorder,
     boxShadow: '0px 4px 8px -4px #000',
     display: 'flex',
     flexDirection: 'column',

@@ -1,5 +1,5 @@
+import { COLOR } from '../styles';
 const { React } = window;
-import { THEME } from '../styles';
 
 enum BUTTON_MODE { BLURRED, HOVER, PRESSED }
 
@@ -55,7 +55,7 @@ export default class IconButton extends React.Component<Props, State> {
         ...customStyle,
         backgroundColor: modeBackgroundColors[this.state.mode],
         fontSize: size || '25px',
-        color: disabled ? THEME.colorGray500 : THEME.colorGray950,
+        color: disabled ? COLOR.gray500 : COLOR.gray950,
       }}
       onMouseOver={() => !disabled && this.setState({ mode: BUTTON_MODE.HOVER })}
       onMouseOut={() => !disabled && this.setState({ mode: BUTTON_MODE.BLURRED })}

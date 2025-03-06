@@ -1,5 +1,4 @@
-import { THEME } from '../styles';
-
+import { COLOR, THEME } from '../styles';
 const { React } = window;
 
 /**
@@ -32,8 +31,8 @@ function clampInt(
 }
 
 const style: React.CSSProperties = {
-  backgroundColor: THEME.colorGray50,
-  border: '2px solid black',
+  backgroundColor: COLOR.gray50,
+  border: THEME.primaryBorder,
   borderRadius: '5px',
   boxShadow: 'inset 0px 1px 4px -1px #000',
   height: '1.25em',

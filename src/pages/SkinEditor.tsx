@@ -1,16 +1,18 @@
 /* eslint-disable max-len */
-const { React, store } = window;
+import { COLOR, GLOBAL_STYLES, THEME } from '../styles';
 import IconButton from '../components/IconButton';
-import { GLOBAL_STYLES } from '../styles';
 import * as FICONS from '../components/Icons';
 import { SkinCssTrigger } from '../lib/TriggerDataManager.types';
 import { App } from '../App';
 import * as Selectors from '../lib/redux-selectors';
 import Dropdown from '../components/Dropdown';
+const { React, store } = window;
 
 const styles = {
   container: {
     alignItems: 'center',
+    backgroundColor: COLOR.gray100,
+    boxShadow: 'none',
     justifyContent: 'center',
     overflow: 'hidden',
     position: 'relative',
@@ -64,7 +66,7 @@ const styles = {
     accentColor: 'black',
     appearance: 'none',
     background: 'linear-gradient(to left, black, white)',
-    border: '2px solid black',
+    border: THEME.primaryBorder,
     borderRadius: '5px',
     cursor: 'move',
     height: '10px',
@@ -72,7 +74,7 @@ const styles = {
     width: '100px',
   },
   colorPicker: {
-    border: '2px solid black',
+    border: THEME.primaryBorder,
     borderRadius: '5px',
     cursor: 'pointer',
     height: '1.5em',

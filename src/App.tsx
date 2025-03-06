@@ -679,7 +679,7 @@ export class App extends React.Component {
               timeValue,
               ['triggers', realIndex.toString(), '0', timeIndex.toString()],
               cProps[timeIndex],
-            this.state.invalidTimes[index] ? 'red' : 'black',
+              this.state.invalidTimes[index] ? 'red' : GLOBAL_STYLES.root.color,
           )}
         </div>;
       })}
@@ -800,7 +800,7 @@ export class App extends React.Component {
         value={value as boolean}
         onCheck={() => this.onUpdateTrigger(!value, propPath)}
       ></Checkbox> : <NumberPicker
-        customStyle={{ ...GLOBAL_STYLES.spacedProperty, color: color || 'black' }}
+        customStyle={{ ...GLOBAL_STYLES.spacedProperty, color: color || GLOBAL_STYLES.root.color }}
         id={propPath.join('_')}
         value={value as number | string}
         min={constraint.MIN}
