@@ -559,10 +559,14 @@ export class App extends React.Component {
 
         return <div>
           <FloatingButton
-            customStyle={{ borderBottom: 'none', borderRadius: '5px 5px 0 0' }}
+            customStyle={{
+              ...GLOBAL_STYLES.tabButton,
+              borderBottomColor: this.state.activeTab === command ? 'transparent' : undefined,
+            }}
             onClick={() => this.onChangeTab(command as TRIGGER_ID)}
             active={this.state.activeTab === command}
             label={TRIGGER_METADATA[command as TRIGGER_ID].DISPLAY_NAME}
+            disabledShadow
           ></FloatingButton>
         </div>;
       })}

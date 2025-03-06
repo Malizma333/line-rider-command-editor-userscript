@@ -50,8 +50,7 @@ export const GLOBAL_STYLES = {
     display: 'flex',
     justifyContent: 'start',
     flexDirection: 'row',
-    marginTop: '3px',
-    overflow: 'hidden',
+    margin: '3px 0 0 1px',
     width: '100%',
   },
   windowContainer: {
@@ -128,6 +127,12 @@ export const GLOBAL_STYLES = {
     position: 'absolute',
     right: '0px',
     transform: 'translateY(50%)',
+    zIndex: 1,
+  },
+  tabButton: {
+    borderRadius: '5px 5px 1px 1px',
+    marginRight: '-2px',
+    transform: 'translateY(2px)',
     zIndex: 1,
   },
 } satisfies Record<string, React.CSSProperties>;
