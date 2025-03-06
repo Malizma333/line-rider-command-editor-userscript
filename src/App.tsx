@@ -12,7 +12,7 @@ import { getSetting, TEXT_SIZES } from './lib/settings-storage';
 import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from './lib/settings-storage.types';
 import { validateTimes, formatSkins } from './lib/util';
 import { CONSTRAINT } from './lib/constraints';
-import { GLOBAL_STYLES } from './styles';
+import { GLOBAL_STYLES, THEME } from './styles';
 
 import * as Actions from './lib/redux-actions';
 import * as Selectors from './lib/redux-selectors';
@@ -561,7 +561,7 @@ export class App extends React.Component {
           <FloatingButton
             customStyle={{
               ...GLOBAL_STYLES.tabButton,
-              borderBottomColor: this.state.activeTab === command ? 'transparent' : undefined,
+              borderBottom: this.state.activeTab === command ? '2px solid transparent' : THEME.primaryBorder,
             }}
             onClick={() => this.onChangeTab(command as TRIGGER_ID)}
             active={this.state.activeTab === command}
