@@ -1,15 +1,26 @@
+export const COLOR = {
+  gray50: 'oklch(0.985 0.002 247.839)',
+  gray100: 'oklch(0.967 0.003 264.542)',
+  gray200: 'oklch(0.928 0.006 264.531)',
+  gray300: 'oklch(0.872 0.01 258.338)',
+  gray400: 'oklch(0.707 0.022 261.325)',
+  gray500: 'oklch(0.551 0.027 264.364)',
+  gray600: 'oklch(0.446 0.03 256.802)',
+  gray700: 'oklch(0.373 0.034 259.733)',
+  gray800: 'oklch(0.278 0.033 256.848)',
+  gray900: 'oklch(0.21 0.034 264.665)',
+  gray950: 'oklch(0.13 0.028 261.692)',
+} as const;
+
 export const THEME = {
-  dark: '#0D1321',
-  midDark: '#7F838B',
-  midLight: '#B7BBC0',
-  light: '#FCFCFC',
+  primaryBorder: `2px solid ${COLOR.gray950}`,
 } as const;
 
 export const GLOBAL_STYLES = {
   root: {
-    backgroundColor: THEME.light,
-    transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
-    border: '2px solid black',
+    backgroundColor: COLOR.gray200,
+    border: THEME.primaryBorder,
+    color: COLOR.gray900,
     fontFamily: 'Helvetica',
     fontWeight: 'bold',
     left: '64px',
@@ -19,6 +30,7 @@ export const GLOBAL_STYLES = {
     pointerEvents: 'none',
     position: 'fixed',
     top: '8px',
+    transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
   },
   actionContainer: {
     alignItems: 'center',
@@ -38,14 +50,8 @@ export const GLOBAL_STYLES = {
     display: 'flex',
     justifyContent: 'start',
     flexDirection: 'row',
-    marginTop: '3px',
-    overflowX: 'auto',
+    margin: '3px 0 0 1px',
     width: '100%',
-  },
-  tab: {
-    border: '2px solid black',
-    borderBottom: 'none',
-    borderRadius: '5px 5px 0 0',
   },
   windowContainer: {
     display: 'flex',
@@ -55,28 +61,33 @@ export const GLOBAL_STYLES = {
   },
   windowHead: {
     alignItems: 'center',
-    backgroundColor: THEME.light,
-    border: '2px solid black',
+    backgroundColor: COLOR.gray100,
+    border: THEME.primaryBorder,
     borderBottom: 'none',
     display: 'flex',
-    flex: 1,
+    fontSize: '1.5em',
+    height: '2.5em',
     justifyContent: 'start',
-    padding: '10px',
   },
   windowBody: {
-    backgroundColor: THEME.light,
-    border: '2px solid black',
+    backgroundColor: COLOR.gray300,
+    border: THEME.primaryBorder,
+    boxShadow: 'inset 0px 0px 8px 0px #000',
     display: 'flex',
-    flex: 10,
+    flex: 1,
     flexDirection: 'column',
+    overflowY: 'scroll',
+    scrollbarColor: `${COLOR.gray500} ${COLOR.gray200}`,
+    scrollbarWidth: 'thin',
   },
   triggerContainer: {
     alignItems: 'start',
-    backgroundColor: THEME.light,
-    borderBottom: '2px solid black',
+    backgroundColor: COLOR.gray100,
+    borderBottom: THEME.primaryBorder,
+    boxShadow: '0px 4px 8px -4px #000',
     display: 'flex',
     flexDirection: 'column',
-    padding: '10px',
+    padding: '0.75em',
     position: 'relative',
   },
   triggerActionContainer: {
@@ -106,17 +117,22 @@ export const GLOBAL_STYLES = {
   spacedProperty: {
     margin: '0 5px',
   },
-  newTriggerButton: {
-    backgroundColor: THEME.light,
-    border: '2px solid black',
-    borderRadius: '50%',
+  createTriggerContainer: {
     bottom: '0px',
+    display: 'flex',
+    justifyContent: 'center',
     left: '0px',
     marginLeft: 'auto',
     marginRight: 'auto',
     position: 'absolute',
     right: '0px',
     transform: 'translateY(50%)',
+    zIndex: 1,
+  },
+  tabButton: {
+    borderRadius: '5px 5px 1px 1px',
+    marginRight: '-2px',
+    transform: 'translateY(2px)',
     zIndex: 1,
   },
 } satisfies Record<string, React.CSSProperties>;

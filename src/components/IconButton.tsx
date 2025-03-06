@@ -1,14 +1,14 @@
+import { COLOR } from '../styles';
 const { React } = window;
-import { THEME } from '../styles';
 
 enum BUTTON_MODE { BLURRED, HOVER, PRESSED }
 
 interface Props {
-  title?: string,
-  disabled?: boolean,
-  customStyle?: React.CSSProperties,
+  title: string
+  disabled?: boolean
+  customStyle?: React.CSSProperties
   size?: string
-  onClick: () => void,
+  onClick: () => void
   icon: React.JSX.Element
 }
 
@@ -23,6 +23,7 @@ const style: React.CSSProperties = {
   justifyContent: 'center',
   userSelect: 'none',
   width: '1.5em',
+  transition: 'background-color 0.125s ease-in-out',
 };
 
 const modeBackgroundColors = {
@@ -31,7 +32,7 @@ const modeBackgroundColors = {
   [BUTTON_MODE.PRESSED]: '#00000033',
 } as const;
 
-export default class EmbeddedButton extends React.Component<Props, State> {
+export default class IconButton extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -41,7 +42,7 @@ export default class EmbeddedButton extends React.Component<Props, State> {
   }
 
   render() {
-    const { title, disabled, onClick, icon, size } = this.props;
+    const { customStyle, disabled, icon, onClick, size, title } = this.props;
 
     if (disabled && this.state.mode !== BUTTON_MODE.BLURRED) {
       this.setState({ mode: BUTTON_MODE.BLURRED });
@@ -51,16 +52,16 @@ export default class EmbeddedButton extends React.Component<Props, State> {
       title={title}
       style={{
         ...style,
+        ...customStyle,
         backgroundColor: modeBackgroundColors[this.state.mode],
-        ...this.props.customStyle,
         fontSize: size || '25px',
-        color: disabled ? THEME.midDark : THEME.dark,
+        color: disabled ? COLOR.gray500 : COLOR.gray950,
       }}
       onMouseOver={() => !disabled && this.setState({ mode: BUTTON_MODE.HOVER })}
       onMouseOut={() => !disabled && this.setState({ mode: BUTTON_MODE.BLURRED })}
       onMouseDown={() => !disabled && this.setState({ mode: BUTTON_MODE.PRESSED })}
       onMouseUp={() => !disabled && this.setState({ mode: BUTTON_MODE.HOVER })}
-      onClick={onClick}
+      onClick={() => onClick()}
       disabled={disabled}
     >
       {icon}

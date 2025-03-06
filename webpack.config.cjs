@@ -18,4 +18,5 @@ module.exports = {
     filename: 'command-editor.min.js',
     path: __dirname
   },
+  watch: true,
 };

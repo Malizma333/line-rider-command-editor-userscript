@@ -1,16 +1,18 @@
 /* eslint-disable max-len */
+import { COLOR, GLOBAL_STYLES, THEME } from '../styles';
+import IconButton from '../components/IconButton';
+import * as FICONS from '../components/Icons';
+import { SkinCssTrigger } from '../lib/TriggerDataManager.types';
+import { App } from '../App';
+import * as Selectors from '../lib/redux-selectors';
+import Dropdown from '../components/Dropdown';
 const { React, store } = window;
-import EmbeddedButton from '../EmbeddedButton';
-import { GLOBAL_STYLES } from '../../styles';
-import * as FICONS from '../Icons';
-import { SkinCssTrigger } from '../../lib/TriggerDataManager.types';
-import { App } from '../../App';
-import * as Selectors from '../../lib/redux-selectors';
-import Dropdown from '../Dropdown';
 
 const styles = {
   container: {
     alignItems: 'center',
+    backgroundColor: COLOR.gray100,
+    boxShadow: 'none',
     justifyContent: 'center',
     overflow: 'hidden',
     position: 'relative',
@@ -18,7 +20,7 @@ const styles = {
     width: '100%',
   },
   gridBackground: {
-    background: 'linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%), linear-gradient(-45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%)',
+    background: 'linear-gradient(45deg, #aaa 25%, transparent 25%, transparent 75%, #aaa 75%), linear-gradient(-45deg, #aaa 25%, transparent 25%, transparent 75%, #aaa 75%)',
     backgroundSize: '10px 10px',
     height: '1000px',
     position: 'absolute',
@@ -51,6 +53,7 @@ const styles = {
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
+    fontSize: '0.75em',
     justifyContent: 'center',
     position: 'relative',
   },
@@ -63,17 +66,19 @@ const styles = {
     accentColor: 'black',
     appearance: 'none',
     background: 'linear-gradient(to left, black, white)',
-    border: '2px solid black',
+    border: THEME.primaryBorder,
     borderRadius: '5px',
+    cursor: 'move',
     height: '10px',
     marginTop: '3px',
     width: '100px',
   },
   colorPicker: {
-    border: '2px solid black',
+    border: THEME.primaryBorder,
     borderRadius: '5px',
-    height: '2.25em',
-    width: '2.25em',
+    cursor: 'pointer',
+    height: '1.5em',
+    width: '1.5em',
   },
 } satisfies Record<string, React.CSSProperties>;
 
@@ -89,11 +94,12 @@ function SkinEditorToolbar({ skinEditor, root }: {skinEditor: SkinEditor, root: 
   const alphaValue = parseInt(skinEditor.state.selectedColor.substring(7), 16) / 255;
 
   return <div style={GLOBAL_STYLES.windowHead}>
-    <EmbeddedButton
+    <IconButton
       onClick={() => root.onResetSkin(skinEditor.state.selectedRider)}
       icon={FICONS.TRASH2}
       customStyle={{ position: 'absolute', right: '10px' }}
-    />
+      title='Reset Skin'
+    ></IconButton>
     <div style={{ ...GLOBAL_STYLES.spacedProperty, ...styles.alphaContainer }}>
       <label htmlFor="alphaSlider">Transparency</label>
       <div style={styles.alphaSliderContainer}>
@@ -116,12 +122,12 @@ function SkinEditorToolbar({ skinEditor, root }: {skinEditor: SkinEditor, root: 
       onChange={(e: React.ChangeEvent) => skinEditor.onChangeColor((e.target as HTMLInputElement).value, undefined)}
     ></input>
     <Dropdown
-      customStyle={{ ...GLOBAL_STYLES.spacedProperty, fontSize: '1.5em' }}
+      customStyle={GLOBAL_STYLES.spacedProperty}
       value={skinEditor.state.selectedRider}
       mapping={[...Array(root.state.numRiders).keys()]}
       label={(_, i) => `Rider ${i + 1}`}
       onChange={(e: number) => skinEditor.onChooseRider(e)}
-    />
+    ></Dropdown>
   </div>;
 }
 
@@ -217,8 +223,18 @@ function SkinEditorCanvas(
   </div>;
 }
 
-interface Props { root: App, skinTriggers: SkinCssTrigger[] }
-interface State { selectedRider: number, selectedColor: string, zoom: number, xOffset: number, yOffset: number }
+interface Props {
+  root: App
+  skinTriggers: SkinCssTrigger[]
+}
+
+interface State {
+  selectedRider: number
+  selectedColor: string
+  zoom: number
+  xOffset: number
+  yOffset: number
+}
 
 export default class SkinEditor extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -283,11 +299,15 @@ export default class SkinEditor extends React.Component<Props, State> {
       skinTriggers,
     } = this.props;
 
-    return <React.Fragment>
-      <SkinEditorToolbar skinEditor={this} root={root}/>
+    return <>
+      <SkinEditorToolbar skinEditor={this} root={root}></SkinEditorToolbar>
       <div style={{ ...GLOBAL_STYLES.windowBody, ...styles.container }}>
         <div style={styles.gridBackground}></div>
-        <SkinEditorCanvas skinEditor={this} root={root} skinCss={skinTriggers[this.state.selectedRider]}/>
+        <SkinEditorCanvas
+          skinEditor={this}
+          root={root}
+          skinCss={skinTriggers[this.state.selectedRider]}
+        ></SkinEditorCanvas>
         <div style={styles.outlineContainer}>
           <text>Outline</text>
           <div
@@ -299,6 +319,6 @@ export default class SkinEditor extends React.Component<Props, State> {
           ></div>
         </div>
       </div>
-    </React.Fragment>;
+    </>;
   }
 }

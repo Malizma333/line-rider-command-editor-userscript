@@ -1,17 +1,19 @@
+import { COLOR, THEME } from '../styles';
 const { React } = window;
-import { THEME } from '../styles';
 
 const styles = {
   head: {
-    backgroundColor: THEME.light,
-    border: '2px solid black',
+    backgroundColor: COLOR.gray50,
+    border: THEME.primaryBorder,
     borderRadius: '5px',
+    boxShadow: '0px 1px 4px -1px #000',
+    cursor: 'pointer',
     height: '1.5em',
     textAlign: 'right',
   },
   option: {
-    backgroundColor: THEME.light,
-    border: '2px solid black',
+    backgroundColor: COLOR.gray50,
+    border: THEME.primaryBorder,
     height: '1.25em',
     textAlign: 'center',
   },

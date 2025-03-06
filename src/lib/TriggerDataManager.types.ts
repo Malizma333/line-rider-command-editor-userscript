@@ -1,7 +1,7 @@
 export type PathValue = object | number | string | boolean
 export interface HistoryItem {
-  modificationPath: string[],
-  oldValue: PathValue,
+  modificationPath: string[]
+  oldValue: PathValue
   activeTab: TRIGGER_ID
 }
 

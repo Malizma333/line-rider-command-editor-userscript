@@ -12,7 +12,7 @@ import { getSetting, TEXT_SIZES } from './lib/settings-storage';
 import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from './lib/settings-storage.types';
 import { validateTimes, formatSkins } from './lib/util';
 import { CONSTRAINT } from './lib/constraints';
-import { GLOBAL_STYLES, THEME } from './styles';
+import { GLOBAL_STYLES } from './styles';
 
 import * as Actions from './lib/redux-actions';
 import * as Selectors from './lib/redux-selectors';
@@ -20,12 +20,13 @@ import * as FICONS from './components/Icons';
 
 import FloatPicker from './components/FloatPicker';
 import IntPicker from './components/IntPicker';
-import EmbeddedButton from './components/EmbeddedButton';
-import SkinEditor from './components/pages/SkinEditor';
-import Settings from './components/pages/Settings';
+import IconButton from './components/IconButton';
+import SkinEditor from './pages/SkinEditor';
+import Settings from './pages/Settings';
 import Checkbox from './components/Checkbox';
 import { Constraint, CONSTRAINT_TYPE } from './lib/constraints.types';
 import Dropdown from './components/Dropdown';
+import FloatingButton from './components/FloatingButton';
 
 const { store, React } = window;
 
@@ -448,23 +449,23 @@ export class App extends React.Component {
       }
     }
 
-    return <div style={{ fontSize: TEXT_SIZES[this.state.fontSize] }}>
+    return <div style={{ fontSize: TEXT_SIZES[this.state.fontSize], transition: 'font-size 0.125s ease-in-out' }}>
       {this.renderActions()}
       {this.state.active && <div style={GLOBAL_STYLES.mainContent}>
         {this.state.settingsActive ?
-          <Settings root={this}/> :
+          <Settings root={this}></Settings> :
           <div style={GLOBAL_STYLES.windowContainer}>
             {this.renderTabContainer()}
             {data.id === TRIGGER_ID.SKIN ?
-              <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}/> :
-              <React.Fragment>
+              <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}></SkinEditor> :
+              <>
                 {this.renderWindowHead()}
-                {<div style={{ ...GLOBAL_STYLES.windowBody, overflowY: 'scroll', paddingBottom: '10px' }}>
+                {<div style={{ ...GLOBAL_STYLES.windowBody, paddingBottom: '10px' }}>
                   {computedTriggers.map(
                       (computeData) => this.renderTrigger(computeData[0], computeData[1], computeData[2]),
                   )}
                 </div>}
-              </React.Fragment>
+              </>
             }
           </div>}
       </div>}
@@ -473,73 +474,78 @@ export class App extends React.Component {
 
   renderActions() {
     return !this.state.active ? <div style={GLOBAL_STYLES.actionContainer}>
-      <EmbeddedButton
+      <IconButton
         title="Maximize"
         onClick={() => this.onToggleActive()}
         icon={FICONS.MAXIMIZE}
-      />
+      ></IconButton>
     </div> : <div style={GLOBAL_STYLES.actionContainer}>
       <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: 'start' }}>
-        <EmbeddedButton
+        <IconButton
           title="Minimize"
           onClick={() => this.onToggleActive()}
           icon={FICONS.MINIMIZE}
-        />
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Download"
           onClick={() => this.onDownload()}
           icon={FICONS.DOWNLOAD}
-        />
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Upload"
           onClick={() => this.onUpload()}
           icon={FICONS.UPLOAD}
-        />
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Load From Script"
           onClick={() => this.onLoadScript()}
           icon={FICONS.CORNER_UP_RIGHT}
           disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
-        />
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Run"
           onClick={() => this.onTest()}
           icon={FICONS.PLAY}
           disabled={this.state.invalidTimes.some((i) => i)}
-        />
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Copy Script"
           onClick={async () => await this.onCopy()}
           icon={FICONS.COPY}
           disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
-        />
+        ></IconButton>
       </div>
       <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: 'end' }}>
-        <EmbeddedButton
+        <IconButton
           title="Undo"
           onClick={() => this.onUndo()}
           icon={FICONS.ARROW_LEFT}
           disabled={this.triggerManager.undoLen === 0}
-        />
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Redo"
           onClick={() => this.onRedo()}
           icon={FICONS.ARROW_RIGHT}
           disabled={this.triggerManager.redoLen === 0}
-        />
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Settings"
           onClick={() => this.onToggleSettings()}
           icon={FICONS.SETTINGS}
-        />
-        <EmbeddedButton
+        ></IconButton>
+        <IconButton
           title="Help"
           onClick={() => this.onHelp()}
           icon={FICONS.HELP_CIRCLE}
-        />
+        ></IconButton>
       </div>
-      <input id="trigger-file-upload" style={{ display: 'none' }} type="file" accept=".json"
-        onChange={(e: React.ChangeEvent) => this.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])} />
+      <input
+        id="trigger-file-upload"
+        style={{ display: 'none' }}
+        type="file"
+        accept=".json"
+        onChange={(e: React.ChangeEvent) => this.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])}
+      />
     </div>;
   }
 
@@ -552,15 +558,16 @@ export class App extends React.Component {
         }
 
         return <div>
-          <button
-            style={{
-              ...GLOBAL_STYLES.tab,
-              backgroundColor: this.state.activeTab === command ? THEME.midLight : THEME.midDark,
+          <FloatingButton
+            customStyle={{
+              ...GLOBAL_STYLES.tabButton,
+              borderBottomColor: this.state.activeTab === command ? 'transparent' : undefined,
             }}
             onClick={() => this.onChangeTab(command as TRIGGER_ID)}
-          >
-            {TRIGGER_METADATA[command as TRIGGER_ID].DISPLAY_NAME}
-          </button>
+            active={this.state.activeTab === command}
+            label={TRIGGER_METADATA[command as TRIGGER_ID].DISPLAY_NAME}
+            disabledShadow
+          ></FloatingButton>
         </div>;
       })}
     </div>;
@@ -569,7 +576,7 @@ export class App extends React.Component {
   renderWindowHead() {
     const data = this.triggerManager.data[this.state.activeTab];
 
-    return <div style={{ ...GLOBAL_STYLES.windowHead, fontSize: '1.5em' }}>
+    return <div style={GLOBAL_STYLES.windowHead}>
       {data.id === TRIGGER_ID.ZOOM &&
         <>
           {this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)}
@@ -589,7 +596,7 @@ export class App extends React.Component {
             mapping={[...Array(this.state.numRiders).keys()]}
             label={(_, i) => `Rider ${i + 1}`}
             onChange={(e: number) => this.onChangeFocusDD(e)}
-          />
+          ></Dropdown>
         </>
       }
       {data.id === TRIGGER_ID.TIME &&
@@ -605,7 +612,7 @@ export class App extends React.Component {
             mapping={[...Array(this.state.numRiders).keys()]}
             label={(_, i) => `Rider ${i + 1}`}
             onChange={(e: number) => this.onChangeGravityDD(e)}
-          />
+          ></Dropdown>
         </>
       }
       {data.id === TRIGGER_ID.LAYER &&
@@ -616,7 +623,7 @@ export class App extends React.Component {
             mapping={this.state.layerMap}
             label={(e) => `Layer ${e}`}
             onChange={(e: number) => this.onChangeLayerDD(e)}
-          />
+          ></Dropdown>
           {this.renderTriggerProp('60 FPS', data.interpolate || false, ['interpolate'], CONSTRAINT.INTERPOLATE)}
         </>
       }
@@ -629,20 +636,21 @@ export class App extends React.Component {
     return <div style={{
       ...GLOBAL_STYLES.triggerContainer,
       fontSize: '1.5em',
-      backgroundColor: index === 0 ? THEME.midLight : THEME.light,
     }}>
       <div style={GLOBAL_STYLES.triggerActionContainer}>
         {(data.id === TRIGGER_ID.ZOOM || data.id === TRIGGER_ID.PAN) && (
-          <EmbeddedButton
+          <IconButton
             onClick={() => this.onCaptureCamera(realIndex, data.id as TRIGGER_ID)}
             icon={FICONS.CAMERA}
-          />
+            title="Capture Editor Camera"
+          ></IconButton>
         )}
-        <EmbeddedButton
+        <IconButton
           onClick={() => this.onDeleteTrigger(realIndex)}
           icon={FICONS.X}
           disabled={index === 0}
-        />
+          title="Delete"
+        ></IconButton>
       </div>
 
       {this.renderTimeInput((currentTrigger as TimedTrigger)[0], realIndex, index)}
@@ -652,12 +660,14 @@ export class App extends React.Component {
       {data.id === TRIGGER_ID.TIME && this.renderRemapTrigger((currentTrigger as TimeRemapTrigger), realIndex)}
       {data.id === TRIGGER_ID.GRAVITY && this.renderGravityTrigger((currentTrigger as GravityTrigger), realIndex)}
       {data.id === TRIGGER_ID.LAYER && this.renderLayerTrigger((currentTrigger as LayerTrigger), realIndex)}
-      <EmbeddedButton
-        customStyle={GLOBAL_STYLES.newTriggerButton}
-        size="16px"
-        icon={FICONS.PLUS}
-        onClick={() => this.onCreateTrigger(realIndex)}
-      />
+      <div style={GLOBAL_STYLES.createTriggerContainer}>
+        <FloatingButton
+          onClick={() => this.onCreateTrigger(realIndex)}
+          customStyle={{ fontSize: '0.75em' }}
+          label="+"
+          active
+        ></FloatingButton>
+      </div>
     </div>;
   }
 
@@ -673,7 +683,7 @@ export class App extends React.Component {
               timeValue,
               ['triggers', realIndex.toString(), '0', timeIndex.toString()],
               cProps[timeIndex],
-            this.state.invalidTimes[index] ? 'red' : 'black',
+              this.state.invalidTimes[index] ? 'red' : GLOBAL_STYLES.root.color,
           )}
         </div>;
       })}
@@ -793,14 +803,14 @@ export class App extends React.Component {
         id={propPath.join('_')}
         value={value as boolean}
         onCheck={() => this.onUpdateTrigger(!value, propPath)}
-      /> : <NumberPicker
-        customStyle={{ ...GLOBAL_STYLES.spacedProperty, color: color || 'black' }}
+      ></Checkbox> : <NumberPicker
+        customStyle={{ ...GLOBAL_STYLES.spacedProperty, color: color || GLOBAL_STYLES.root.color }}
         id={propPath.join('_')}
         value={value as number | string}
         min={constraint.MIN}
         max={constraint.MAX}
         onChange={(v: number | string) => this.onUpdateTrigger(v, propPath)}
-      />}
+      ></NumberPicker>}
     </div>;
   }
 }

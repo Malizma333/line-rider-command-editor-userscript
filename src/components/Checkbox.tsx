@@ -1,3 +1,4 @@
+import { COLOR, THEME } from '../styles';
 const { React } = window;
 
 const styles = {
@@ -11,21 +12,24 @@ const styles = {
   },
   primary: {
     appearance: 'none',
-    background: '#FFF',
-    border: '2px solid black',
+    background: COLOR.gray50,
+    border: THEME.primaryBorder,
     borderRadius: '50%',
     boxSizing: 'border-box',
+    boxShadow: 'inset 0px 1px 4px -1px #000',
+    cursor: 'pointer',
     height: '100%',
     position: 'absolute',
     width: '100%',
   },
   fill: {
     backgroundColor: '#000',
-    borderRadius: '50%',
-    height: '50%',
+    borderRadius: '60%',
+    height: '60%',
     pointerEvents: 'none',
     position: 'absolute',
-    width: '50%',
+    transition: 'opacity 0.125s ease-in-out',
+    width: '60%',
   },
 } satisfies Record<string, React.CSSProperties>;
 
@@ -49,6 +53,6 @@ export default function Checkbox(
       type="checkbox"
       onChange={() => onCheck()}
     />
-    {value && <div style={styles.fill}></div>}
+    <div style={{ ...styles.fill, opacity: value ? '100' : '0' }}></div>
   </div>;
 }

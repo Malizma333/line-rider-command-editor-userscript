@@ -1,20 +1,20 @@
+import { COLOR, THEME } from '../styles';
+import FloatingButton from '../components/FloatingButton';
+import IconButton from '../components/IconButton';
+import * as FICONS from '../components/Icons';
+import { App } from '../App';
+import { FONT_SIZE_SETTING, VIEWPORT_SETTING, SETTINGS_KEY } from '../lib/settings-storage.types';
+import { getSetting, saveSetting } from '../lib/settings-storage';
 const { React } = window;
-import { THEME } from '../../styles';
-import SettingsRadioButton from '../SettingsRadioButton';
-import EmbeddedButton from '../EmbeddedButton';
-import * as FICONS from '../Icons';
-import { App } from '../../App';
-import { FONT_SIZE_SETTING, VIEWPORT_SETTING, SETTINGS_KEY } from '../../lib/settings-storage.types';
-import { getSetting, saveSetting } from '../../lib/settings-storage';
 
 const styles = {
   window: {
-    backgroundColor: THEME.light,
-    border: '2px solid black',
+    backgroundColor: COLOR.gray100,
+    border: THEME.primaryBorder,
+    boxShadow: '0px 4px 8px -4px #000',
     display: 'flex',
     flexDirection: 'column',
     flex: 9,
-    overflow: 'auto',
     position: 'relative',
     width: '100%',
   },
@@ -27,8 +27,6 @@ const styles = {
     position: 'relative',
   },
   applyButton: {
-    border: '2px solid black',
-    borderRadius: '5px',
     left: '0px',
     position: 'absolute',
   },
@@ -59,22 +57,20 @@ const styles = {
  */
 function SettingsHeader({ root, settings }: {root: App, settings: Settings}) {
   return <div style={{ ...styles.header, fontSize: '1.5em' }}>
-    <EmbeddedButton
+    <IconButton
       onClick={() => root.onToggleSettings()}
       icon={FICONS.X}
       customStyle={{ position: 'absolute', right: '0px' }}
-    />
+      title='Close'
+    ></IconButton>
     Settings
-    <button
-      style={{
-        ...styles.applyButton,
-        background: settings.state.dirty ? THEME.midLight : THEME.midDark,
-      }}
+    <FloatingButton
+      customStyle={styles.applyButton}
+      active={settings.state.dirty}
       disabled={!settings.state.dirty}
       onClick={() => settings.onApply()}
-    >
-      Apply
-    </button>
+      label='Apply'
+    ></FloatingButton>
   </div>;
 }
 
@@ -112,12 +108,12 @@ function SettingsSection(
     </text>
     <div style={styles.parameter}>
       {...LABEL_MAP[lkey].map(([target, label]) => {
-        return <SettingsRadioButton
-          current={current}
-          target={target}
+        return <FloatingButton
+          customStyle={{ margin: '5px' }}
+          active={current === target}
           label={label}
-          onClick={(e: number) => onClick(e as number)}
-        />;
+          onClick={() => onClick(target)}
+        ></FloatingButton>;
       })}
     </div>
   </div>;
@@ -125,8 +121,8 @@ function SettingsSection(
 
 interface Props { root: App }
 interface State {
-  dirty: boolean,
-  fontSize: FONT_SIZE_SETTING,
+  dirty: boolean
+  fontSize: FONT_SIZE_SETTING
   resolution: VIEWPORT_SETTING
 }
 
@@ -180,20 +176,20 @@ export default class Settings extends React.Component<Props, State> {
     } = this.props;
 
     return <div style={styles.window}>
-      <SettingsHeader root={root} settings={this}/>
+      <SettingsHeader root={root} settings={this}></SettingsHeader>
       <div>
         <SettingsSection
           current={this.state.fontSize}
           onClick={(e: number) => this.onChangeFontSize(e)}
           title={'Font Sizes'}
           lkey={SETTINGS_KEY.FONT_SIZE}
-        />
+        ></SettingsSection>
         <SettingsSection
           current={this.state.resolution}
           onClick={(e: number) => this.onChangeViewport(e)}
           title={'Viewport'}
           lkey={SETTINGS_KEY.VIEWPORT}
-        />
+        ></SettingsSection>
       </div>
     </div>;
   }
