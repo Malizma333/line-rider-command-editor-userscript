@@ -11,7 +11,7 @@ import { retrieveTimestamp } from "../util";
  * @param currentTriggerData The current trigger data in case there is an issue with the new data
  * @returns The formatted trigger data object
  */
-export function readJsScript(scriptText: string, currentTriggerData: TriggerDataLookup): TriggerDataLookup {
+export default function readJsScript(scriptText: string, currentTriggerData: TriggerDataLookup): TriggerDataLookup {
   const triggerData = TriggerDataManager.initialTriggerData;
 
   /**

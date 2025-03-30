@@ -5,8 +5,9 @@ import {
   LayerTrigger,
   Trigger,
 } from "./lib/TriggerDataManager.types";
-import { readJsScript } from "./lib/io/read-js-script";
-import { readJsonScript } from "./lib/io/read-json-script";
+import readJsScript from "./lib/io/read-js-script";
+import readJsonScript from "./lib/io/read-json-script";
+import writeJsonScript from "./lib/io/write-json-script";
 import { getSetting, TEXT_SIZES } from "./lib/settings-storage";
 import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from "./lib/settings-storage.types";
 import { validateTimes, formatSkins, generateScript } from "./lib/util";
@@ -170,7 +171,7 @@ export class App extends React.Component {
   }
 
   onDownload(): void {
-    const jsonString = JSON.stringify(this.triggerManager.data);
+    const jsonString = JSON.stringify(writeJsonScript(this.triggerManager.data));
     const a = document.createElement("a");
     const data = "data:text/json;charset=utf-8," + encodeURIComponent(jsonString);
     a.setAttribute("href", data);

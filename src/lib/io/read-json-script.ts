@@ -12,7 +12,7 @@ import { retrieveTimestamp } from "../util";
  * @param currentTriggerData The current trigger data in case data needs be reverted
  * @returns The validated trigger data
  */
-export function readJsonScript(
+export default function readJsonScript(
     fileObject: JSONObject,
     currentTriggerData: TriggerDataLookup,
 ): TriggerDataLookup {

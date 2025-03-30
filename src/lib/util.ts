@@ -99,6 +99,15 @@ export function retrieveTimestamp(index: number): TriggerTime {
 }
 
 /**
+ * Converts trigger timestamp to player index
+ * @param timestamp Timestamp to convert to frame index
+ * @returns Frame corresponding to the trigger time timestamp
+ */
+export function retrieveIndex(timestamp: TriggerTime): number {
+  return timestamp[0] * 2400 + timestamp[1] * 40 + timestamp[2];
+}
+
+/**
  * Generates a Line Rider Web script from trigger data and a specific command id
  * @param command Command to generate a script for
  * @param triggerData Template information to use for the command
