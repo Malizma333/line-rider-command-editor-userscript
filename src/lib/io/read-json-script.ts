@@ -13,49 +13,89 @@ import { retrieveTimestamp } from '../util';
  * @returns The validated trigger data
  */
 export function readJsonScript(
-    fileObject: JSONObject, currentTriggerData: TriggerDataLookup,
+    fileObject: JSONObject,
+    currentTriggerData: TriggerDataLookup,
 ): TriggerDataLookup {
   const triggerData = TriggerDataManager.initialTriggerData;
 
-  /**
-   * Parses an individual command given its id and applies the parsed file data to the trigger data
-   * @param commandId The type of command being parsed
-   * @param fileObject The object that needs parsing
-   */
-  function parseCommand(commandId: TRIGGER_ID, fileObject: JSONObject): void {
-    if (fileObject[commandId] === undefined || fileObject[commandId] === null) {
-      throw new Error(`Command ${commandId} not found!`);
-    }
+  let version = 0;
 
-    if (typeof fileObject[commandId] !== 'object') {
-      throw new Error(`Invalid format for ${commandId}!`);
+  if (typeof fileObject.version === 'number') {
+    if (fileObject.version === 0) {
+      version = 0;
+    } else if (fileObject.version === 1) {
+      version = 1;
+    } else {
+      console.warn(`[ScriptParser.parseScript()] Invalid file version!`);
+      return currentTriggerData;
     }
+  } else if (fileObject.version === undefined) {
+    version = 0;
+  } else {
+    console.warn(`[ScriptParser.parseScript()] Invalid file version!`);
+    return currentTriggerData;
+  }
 
-    if (Array.isArray(fileObject[commandId])) {
-      throw new Error(`Invalid format for ${commandId}!`);
+  Object.keys(TRIGGER_METADATA).forEach((commandId: string) => {
+    try {
+      triggerData[commandId as TRIGGER_ID].triggers = [];
+      if (version === 0) {
+        parseV0Command(commandId as TRIGGER_ID, fileObject, triggerData);
+      } else if (version === 1) {
+        parseV0Command(commandId as TRIGGER_ID, fileObject, triggerData); // TODO
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.warn(`[ScriptParser.parseScript()] ${error.message}`);
+        triggerData[commandId as TRIGGER_ID] = structuredClone(
+            currentTriggerData[commandId as TRIGGER_ID],
+        );
+      }
     }
+  });
 
-    switch (commandId) {
-      case TRIGGER_ID.ZOOM:
-      case TRIGGER_ID.PAN:
-      case TRIGGER_ID.FOCUS:
-        parseTriggers(commandId, fileObject[commandId]['triggers']);
-        parseSmoothing(commandId, fileObject[commandId]['smoothing']);
-        break;
-      case TRIGGER_ID.TIME:
-      case TRIGGER_ID.LAYER:
-        parseTriggers(commandId, fileObject[commandId]['triggers']);
-        parseSmoothing(commandId, fileObject[commandId]['interpolate']);
-        break;
-      case TRIGGER_ID.SKIN:
-        parseSkinTriggers(fileObject[commandId]['triggers']);
-        break;
-      case TRIGGER_ID.GRAVITY:
-        parseTriggers(commandId, fileObject[commandId]['triggers']);
-        break;
-      default:
-        break;
-    }
+  return triggerData;
+}
+
+/**
+ * Parses an individual command given its id and applies the parsed file data to the trigger data
+ * @param commandId The type of command being parsed
+ * @param fileObject The object that needs parsing
+ * @param triggerData The trigger data object to write script data to
+ */
+function parseV0Command(commandId: TRIGGER_ID, fileObject: JSONObject, triggerData: TriggerDataLookup) {
+  if (fileObject[commandId] === undefined || fileObject[commandId] === null) {
+    throw new Error(`Command ${commandId} not found!`);
+  }
+
+  if (typeof fileObject[commandId] !== 'object') {
+    throw new Error(`Invalid format for ${commandId}!`);
+  }
+
+  if (Array.isArray(fileObject[commandId])) {
+    throw new Error(`Invalid format for ${commandId}!`);
+  }
+
+  switch (commandId) {
+    case TRIGGER_ID.ZOOM:
+    case TRIGGER_ID.PAN:
+    case TRIGGER_ID.FOCUS:
+      parseTriggers(commandId, fileObject[commandId]['triggers']);
+      parseSmoothing(commandId, fileObject[commandId]['smoothing']);
+      break;
+    case TRIGGER_ID.TIME:
+    case TRIGGER_ID.LAYER:
+      parseTriggers(commandId, fileObject[commandId]['triggers']);
+      parseSmoothing(commandId, fileObject[commandId]['interpolate']);
+      break;
+    case TRIGGER_ID.SKIN:
+      parseSkinTriggers(fileObject[commandId]['triggers']);
+      break;
+    case TRIGGER_ID.GRAVITY:
+      parseTriggers(commandId, fileObject[commandId]['triggers']);
+      break;
+    default:
+      break;
   }
 
   /**
@@ -202,20 +242,4 @@ export function readJsonScript(
       )
     );
   }
-
-  Object.keys(TRIGGER_METADATA).forEach((commandId: string) => {
-    try {
-      triggerData[commandId as TRIGGER_ID].triggers = [];
-      parseCommand(commandId as TRIGGER_ID, fileObject);
-    } catch (error) {
-      if (error instanceof Error) {
-        console.warn(`[ScriptParser.parseScript()] ${error.message}`);
-        triggerData[commandId as TRIGGER_ID] = structuredClone(
-            currentTriggerData[commandId as TRIGGER_ID],
-        );
-      }
-    }
-  });
-
-  return triggerData;
 }
