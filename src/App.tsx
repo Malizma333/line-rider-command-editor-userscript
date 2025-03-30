@@ -191,7 +191,7 @@ export class App extends React.Component {
       try {
         this.onLoad(
             readJsonScript(
-                JSON.parse(reader.result as string),
+                JSON.parse(reader.result as string) as JSONObject,
                 this.triggerManager.data as TriggerDataLookup,
             ),
         );
