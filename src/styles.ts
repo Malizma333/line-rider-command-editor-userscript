@@ -45,14 +45,6 @@ export const GLOBAL_STYLES = {
     justifyContent: 'center',
     width: 'max(37.5vw, 480px)',
   },
-  tabContainer: {
-    alignItems: 'end',
-    display: 'flex',
-    justifyContent: 'start',
-    flexDirection: 'row',
-    margin: '3px 0 0 1px',
-    width: '100%',
-  },
   windowContainer: {
     display: 'flex',
     height: '100%',
@@ -129,8 +121,15 @@ export const GLOBAL_STYLES = {
     transform: 'translateY(50%)',
     zIndex: 1,
   },
+  tabContainer: {
+    alignItems: 'end',
+    display: 'flex',
+    justifyContent: 'start',
+    flexDirection: 'row',
+    width: '100%',
+  },
   tabButton: {
-    borderRadius: '5px 5px 1px 1px',
+    borderRadius: '5px 5px 0px 0px',
     marginRight: '-2px',
     transform: 'translateY(2px)',
     zIndex: 1,

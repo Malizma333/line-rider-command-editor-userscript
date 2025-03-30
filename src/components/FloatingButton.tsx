@@ -10,6 +10,7 @@ interface Props {
   label: string
   onClick: () => void
   disabledShadow?: boolean
+  tabButton?: boolean
 }
 
 interface State { mode: BUTTON_MODE }
@@ -17,7 +18,7 @@ interface State { mode: BUTTON_MODE }
 const style: React.CSSProperties = {
   border: THEME.primaryBorder,
   borderRadius: '5px',
-  boxShadow: '',
+  position: 'relative',
 };
 
 const modeShadows = {
@@ -35,7 +36,7 @@ export default class FloatingButton extends React.Component<Props, State> {
   }
 
   render() {
-    const { active, customStyle, disabled, disabledShadow, label, onClick } = this.props;
+    const { active, customStyle, disabled, disabledShadow, label, onClick, tabButton } = this.props;
 
     if (disabled && this.state.mode !== BUTTON_MODE.BLURRED) {
       this.setState({ mode: BUTTON_MODE.BLURRED });
@@ -46,7 +47,7 @@ export default class FloatingButton extends React.Component<Props, State> {
         ...style,
         ...customStyle,
         boxShadow: disabledShadow ? 'none' : modeShadows[this.state.mode],
-        backgroundColor: !disabled && active ? COLOR.gray50 : COLOR.gray400,
+        backgroundColor: !disabled && active ? COLOR.gray100 : COLOR.gray400,
       }}
       onMouseDown={() => !disabled && this.setState({ mode: BUTTON_MODE.PRESSED })}
       onMouseUp={() => !disabled && this.setState({ mode: BUTTON_MODE.BLURRED })}
@@ -54,6 +55,15 @@ export default class FloatingButton extends React.Component<Props, State> {
       disabled={disabled}
     >
       {label}
+      {tabButton && !disabled && active && <div style={{
+        backgroundColor: COLOR.gray100,
+        bottom: '-3px',
+        height: '4px',
+        left: '0',
+        position: 'absolute',
+        right: '0',
+        zIndex: 1,
+      }}></div>}
     </button>;
   }
 }
