@@ -1,5 +1,11 @@
-import { TimedTrigger, TriggerTime, SkinCssTrigger } from '../lib/TriggerDataManager.types';
-import { isLayerTrigger } from './TriggerDataManager';
+import {
+  TRIGGER_ID,
+  TriggerDataLookup,
+  TimedTrigger,
+  TriggerTime,
+  SkinCssTrigger,
+} from '../lib/TriggerDataManager.types';
+import { TRIGGER_METADATA, isLayerTrigger } from './TriggerDataManager';
 
 /**
  * Validates the times in a list of triggers
@@ -90,4 +96,40 @@ export function retrieveTimestamp(index: number): TriggerTime {
   const seconds = Math.floor(index / 40) % 60;
   const minutes = Math.floor(index / 2400);
   return [minutes, seconds, frames];
+}
+
+/**
+ * Generates a Line Rider Web script from trigger data and a specific command id
+ * @param command Command to generate a script for
+ * @param triggerData Template information to use for the command
+ * @returns The script as a string
+ */
+export function generateScript(command: TRIGGER_ID, triggerData: TriggerDataLookup): string {
+  const currentData = triggerData[command];
+  const currentHeader = (TRIGGER_METADATA[command]).FUNC;
+
+  if (currentHeader === undefined) {
+    return '';
+  }
+
+  switch (command) {
+    case TRIGGER_ID.FOCUS:
+    case TRIGGER_ID.PAN:
+    case TRIGGER_ID.ZOOM:
+      return currentHeader
+          .replace('{0}', JSON.stringify(currentData.triggers))
+          .replace('{1}', String(currentData.smoothing))
+          .replace(' ', '');
+    case TRIGGER_ID.TIME:
+      return currentHeader
+          .replace('{0}', JSON.stringify(currentData.triggers))
+          .replace('{1}', String(currentData.interpolate))
+          .replace(' ', '');
+    case TRIGGER_ID.SKIN:
+      return currentHeader
+          .replace('{0}', JSON.stringify(formatSkins(currentData.triggers as SkinCssTrigger[])))
+          .replace(' ', '');
+    default:
+      return '';
+  }
 }
