@@ -27,6 +27,18 @@ declare global {
   }
 
   type RootState = ReturnType<typeof window.store.getState>
+
+  type JSONValue =
+    | string
+    | number
+    | boolean
+    | null
+    | JSONValue[]
+    | {[key: string]: JSONValue}
+
+  type JSONObject = Record<string, JSONValue>
+
+  interface JSONArray extends Array<JSONValue> {}
 }
 
 /**
