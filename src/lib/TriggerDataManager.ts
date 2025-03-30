@@ -1,4 +1,4 @@
-import { CONSTRAINT } from './constraints';
+import { CONSTRAINT } from "./constraints";
 import {
   GravityTrigger, TRIGGER_ID, TriggerDataLookup, TriggerMetadataLookup, HistoryItem, CameraFocusTrigger, PathValue,
   LayerTrigger,
@@ -7,97 +7,97 @@ import {
   CameraPanTrigger,
   ZoomTrigger,
   TimeRemapTrigger,
-} from './TriggerDataManager.types';
+} from "./TriggerDataManager.types";
 
 export const TRIGGER_METADATA: TriggerMetadataLookup = {
   [TRIGGER_ID.ZOOM]: {
-    DISPLAY_NAME: 'Zoom',
-    FUNC: 'getAutoZoom=createZoomer({0},{1});',
+    DISPLAY_NAME: "Zoom",
+    FUNC: "getAutoZoom=createZoomer({0},{1});",
     TEMPLATE: [[0, 0, 0], 1],
   },
   [TRIGGER_ID.PAN]: {
-    DISPLAY_NAME: 'Pan',
-    FUNC: 'getCamBounds=createBoundsPanner({0},{1});',
+    DISPLAY_NAME: "Pan",
+    FUNC: "getCamBounds=createBoundsPanner({0},{1});",
     TEMPLATE: [[0, 0, 0], { w: 0.4, h: 0.4, x: 0, y: 0 }],
   },
   [TRIGGER_ID.FOCUS]: {
-    DISPLAY_NAME: 'Focus',
-    FUNC: 'getCamFocus=createFocuser({0},{1});',
+    DISPLAY_NAME: "Focus",
+    FUNC: "getCamFocus=createFocuser({0},{1});",
     TEMPLATE: [[0, 0, 0], [1]],
   },
   [TRIGGER_ID.TIME]: {
-    DISPLAY_NAME: 'Speed',
-    FUNC: 'timeRemapper=createTimeRemapper({0},{1});',
+    DISPLAY_NAME: "Speed",
+    FUNC: "timeRemapper=createTimeRemapper({0},{1});",
     TEMPLATE: [[0, 0, 0], 1],
   },
   [TRIGGER_ID.SKIN]: {
-    DISPLAY_NAME: 'Skin',
-    FUNC: 'setCustomRiders({0});',
+    DISPLAY_NAME: "Skin",
+    FUNC: "setCustomRiders({0});",
     TEMPLATE: {
-      outline: { stroke: 'black' },
-      flag: { fill: '#00000066' },
-      skin: { fill: 'white' },
-      hair: { fill: 'black' },
-      fill: { fill: 'black' },
-      eye: { fill: 'black' },
-      sled: { fill: 'white' },
-      string: { stroke: 'black' },
-      armSleeve: { fill: 'black' },
-      armHand: { fill: 'white' },
-      legPants: { fill: 'black' },
-      legFoot: { fill: 'white' },
-      torso: { fill: 'white' },
-      hatTop: { fill: 'white' },
-      hatBottom: { stroke: 'black' },
-      hatBall: { fill: 'black' },
-      scarf1: { fill: '#FD4F38' },
-      scarf2: { fill: 'white' },
-      scarf3: { fill: '#06A725' },
-      scarf4: { fill: 'white' },
-      scarf5: { fill: '#3995FD' },
-      id_scarf0: { fill: 'white' },
-      id_scarf1: { fill: '#FD4F38' },
-      id_scarf2: { fill: 'white' },
-      id_scarf3: { fill: '#06A725' },
-      id_scarf4: { fill: 'white' },
-      id_scarf5: { fill: '#3995FD' },
+      outline: { stroke: "black" },
+      flag: { fill: "#00000066" },
+      skin: { fill: "white" },
+      hair: { fill: "black" },
+      fill: { fill: "black" },
+      eye: { fill: "black" },
+      sled: { fill: "white" },
+      string: { stroke: "black" },
+      armSleeve: { fill: "black" },
+      armHand: { fill: "white" },
+      legPants: { fill: "black" },
+      legFoot: { fill: "white" },
+      torso: { fill: "white" },
+      hatTop: { fill: "white" },
+      hatBottom: { stroke: "black" },
+      hatBall: { fill: "black" },
+      scarf1: { fill: "#FD4F38" },
+      scarf2: { fill: "white" },
+      scarf3: { fill: "#06A725" },
+      scarf4: { fill: "white" },
+      scarf5: { fill: "#3995FD" },
+      id_scarf0: { fill: "white" },
+      id_scarf1: { fill: "#FD4F38" },
+      id_scarf2: { fill: "white" },
+      id_scarf3: { fill: "#06A725" },
+      id_scarf4: { fill: "white" },
+      id_scarf5: { fill: "#3995FD" },
     },
   },
   [TRIGGER_ID.GRAVITY]: {
-    DISPLAY_NAME: 'Gravity',
+    DISPLAY_NAME: "Gravity",
     TEMPLATE: [[0, 0, 0], [{ x: 0, y: 0.175 }]],
   },
   [TRIGGER_ID.LAYER]: {
-    DISPLAY_NAME: 'Layer',
+    DISPLAY_NAME: "Layer",
     TEMPLATE: [[0, 0, 0], { id: 0, on: 1, off: 0, offset: 0 }],
   },
 };
 
-const isTrigger = (x: unknown): x is Trigger => typeof x === 'object' && x !== null;
-const isTimedTrigger = (x: unknown): x is TimedTrigger => isTrigger(x) && 'length' in x && x.length === 2;
+const isTrigger = (x: unknown): x is Trigger => typeof x === "object" && x !== null;
+const isTimedTrigger = (x: unknown): x is TimedTrigger => isTrigger(x) && "length" in x && x.length === 2;
 
 export const isTimeOrZoomTrigger = (x: unknown): x is (TimeRemapTrigger | ZoomTrigger) => (
-  isTimedTrigger(x) && x[1] !== null && typeof x[1] === 'number'
+  isTimedTrigger(x) && x[1] !== null && typeof x[1] === "number"
 );
 
 export const isPanTrigger = (x: unknown): x is CameraPanTrigger => (
-  isTimedTrigger(x) && x[1] !== null && typeof x[1] === 'object' && 'w' in x[1]
+  isTimedTrigger(x) && x[1] !== null && typeof x[1] === "object" && "w" in x[1]
 );
 
 export const isFocusTrigger = (x: unknown): x is CameraFocusTrigger => (
-  isTimedTrigger(x) && x[1] !== null && typeof x[1] === 'object' && 'length' in x[1] && (
-    x[1].length === 0 || x[1].length === 1 && typeof x[1][0] === 'number'
+  isTimedTrigger(x) && x[1] !== null && typeof x[1] === "object" && "length" in x[1] && (
+    x[1].length === 0 || x[1].length === 1 && typeof x[1][0] === "number"
   )
 );
 
 export const isGravityTrigger = (x: unknown): x is GravityTrigger => (
-  isTimedTrigger(x) && x[1] !== null && typeof x[1] === 'object' && 'length' in x[1] && (
-    x[1].length === 0 || x[1].length === 1 && typeof x[1][0] === 'object'
+  isTimedTrigger(x) && x[1] !== null && typeof x[1] === "object" && "length" in x[1] && (
+    x[1].length === 0 || x[1].length === 1 && typeof x[1][0] === "object"
   )
 );
 
 export const isLayerTrigger = (x: unknown): x is LayerTrigger => (
-  isTimedTrigger(x) && x[1] !== null && typeof x[1] === 'object' && 'id' in x[1]
+  isTimedTrigger(x) && x[1] !== null && typeof x[1] === "object" && "id" in x[1]
 );
 
 export class TriggerDataManager {

@@ -1,31 +1,31 @@
-import { TriggerDataManager, TRIGGER_METADATA, isLayerTrigger } from './lib/TriggerDataManager';
+import { TriggerDataManager, TRIGGER_METADATA, isLayerTrigger } from "./lib/TriggerDataManager";
 import {
   TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, GravityTrigger,
   SkinCssTrigger, CameraPanTrigger, TimeRemapTrigger,
   LayerTrigger,
   Trigger,
-} from './lib/TriggerDataManager.types';
-import { readJsScript } from './lib/io/read-js-script';
-import { readJsonScript } from './lib/io/read-json-script';
-import { getSetting, TEXT_SIZES } from './lib/settings-storage';
-import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from './lib/settings-storage.types';
-import { validateTimes, formatSkins, generateScript } from './lib/util';
-import { CONSTRAINT } from './lib/constraints';
-import { GLOBAL_STYLES } from './styles';
+} from "./lib/TriggerDataManager.types";
+import { readJsScript } from "./lib/io/read-js-script";
+import { readJsonScript } from "./lib/io/read-json-script";
+import { getSetting, TEXT_SIZES } from "./lib/settings-storage";
+import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from "./lib/settings-storage.types";
+import { validateTimes, formatSkins, generateScript } from "./lib/util";
+import { CONSTRAINT } from "./lib/constraints";
+import { GLOBAL_STYLES } from "./styles";
 
-import * as Actions from './lib/redux-actions';
-import * as Selectors from './lib/redux-selectors';
-import * as FICONS from './components/Icons';
+import * as Actions from "./lib/redux-actions";
+import * as Selectors from "./lib/redux-selectors";
+import * as FICONS from "./components/Icons";
 
-import FloatPicker from './components/FloatPicker';
-import IntPicker from './components/IntPicker';
-import IconButton from './components/IconButton';
-import SkinEditor from './pages/SkinEditor';
-import Settings from './pages/Settings';
-import Checkbox from './components/Checkbox';
-import { Constraint, CONSTRAINT_TYPE } from './lib/constraints.types';
-import Dropdown from './components/Dropdown';
-import FloatingButton from './components/FloatingButton';
+import FloatPicker from "./components/FloatPicker";
+import IntPicker from "./components/IntPicker";
+import IconButton from "./components/IconButton";
+import SkinEditor from "./pages/SkinEditor";
+import Settings from "./pages/Settings";
+import Checkbox from "./components/Checkbox";
+import { Constraint, CONSTRAINT_TYPE } from "./lib/constraints.types";
+import Dropdown from "./components/Dropdown";
+import FloatingButton from "./components/FloatingButton";
 
 const { store, React } = window;
 
@@ -135,7 +135,7 @@ export class App extends React.Component {
         .slice(0, index + 1)
         .concat([newTrigger])
         .concat(currentTriggers.slice(index + 1));
-    this.triggerManager.updateFromPath([activeTab, 'triggers'], newTriggers, activeTab);
+    this.triggerManager.updateFromPath([activeTab, "triggers"], newTriggers, activeTab);
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
 
     const newTriggerArray = this.triggerManager.data[activeTab].triggers;
@@ -161,7 +161,7 @@ export class App extends React.Component {
 
     const currentTriggers = this.triggerManager.data[activeTab].triggers;
     const newTriggers = currentTriggers.slice(0, index).concat(currentTriggers.slice(index + 1));
-    this.triggerManager.updateFromPath([activeTab, 'triggers'], newTriggers, activeTab);
+    this.triggerManager.updateFromPath([activeTab, "triggers"], newTriggers, activeTab);
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
 
     const newTriggerArray = this.triggerManager.data[activeTab].triggers;
@@ -171,17 +171,17 @@ export class App extends React.Component {
 
   onDownload(): void {
     const jsonString = JSON.stringify(this.triggerManager.data);
-    const a = document.createElement('a');
-    const data = 'data:text/json;charset=utf-8,' + encodeURIComponent(jsonString);
-    a.setAttribute('href', data);
-    a.setAttribute('download', Selectors.getTrackTitle(store.getState()) + '.script.json');
+    const a = document.createElement("a");
+    const data = "data:text/json;charset=utf-8," + encodeURIComponent(jsonString);
+    a.setAttribute("href", data);
+    a.setAttribute("download", Selectors.getTrackTitle(store.getState()) + ".script.json");
     a.click();
     a.remove();
   }
 
   onUpload(): void {
-    const triggerUploadInput = (document.getElementById('trigger-file-upload') as HTMLInputElement);
-    triggerUploadInput.value = '';
+    const triggerUploadInput = (document.getElementById("trigger-file-upload") as HTMLInputElement);
+    triggerUploadInput.value = "";
     triggerUploadInput.click();
   }
 
@@ -240,7 +240,7 @@ export class App extends React.Component {
     const { activeTab, invalidTimes } = this.state;
     try {
       if (!invalidTimes.every((invalid) => !invalid)) {
-        throw new Error('Triggers contain invalid times!');
+        throw new Error("Triggers contain invalid times!");
       }
 
       const currentData = this.triggerManager.data[activeTab];
@@ -297,7 +297,7 @@ export class App extends React.Component {
     const { activeTab, invalidTimes } = this.state;
     try {
       if (!invalidTimes.every((invalid) => !invalid)) {
-        throw new Error('Triggers contain invalid times!');
+        throw new Error("Triggers contain invalid times!");
       }
 
       const script = generateScript(activeTab, this.triggerManager.data as TriggerDataLookup);
@@ -343,7 +343,7 @@ export class App extends React.Component {
 
   onResetSkin(index: number): void {
     this.triggerManager.updateFromPath(
-        [TRIGGER_ID.SKIN, 'triggers', index.toString()],
+        [TRIGGER_ID.SKIN, "triggers", index.toString()],
         structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE),
         TRIGGER_ID.SKIN,
     );
@@ -379,7 +379,7 @@ export class App extends React.Component {
   }
 
   onHelp(): void {
-    window.open('https://github.com/Malizma333/line-rider-command-editor-userscript#readme');
+    window.open("https://github.com/Malizma333/line-rider-command-editor-userscript#readme");
   }
 
   onApplyViewport(newResolution: VIEWPORT_SETTING) {
@@ -397,7 +397,7 @@ export class App extends React.Component {
     const newZoomTriggers = zoomTriggers.map(
         (trigger) => [trigger[0], Math.round((trigger[1] + factor + Number.EPSILON) * 1e7) / 1e7],
     );
-    this.triggerManager.updateFromPath([TRIGGER_ID.ZOOM, 'triggers'], newZoomTriggers, TRIGGER_ID.ZOOM);
+    this.triggerManager.updateFromPath([TRIGGER_ID.ZOOM, "triggers"], newZoomTriggers, TRIGGER_ID.ZOOM);
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
   }
 
@@ -416,7 +416,7 @@ export class App extends React.Component {
   onCaptureCamera(index: number, triggerType: TRIGGER_ID) {
     switch (triggerType) {
       case TRIGGER_ID.ZOOM: {
-        this.onUpdateTrigger(Math.log2(Selectors.getEditorZoom(store.getState())), ['triggers', index.toString(), '1']);
+        this.onUpdateTrigger(Math.log2(Selectors.getEditorZoom(store.getState())), ["triggers", index.toString(), "1"]);
         break;
       }
       case TRIGGER_ID.PAN: {
@@ -426,8 +426,8 @@ export class App extends React.Component {
         const zoom = Selectors.getPlaybackZoom(store.getState());
         const playerIndex = Math.floor(Selectors.getPlayerIndex(store.getState()));
         const camera = store.getState().camera.playbackFollower.getCamera(track, { zoom, width, height }, playerIndex);
-        this.onUpdateTrigger((x - camera.x) * zoom / width, ['triggers', index.toString(), '1', 'x']);
-        this.onUpdateTrigger((y - camera.y) * zoom / height, ['triggers', index.toString(), '1', 'y']);
+        this.onUpdateTrigger((x - camera.x) * zoom / width, ["triggers", index.toString(), "1", "x"]);
+        this.onUpdateTrigger((y - camera.y) * zoom / height, ["triggers", index.toString(), "1", "y"]);
         break;
       }
       default: {
@@ -448,7 +448,7 @@ export class App extends React.Component {
       }
     }
 
-    return <div style={{ fontSize: TEXT_SIZES[this.state.fontSize], transition: 'font-size 0.125s ease-in-out' }}>
+    return <div style={{ fontSize: TEXT_SIZES[this.state.fontSize], transition: "font-size 0.125s ease-in-out" }}>
       {this.renderActions()}
       {this.state.active && <div style={GLOBAL_STYLES.mainContent}>
         {this.state.settingsActive ?
@@ -459,7 +459,7 @@ export class App extends React.Component {
               <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}></SkinEditor> :
               <>
                 {this.renderWindowHead()}
-                {<div style={{ ...GLOBAL_STYLES.windowBody, paddingBottom: '10px' }}>
+                {<div style={{ ...GLOBAL_STYLES.windowBody, paddingBottom: "10px" }}>
                   {computedTriggers.map(
                       (computeData) => this.renderTrigger(computeData[0], computeData[1], computeData[2]),
                   )}
@@ -479,7 +479,7 @@ export class App extends React.Component {
         icon={FICONS.MAXIMIZE}
       ></IconButton>
     </div> : <div style={GLOBAL_STYLES.actionContainer}>
-      <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: 'start' }}>
+      <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: "start" }}>
         <IconButton
           title="Minimize"
           onClick={() => this.onToggleActive()}
@@ -514,7 +514,7 @@ export class App extends React.Component {
           disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
         ></IconButton>
       </div>
-      <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: 'end' }}>
+      <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: "end" }}>
         <IconButton
           title="Undo"
           onClick={() => this.onUndo()}
@@ -540,7 +540,7 @@ export class App extends React.Component {
       </div>
       <input
         id="trigger-file-upload"
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
         type="file"
         accept=".json"
         onChange={(e: React.ChangeEvent) => this.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])}
@@ -576,19 +576,19 @@ export class App extends React.Component {
     return <div style={GLOBAL_STYLES.windowHead}>
       {data.id === TRIGGER_ID.ZOOM &&
         <>
-          {this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)}
+          {this.renderTriggerProp("Smoothing", data.smoothing || 0, ["smoothing"], CONSTRAINT.SMOOTH)}
         </>
       }
       {data.id === TRIGGER_ID.PAN &&
         <>
-          {this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)}
+          {this.renderTriggerProp("Smoothing", data.smoothing || 0, ["smoothing"], CONSTRAINT.SMOOTH)}
         </>
       }
       {data.id === TRIGGER_ID.FOCUS &&
         <>
-          {this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)}
+          {this.renderTriggerProp("Smoothing", data.smoothing || 0, ["smoothing"], CONSTRAINT.SMOOTH)}
           <Dropdown
-            customStyle={{ margin: '0em .25em' }}
+            customStyle={{ margin: "0em .25em" }}
             value={this.state.focusDropdown}
             mapping={[...Array(this.state.numRiders).keys()]}
             label={(_, i) => `Rider ${i + 1}`}
@@ -598,13 +598,13 @@ export class App extends React.Component {
       }
       {data.id === TRIGGER_ID.TIME &&
         <>
-          {this.renderTriggerProp('Smoothing', data.interpolate || false, ['interpolate'], CONSTRAINT.INTERPOLATE)}
+          {this.renderTriggerProp("Smoothing", data.interpolate || false, ["interpolate"], CONSTRAINT.INTERPOLATE)}
         </>
       }
       {data.id === TRIGGER_ID.GRAVITY &&
         <>
           <Dropdown
-            customStyle={{ margin: '0em .25em' }}
+            customStyle={{ margin: "0em .25em" }}
             value={this.state.gravityDropdown}
             mapping={[...Array(this.state.numRiders).keys()]}
             label={(_, i) => `Rider ${i + 1}`}
@@ -615,13 +615,13 @@ export class App extends React.Component {
       {data.id === TRIGGER_ID.LAYER &&
         <>
           <Dropdown
-            customStyle={{ margin: '0em .25em' }}
+            customStyle={{ margin: "0em .25em" }}
             value={this.state.layerDropdown}
             mapping={this.state.layerMap}
             label={(e) => `Layer ${e}`}
             onChange={(e: number) => this.onChangeLayerDD(e)}
           ></Dropdown>
-          {this.renderTriggerProp('60 FPS', data.interpolate || false, ['interpolate'], CONSTRAINT.INTERPOLATE)}
+          {this.renderTriggerProp("60 FPS", data.interpolate || false, ["interpolate"], CONSTRAINT.INTERPOLATE)}
         </>
       }
     </div>;
@@ -632,7 +632,7 @@ export class App extends React.Component {
 
     return <div style={{
       ...GLOBAL_STYLES.triggerContainer,
-      fontSize: '1.5em',
+      fontSize: "1.5em",
     }}>
       <div style={GLOBAL_STYLES.triggerActionContainer}>
         {(data.id === TRIGGER_ID.ZOOM || data.id === TRIGGER_ID.PAN) && (
@@ -660,7 +660,7 @@ export class App extends React.Component {
       <div style={GLOBAL_STYLES.createTriggerContainer}>
         <FloatingButton
           onClick={() => this.onCreateTrigger(realIndex)}
-          customStyle={{ fontSize: '0.75em' }}
+          customStyle={{ fontSize: "0.75em" }}
           label="+"
           active
         ></FloatingButton>
@@ -670,7 +670,7 @@ export class App extends React.Component {
 
   renderTimeInput(data: TriggerTime, realIndex: number, index: number) {
     const cProps = [CONSTRAINT.MINUTE, CONSTRAINT.SECOND, CONSTRAINT.FRAME];
-    const labels = ['Time', ':', ':'];
+    const labels = ["Time", ":", ":"];
 
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
       {...data.map((timeValue, timeIndex) => {
@@ -678,9 +678,9 @@ export class App extends React.Component {
           {this.renderTriggerProp(
               labels[timeIndex],
               timeValue,
-              ['triggers', realIndex.toString(), '0', timeIndex.toString()],
+              ["triggers", realIndex.toString(), "0", timeIndex.toString()],
               cProps[timeIndex],
-              this.state.invalidTimes[index] ? 'red' : GLOBAL_STYLES.root.color,
+              this.state.invalidTimes[index] ? "red" : GLOBAL_STYLES.root.color,
           )}
         </div>;
       })}
@@ -690,9 +690,9 @@ export class App extends React.Component {
   renderZoomTrigger(data: ZoomTrigger, index: number) {
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
       {this.renderTriggerProp(
-          'Zoom To',
+          "Zoom To",
           data[1],
-          ['triggers', index.toString(), '1'],
+          ["triggers", index.toString(), "1"],
           CONSTRAINT.ZOOM,
       )}
     </div>;
@@ -700,17 +700,17 @@ export class App extends React.Component {
 
   renderPanTrigger(data: CameraPanTrigger, index: number) {
     const cProps = [CONSTRAINT.PAN_WIDTH, CONSTRAINT.PAN_HEIGHT, CONSTRAINT.PAN_X, CONSTRAINT.PAN_Y];
-    const labels = ['Width', 'Height', 'Offset X', 'Y'];
+    const labels = ["Width", "Height", "Offset X", "Y"];
 
     return <div>
-      {...[['w', 'h'], ['x', 'y']].map((pair, pairIndex) => {
-        return <div style={{ display: 'flex', flexDirection: 'row' }}>
+      {...[["w", "h"], ["x", "y"]].map((pair, pairIndex) => {
+        return <div style={{ display: "flex", flexDirection: "row" }}>
           {...pair.map((prop, propIndex) => {
             return <div style={GLOBAL_STYLES.triggerPropContainer}>
               {this.renderTriggerProp(
                   labels[propIndex + 2 * pairIndex],
-                  data[1][prop as 'w' | 'h' | 'x' | 'y'],
-                  ['triggers', index.toString(), '1', prop],
+                  data[1][prop as "w" | "h" | "x" | "y"],
+                  ["triggers", index.toString(), "1", prop],
                   cProps[propIndex + 2 * pairIndex],
               )}
             </div>;
@@ -725,9 +725,9 @@ export class App extends React.Component {
 
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
       {this.renderTriggerProp(
-          'Weight',
+          "Weight",
           data[1][dropdownIndex],
-          ['triggers', index.toString(), '1', dropdownIndex.toString()],
+          ["triggers", index.toString(), "1", dropdownIndex.toString()],
           CONSTRAINT.FOCUS_WEIGHT,
       )}
     </div>;
@@ -736,9 +736,9 @@ export class App extends React.Component {
   renderRemapTrigger(data: TimeRemapTrigger, index: number) {
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
       {this.renderTriggerProp(
-          'Speed',
+          "Speed",
           data[1],
-          ['triggers', index.toString(), '1'],
+          ["triggers", index.toString(), "1"],
           CONSTRAINT.TIME_SPEED,
       )}
     </div>;
@@ -747,15 +747,15 @@ export class App extends React.Component {
   renderGravityTrigger(data: GravityTrigger, index: number) {
     const dropdownIndex = this.state.gravityDropdown;
     const cProps = [CONSTRAINT.GRAVITY_X, CONSTRAINT.GRAVITY_Y];
-    const labels = ['X', 'Y'];
+    const labels = ["X", "Y"];
 
-    return <div style={{ display: 'flex', flexDirection: 'row' }}>
-      {...['x', 'y'].map((prop, propIndex) => {
+    return <div style={{ display: "flex", flexDirection: "row" }}>
+      {...["x", "y"].map((prop, propIndex) => {
         return <div style={GLOBAL_STYLES.triggerPropContainer}>
           {this.renderTriggerProp(
               labels[propIndex],
-              data[1][dropdownIndex][prop as 'x' | 'y'],
-              ['triggers', index.toString(), '1', dropdownIndex.toString(), prop],
+              data[1][dropdownIndex][prop as "x" | "y"],
+              ["triggers", index.toString(), "1", dropdownIndex.toString(), prop],
               cProps[propIndex],
           )}
         </div>;
@@ -765,15 +765,15 @@ export class App extends React.Component {
 
   renderLayerTrigger(data: LayerTrigger, index: number) {
     const cProps = [CONSTRAINT.LAYER_ON, CONSTRAINT.LAYER_OFF, CONSTRAINT.LAYER_OFFSET];
-    const labels = ['ON', 'OFF', 'OFFSET'];
+    const labels = ["ON", "OFF", "OFFSET"];
 
-    return <div style={{ display: 'flex', flexDirection: 'row' }}>
-      {...['on', 'off', 'offset'].map((prop, propIndex) => {
+    return <div style={{ display: "flex", flexDirection: "row" }}>
+      {...["on", "off", "offset"].map((prop, propIndex) => {
         return <div style={GLOBAL_STYLES.triggerPropContainer}>
           {this.renderTriggerProp(
               labels[propIndex],
-              data[1][prop as 'on' | 'off' | 'offset'],
-              ['triggers', index.toString(), '1', prop],
+              data[1][prop as "on" | "off" | "offset"],
+              ["triggers", index.toString(), "1", prop],
               cProps[propIndex],
           )}
         </div>;
@@ -791,18 +791,18 @@ export class App extends React.Component {
     const NumberPicker = constraint.TYPE === CONSTRAINT_TYPE.FLOAT ? FloatPicker : IntPicker;
 
     return <div style={GLOBAL_STYLES.triggerRowContainer}>
-      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={propPath.join('_')}>
+      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={propPath.join("_")}>
         {labelText}
       </label>
       {constraint.TYPE === CONSTRAINT_TYPE.BOOL ?
       <Checkbox
         customStyle={GLOBAL_STYLES.spacedProperty}
-        id={propPath.join('_')}
+        id={propPath.join("_")}
         value={value as boolean}
         onCheck={() => this.onUpdateTrigger(!value, propPath)}
       ></Checkbox> : <NumberPicker
         customStyle={{ ...GLOBAL_STYLES.spacedProperty, color: color || GLOBAL_STYLES.root.color }}
-        id={propPath.join('_')}
+        id={propPath.join("_")}
         value={value as number | string}
         min={constraint.MIN}
         max={constraint.MAX}

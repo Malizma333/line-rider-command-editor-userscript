@@ -75,7 +75,7 @@ const rules = {
   'operator-linebreak': [2, 'after'],
   'padded-blocks': [2, 'never'],
   'quote-props': [2, 'consistent'],
-  'quotes': [2, 'single', {allowTemplateLiterals: true}],
+  'quotes': [2, 'double', {allowTemplateLiterals: true}],
   'semi': 2,
   'semi-spacing': 2,
   'space-before-blocks': 2,
@@ -98,6 +98,7 @@ const rules = {
   'rest-spread-spacing': 2,
   'yield-star-spacing': [2, 'after'],
   '@typescript-eslint/no-empty-object-type': [2, { allowInterfaces: 'with-single-extends' }],
+  'linebreak-style': [2, 'unix'],
 };
 
 export default tseslint.config(
@@ -113,9 +114,7 @@ export default tseslint.config(
         myCustomGlobal: "readonly"
       }
     },
-    rules
-  },
-  {
+    rules,
     ignores: ["command-editor.min.js", "**/*.config.*"]
   }
 );

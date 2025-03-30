@@ -20,13 +20,13 @@ export type TimedTrigger =
 export type Trigger = TimedTrigger | SkinCssTrigger
 
 export enum TRIGGER_ID {
-  ZOOM = 'ZOOM',
-  PAN = 'CAMERA_PAN',
-  FOCUS = 'CAMERA_FOCUS',
-  TIME = 'TIME_REMAP',
-  SKIN = 'CUSTOM_SKIN',
-  GRAVITY = 'GRAVITY',
-  LAYER = 'LAYER'
+  ZOOM = "ZOOM",
+  PAN = "CAMERA_PAN",
+  FOCUS = "CAMERA_FOCUS",
+  TIME = "TIME_REMAP",
+  SKIN = "CUSTOM_SKIN",
+  GRAVITY = "GRAVITY",
+  LAYER = "LAYER"
 }
 
 interface TriggerData {

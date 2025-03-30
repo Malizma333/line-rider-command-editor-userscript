@@ -1,4 +1,4 @@
-import { COLOR, THEME } from '../styles';
+import { COLOR, THEME } from "../styles";
 const { React } = window;
 
 enum BUTTON_MODE { BLURRED, PRESSED }
@@ -17,13 +17,13 @@ interface State { mode: BUTTON_MODE }
 
 const style: React.CSSProperties = {
   border: THEME.primaryBorder,
-  borderRadius: '5px',
-  position: 'relative',
+  borderRadius: "5px",
+  position: "relative",
 };
 
 const modeShadows = {
-  [BUTTON_MODE.BLURRED]: '0px 1px 4px -1px #000',
-  [BUTTON_MODE.PRESSED]: 'none',
+  [BUTTON_MODE.BLURRED]: "0px 1px 4px -1px #000",
+  [BUTTON_MODE.PRESSED]: "none",
 };
 
 export default class FloatingButton extends React.Component<Props, State> {
@@ -46,7 +46,7 @@ export default class FloatingButton extends React.Component<Props, State> {
       style={{
         ...style,
         ...customStyle,
-        boxShadow: disabledShadow ? 'none' : modeShadows[this.state.mode],
+        boxShadow: disabledShadow ? "none" : modeShadows[this.state.mode],
         backgroundColor: !disabled && active ? COLOR.gray100 : COLOR.gray400,
       }}
       onMouseDown={() => !disabled && this.setState({ mode: BUTTON_MODE.PRESSED })}
@@ -57,11 +57,11 @@ export default class FloatingButton extends React.Component<Props, State> {
       {label}
       {tabButton && !disabled && active && <div style={{
         backgroundColor: COLOR.gray100,
-        bottom: '-3px',
-        height: '4px',
-        left: '0',
-        position: 'absolute',
-        right: '0',
+        bottom: "-3px",
+        height: "4px",
+        left: "0",
+        position: "absolute",
+        right: "0",
         zIndex: 1,
       }}></div>}
     </button>;

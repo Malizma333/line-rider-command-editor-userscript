@@ -1,50 +1,50 @@
-import { COLOR, THEME } from '../styles';
-import FloatingButton from '../components/FloatingButton';
-import IconButton from '../components/IconButton';
-import * as FICONS from '../components/Icons';
-import { App } from '../App';
-import { FONT_SIZE_SETTING, VIEWPORT_SETTING, SETTINGS_KEY } from '../lib/settings-storage.types';
-import { getSetting, saveSetting } from '../lib/settings-storage';
+import { COLOR, THEME } from "../styles";
+import FloatingButton from "../components/FloatingButton";
+import IconButton from "../components/IconButton";
+import * as FICONS from "../components/Icons";
+import { App } from "../App";
+import { FONT_SIZE_SETTING, VIEWPORT_SETTING, SETTINGS_KEY } from "../lib/settings-storage.types";
+import { getSetting, saveSetting } from "../lib/settings-storage";
 const { React } = window;
 
 const styles = {
   window: {
     backgroundColor: COLOR.gray100,
     border: THEME.primaryBorder,
-    boxShadow: '0px 4px 8px -4px #000',
-    display: 'flex',
-    flexDirection: 'column',
+    boxShadow: "0px 4px 8px -4px #000",
+    display: "flex",
+    flexDirection: "column",
     flex: 9,
-    position: 'relative',
-    width: '100%',
+    position: "relative",
+    width: "100%",
   },
   header: {
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'center',
-    minHeight: '3em',
-    margin: '10px',
-    position: 'relative',
+    alignItems: "center",
+    display: "flex",
+    justifyContent: "center",
+    minHeight: "3em",
+    margin: "10px",
+    position: "relative",
   },
   applyButton: {
-    left: '0px',
-    position: 'absolute',
+    left: "0px",
+    position: "absolute",
   },
   row: {
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'row',
-    height: '1.5em',
-    minHeight: '3em',
-    padding: '1em',
+    alignItems: "center",
+    display: "flex",
+    flexDirection: "row",
+    height: "1.5em",
+    minHeight: "3em",
+    padding: "1em",
   },
   label: {
-    position: 'absolute',
-    left: '5px',
+    position: "absolute",
+    left: "5px",
   },
   parameter: {
-    position: 'absolute',
-    right: '5px',
+    position: "absolute",
+    right: "5px",
   },
 } satisfies Record<string, React.CSSProperties>;
 
@@ -56,11 +56,11 @@ const styles = {
  * @returns Settings header component at top of settings page
  */
 function SettingsHeader({ root, settings }: {root: App, settings: Settings}) {
-  return <div style={{ ...styles.header, fontSize: '1.5em' }}>
+  return <div style={{ ...styles.header, fontSize: "1.5em" }}>
     <IconButton
       onClick={() => root.onToggleSettings()}
       icon={FICONS.X}
-      customStyle={{ position: 'absolute', right: '0px' }}
+      customStyle={{ position: "absolute", right: "0px" }}
       title='Close'
     ></IconButton>
     Settings
@@ -76,15 +76,15 @@ function SettingsHeader({ root, settings }: {root: App, settings: Settings}) {
 
 const LABEL_MAP = {
   [SETTINGS_KEY.FONT_SIZE]: [
-    [FONT_SIZE_SETTING.SMALL, 'Small'],
-    [FONT_SIZE_SETTING.MEDIUM, 'Medium'],
-    [FONT_SIZE_SETTING.LARGE, 'Large'],
+    [FONT_SIZE_SETTING.SMALL, "Small"],
+    [FONT_SIZE_SETTING.MEDIUM, "Medium"],
+    [FONT_SIZE_SETTING.LARGE, "Large"],
   ],
   [SETTINGS_KEY.VIEWPORT]: [
-    [VIEWPORT_SETTING.HD, '720p'],
-    [VIEWPORT_SETTING.FHD, '1080p'],
-    [VIEWPORT_SETTING.QHD, '1440p'],
-    [VIEWPORT_SETTING.UHD, '4K'],
+    [VIEWPORT_SETTING.HD, "720p"],
+    [VIEWPORT_SETTING.FHD, "1080p"],
+    [VIEWPORT_SETTING.QHD, "1440p"],
+    [VIEWPORT_SETTING.UHD, "4K"],
   ],
 } as const;
 
@@ -109,7 +109,7 @@ function SettingsSection(
     <div style={styles.parameter}>
       {...LABEL_MAP[lkey].map(([target, label]) => {
         return <FloatingButton
-          customStyle={{ margin: '5px' }}
+          customStyle={{ margin: "5px" }}
           active={current === target}
           label={label}
           onClick={() => onClick(target)}
@@ -181,13 +181,13 @@ export default class Settings extends React.Component<Props, State> {
         <SettingsSection
           current={this.state.fontSize}
           onClick={(e: number) => this.onChangeFontSize(e)}
-          title={'Font Sizes'}
+          title={"Font Sizes"}
           lkey={SETTINGS_KEY.FONT_SIZE}
         ></SettingsSection>
         <SettingsSection
           current={this.state.resolution}
           onClick={(e: number) => this.onChangeViewport(e)}
-          title={'Viewport'}
+          title={"Viewport"}
           lkey={SETTINGS_KEY.VIEWPORT}
         ></SettingsSection>
       </div>

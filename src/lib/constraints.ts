@@ -1,4 +1,4 @@
-import { CONSTRAINT_TYPE } from './constraints.types';
+import { CONSTRAINT_TYPE } from "./constraints.types";
 
 export const CONSTRAINT = {
   INTERPOLATE: { DEFAULT: false, TYPE: CONSTRAINT_TYPE.BOOL },

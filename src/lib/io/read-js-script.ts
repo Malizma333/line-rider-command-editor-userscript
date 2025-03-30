@@ -1,9 +1,9 @@
-import { TriggerDataManager, TRIGGER_METADATA } from '../TriggerDataManager';
+import { TriggerDataManager, TRIGGER_METADATA } from "../TriggerDataManager";
 import {
   TRIGGER_ID, TriggerDataLookup, TimedTrigger, SkinCssTrigger,
-} from '../TriggerDataManager.types';
-import { CONSTRAINT } from '../constraints';
-import { retrieveTimestamp } from '../util';
+} from "../TriggerDataManager.types";
+import { CONSTRAINT } from "../constraints";
+import { retrieveTimestamp } from "../util";
 
 /**
  * Parses text from the script field into a trigger data object, reverting to the original value if an error occurs
@@ -21,30 +21,30 @@ export function readJsScript(scriptText: string, currentTriggerData: TriggerData
    */
   function parseCommand(commandId: TRIGGER_ID, scriptSection: string): void {
     if (commandId === TRIGGER_ID.GRAVITY) {
-      throw new Error('Gravity parsing not supported!');
+      throw new Error("Gravity parsing not supported!");
     }
 
     if (commandId === TRIGGER_ID.LAYER) {
-      throw new Error('Layer parsing not supported!');
+      throw new Error("Layer parsing not supported!");
     }
 
     if (TRIGGER_METADATA[commandId].FUNC === undefined) {
-      throw new Error('Function undefined!');
+      throw new Error("Function undefined!");
     }
 
-    const currentHeader = TRIGGER_METADATA[commandId].FUNC.split('(')[0];
+    const currentHeader = TRIGGER_METADATA[commandId].FUNC.split("(")[0];
     const currentHeaderIndex = scriptSection.indexOf(currentHeader);
 
     if (currentHeaderIndex === -1) {
-      throw new Error('Command header not found!');
+      throw new Error("Command header not found!");
     }
 
     const startIndex = currentHeaderIndex + currentHeader.length + 1;
     let endIndex = startIndex;
 
     for (let i = 1; i > 0 || endIndex >= scriptSection.length; endIndex += 1) {
-      if (scriptSection.charAt(endIndex + 1) === '(') i += 1;
-      if (scriptSection.charAt(endIndex + 1) === ')') i -= 1;
+      if (scriptSection.charAt(endIndex + 1) === "(") i += 1;
+      if (scriptSection.charAt(endIndex + 1) === ")") i -= 1;
     }
 
     const parameterText = `[${
@@ -86,7 +86,7 @@ export function readJsScript(scriptText: string, currentTriggerData: TriggerData
       triggers.push(structuredClone(commandArray[i]));
 
       const timeProp = commandArray[i][0] as number | number[];
-      if (typeof timeProp === 'number') {
+      if (typeof timeProp === "number") {
         const index = timeProp;
         triggers[i][0] = retrieveTimestamp(index);
       } else if (timeProp.length === 1) {
@@ -122,7 +122,7 @@ export function readJsScript(scriptText: string, currentTriggerData: TriggerData
       if (smoothingValue === true || smoothingValue === false) {
         triggerData[commandId].interpolate = smoothingValue;
       } else {
-        throw new Error('Invalid boolean!');
+        throw new Error("Invalid boolean!");
       }
     } else {
       const constraints = CONSTRAINT.SMOOTH;
@@ -132,8 +132,8 @@ export function readJsScript(scriptText: string, currentTriggerData: TriggerData
         return;
       }
 
-      if (typeof smoothingValue !== 'number') {
-        throw new Error('Invalid integer!');
+      if (typeof smoothingValue !== "number") {
+        throw new Error("Invalid integer!");
       }
 
       if (smoothingValue > constraints.MAX) {
@@ -159,12 +159,12 @@ export function readJsScript(scriptText: string, currentTriggerData: TriggerData
       let zeroIndex = 0;
 
       for (let i = 0; i < skinCSS.length; i += 1) {
-        if (skinCSS.charAt(i) === '{') depth += 1;
-        if (skinCSS.charAt(i) === '}') {
+        if (skinCSS.charAt(i) === "{") depth += 1;
+        if (skinCSS.charAt(i) === "}") {
           depth -= 1;
           if (depth === 0) {
             parseSkinProp(
-                skinCSS.substring(zeroIndex, i + 1).replace(/\s/g, ''),
+                skinCSS.substring(zeroIndex, i + 1).replace(/\s/g, ""),
                 skinIndex,
             );
             zeroIndex = i + 1;
@@ -190,41 +190,41 @@ export function readJsScript(scriptText: string, currentTriggerData: TriggerData
     const wordRegex = /(['"])?([#]?[a-z0-9A-Z_-]+)(['"])?/g;
     const skinTriggers = triggerData[TRIGGER_ID.SKIN].triggers as SkinCssTrigger[];
     const cssPropKeywords = {
-      outline: '.outline',
-      flag: '.flag',
-      skin: '.skin',
-      hair: '.hair',
-      fill: '.fill',
-      eye: '#eye',
-      sled: '.sled',
-      string: '#string',
-      armSleeve: '.arm.sleeve',
-      armHand: '.arm.hand',
-      legPants: '.leg.pants',
-      legFoot: '.leg.foot',
-      torso: '.torso',
-      hatTop: '.hat.top',
-      hatBottom: '.hat.bottom',
-      hatBall: '.hat.ball',
-      scarf1: '.scarf1',
-      scarf2: '.scarf2',
-      scarf3: '.scarf3',
-      scarf4: '.scarf4',
-      scarf5: '.scarf5',
-      id_scarf0: '#scarf0',
-      id_scarf1: '#scarf1',
-      id_scarf2: '#scarf2',
-      id_scarf3: '#scarf3',
-      id_scarf4: '#scarf4',
-      id_scarf5: '#scarf5',
+      outline: ".outline",
+      flag: ".flag",
+      skin: ".skin",
+      hair: ".hair",
+      fill: ".fill",
+      eye: "#eye",
+      sled: ".sled",
+      string: "#string",
+      armSleeve: ".arm.sleeve",
+      armHand: ".arm.hand",
+      legPants: ".leg.pants",
+      legFoot: ".leg.foot",
+      torso: ".torso",
+      hatTop: ".hat.top",
+      hatBottom: ".hat.bottom",
+      hatBall: ".hat.ball",
+      scarf1: ".scarf1",
+      scarf2: ".scarf2",
+      scarf3: ".scarf3",
+      scarf4: ".scarf4",
+      scarf5: ".scarf5",
+      id_scarf0: "#scarf0",
+      id_scarf1: "#scarf1",
+      id_scarf2: "#scarf2",
+      id_scarf3: "#scarf3",
+      id_scarf4: "#scarf4",
+      id_scarf5: "#scarf5",
     };
 
     Object.entries(cssPropKeywords).forEach(([propName, cssSelector]) => {
       if (!cssString.startsWith(cssSelector)) return;
       const styleData = JSON.parse(cssString
           .substring(cssSelector.length)
-          .replace(wordRegex, '"$2"')
-          .replace(';', ','));
+          .replace(wordRegex, "\"$2\"")
+          .replace(";", ","));
 
       if (styleData.fill !== undefined) {
         skinTriggers[skinIndex][propName].fill = styleData.fill;
@@ -246,10 +246,10 @@ export function readJsScript(scriptText: string, currentTriggerData: TriggerData
    */
   function removeLeadingZeroes(script: string, commandId: TRIGGER_ID): string {
     if (commandId === TRIGGER_ID.SKIN) return script;
-    return script.replace(/([^\d.+-])0+(\d+)/g, '$1$2');
+    return script.replace(/([^\d.+-])0+(\d+)/g, "$1$2");
   }
 
-  const trimmedScript = scriptText.replace(/\s/g, '');
+  const trimmedScript = scriptText.replace(/\s/g, "");
 
   Object.keys(TRIGGER_METADATA).forEach((commandId: string) => {
     try {

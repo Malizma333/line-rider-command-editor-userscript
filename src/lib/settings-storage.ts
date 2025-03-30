@@ -1,6 +1,6 @@
-import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from './settings-storage.types';
+import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from "./settings-storage.types";
 
-const LOCAL_STORAGE_PREFIX = 'CMD_EDITOR_MOD_';
+const LOCAL_STORAGE_PREFIX = "CMD_EDITOR_MOD_";
 
 const DEFAULTS = {
   [SETTINGS_KEY.FONT_SIZE]: FONT_SIZE_SETTING.MEDIUM,
@@ -8,9 +8,9 @@ const DEFAULTS = {
 } as const;
 
 export const TEXT_SIZES = {
-  [FONT_SIZE_SETTING.SMALL]: '12px',
-  [FONT_SIZE_SETTING.MEDIUM]: '14px',
-  [FONT_SIZE_SETTING.LARGE]: '16px',
+  [FONT_SIZE_SETTING.SMALL]: "12px",
+  [FONT_SIZE_SETTING.MEDIUM]: "14px",
+  [FONT_SIZE_SETTING.LARGE]: "16px",
 } as const;
 
 /**

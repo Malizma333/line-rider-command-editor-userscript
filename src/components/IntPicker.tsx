@@ -1,4 +1,4 @@
-import { COLOR, THEME } from '../styles';
+import { COLOR, THEME } from "../styles";
 const { React } = window;
 
 /**
@@ -23,7 +23,7 @@ function clampInt(
     return Math.max(min, Math.min(max, parsedValue));
   }
 
-  if (newValue === '-' || newValue === '') {
+  if (newValue === "-" || newValue === "") {
     return newValue;
   }
 
@@ -33,12 +33,12 @@ function clampInt(
 const style: React.CSSProperties = {
   backgroundColor: COLOR.gray50,
   border: THEME.primaryBorder,
-  borderRadius: '5px',
-  boxShadow: 'inset 0px 1px 4px -1px #000',
-  height: '1.25em',
-  padding: '5px',
-  textAlign: 'right',
-  width: '3em',
+  borderRadius: "5px",
+  boxShadow: "inset 0px 1px 4px -1px #000",
+  height: "1.25em",
+  padding: "5px",
+  textAlign: "right",
+  width: "3em",
 };
 
 /**

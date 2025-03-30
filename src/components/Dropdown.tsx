@@ -1,21 +1,21 @@
-import { COLOR, THEME } from '../styles';
+import { COLOR, THEME } from "../styles";
 const { React } = window;
 
 const styles = {
   head: {
     backgroundColor: COLOR.gray50,
     border: THEME.primaryBorder,
-    borderRadius: '5px',
-    boxShadow: '0px 1px 4px -1px #000',
-    cursor: 'pointer',
-    height: '1.5em',
-    textAlign: 'right',
+    borderRadius: "5px",
+    boxShadow: "0px 1px 4px -1px #000",
+    cursor: "pointer",
+    height: "1.5em",
+    textAlign: "right",
   },
   option: {
     backgroundColor: COLOR.gray50,
     border: THEME.primaryBorder,
-    height: '1.25em',
-    textAlign: 'center',
+    height: "1.25em",
+    textAlign: "center",
   },
 } satisfies Record<string, React.CSSProperties>;
 

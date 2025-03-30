@@ -1,9 +1,9 @@
-import { TriggerDataManager, TRIGGER_METADATA } from '../TriggerDataManager';
+import { TriggerDataManager, TRIGGER_METADATA } from "../TriggerDataManager";
 import {
   TRIGGER_ID, TriggerDataLookup, TimedTrigger, GravityTrigger, SkinCssTrigger,
-} from '../TriggerDataManager.types';
-import { CONSTRAINT } from '../constraints';
-import { retrieveTimestamp } from '../util';
+} from "../TriggerDataManager.types";
+import { CONSTRAINT } from "../constraints";
+import { retrieveTimestamp } from "../util";
 
 /**
  * Parses file from the script file format into a trigger data object, reverting to the original
@@ -20,7 +20,7 @@ export function readJsonScript(
 
   let version = 0;
 
-  if (typeof fileObject.version === 'number') {
+  if (typeof fileObject.version === "number") {
     if (fileObject.version === 0) {
       version = 0;
     } else if (fileObject.version === 1) {
@@ -68,7 +68,7 @@ function parseV0Command(commandId: TRIGGER_ID, fileObject: JSONObject, triggerDa
     throw new Error(`Command ${commandId} not found!`);
   }
 
-  if (typeof fileObject[commandId] !== 'object') {
+  if (typeof fileObject[commandId] !== "object") {
     throw new Error(`Invalid format for ${commandId}!`);
   }
 
@@ -80,19 +80,19 @@ function parseV0Command(commandId: TRIGGER_ID, fileObject: JSONObject, triggerDa
     case TRIGGER_ID.ZOOM:
     case TRIGGER_ID.PAN:
     case TRIGGER_ID.FOCUS:
-      parseTriggers(commandId, fileObject[commandId]['triggers']);
-      parseSmoothing(commandId, fileObject[commandId]['smoothing']);
+      parseTriggers(commandId, fileObject[commandId]["triggers"]);
+      parseSmoothing(commandId, fileObject[commandId]["smoothing"]);
       break;
     case TRIGGER_ID.TIME:
     case TRIGGER_ID.LAYER:
-      parseTriggers(commandId, fileObject[commandId]['triggers']);
-      parseSmoothing(commandId, fileObject[commandId]['interpolate']);
+      parseTriggers(commandId, fileObject[commandId]["triggers"]);
+      parseSmoothing(commandId, fileObject[commandId]["interpolate"]);
       break;
     case TRIGGER_ID.SKIN:
-      parseSkinTriggers(fileObject[commandId]['triggers']);
+      parseSkinTriggers(fileObject[commandId]["triggers"]);
       break;
     case TRIGGER_ID.GRAVITY:
-      parseTriggers(commandId, fileObject[commandId]['triggers']);
+      parseTriggers(commandId, fileObject[commandId]["triggers"]);
       break;
     default:
       break;
@@ -118,7 +118,7 @@ function parseV0Command(commandId: TRIGGER_ID, fileObject: JSONObject, triggerDa
       const timeTrigger: TimedTrigger = structuredClone(timedTrigger);
       const timeProp = timedTrigger[0] as number | number[];
 
-      if (typeof timeProp === 'number') {
+      if (typeof timeProp === "number") {
         const index = timeProp;
         timeTrigger[0] = retrieveTimestamp(index);
       } else if (timeProp.length === 1) {
@@ -160,7 +160,7 @@ function parseV0Command(commandId: TRIGGER_ID, fileObject: JSONObject, triggerDa
       if (smoothingValue === true || smoothingValue === false) {
         triggerData[commandId].interpolate = smoothingValue;
       } else {
-        throw new Error('Invalid boolean!');
+        throw new Error("Invalid boolean!");
       }
     } else {
       const constraints = CONSTRAINT.SMOOTH;
@@ -170,8 +170,8 @@ function parseV0Command(commandId: TRIGGER_ID, fileObject: JSONObject, triggerDa
         return;
       }
 
-      if (typeof smoothingValue !== 'number') {
-        throw new Error('Invalid integer!');
+      if (typeof smoothingValue !== "number") {
+        throw new Error("Invalid integer!");
       }
 
       if (smoothingValue > constraints.MAX) {
@@ -196,7 +196,7 @@ function parseV0Command(commandId: TRIGGER_ID, fileObject: JSONObject, triggerDa
     const triggers = [] as SkinCssTrigger[];
 
     for (const skinMap of skinMapArray) {
-      if (!(skinMap && typeof skinMap === 'object') || Array.isArray(skinMap)) {
+      if (!(skinMap && typeof skinMap === "object") || Array.isArray(skinMap)) {
         throw new Error(`Invalid skinMapArray format!`);
       }
 
@@ -204,15 +204,15 @@ function parseV0Command(commandId: TRIGGER_ID, fileObject: JSONObject, triggerDa
       for (const key of Object.keys(defaultSkinMap)) {
         if (skinMap[key] === null || skinMap[key] === undefined) continue;
 
-        if (!(typeof skinMap[key] === 'object') || Array.isArray(skinMap[key])) {
+        if (!(typeof skinMap[key] === "object") || Array.isArray(skinMap[key])) {
           throw new Error(`Invalid skinMapArray format!`);
         }
 
-        if (typeof skinMap[key].fill === 'string') {
+        if (typeof skinMap[key].fill === "string") {
           defaultSkinMap[key].fill = skinMap[key].fill;
         }
 
-        if (typeof skinMap[key].stroke === 'string') {
+        if (typeof skinMap[key].stroke === "string") {
           defaultSkinMap[key].stroke = skinMap[key].stroke;
         }
       }
@@ -234,11 +234,11 @@ function parseV0Command(commandId: TRIGGER_ID, fileObject: JSONObject, triggerDa
       trigger.length === 2 &&
       Array.isArray(trigger[0]) &&
       trigger[0].length === 3 &&
-      typeof trigger[0][0] === 'number' &&
-      typeof trigger[0][1] === 'number' &&
-      typeof trigger[0][2] === 'number' && (
-        typeof trigger[1] === 'number' ||
-        typeof trigger[1] === 'object' && trigger[1]
+      typeof trigger[0][0] === "number" &&
+      typeof trigger[0][1] === "number" &&
+      typeof trigger[0][2] === "number" && (
+        typeof trigger[1] === "number" ||
+        typeof trigger[1] === "object" && trigger[1]
       )
     );
   }
