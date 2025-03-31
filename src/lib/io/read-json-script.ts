@@ -4,6 +4,8 @@ import parseV0Command from "./read-json-v0-script";
 import parseV1Command from "./read-json-v1.script";
 import { isNumber } from "./type-guards";
 
+// TODO: Add context to logs
+
 /**
  * Parses file from the script file format into a trigger data object, reverting to the original
  * value if an error occurs

@@ -43,7 +43,7 @@ export const GLOBAL_STYLES = {
     height: "50vh",
     flexDirection: "column",
     justifyContent: "center",
-    width: "max(37.5vw, 480px)",
+    width: "max(37.5vw, 600px)",
   },
   windowContainer: {
     display: "flex",
