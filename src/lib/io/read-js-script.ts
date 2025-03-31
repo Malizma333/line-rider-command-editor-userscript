@@ -1,9 +1,10 @@
-import { TriggerDataManager, TRIGGER_METADATA } from "../TriggerDataManager";
+import { TriggerDataManager, TRIGGER_METADATA, TRIGGER_DATA_KEYS } from "../TriggerDataManager";
 import {
-  TRIGGER_ID, TriggerDataLookup, TimedTrigger, SkinCssTrigger,
+  CameraFocusTrigger, CameraPanTrigger, TimeRemapTrigger, TRIGGER_ID, TriggerDataLookup, ZoomTrigger,
 } from "../TriggerDataManager.types";
 import { CONSTRAINT } from "../constraints";
 import { retrieveTimestamp } from "../util";
+import { isArray, isNumber, isNumberArray, isStringArray } from "./type-guards";
 
 /**
  * Parses text from the script field into a trigger data object, reverting to the original value if an error occurs
@@ -55,16 +56,36 @@ export default function readJsScript(scriptText: string, currentTriggerData: Tri
     }]`;
 
     // HACK: Using eval is easier than json.parse, which has stricter syntax
-    const parameterArray = eval(parameterText);
-    const [keyframes, smoothing] = parameterArray;
+    const parameterArray: JSONArray = eval(parameterText);
+
+    const keyframes = parameterArray[0];
+
+    if (!isArray(keyframes)) {
+      throw new Error("Keyframes was not an array!");
+    }
+
+    let smoothing: JSONValue = 0;
+
+    if (parameterArray.length > 0) {
+      smoothing = parameterArray[1];
+    }
 
     switch (commandId) {
       case TRIGGER_ID.ZOOM:
+        triggerData[commandId].triggers = parseTriggers<ZoomTrigger>(keyframes);
+        triggerData[commandId].smoothing = parseSmoothing(smoothing);
+        break;
       case TRIGGER_ID.PAN:
+        triggerData[commandId].triggers = parseTriggers<CameraPanTrigger>(keyframes);
+        triggerData[commandId].smoothing = parseSmoothing(smoothing);
+        break;
       case TRIGGER_ID.FOCUS:
+        triggerData[commandId].triggers = parseTriggers<CameraFocusTrigger>(keyframes);
+        triggerData[commandId].smoothing = parseSmoothing(smoothing);
+        break;
       case TRIGGER_ID.TIME:
-        parseTriggers(commandId, keyframes);
-        parseSmoothing(commandId, smoothing);
+        triggerData[commandId].triggers = parseTriggers<TimeRemapTrigger>(keyframes);
+        triggerData[commandId].interpolate = smoothing === true;
         break;
       case TRIGGER_ID.SKIN:
         parseSkinCss(keyframes);
@@ -76,73 +97,69 @@ export default function readJsScript(scriptText: string, currentTriggerData: Tri
 
   /**
    * Parses a potential new Trigger[], not necessarily a complete definition of one
-   * @param commandId The trigger type being parsed
-   * @param commandArray The list of triggers being parsed
+   * @param triggerArray The list of triggers being parsed
+   * @returns The parsed list of triggers
    */
-  function parseTriggers(commandId: TRIGGER_ID, commandArray: TimedTrigger[]): void {
-    const triggers: TimedTrigger[] = [];
+  function parseTriggers<TriggerType>(triggerArray: JSONArray): TriggerType[] {
+    const triggers: TriggerType[] = [];
 
-    for (let i = 0; i < commandArray.length; i += 1) {
-      triggers.push(structuredClone(commandArray[i]));
+    for (const trigger of triggerArray) {
+      if (!isArray(trigger)) {
+        throw new Error("Command keyframe was not an array!");
+      }
 
-      const timeProp = commandArray[i][0] as number | number[];
+      const newTrigger: JSONArray = [[0, 0, 0], structuredClone(trigger[1])];
+      const timeProp = trigger[0];
+
       if (typeof timeProp === "number") {
         const index = timeProp;
-        triggers[i][0] = retrieveTimestamp(index);
-      } else if (timeProp.length === 1) {
+        newTrigger[0] = retrieveTimestamp(index);
+        continue;
+      }
+
+      if (!isNumberArray(timeProp)) {
+        throw new Error("Keyframe was not a number array or number!");
+      }
+
+      if (timeProp.length === 1) {
         const index = timeProp[0];
-        triggers[i][0] = retrieveTimestamp(index);
+        newTrigger[0] = retrieveTimestamp(index);
       } else if (timeProp.length === 2) {
         const index = timeProp[0] * 40 + timeProp[1];
-        triggers[i][0] = retrieveTimestamp(index);
+        newTrigger[0] = retrieveTimestamp(index);
       } else {
-        const index = timeProp[0] * 2400 +
-         timeProp[1] * 40 + timeProp[2];
-        triggers[i][0] = retrieveTimestamp(index);
+        const index = timeProp[0] * 2400 + timeProp[1] * 40 + timeProp[2];
+        newTrigger[0] = retrieveTimestamp(index);
       }
+
+      triggers.push(newTrigger as TriggerType); // TODO: Unsafe
     }
 
-    triggerData[commandId].triggers = triggers;
+    return triggers;
   }
 
   /**
-   * Parses integer or boolean smoothing for a command if its available
-   * @param commandId The trigger type being parsed
+   * Parses integer smoothing for a command if its available
    * @param smoothingValue The proposed value for smoothing
+   * @returns The parsed smoothing integer
    */
-  function parseSmoothing(commandId: TRIGGER_ID, smoothingValue?: boolean | number): void {
-    if (commandId === TRIGGER_ID.TIME) {
-      const constraints = CONSTRAINT.INTERPOLATE;
+  function parseSmoothing(smoothingValue: JSONValue): number {
+    const constraints = CONSTRAINT.SMOOTH;
 
-      if (smoothingValue == null) {
-        triggerData[commandId].interpolate = constraints.DEFAULT;
-        return;
-      }
+    if (smoothingValue === null || smoothingValue === undefined) {
+      return constraints.DEFAULT;
+    }
 
-      if (smoothingValue === true || smoothingValue === false) {
-        triggerData[commandId].interpolate = smoothingValue;
-      } else {
-        throw new Error("Invalid boolean!");
-      }
+    if (!isNumber(smoothingValue)) {
+      throw new Error("Invalid smoothing, was not a number!");
+    }
+
+    if (smoothingValue > constraints.MAX) {
+      return constraints.MAX;
+    } else if (smoothingValue < constraints.MIN) {
+      return constraints.MIN;
     } else {
-      const constraints = CONSTRAINT.SMOOTH;
-
-      if (smoothingValue == null) {
-        triggerData[commandId].smoothing = constraints.DEFAULT;
-        return;
-      }
-
-      if (typeof smoothingValue !== "number") {
-        throw new Error("Invalid integer!");
-      }
-
-      if (smoothingValue > constraints.MAX) {
-        triggerData[commandId].smoothing = constraints.MAX;
-      } else if (smoothingValue < constraints.MIN) {
-        triggerData[commandId].smoothing = constraints.MIN;
-      } else {
-        triggerData[commandId].smoothing = smoothingValue;
-      }
+      return smoothingValue;
     }
   }
 
@@ -150,7 +167,11 @@ export default function readJsScript(scriptText: string, currentTriggerData: Tri
    * Parses a string of CSS into a skin trigger array
    * @param skinCSSArray The css array that needs parsing
    */
-  function parseSkinCss(skinCSSArray: string[]): void {
+  function parseSkinCss(skinCSSArray: JSONArray): void {
+    if (!isStringArray(skinCSSArray)) {
+      throw new Error("Skin CSS Array was not string array!");
+    }
+
     skinCSSArray.forEach((skinCSS: string, skinIndex: number) => {
       triggerData[TRIGGER_ID.SKIN].triggers.push(
           structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE),
@@ -188,7 +209,7 @@ export default function readJsScript(scriptText: string, currentTriggerData: Tri
    */
   function parseSkinProp(cssString: string, skinIndex: number): void {
     const wordRegex = /(['"])?([#]?[a-z0-9A-Z_-]+)(['"])?/g;
-    const skinTriggers = triggerData[TRIGGER_ID.SKIN].triggers as SkinCssTrigger[];
+    const skinTriggers = triggerData[TRIGGER_ID.SKIN].triggers;
     const cssPropKeywords = {
       outline: ".outline",
       flag: ".flag",
@@ -251,16 +272,33 @@ export default function readJsScript(scriptText: string, currentTriggerData: Tri
 
   const trimmedScript = scriptText.replace(/\s/g, "");
 
-  Object.keys(TRIGGER_METADATA).forEach((commandId: string) => {
+  TRIGGER_DATA_KEYS.forEach((commandId) => {
     try {
-      triggerData[commandId as TRIGGER_ID].triggers = [];
-      parseCommand(commandId as TRIGGER_ID, trimmedScript);
+      triggerData[commandId].triggers = [];
+      parseCommand(commandId, trimmedScript);
     } catch (error) {
       if (error instanceof Error) {
-        console.warn(`[ScriptParser.parseScript()] ${error.message}`);
-        triggerData[commandId as TRIGGER_ID] = structuredClone(
-            currentTriggerData[commandId as TRIGGER_ID],
-        );
+        console.error(`[ScriptParser.parseScript()] ${error.message}`);
+        switch (commandId) {
+          case TRIGGER_ID.ZOOM:
+            triggerData[commandId] = structuredClone(currentTriggerData[commandId]);
+            break;
+          case TRIGGER_ID.PAN:
+            triggerData[commandId] = structuredClone(currentTriggerData[commandId]);
+            break;
+          case TRIGGER_ID.FOCUS:
+            triggerData[commandId] = structuredClone(currentTriggerData[commandId]);
+            break;
+          case TRIGGER_ID.TIME:
+            triggerData[commandId] = structuredClone(currentTriggerData[commandId]);
+            break;
+          case TRIGGER_ID.GRAVITY:
+            triggerData[commandId] = structuredClone(currentTriggerData[commandId]);
+            break;
+          case TRIGGER_ID.LAYER:
+            triggerData[commandId] = structuredClone(currentTriggerData[commandId]);
+            break;
+        }
       }
     }
   });

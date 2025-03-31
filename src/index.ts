@@ -22,8 +22,8 @@ declare global {
     timeRemapper?: object
     createTimeRemapper: (timeRemap: TimeRemapTrigger[], smoothing?: boolean) => typeof window.timeRemapper
     setCustomRiders: (cssList: string[]) => void
-    setCustomGravity?: (gravity: GravityTrigger[]) => void
-    createLayerAutomator?: (layerTriggers: LayerTrigger[], sixtyFps: boolean) => void
+    setCustomGravity?: (gravity: GravityTrigger[][]) => void
+    createLayerAutomator?: (layerTriggers: Record<number, LayerTrigger[]>, sixtyFps: boolean) => void
   }
 
   type RootState = ReturnType<typeof window.store.getState>
@@ -68,7 +68,7 @@ function main(): void {
     const errorContainer = content.querySelector("div[style=\"margin: 16px;\"]");
     if (errorContainer) {
       const errorHeader = errorContainer.querySelector("h1");
-      if (errorHeader && errorHeader.innerHTML === "An error occured!") {
+      if (errorHeader && errorHeader.innerHTML === "An error occurred!") {
         console.warn("[index.main()] Crash detected...");
         window.saveCommands();
         clearInterval(timerId);

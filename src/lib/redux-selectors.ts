@@ -112,6 +112,6 @@ export function getPlaybackDimensions(state: RootState): {width: number, height:
  * @param state Redux store state
  * @returns List of layer ids by index
  */
-export function getLayers(state: RootState): number[] {
+export function getLayerIds(state: RootState): number[] {
   return state.simulator.committedEngine.engine.state.layers.toArray().map((l: {id: number}) => l.id);
 }

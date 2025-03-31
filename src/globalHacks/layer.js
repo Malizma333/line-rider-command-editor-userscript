@@ -58,16 +58,20 @@ window.createLayerAutomator = (function() {
     mapping = {};
     triggerIndices = {};
 
-    for (const trigger of newTriggers) {
-      if (!(trigger[1].id in mapping)) {
-        mapping[trigger[1].id] = [];
-        triggerIndices[trigger[1].id] = 0;
+    for (const id of Object.keys(newTriggers)) {
+      const triggerArr = newTriggers[id];
+
+      if (!(id in mapping)) {
+        mapping[id] = [];
+        triggerIndices[id] = 0;
       }
 
-      mapping[trigger[1].id].push([
-        trigger[0][0] * 2400 + trigger[0][1] * 40 + trigger[0][2],
-        { on: trigger[1].on, off: trigger[1].off, offset: trigger[1].offset },
-      ]);
+      for (const trigger of triggerArr) {
+        mapping[id].push([
+          trigger[0][0] * 2400 + trigger[0][1] * 40 + trigger[0][2],
+          { on: trigger[1].on, off: trigger[1].off, offset: trigger[1].offset },
+        ]);
+      }
     }
 
     if (window.getLayerVisibleAtTime === undefined) {
