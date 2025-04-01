@@ -1,10 +1,7 @@
 import { TriggerDataManager, TRIGGER_DATA_KEYS } from "../TriggerDataManager";
 import { TRIGGER_ID, TriggerDataLookup } from "../TriggerDataManager.types";
 import parseV0Command from "./read-json-v0-script";
-import parseV1Command from "./read-json-v1.script";
-import { isNumber } from "./type-guards";
-
-// TODO: Add context to logs
+import { assert, ASSERT_TYPE } from "./type-guards";
 
 /**
  * Parses file from the script file format into a trigger data object, reverting to the original
@@ -14,23 +11,16 @@ import { isNumber } from "./type-guards";
  * @returns The validated trigger data
  */
 export default function readJsonScript(
-    fileObject: JSONObject,
+    fileObject: unknown,
     currentTriggerData: TriggerDataLookup,
 ): TriggerDataLookup {
   const triggerData = TriggerDataManager.initialTriggerData;
 
-  let version = 0;
+  let version = -1;
 
-  if (isNumber(fileObject.version)) {
-    if (fileObject.version === 0) {
-      version = 0;
-    } else if (fileObject.version === 1) {
-      version = 1;
-    } else {
-      console.error(`[ScriptParser.parseScript()] Invalid file version!`);
-      return currentTriggerData;
-    }
-  } else if (fileObject.version === undefined) {
+  assert(fileObject, ASSERT_TYPE.RECORD);
+
+  if (fileObject.version === undefined || fileObject.version === 0) {
     version = 0;
   } else {
     console.error(`[ScriptParser.parseScript()] Invalid file version!`);
@@ -42,8 +32,6 @@ export default function readJsonScript(
       triggerData[commandId].triggers = [];
       if (version === 0) {
         parseV0Command(commandId, fileObject, triggerData);
-      } else if (version === 1) {
-        parseV1Command(commandId, fileObject, triggerData); // TODO
       }
     } catch (error) {
       if (error instanceof Error) {

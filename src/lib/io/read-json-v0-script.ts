@@ -13,7 +13,7 @@ import {
   ZoomTrigger,
 } from "../TriggerDataManager.types";
 import { retrieveTimestamp } from "../util";
-import { isArray, isNumber, isNumberArray, isRecord, isString, isStringRecord } from "./type-guards";
+import { assert, ASSERT_TYPE, check } from "./type-guards";
 
 /**
  * Parses an individual command given its id and applies the parsed file data to the trigger data
@@ -21,35 +21,29 @@ import { isArray, isNumber, isNumberArray, isRecord, isString, isStringRecord } 
  * @param fileObject The object that needs parsing
  * @param triggerData The trigger data object to write script data to
  */
-export default function parseV0Command(commandId: TRIGGER_ID, fileObject: JSONObject, triggerData: TriggerDataLookup) {
-  if (fileObject === null) {
-    throw new Error("File object was null");
-  }
+export default function parseV0Command(commandId: TRIGGER_ID, fileObject: unknown, triggerData: TriggerDataLookup) {
+  assert(fileObject, ASSERT_TYPE.RECORD);
 
   const command = fileObject[commandId];
-  if (!isRecord(command)) {
-    throw new Error("Command was not valid object");
-  }
 
-  if (!isArray(command["triggers"])) {
-    throw new Error("Triggers was not valid trigger array!");
-  }
+  assert(command, ASSERT_TYPE.RECORD);
+  assert(command["triggers"], ASSERT_TYPE.ARR);
 
   switch (commandId) {
     case TRIGGER_ID.ZOOM:
-      triggerData[commandId].triggers = parseTriggers<ZoomTrigger>(command["triggers"]);
+      triggerData[commandId].triggers = parseZoomTriggers(command["triggers"]);
       triggerData[commandId].smoothing = parseNumberSmoothing(command["smoothing"]);
       break;
     case TRIGGER_ID.PAN:
-      triggerData[commandId].triggers = parseTriggers<CameraPanTrigger>(command["triggers"]);
+      triggerData[commandId].triggers = parsePanTriggers(command["triggers"]);
       triggerData[commandId].smoothing = parseNumberSmoothing(command["smoothing"]);
       break;
     case TRIGGER_ID.FOCUS:
-      triggerData[commandId].triggers = parseTriggers<CameraFocusTrigger>(command["triggers"]);
+      triggerData[commandId].triggers = parseFocusTriggers(command["triggers"]);
       triggerData[commandId].smoothing = parseNumberSmoothing(command["smoothing"]);
       break;
     case TRIGGER_ID.TIME:
-      triggerData[commandId].triggers = parseTriggers<TimeRemapTrigger>(command["triggers"]);
+      triggerData[commandId].triggers = parseTimeTriggers(command["triggers"]);
       triggerData[commandId].interpolate = parseBooleanSmoothing(command["interpolate"]);
       break;
     case TRIGGER_ID.SKIN:
@@ -65,231 +59,275 @@ export default function parseV0Command(commandId: TRIGGER_ID, fileObject: JSONOb
     default:
       break;
   }
+}
 
-  /**
-   * Parses a potential new Trigger[], not necessarily a complete definition of one
-   * @param triggerArray The list of triggers being parsed
-   * @returns The parsed list of triggers
-   */
-  function parseTriggers<TriggerType>(triggerArray: JSONArray): TriggerType[] {
-    const triggers: TriggerType[] = [];
+/**
+ * Parses an unknown array into a list of zoom triggers
+ * @param triggerArray The list of triggers being parsed
+ * @returns The converted list of triggers
+ */
+function parseZoomTriggers(triggerArray: unknown[]): ZoomTrigger[] {
+  const triggers: ZoomTrigger[] = [];
 
-    for (const trigger of triggerArray) {
-      if (!isArray(trigger)) {
-        throw new Error("Timed trigger was not an array");
-      }
+  for (const trigger of triggerArray) {
+    assert(trigger, ASSERT_TYPE.ARR);
 
-      const newTrigger: JSONArray = structuredClone(trigger);
-      const timeProp = trigger[0];
+    const zoomProp = trigger[1];
 
-      if (typeof timeProp === "number") {
-        const index = timeProp;
-        newTrigger[0] = retrieveTimestamp(index);
-        continue;
-      }
+    assert(zoomProp, ASSERT_TYPE.NUM);
 
-      if (!isNumberArray(timeProp)) {
-        throw new Error("Keyframe was not a number array or number!");
-      }
+    const newTrigger: ZoomTrigger = [parseTime(trigger[0]), zoomProp] as ZoomTrigger;
 
-      if (timeProp.length === 1) {
-        const index = timeProp[0];
-        newTrigger[0] = retrieveTimestamp(index);
-      } else if (timeProp.length === 2) {
-        const index = timeProp[0] * 40 + timeProp[1];
-        newTrigger[0] = retrieveTimestamp(index);
-      } else {
-        const index = timeProp[0] * 2400 + timeProp[1] * 40 + timeProp[2];
-        newTrigger[0] = retrieveTimestamp(index);
-      }
-
-      triggers.push(newTrigger as TriggerType); // TODO: Unsafe
-    }
-
-    return triggers;
+    triggers.push(newTrigger);
   }
 
-  /**
-   * Parses integer smoothing
-   * @param smoothingValue The proposed value for smoothing
-   * @returns A valid smoothing value
-   */
-  function parseNumberSmoothing(smoothingValue: JSONValue): number {
-    const constraints = CONSTRAINT.SMOOTH;
+  return triggers;
+}
 
-    if (smoothingValue === null || smoothingValue === undefined) {
-      return constraints.DEFAULT;
-    }
+/**
+ * Parses an unknown array into a list of camera pan triggers
+ * @param triggerArray The list of triggers being parsed
+ * @returns The converted list of triggers
+ */
+function parsePanTriggers(triggerArray: unknown[]): CameraPanTrigger[] {
+  const triggers: CameraPanTrigger[] = [];
 
-    if (!isNumber(smoothingValue)) {
-      throw new Error("Smoothing was not a number");
-    }
+  for (const trigger of triggerArray) {
+    assert(trigger, ASSERT_TYPE.ARR);
 
-    if (smoothingValue > constraints.MAX) {
-      return constraints.MAX;
-    } else if (smoothingValue < constraints.MIN) {
-      return constraints.MIN;
-    } else {
-      return smoothingValue;
-    }
+    const panProp = trigger[1];
+
+    assert(panProp, ASSERT_TYPE.STR_RECORD);
+
+    const { x, y, w, h } = panProp;
+
+    assert(x, ASSERT_TYPE.NUM);
+    assert(y, ASSERT_TYPE.NUM);
+    assert(w, ASSERT_TYPE.NUM);
+    assert(h, ASSERT_TYPE.NUM);
+
+    const newTrigger: CameraPanTrigger = [parseTime(trigger[0]), { x, y, w, h }];
+
+    triggers.push(newTrigger);
   }
 
-  /**
-   * Parses boolean smoothing
-   * @param smoothingValue The proposed value for smoothing
-   * @returns A valid smoothing value
-   */
-  function parseBooleanSmoothing(smoothingValue: JSONValue): boolean {
-    const constraints = CONSTRAINT.INTERPOLATE;
+  return triggers;
+}
 
-    if (smoothingValue === null || smoothingValue === undefined) {
-      return constraints.DEFAULT;
-    }
+/**
+ * Parses an unknown array into a list of camera focus triggers
+ * @param triggerArray The list of triggers being parsed
+ * @returns The converted list of triggers
+ */
+function parseFocusTriggers(triggerArray: unknown[]): CameraFocusTrigger[] {
+  const triggers: CameraFocusTrigger[] = [];
 
-    if (!(smoothingValue === true || smoothingValue === false)) {
-      throw new Error("Invalid boolean smooothing value!");
-    }
+  for (const trigger of triggerArray) {
+    assert(trigger, ASSERT_TYPE.ARR);
 
+    const focusProp = trigger[1];
+
+    assert(focusProp, ASSERT_TYPE.NUM_ARR);
+
+    const newTrigger: CameraFocusTrigger = [parseTime(trigger[0]), focusProp];
+
+    triggers.push(newTrigger);
+  }
+
+  return triggers;
+}
+
+/**
+ * Parses an unknown array into a list of time remap triggers
+ * @param triggerArray The list of triggers being parsed
+ * @returns The converted list of triggers
+ */
+function parseTimeTriggers(triggerArray: unknown[]): TimeRemapTrigger[] {
+  const triggers: TimeRemapTrigger[] = [];
+
+  for (const trigger of triggerArray) {
+    assert(trigger, ASSERT_TYPE.ARR);
+
+    const timeRemapProp = trigger[1];
+
+    assert(timeRemapProp, ASSERT_TYPE.NUM);
+
+    const newTrigger: TimeRemapTrigger = [parseTime(trigger[0]), timeRemapProp] as TimeRemapTrigger;
+
+    triggers.push(newTrigger);
+  }
+
+  return triggers;
+}
+
+/**
+ * Parses integer smoothing
+ * @param smoothingValue The proposed value for smoothing
+ * @returns A valid smoothing value
+ */
+function parseNumberSmoothing(smoothingValue: unknown): number {
+  const constraints = CONSTRAINT.SMOOTH;
+
+  if (smoothingValue === null || smoothingValue === undefined) {
+    return constraints.DEFAULT;
+  }
+
+  assert(smoothingValue, ASSERT_TYPE.NUM);
+
+  if (smoothingValue > constraints.MAX) {
+    return constraints.MAX;
+  } else if (smoothingValue < constraints.MIN) {
+    return constraints.MIN;
+  } else {
     return smoothingValue;
   }
+}
 
-  /**
-   * Parses a string of CSS into a skin trigger array
-   * @param skinMapArray The css array that needs parsing
-   * @returns The parsed list of triggers
-   */
-  function parseSkinTriggers(skinMapArray: JSONArray): SkinCssTrigger[] {
-    const triggers: SkinCssTrigger[] = [];
+/**
+ * Parses boolean smoothing
+ * @param smoothingValue The proposed value for smoothing
+ * @returns A valid smoothing value
+ */
+function parseBooleanSmoothing(smoothingValue: unknown): boolean {
+  const constraints = CONSTRAINT.INTERPOLATE;
 
-    for (const skinMap of skinMapArray) {
-      if (!isStringRecord(skinMap)) {
-        throw new Error("Skin map was not string record");
-      }
-
-      const defaultSkinMap = structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE);
-      for (const key of Object.keys(defaultSkinMap)) {
-        if (!isStringRecord(skinMap[key])) {
-          throw new Error("Skin map object was not string record");
-        }
-
-        if (isString(skinMap[key].fill)) {
-          defaultSkinMap[key].fill = skinMap[key].fill;
-        }
-
-        if (isString(skinMap[key].stroke)) {
-          defaultSkinMap[key].stroke = skinMap[key].stroke;
-        }
-      }
-      triggers.push(defaultSkinMap);
-    }
-
-    return triggers;
+  if (smoothingValue === null || smoothingValue === undefined) {
+    return constraints.DEFAULT;
   }
 
-  /**
-   * Converts a legacy array of gravity triggers to the v1 format
-   * @param arr Array of old triggers to convert
-   * @returns New array of valid triggers
-   */
-  function parseGravityTriggers(arr: JSONArray): GravityTrigger[][] {
-    const triggers: GravityTrigger[][] = [];
-
-    for (const trigger of arr) {
-      if (!isArray(trigger)) {
-        throw new Error("Trigger was not valid array!");
-      }
-
-      if (!isNumberArray(trigger[0])) {
-        throw new Error("Trigger time was not valid array!");
-      }
-
-      if (trigger[0].length < 3) {
-        throw new Error("Trigger time did not have valid length!");
-      }
-
-      const triggerTime: TriggerTime = [trigger[0][0], trigger[0][1], trigger[0][2]];
-
-      if (!isArray(trigger[1])) {
-        throw new Error("Trigger contents was not valid array!");
-      }
-
-      for (let i = 0; i < trigger[1].length; i++) {
-        const record = trigger[1][i];
-
-        if (!isStringRecord(record)) {
-          throw new Error("Gravity was not valid record!");
-        }
-
-        if (!isNumber(record["x"])) {
-          throw new Error("Gravity did not have valid x prop!");
-        }
-
-        if (!isNumber(record["y"])) {
-          throw new Error("Gravity did not have valid y prop!");
-        }
-
-        while (triggers.length <= i) {
-          triggers.push([]);
-        }
-
-        triggers[i].push([triggerTime, { x: record["x"], y: record["y"] }]);
-      }
-    }
-
-    return triggers;
+  if (!(smoothingValue === true || smoothingValue === false)) {
+    throw new Error("Invalid boolean smoothing value!");
   }
 
-  /**
-   * Converts a legacy array of layer triggers to the v1 format
-   * @param arr Array of old triggers to convert
-   * @returns New record of valid triggers
-   */
-  function parseLayerTriggers(arr: JSONArray): Record<number, LayerTrigger[]> {
-    const triggers: Record<number, LayerTrigger[]> = {};
+  return smoothingValue;
+}
 
-    for (const trigger of arr) {
-      if (!isArray(trigger)) {
-        throw new Error("Trigger was not valid array!");
+/**
+ * Parses a string of CSS into a skin trigger array
+ * @param skinMapArray The css array that needs parsing
+ * @returns The parsed list of triggers
+ */
+function parseSkinTriggers(skinMapArray: unknown[]): SkinCssTrigger[] {
+  const triggers: SkinCssTrigger[] = [];
+
+  for (const skinMap of skinMapArray) {
+    assert(skinMap, ASSERT_TYPE.STR_RECORD);
+
+    const defaultSkinMap = structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE);
+    for (const key of Object.keys(defaultSkinMap)) {
+      assert(skinMap[key], ASSERT_TYPE.STR_RECORD);
+
+      if (check(skinMap[key].fill, ASSERT_TYPE.STR)) {
+        defaultSkinMap[key].fill = skinMap[key].fill;
       }
 
-      if (!isNumberArray(trigger[0])) {
-        throw new Error("Trigger time was not valid array!");
+      if (check(skinMap[key].stroke, ASSERT_TYPE.STR)) {
+        defaultSkinMap[key].stroke = skinMap[key].stroke;
       }
+    }
+    triggers.push(defaultSkinMap);
+  }
 
-      if (trigger[0].length < 3) {
-        throw new Error("Trigger time did not have valid length!");
-      }
+  return triggers;
+}
 
-      const triggerTime: TriggerTime = [trigger[0][0], trigger[0][1], trigger[0][2]];
-      const record = trigger[1];
+/**
+ * Converts a legacy array of gravity triggers to the v1 format
+ * @param arr Array of old triggers to convert
+ * @returns New array of valid triggers
+ */
+function parseGravityTriggers(arr: unknown[]): GravityTrigger[][] {
+  const triggers: GravityTrigger[][] = [];
 
-      if (!isStringRecord(record)) {
-        throw new Error("Trigger contents was not valid record!");
-      }
+  for (const trigger of arr) {
+    assert(trigger, ASSERT_TYPE.ARR);
+    assert(trigger[0], ASSERT_TYPE.NUM_ARR);
 
-      if (!isNumber(record["id"])) {
-        throw new Error("Layer did not have valid id prop!");
-      }
-
-      if (!isNumber(record["on"])) {
-        throw new Error("Layer did not have valid on prop!");
-      }
-
-      if (!isNumber(record["off"])) {
-        throw new Error("Layer did not have valid off prop!");
-      }
-
-      if (!isNumber(record["offset"])) {
-        throw new Error("Layer did not have valid offset prop!");
-      }
-
-      if (!(record["id"] in triggers)) {
-        triggers[record["id"]] = [];
-      }
-
-      triggers[record["id"]].push([triggerTime, { on: record["on"], off: record["off"], offset: record["offset"] }]);
+    if (trigger[0].length < 3) {
+      throw new Error("Trigger time did not have valid length!");
     }
 
-    return triggers;
+    const triggerTime: TriggerTime = [trigger[0][0], trigger[0][1], trigger[0][2]];
+
+    assert(trigger[1], ASSERT_TYPE.ARR);
+
+    for (let i = 0; i < trigger[1].length; i++) {
+      const record: unknown = trigger[1][i];
+
+      assert(record, ASSERT_TYPE.STR_RECORD);
+      assert(record["x"], ASSERT_TYPE.NUM);
+      assert(record["y"], ASSERT_TYPE.NUM);
+
+      while (triggers.length <= i) {
+        triggers.push([]);
+      }
+
+      triggers[i].push([triggerTime, { x: record["x"], y: record["y"] }]);
+    }
   }
+
+  return triggers;
+}
+
+/**
+ * Converts a legacy array of layer triggers to the v1 format
+ * @param arr Array of old triggers to convert
+ * @returns New record of valid triggers
+ */
+function parseLayerTriggers(arr: unknown[]): Record<number, LayerTrigger[]> {
+  const triggers: Record<number, LayerTrigger[]> = {};
+
+  for (const trigger of arr) {
+    assert(trigger, ASSERT_TYPE.ARR);
+    assert(trigger[0], ASSERT_TYPE.NUM_ARR);
+
+    if (trigger[0].length < 3) {
+      throw new Error("Trigger time did not have valid length!");
+    }
+
+    const triggerTime: TriggerTime = [trigger[0][0], trigger[0][1], trigger[0][2]];
+    const record: unknown = trigger[1];
+
+    assert(record, ASSERT_TYPE.STR_RECORD);
+    assert(record["id"], ASSERT_TYPE.NUM);
+    assert(record["on"], ASSERT_TYPE.NUM);
+    assert(record["off"], ASSERT_TYPE.NUM);
+    assert(record["offset"], ASSERT_TYPE.NUM);
+
+    if (!(record["id"] in triggers)) {
+      triggers[record["id"]] = [];
+    }
+
+    triggers[record["id"]].push([triggerTime, { on: record["on"], off: record["off"], offset: record["offset"] }]);
+  }
+
+  return triggers;
+}
+
+/**
+ * Parses a timestamp
+ * @param timestamp Time stamp to parse
+ * @returns Valid timestamp converted to trigger time
+ */
+function parseTime(timestamp: unknown): TriggerTime {
+  let parsedTimestamp: TriggerTime = [0, 0, 0];
+
+  if (check(timestamp, ASSERT_TYPE.NUM)) {
+    const index = timestamp;
+    parsedTimestamp = retrieveTimestamp(index);
+  } else {
+    assert(timestamp, ASSERT_TYPE.NUM_ARR);
+
+    if (timestamp.length === 1) {
+      const index = timestamp[0];
+      parsedTimestamp = retrieveTimestamp(index);
+    } else if (timestamp.length === 2) {
+      const index = timestamp[0] * 40 + timestamp[1];
+      parsedTimestamp = retrieveTimestamp(index);
+    } else {
+      const index = timestamp[0] * 2400 + timestamp[1] * 40 + timestamp[2];
+      parsedTimestamp = retrieveTimestamp(index);
+    }
+  }
+  return parsedTimestamp;
 }

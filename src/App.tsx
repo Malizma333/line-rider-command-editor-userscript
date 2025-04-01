@@ -257,34 +257,22 @@ export class App extends React.Component {
       switch (activeTab) {
         case TRIGGER_ID.ZOOM: {
           const currentData = this.triggerManager.data[TRIGGER_ID.ZOOM];
-          window.getAutoZoom = window.createZoomer(
-              currentData.triggers,
-              currentData.smoothing,
-          );
+          window.getAutoZoom = window.createZoomer(currentData.triggers, currentData.smoothing);
           break;
         }
         case TRIGGER_ID.PAN: {
           const currentData = this.triggerManager.data[TRIGGER_ID.PAN];
-          window.getCamBounds = window.createBoundsPanner(
-              currentData.triggers,
-              currentData.smoothing,
-          );
+          window.getCamBounds = window.createBoundsPanner(currentData.triggers, currentData.smoothing);
           break;
         }
         case TRIGGER_ID.FOCUS: {
           const currentData = this.triggerManager.data[TRIGGER_ID.FOCUS];
-          window.getCamFocus = window.createFocuser(
-              currentData.triggers,
-              currentData.smoothing,
-          );
+          window.getCamFocus = window.createFocuser(currentData.triggers, currentData.smoothing);
           break;
         }
         case TRIGGER_ID.TIME: {
           const currentData = this.triggerManager.data[TRIGGER_ID.TIME];
-          window.timeRemapper = window.createTimeRemapper(
-              currentData.triggers,
-              currentData.interpolate,
-          );
+          window.timeRemapper = window.createTimeRemapper(currentData.triggers, currentData.interpolate);
           break;
         }
         case TRIGGER_ID.SKIN: {

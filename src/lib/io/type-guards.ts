@@ -1,9 +1,31 @@
+export enum ASSERT_TYPE {
+  STR = "string",
+  NUM = "number",
+  ARR = "Array",
+  NUM_ARR = "Array<number>",
+  STR_ARR = "Array<string>",
+  RECORD = "Record",
+  NUM_RECORD = "Record<number, unknown>",
+  STR_RECORD = "Record<string, unknown>",
+}
+
+interface ASSERT_TYPE_MAP {
+  [ASSERT_TYPE.NUM]: number;
+  [ASSERT_TYPE.STR]: string;
+  [ASSERT_TYPE.ARR]: unknown[];
+  [ASSERT_TYPE.RECORD]: Record<string | number | symbol, unknown>;
+  [ASSERT_TYPE.NUM_ARR]: number[];
+  [ASSERT_TYPE.STR_ARR]: string[];
+  [ASSERT_TYPE.NUM_RECORD]: Record<number, unknown>;
+  [ASSERT_TYPE.STR_RECORD]: Record<string, unknown>;
+}
+
 /**
  * Type guard to check if an unknown is a number
  * @param x Value to check number status of
  * @returns Whether x is a number
  */
-export function isNumber(x: unknown): x is number {
+function isNumber(x: unknown): x is number {
   return typeof x === "number";
 }
 
@@ -12,7 +34,7 @@ export function isNumber(x: unknown): x is number {
  * @param x Value to check string status of
  * @returns Whether x is a string
  */
-export function isString(x: unknown): x is string {
+function isString(x: unknown): x is string {
   return typeof x === "string";
 }
 
@@ -21,7 +43,7 @@ export function isString(x: unknown): x is string {
  * @param x Value to check array status of
  * @returns Whether x is an array
  */
-export function isArray(x: unknown): x is unknown[] {
+function isArray(x: unknown): x is unknown[] {
   return Array.isArray(x);
 }
 
@@ -30,7 +52,7 @@ export function isArray(x: unknown): x is unknown[] {
  * @param arr Array to check type of
  * @returns Whether arr is a string array
  */
-export function isStringArray(arr: unknown): arr is string[] {
+function isStringArray(arr: unknown): arr is string[] {
   return isArray(arr) && arr.every((item) => isString(item));
 }
 
@@ -39,7 +61,7 @@ export function isStringArray(arr: unknown): arr is string[] {
  * @param arr Array to check type of
  * @returns Whether arr is a number array
  */
-export function isNumberArray(arr: unknown): arr is number[] {
+function isNumberArray(arr: unknown): arr is number[] {
   return isArray(arr) && arr.every((item) => isNumber(item));
 }
 
@@ -48,7 +70,7 @@ export function isNumberArray(arr: unknown): arr is number[] {
  * @param obj Object to check type of
  * @returns Whether obj is a record
  */
-export function isRecord(obj: unknown): obj is Record<string | number | symbol, unknown> {
+function isRecord(obj: unknown): obj is Record<string | number | symbol, unknown> {
   return typeof obj === "object" && obj !== null && !Array.isArray(obj);
 }
 
@@ -57,7 +79,7 @@ export function isRecord(obj: unknown): obj is Record<string | number | symbol, 
  * @param obj Object to check type of
  * @returns Whether obj is a record of numbers
  */
-export function isNumberRecord(obj: unknown): obj is Record<number, unknown> {
+function isNumberRecord(obj: unknown): obj is Record<number, unknown> {
   return isRecord(obj) && isNumberArray(Object.keys(obj));
 }
 
@@ -66,6 +88,79 @@ export function isNumberRecord(obj: unknown): obj is Record<number, unknown> {
  * @param obj Object to check type of
  * @returns Whether obj is a record of strings
  */
-export function isStringRecord(obj: unknown): obj is Record<string, unknown> {
+function isStringRecord(obj: unknown): obj is Record<string, unknown> {
   return isRecord(obj) && isStringArray(Object.keys(obj));
+}
+
+/**
+ * Function to assert that a type guard is true and throws an error if it isn't
+ * @param value Value to assert type of
+ * @param expectedType Type expected from value
+ */
+export function assert<T extends ASSERT_TYPE>(value: unknown, expectedType: T): asserts value is ASSERT_TYPE_MAP[T] {
+  const message = `Assertion failed: ${value} was not ${expectedType}`;
+
+  switch (expectedType) {
+    case ASSERT_TYPE.NUM:
+      if (!isNumber(value)) throw new Error(message);
+      break;
+    case ASSERT_TYPE.STR:
+      if (!isString(value)) throw new Error(message);
+      break;
+    case ASSERT_TYPE.ARR:
+      if (!isArray(value)) throw new Error(message);
+      break;
+    case ASSERT_TYPE.RECORD:
+      if (!isArray(value)) throw new Error(message);
+      break;
+    case ASSERT_TYPE.NUM_ARR:
+      if (!isNumberArray(value)) throw new Error(message);
+      break;
+    case ASSERT_TYPE.STR_ARR:
+      if (!isStringArray(value)) throw new Error(message);
+      break;
+    case ASSERT_TYPE.NUM_RECORD:
+      if (!isNumberRecord(value)) throw new Error(message);
+      break;
+    case ASSERT_TYPE.STR_RECORD:
+      if (!isStringRecord(value)) throw new Error(message);
+      break;
+  }
+}
+
+/**
+ * Function to check that a type guard is true and returns false if it isn't
+ * @param value Value to check type of
+ * @param expectedType Type expected from value
+ * @returns Whether value is type expectedType
+ */
+export function check<T extends ASSERT_TYPE>(value: unknown, expectedType: T): value is ASSERT_TYPE_MAP[T] {
+  switch (expectedType) {
+    case ASSERT_TYPE.NUM:
+      if (!isNumber(value)) return false;
+      break;
+    case ASSERT_TYPE.STR:
+      if (!isString(value)) return false;
+      break;
+    case ASSERT_TYPE.ARR:
+      if (!isArray(value)) return false;
+      break;
+    case ASSERT_TYPE.RECORD:
+      if (!isArray(value)) return false;
+      break;
+    case ASSERT_TYPE.NUM_ARR:
+      if (!isNumberArray(value)) return false;
+      break;
+    case ASSERT_TYPE.STR_ARR:
+      if (!isStringArray(value)) return false;
+      break;
+    case ASSERT_TYPE.NUM_RECORD:
+      if (!isNumberRecord(value)) return false;
+      break;
+    case ASSERT_TYPE.STR_RECORD:
+      if (!isStringRecord(value)) return false;
+      break;
+  }
+
+  return true;
 }
