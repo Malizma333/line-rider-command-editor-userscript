@@ -82,20 +82,21 @@ export class App extends React.Component {
 
   updateStore(force = false): void {
     const riderCount = Selectors.getNumRiders(store.getState());
+    const stateDelta: Partial<RootState> = {};
 
     if (force || this.state.numRiders !== riderCount) {
       const { focusDropdown, gravityDropdown } = this.state;
 
       if (riderCount > 0) {
         this.triggerManager.updateRiderCount(riderCount);
-        this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
-        this.setState({ focusDropdown: Math.min(riderCount - 1, focusDropdown) });
-        this.setState({ gravityDropdown: Math.min(riderCount - 1, gravityDropdown) });
+        stateDelta.triggerUpdateFlag = !this.state.triggerUpdateFlag;
+        stateDelta.focusDropdown = Math.min(riderCount - 1, focusDropdown);
+        stateDelta.gravityDropdown = Math.min(riderCount - 1, gravityDropdown);
       } else if ([TRIGGER_ID.FOCUS, TRIGGER_ID.GRAVITY, TRIGGER_ID.SKIN].includes(this.state.activeTab)) {
-        this.setState({ activeTab: TRIGGER_ID.ZOOM });
+        stateDelta.activeTab = TRIGGER_ID.ZOOM;
       }
 
-      this.setState({ numRiders: riderCount });
+      stateDelta.numRiders = riderCount;
     }
 
     const layerIds = Selectors.getLayerIds(store.getState());
@@ -104,18 +105,20 @@ export class App extends React.Component {
       const { layerDropdown } = this.state;
 
       this.triggerManager.updateLayerMap(layerIds);
-      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
+      stateDelta.triggerUpdateFlag = !this.state.triggerUpdateFlag;
       if (!layerIds.includes(layerDropdown)) {
-        this.setState({ layerDropdown: layerIds[0] });
+        stateDelta.layerDropdown = layerIds[0];
       }
-      this.setState({ layerMap: layerIds });
+      stateDelta.layerMap = layerIds;
     }
 
     const sidebarOpen = Selectors.getSidebarOpen(store.getState());
 
     if (sidebarOpen) {
-      this.setState({ active: false });
+      stateDelta.active = false;
     }
+
+    this.setState(stateDelta);
   }
 
   onCreateTrigger(index: number): void {
@@ -418,10 +421,12 @@ export class App extends React.Component {
 
   onChangeGravityDD(value: number): void {
     this.setState({ gravityDropdown: value });
+    this.setState({ invalidTimes: validateTimes(this.triggerManager.data[TRIGGER_ID.GRAVITY].triggers[value]) });
   }
 
   onChangeLayerDD(value: number): void {
     this.setState({ layerDropdown: value });
+    this.setState({ invalidTimes: validateTimes(this.triggerManager.data[TRIGGER_ID.LAYER].triggers[value]) });
   }
 
   onCaptureCamera(index: number, triggerType: TRIGGER_ID) {
