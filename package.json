@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "build": "npx webpack",
-    "lint": "npx eslint ./src --fix"
+    "lint": "eslint ./src --fix"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

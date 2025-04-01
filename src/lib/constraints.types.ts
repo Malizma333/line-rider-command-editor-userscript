@@ -12,5 +12,4 @@ interface BoolConstraint {
   TYPE: CONSTRAINT_TYPE.BOOL
 }
 
-
 export type Constraint = NumContraint | BoolConstraint
