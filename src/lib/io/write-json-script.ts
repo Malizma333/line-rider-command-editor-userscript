@@ -9,7 +9,7 @@ import { retrieveIndex } from "../util";
 export default function writeJsonScript(currentTriggerData: TriggerDataLookup): unknown {
   return {
     version: 1, // Increment whenever version changes and need to reparse format
-    zoom: {
+    [TRIGGER_ID.ZOOM]: {
       smoothing: currentTriggerData[TRIGGER_ID.ZOOM].smoothing,
       triggers: currentTriggerData[TRIGGER_ID.ZOOM].triggers
           .map((trigger) => [
@@ -17,7 +17,7 @@ export default function writeJsonScript(currentTriggerData: TriggerDataLookup): 
             trigger[1],
           ]),
     },
-    pan: {
+    [TRIGGER_ID.PAN]: {
       smoothing: currentTriggerData[TRIGGER_ID.PAN].smoothing,
       triggers: currentTriggerData[TRIGGER_ID.PAN].triggers
           .map((trigger) => [
@@ -28,7 +28,7 @@ export default function writeJsonScript(currentTriggerData: TriggerDataLookup): 
             trigger[1].y,
           ]),
     },
-    focus: {
+    [TRIGGER_ID.FOCUS]: {
       smoothing: currentTriggerData[TRIGGER_ID.FOCUS].smoothing,
       triggers: currentTriggerData[TRIGGER_ID.FOCUS].triggers
           .map((trigger) => [
@@ -36,7 +36,7 @@ export default function writeJsonScript(currentTriggerData: TriggerDataLookup): 
             trigger[1].map((weight) => weight),
           ]),
     },
-    time: {
+    [TRIGGER_ID.TIME]: {
       interpolate: currentTriggerData[TRIGGER_ID.TIME].interpolate,
       triggers: currentTriggerData[TRIGGER_ID.TIME].triggers
           .map((trigger) => [
@@ -44,7 +44,7 @@ export default function writeJsonScript(currentTriggerData: TriggerDataLookup): 
             trigger[1],
           ]),
     },
-    skin: {
+    [TRIGGER_ID.SKIN]: {
       triggers: currentTriggerData[TRIGGER_ID.SKIN].triggers
           .map((trigger) => Object.fromEntries(
               Object.entries(trigger).map(([key, value]) => (
@@ -52,7 +52,7 @@ export default function writeJsonScript(currentTriggerData: TriggerDataLookup): 
               )),
           )),
     },
-    gravity: {
+    [TRIGGER_ID.GRAVITY]: {
       triggers: currentTriggerData[TRIGGER_ID.GRAVITY].triggers
           .map((riderTriggers) => (
             riderTriggers.map((trigger) => [
@@ -62,7 +62,7 @@ export default function writeJsonScript(currentTriggerData: TriggerDataLookup): 
             ])
           )),
     },
-    layer: {
+    [TRIGGER_ID.LAYER]: {
       interpolate: currentTriggerData[TRIGGER_ID.LAYER].interpolate,
       triggers: Object.fromEntries(
           Object.entries(currentTriggerData[TRIGGER_ID.LAYER].triggers)

@@ -1,6 +1,7 @@
 import { TriggerDataManager, TRIGGER_DATA_KEYS } from "../TriggerDataManager";
 import { TRIGGER_ID, TriggerDataLookup } from "../TriggerDataManager.types";
 import parseV0Command from "./read-json-v0-script";
+import parseV1Command from "./read-json-v1-script";
 import { assert, ASSERT_TYPE } from "./type-guards";
 
 /**
@@ -22,6 +23,8 @@ export default function readJsonScript(
 
   if (fileObject.version === undefined || fileObject.version === 0) {
     version = 0;
+  } else if (fileObject.version === 1) {
+    version = 1;
   } else {
     console.error(`[ScriptParser.parseScript()] Invalid file version!`);
     return currentTriggerData;
@@ -30,8 +33,15 @@ export default function readJsonScript(
   TRIGGER_DATA_KEYS.forEach((commandId) => {
     try {
       triggerData[commandId].triggers = [];
-      if (version === 0) {
-        parseV0Command(commandId, fileObject, triggerData);
+      switch (version) {
+        case 0:
+          parseV0Command(commandId, fileObject, triggerData);
+          break;
+        case 1:
+          parseV1Command(commandId, fileObject, triggerData);
+          break;
+        default:
+          break;
       }
     } catch (error) {
       if (error instanceof Error) {

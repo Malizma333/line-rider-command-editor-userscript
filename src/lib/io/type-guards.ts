@@ -4,20 +4,16 @@ export enum ASSERT_TYPE {
   ARR = "Array",
   NUM_ARR = "Array<number>",
   STR_ARR = "Array<string>",
-  RECORD = "Record",
-  NUM_RECORD = "Record<number, unknown>",
-  STR_RECORD = "Record<string, unknown>",
+  RECORD = "Record<string>",
 }
 
 interface ASSERT_TYPE_MAP {
   [ASSERT_TYPE.NUM]: number;
   [ASSERT_TYPE.STR]: string;
   [ASSERT_TYPE.ARR]: unknown[];
-  [ASSERT_TYPE.RECORD]: Record<string | number | symbol, unknown>;
   [ASSERT_TYPE.NUM_ARR]: number[];
   [ASSERT_TYPE.STR_ARR]: string[];
-  [ASSERT_TYPE.NUM_RECORD]: Record<number, unknown>;
-  [ASSERT_TYPE.STR_RECORD]: Record<string, unknown>;
+  [ASSERT_TYPE.RECORD]: Record<string, unknown>;
 }
 
 /**
@@ -68,28 +64,10 @@ function isNumberArray(arr: unknown): arr is number[] {
 /**
  * Type guard to check if an object is a valid record
  * @param obj Object to check type of
- * @returns Whether obj is a record
+ * @returns Whether obj is a record with string keys
  */
-function isRecord(obj: unknown): obj is Record<string | number | symbol, unknown> {
-  return typeof obj === "object" && obj !== null && !Array.isArray(obj);
-}
-
-/**
- * Type guard to check if an object is a record with numbers as keys
- * @param obj Object to check type of
- * @returns Whether obj is a record of numbers
- */
-function isNumberRecord(obj: unknown): obj is Record<number, unknown> {
-  return isRecord(obj) && isNumberArray(Object.keys(obj));
-}
-
-/**
- * Type guard to check if an object is a record with strings as keys
- * @param obj Object to check type of
- * @returns Whether obj is a record of strings
- */
-function isStringRecord(obj: unknown): obj is Record<string, unknown> {
-  return isRecord(obj) && isStringArray(Object.keys(obj));
+function isRecord(obj: unknown): obj is Record<string, unknown> {
+  return typeof obj === "object" && obj !== null && isStringArray(Object.keys(obj));
 }
 
 /**
@@ -111,19 +89,13 @@ export function assert<T extends ASSERT_TYPE>(value: unknown, expectedType: T): 
       if (!isArray(value)) throw new Error(message);
       break;
     case ASSERT_TYPE.RECORD:
-      if (!isArray(value)) throw new Error(message);
+      if (!isRecord(value)) throw new Error(message);
       break;
     case ASSERT_TYPE.NUM_ARR:
       if (!isNumberArray(value)) throw new Error(message);
       break;
     case ASSERT_TYPE.STR_ARR:
       if (!isStringArray(value)) throw new Error(message);
-      break;
-    case ASSERT_TYPE.NUM_RECORD:
-      if (!isNumberRecord(value)) throw new Error(message);
-      break;
-    case ASSERT_TYPE.STR_RECORD:
-      if (!isStringRecord(value)) throw new Error(message);
       break;
   }
 }
@@ -146,19 +118,13 @@ export function check<T extends ASSERT_TYPE>(value: unknown, expectedType: T): v
       if (!isArray(value)) return false;
       break;
     case ASSERT_TYPE.RECORD:
-      if (!isArray(value)) return false;
+      if (!isRecord(value)) return false;
       break;
     case ASSERT_TYPE.NUM_ARR:
       if (!isNumberArray(value)) return false;
       break;
     case ASSERT_TYPE.STR_ARR:
       if (!isStringArray(value)) return false;
-      break;
-    case ASSERT_TYPE.NUM_RECORD:
-      if (!isNumberRecord(value)) return false;
-      break;
-    case ASSERT_TYPE.STR_RECORD:
-      if (!isStringRecord(value)) return false;
       break;
   }
 

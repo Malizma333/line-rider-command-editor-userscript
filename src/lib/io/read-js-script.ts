@@ -128,7 +128,7 @@ function parsePanTriggers(triggerArray: unknown[]): CameraPanTrigger[] {
 
     const panProp = trigger[1];
 
-    assert(panProp, ASSERT_TYPE.STR_RECORD);
+    assert(panProp, ASSERT_TYPE.RECORD);
 
     const { x, y, w, h } = panProp;
 

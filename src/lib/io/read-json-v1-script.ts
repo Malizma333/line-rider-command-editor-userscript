@@ -9,7 +9,6 @@ import {
   TimeRemapTrigger,
   TRIGGER_ID,
   TriggerDataLookup,
-  TriggerTime,
   ZoomTrigger,
 } from "../TriggerDataManager.types";
 import { retrieveTimestamp } from "../util";
@@ -21,7 +20,7 @@ import { assert, ASSERT_TYPE, check } from "./type-guards";
  * @param fileObject The object that needs parsing
  * @param triggerData The trigger data object to write script data to
  */
-export default function parseV0Command(
+export default function parseV1Command(
     commandId: TRIGGER_ID,
     fileObject: Record<string, unknown>,
     triggerData: TriggerDataLookup,
@@ -29,6 +28,14 @@ export default function parseV0Command(
   const command = fileObject[commandId];
 
   assert(command, ASSERT_TYPE.RECORD);
+
+  if (commandId === TRIGGER_ID.LAYER) {
+    assert(command["triggers"], ASSERT_TYPE.RECORD);
+    triggerData[commandId].triggers = parseLayerTriggers(command["triggers"]);
+    triggerData[commandId].interpolate = parseBooleanSmoothing(command["interpolate"]);
+    return;
+  }
+
   assert(command["triggers"], ASSERT_TYPE.ARR);
 
   switch (commandId) {
@@ -54,10 +61,6 @@ export default function parseV0Command(
     case TRIGGER_ID.GRAVITY:
       triggerData[commandId].triggers = parseGravityTriggers(command["triggers"]);
       break;
-    case TRIGGER_ID.LAYER:
-      triggerData[commandId].triggers = parseLayerTriggers(command["triggers"]);
-      triggerData[commandId].interpolate = parseBooleanSmoothing(command["interpolate"]);
-      break;
     default:
       break;
   }
@@ -72,13 +75,9 @@ function parseZoomTriggers(triggerArray: unknown[]): ZoomTrigger[] {
   const triggers: ZoomTrigger[] = [];
 
   for (const trigger of triggerArray) {
-    assert(trigger, ASSERT_TYPE.ARR);
+    assert(trigger, ASSERT_TYPE.NUM_ARR);
 
-    const zoomProp = trigger[1];
-
-    assert(zoomProp, ASSERT_TYPE.NUM);
-
-    const newTrigger: ZoomTrigger = [parseTime(trigger[0]), zoomProp] as ZoomTrigger;
+    const newTrigger: ZoomTrigger = [retrieveTimestamp(trigger[0]), trigger[1]] as ZoomTrigger;
 
     triggers.push(newTrigger);
   }
@@ -95,20 +94,11 @@ function parsePanTriggers(triggerArray: unknown[]): CameraPanTrigger[] {
   const triggers: CameraPanTrigger[] = [];
 
   for (const trigger of triggerArray) {
-    assert(trigger, ASSERT_TYPE.ARR);
+    assert(trigger, ASSERT_TYPE.NUM_ARR);
 
-    const panProp = trigger[1];
+    const [time, w, h, x, y] = trigger;
 
-    assert(panProp, ASSERT_TYPE.RECORD);
-
-    const { x, y, w, h } = panProp;
-
-    assert(x, ASSERT_TYPE.NUM);
-    assert(y, ASSERT_TYPE.NUM);
-    assert(w, ASSERT_TYPE.NUM);
-    assert(h, ASSERT_TYPE.NUM);
-
-    const newTrigger: CameraPanTrigger = [parseTime(trigger[0]), { x, y, w, h }];
+    const newTrigger: CameraPanTrigger = [retrieveTimestamp(time), { x, y, w, h }];
 
     triggers.push(newTrigger);
   }
@@ -127,11 +117,12 @@ function parseFocusTriggers(triggerArray: unknown[]): CameraFocusTrigger[] {
   for (const trigger of triggerArray) {
     assert(trigger, ASSERT_TYPE.ARR);
 
-    const focusProp = trigger[1];
+    const [time, focusProp] = trigger;
 
+    assert(time, ASSERT_TYPE.NUM);
     assert(focusProp, ASSERT_TYPE.NUM_ARR);
 
-    const newTrigger: CameraFocusTrigger = [parseTime(trigger[0]), focusProp];
+    const newTrigger: CameraFocusTrigger = [retrieveTimestamp(time), focusProp];
 
     triggers.push(newTrigger);
   }
@@ -148,13 +139,9 @@ function parseTimeTriggers(triggerArray: unknown[]): TimeRemapTrigger[] {
   const triggers: TimeRemapTrigger[] = [];
 
   for (const trigger of triggerArray) {
-    assert(trigger, ASSERT_TYPE.ARR);
+    assert(trigger, ASSERT_TYPE.NUM_ARR);
 
-    const timeRemapProp = trigger[1];
-
-    assert(timeRemapProp, ASSERT_TYPE.NUM);
-
-    const newTrigger: TimeRemapTrigger = [parseTime(trigger[0]), timeRemapProp] as TimeRemapTrigger;
+    const newTrigger: TimeRemapTrigger = [retrieveTimestamp(trigger[0]), trigger[1]] as TimeRemapTrigger;
 
     triggers.push(newTrigger);
   }
@@ -239,97 +226,51 @@ function parseSkinTriggers(skinMapArray: unknown[]): SkinCssTrigger[] {
  * @returns New array of valid triggers
  */
 function parseGravityTriggers(arr: unknown[]): GravityTrigger[][] {
-  const triggers: GravityTrigger[][] = [];
+  const overallNewTriggers: GravityTrigger[][] = [];
 
-  for (const trigger of arr) {
-    assert(trigger, ASSERT_TYPE.ARR);
-    assert(trigger[0], ASSERT_TYPE.NUM_ARR);
+  for (const riderTriggers of arr) {
+    assert(riderTriggers, ASSERT_TYPE.ARR);
+    const newRiderTriggers: GravityTrigger[] = [];
+    for (const trigger of riderTriggers) {
+      assert(trigger, ASSERT_TYPE.NUM_ARR);
 
-    if (trigger[0].length < 3) {
-      throw new Error("Trigger time did not have valid length!");
+      const newTrigger: GravityTrigger = [
+        retrieveTimestamp(trigger[0]),
+        { x: trigger[1], y: trigger[2] },
+      ];
+
+      newRiderTriggers.push(newTrigger);
     }
-
-    const triggerTime: TriggerTime = [trigger[0][0], trigger[0][1], trigger[0][2]];
-
-    assert(trigger[1], ASSERT_TYPE.ARR);
-
-    for (let i = 0; i < trigger[1].length; i++) {
-      const record: unknown = trigger[1][i];
-
-      assert(record, ASSERT_TYPE.RECORD);
-      assert(record["x"], ASSERT_TYPE.NUM);
-      assert(record["y"], ASSERT_TYPE.NUM);
-
-      while (triggers.length <= i) {
-        triggers.push([]);
-      }
-
-      triggers[i].push([triggerTime, { x: record["x"], y: record["y"] }]);
-    }
+    overallNewTriggers.push(newRiderTriggers);
   }
 
-  return triggers;
+  return overallNewTriggers;
 }
 
 /**
  * Converts a legacy array of layer triggers to the v1 format
- * @param arr Array of old triggers to convert
+ * @param layerMap Array of old triggers to convert
  * @returns New record of valid triggers
  */
-function parseLayerTriggers(arr: unknown[]): Record<number, LayerTrigger[]> {
-  const triggers: Record<number, LayerTrigger[]> = {};
+function parseLayerTriggers(layerMap: Record<string, unknown>): Record<number, LayerTrigger[]> {
+  const overallNewTriggers: Record<number, LayerTrigger[]> = {};
 
-  for (const trigger of arr) {
-    assert(trigger, ASSERT_TYPE.ARR);
-    assert(trigger[0], ASSERT_TYPE.NUM_ARR);
+  for (const id of Object.keys(layerMap)) {
+    const currentLayerId = parseInt(id);
+    overallNewTriggers[currentLayerId] = [];
 
-    if (trigger[0].length < 3) {
-      throw new Error("Trigger time did not have valid length!");
-    }
+    const layerTriggers = layerMap[id];
+    assert(layerTriggers, ASSERT_TYPE.ARR);
 
-    const triggerTime: TriggerTime = [trigger[0][0], trigger[0][1], trigger[0][2]];
-    const record: unknown = trigger[1];
+    for (const trigger of layerTriggers) {
+      assert(trigger, ASSERT_TYPE.NUM_ARR);
 
-    assert(record, ASSERT_TYPE.RECORD);
-    assert(record["id"], ASSERT_TYPE.NUM);
-    assert(record["on"], ASSERT_TYPE.NUM);
-    assert(record["off"], ASSERT_TYPE.NUM);
-    assert(record["offset"], ASSERT_TYPE.NUM);
-
-    if (!(record["id"] in triggers)) {
-      triggers[record["id"]] = [];
-    }
-
-    triggers[record["id"]].push([triggerTime, { on: record["on"], off: record["off"], offset: record["offset"] }]);
-  }
-
-  return triggers;
-}
-
-/**
- * Parses a timestamp
- * @param timestamp Time stamp to parse
- * @returns Valid timestamp converted to trigger time
- */
-function parseTime(timestamp: unknown): TriggerTime {
-  let parsedTimestamp: TriggerTime = [0, 0, 0];
-
-  if (check(timestamp, ASSERT_TYPE.NUM)) {
-    const index = timestamp;
-    parsedTimestamp = retrieveTimestamp(index);
-  } else {
-    assert(timestamp, ASSERT_TYPE.NUM_ARR);
-
-    if (timestamp.length === 1) {
-      const index = timestamp[0];
-      parsedTimestamp = retrieveTimestamp(index);
-    } else if (timestamp.length === 2) {
-      const index = timestamp[0] * 40 + timestamp[1];
-      parsedTimestamp = retrieveTimestamp(index);
-    } else {
-      const index = timestamp[0] * 2400 + timestamp[1] * 40 + timestamp[2];
-      parsedTimestamp = retrieveTimestamp(index);
+      overallNewTriggers[currentLayerId].push([
+        retrieveTimestamp(trigger[0]),
+        { on: trigger[1], off: trigger[2], offset: trigger[3] },
+      ]);
     }
   }
-  return parsedTimestamp;
+
+  return overallNewTriggers;
 }
