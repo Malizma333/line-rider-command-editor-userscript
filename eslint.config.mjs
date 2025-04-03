@@ -99,8 +99,6 @@ const rules = {
   'yield-star-spacing': [2, 'after'],
   '@typescript-eslint/no-empty-object-type': [2, {allowInterfaces: 'with-single-extends'}],
   'linebreak-style': [2, 'unix'],
-  'jsdoc/require-description': [1, {contexts: ['any']}],
-  'jsdoc/require-jsdoc': [1, {require: { ClassDeclaration: true, MethodDefinition: true}}]
 };
 
 export default tseslint.config(
@@ -109,14 +107,18 @@ export default tseslint.config(
   tseslint.configs.stylistic,
   tseslint.configs.recommended,
   jsdoc.configs['flat/recommended-typescript'],
+  { ignores: ["command-editor.min.js", "**/*.config.*"] },
   {
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        myCustomGlobal: "readonly"
-      }
+    ignores: ["**/*.tsx"],
+    languageOptions: { globals: globals.browser },
+    rules: {
+      ...rules,
+      'jsdoc/require-description': [1, {contexts: ['any']}],
+      'jsdoc/require-jsdoc': [1, {require: { ClassDeclaration: true, MethodDefinition: true}}]
     },
-    rules,
-    ignores: ["command-editor.min.js", "**/*.config.*"]
+  },
+  {
+    languageOptions: { globals: globals.browser },
+    rules: rules
   }
 );
