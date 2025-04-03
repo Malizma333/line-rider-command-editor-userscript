@@ -116,29 +116,51 @@ export const TRIGGER_DATA_KEYS = [
   TRIGGER_ID.LAYER,
 ];
 
+/**
+ * Class to manage trigger data and updates throughout the mod
+ */
 export class TriggerDataManager {
   private triggerData: TriggerDataLookup;
   private undoStack: HistoryItem[];
   private redoStack: HistoryItem[];
 
+  /**
+   * Creates a new trigger manager by initializing the data and history stacks
+   */
   constructor() {
     this.triggerData = TriggerDataManager.initialTriggerData;
     this.undoStack = [];
     this.redoStack = [];
   }
 
+  /**
+   * Makes a copy of {@link INIT_TRIGGER_DATA}
+   * @returns Copy of the initial trigger data structure
+   */
   static get initialTriggerData(): TriggerDataLookup {
     return structuredClone(INIT_TRIGGER_DATA);
   }
 
+  /**
+   * Gets the current trigger data
+   * @returns This trigger managers data
+   */
   get data() {
     return this.triggerData;
   }
 
+  /**
+   * Gets how many undo actions are available
+   * @returns The length of the undo stack
+   */
   get undoLen(): number {
     return this.undoStack.length;
   }
 
+  /**
+   * Gets how many redo actions are available
+   * @returns The length of the redo stack
+   */
   get redoLen(): number {
     return this.redoStack.length;
   }
@@ -219,6 +241,12 @@ export class TriggerDataManager {
     this.triggerData[TRIGGER_ID.LAYER].triggers = filteredTriggers;
   }
 
+  /**
+   * Updates a value in the trigger data from a given path
+   * @param path The path to update the value at
+   * @param newValue The new value to write there
+   * @param location The section of trigger data being written to
+   */
   updateFromPath(path: string[], newValue: PathValue, location: TRIGGER_ID): void {
     const HISTORY_LIMIT = 30;
     this.redoStack = [];
@@ -229,6 +257,10 @@ export class TriggerDataManager {
     }
   }
 
+  /**
+   * Undoes an action that was performed by {@link TriggerDataManager.updateFromPath}
+   * @returns The location where the action was performed, or null if the undo stack is empty
+   */
   undo(): TRIGGER_ID | null {
     const previous = this.undoStack.pop();
 
@@ -243,6 +275,10 @@ export class TriggerDataManager {
     return activeTab;
   }
 
+  /**
+   * Redoes an action that was performed by {@link TriggerDataManager.undo}
+   * @returns The location where the action was undone, or null if the redo stack is empty
+   */
   redo(): TRIGGER_ID | null {
     const next = this.redoStack.pop();
 
