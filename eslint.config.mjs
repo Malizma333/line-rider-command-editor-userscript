@@ -97,8 +97,10 @@ const rules = {
   'prefer-spread': 2,
   'rest-spread-spacing': 2,
   'yield-star-spacing': [2, 'after'],
-  '@typescript-eslint/no-empty-object-type': [2, { allowInterfaces: 'with-single-extends' }],
+  '@typescript-eslint/no-empty-object-type': [2, {allowInterfaces: 'with-single-extends'}],
   'linebreak-style': [2, 'unix'],
+  'jsdoc/require-description': [1, {contexts: ['any']}],
+  'jsdoc/require-jsdoc': [1, {require: { ClassDeclaration: true, MethodDefinition: true}}]
 };
 
 export default tseslint.config(
