@@ -582,17 +582,32 @@ export class App extends React.Component {
     return <div style={GLOBAL_STYLES.windowHead}>
       {activeTab === TRIGGER_ID.ZOOM &&
         <>
-          {this.renderFloatPicker("Smoothing", data[activeTab].smoothing.toString(), ["smoothing"], 0)}
+          {this.renderFloatPicker({
+            label: "Smoothing",
+            value: data[activeTab].smoothing.toString(),
+            path: ["smoothing"],
+            min: 0,
+          })}
         </>
       }
       {activeTab === TRIGGER_ID.PAN &&
         <>
-          {this.renderFloatPicker("Smoothing", data[activeTab].smoothing.toString(), ["smoothing"], 0)}
+          {this.renderFloatPicker({
+            label: "Smoothing",
+            value: data[activeTab].smoothing.toString(),
+            path: ["smoothing"],
+            min: 0,
+          })}
         </>
       }
       {activeTab === TRIGGER_ID.FOCUS &&
         <>
-          {this.renderFloatPicker("Smoothing", data[activeTab].smoothing.toString(), ["smoothing"], 0)}
+          {this.renderFloatPicker({
+            label: "Smoothing",
+            value: data[activeTab].smoothing.toString(),
+            path: ["smoothing"],
+            min: 0,
+          })}
           <Dropdown
             customStyle={{ margin: "0em .25em" }}
             value={this.state.focusDropdown}
@@ -675,55 +690,67 @@ export class App extends React.Component {
   }
 
   renderTimeInput(data: TriggerTime, index: number) {
-    const constraintProps = [[0, 999], [0, 59], [0, 39]];
-    const labels = ["Time", ":", ":"];
+    const props = [
+      { id: "0", label: "Time", min: 0, max: 999 },
+      { id: "1", label: ":", min: 0, max: 59 },
+      { id: "2", label: ":", min: 0, max: 39 },
+    ] as const;
 
-    const path = this.state.activeTab === TRIGGER_ID.GRAVITY ?
-      ["triggers", this.state.gravityDropdown.toString(), index.toString(), "0"] :
+    const pathHead = this.state.activeTab === TRIGGER_ID.GRAVITY ?
+      ["triggers", this.state.gravityDropdown.toString()] :
       this.state.activeTab === TRIGGER_ID.LAYER ?
-      ["triggers", this.state.layerDropdown.toString(), index.toString(), "0"] :
-      ["triggers", index.toString(), "0"];
+      ["triggers", this.state.layerDropdown.toString()] :
+      ["triggers"];
 
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {...data.map((timeValue, timeIndex) => {
+      {...props.map((prop) => {
+        const path = pathHead.concat([index.toString(), "0", prop.id]);
+
         return <div>
-          {this.renderIntPicker(
-              labels[timeIndex],
-              timeValue.toString(),
-              path.concat([timeIndex.toString()]),
-              constraintProps[index][0],
-              constraintProps[index][1],
-              this.state.invalidTimes[index] ? "red" : GLOBAL_STYLES.root.color,
-          )}
+          {this.renderIntPicker({
+            label: prop.label,
+            value: data[parseInt(prop.id)].toString(),
+            path,
+            min: prop.min,
+            max: prop.max,
+            customStyle: { color: this.state.invalidTimes[index] ? "red" : GLOBAL_STYLES.root.color },
+          })}
         </div>;
       })}
     </div>;
   }
 
   renderZoomTrigger(data: ZoomTrigger, index: number) {
+    const path = ["triggers", index.toString(), "1"];
+
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {this.renderFloatPicker(
-          "Zoom To",
-          data[1].toString(),
-          ["triggers", index.toString(), "1"],
-      )}
+      {this.renderFloatPicker({
+        label: "Zoom To",
+        value: data[1].toString(),
+        path,
+      })}
     </div>;
   }
 
   renderPanTrigger(data: CameraPanTrigger, index: number) {
-    const labels = ["Width", "Height", "Offset X", "Y"];
+    const props = [
+      [{ id: "w", label: "Width", min: 0 }, { id: "h", label: "Height", min: 0 }],
+      [{ id: "x", label: "Offset X", min: -Number.MAX_VALUE }, { id: "y", label: "Offset Y", min: -Number.MAX_VALUE }],
+    ] as const;
 
     return <div>
-      {...([["w", "h"], ["x", "y"]] as const).map((pair, pairIndex) => {
+      {...props.map((pair) => {
         return <div style={{ display: "flex", flexDirection: "row" }}>
-          {...pair.map((prop, propIndex) => {
+          {...pair.map((prop) => {
+            const path = ["triggers", index.toString(), "1", prop.id];
+
             return <div style={GLOBAL_STYLES.triggerPropContainer}>
-              {this.renderFloatPicker(
-                  labels[propIndex + 2 * pairIndex],
-                  data[1][prop].toString(),
-                  ["triggers", index.toString(), "1", prop],
-                  pairIndex === 0 ? 0 : -Number.MAX_VALUE,
-              )}
+              {this.renderFloatPicker({
+                label: prop.label,
+                value: data[1][prop.id].toString(),
+                path,
+                min: prop.min,
+              })}
             </div>;
           })}
         </div>;
@@ -732,59 +759,70 @@ export class App extends React.Component {
   }
 
   renderFocusTrigger(data: CameraFocusTrigger, index: number) {
-    const dropdownIndex = this.state.focusDropdown;
+    const path = ["triggers", index.toString(), "1", this.state.focusDropdown.toString()];
 
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {this.renderFloatPicker(
-          "Weight",
-          data[1][dropdownIndex].toString(),
-          ["triggers", index.toString(), "1", dropdownIndex.toString()],
-          0,
-      )}
+      {this.renderFloatPicker({
+        label: "Weight",
+        value: data[1][this.state.focusDropdown].toString(),
+        path,
+        min: 0,
+      })}
     </div>;
   }
 
   renderRemapTrigger(data: TimeRemapTrigger, index: number) {
+    const path = ["triggers", index.toString(), "1"];
+
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {this.renderFloatPicker(
-          "Speed",
-          data[1].toString(),
-          ["triggers", index.toString(), "1"],
-          0.001,
-      )}
+      {this.renderFloatPicker({
+        label: "Speed",
+        value: data[1].toString(),
+        path,
+        min: 0.001,
+      })}
     </div>;
   }
 
   renderGravityTrigger(data: GravityTrigger, index: number) {
-    const labels = ["X", "Y"];
-    const { gravityDropdown } = this.state;
+    const props = [
+      { id: "x", label: "X" },
+      { id: "y", label: "Y" },
+    ] as const;
 
     return <div style={{ display: "flex", flexDirection: "row" }}>
-      {...(["x", "y"] as const).map((prop, propIndex) => {
+      {...props.map((prop) => {
+        const path = ["triggers", this.state.gravityDropdown.toString(), index.toString(), "1", prop.id];
+
         return <div style={GLOBAL_STYLES.triggerPropContainer}>
-          {this.renderFloatPicker(
-              labels[propIndex],
-              data[1][prop].toString(),
-              ["triggers", gravityDropdown.toString(), index.toString(), "1", prop],
-          )}
+          {this.renderFloatPicker({
+            label: prop.label,
+            value: data[1][prop.id].toString(),
+            path,
+          })}
         </div>;
       })}
     </div>;
   }
 
   renderLayerTrigger(data: LayerTrigger, index: number) {
-    const labels = ["ON", "OFF", "OFFSET"];
-    const { layerDropdown } = this.state;
+    const props = [
+      { id: "on", label: "ON" },
+      { id: "off", label: "OFF" },
+      { id: "offset", label: "OFFSET" },
+    ] as const;
 
     return <div style={{ display: "flex", flexDirection: "row" }}>
-      {...(["on", "off", "offset"] as const).map((prop, propIndex) => {
+      {...props.map((prop) => {
+        const path = ["triggers", this.state.layerDropdown.toString(), index.toString(), "1", prop.id];
+
         return <div style={GLOBAL_STYLES.triggerPropContainer}>
-          {this.renderIntPicker(
-              labels[propIndex],
-              data[1][prop].toString(),
-              ["triggers", layerDropdown.toString(), index.toString(), "1", prop],
-              0,
-          )}
+          {this.renderIntPicker({
+            label: prop.label,
+            value: data[1][prop.id].toString(),
+            path,
+            min: 0,
+          })}
         </div>;
       })}
     </div>;
@@ -804,34 +842,40 @@ export class App extends React.Component {
     </div>;
   }
 
-  renderIntPicker(labelText: string, value: string, propPath: string[], min?: number, max?: number, color?: string) {
+  renderIntPicker(
+      { label, value, path, min, max, customStyle } :
+      { label: string, value: string, path: string[], min?: number, max?: number, customStyle?: React.CSSProperties },
+  ) {
     return <div style={GLOBAL_STYLES.triggerRowContainer}>
-      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={propPath.join("-")}>
-        {labelText}
+      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={path.join("-")}>
+        {label}
       </label>
       <IntPicker
-        customStyle={{ ...GLOBAL_STYLES.spacedProperty, color: color || GLOBAL_STYLES.root.color }}
-        id={propPath.join("-")}
+        customStyle={{ ...GLOBAL_STYLES.spacedProperty, ...customStyle }}
+        id={path.join("-")}
         value={value}
-        min={min || -Number.MAX_SAFE_INTEGER}
-        max={max || Number.MAX_SAFE_INTEGER}
-        onChange={(v: string) => this.onUpdateTrigger(v, propPath)}
+        min={min}
+        max={max}
+        onChange={(v: number) => this.onUpdateTrigger(v, path)}
       ></IntPicker>
     </div>;
   }
 
-  renderFloatPicker(labelText: string, value: string, propPath: string[], min?: number, max?: number, color?: string) {
+  renderFloatPicker(
+      { label, value, path, min, max, customStyle } :
+      { label: string, value: string, path: string[], min?: number, max?: number, customStyle?: React.CSSProperties },
+  ) {
     return <div style={GLOBAL_STYLES.triggerRowContainer}>
-      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={propPath.join("-")}>
-        {labelText}
+      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={path.join("-")}>
+        {label}
       </label>
       <FloatPicker
-        customStyle={{ ...GLOBAL_STYLES.spacedProperty, color: color || GLOBAL_STYLES.root.color }}
-        id={propPath.join("-")}
+        customStyle={{ ...GLOBAL_STYLES.spacedProperty, ...customStyle }}
+        id={path.join("-")}
         value={value}
-        min={min || -Number.MAX_VALUE}
-        max={max || Number.MAX_VALUE}
-        onChange={(v: string) => this.onUpdateTrigger(v, propPath)}
+        min={min}
+        max={max}
+        onChange={(v: number) => this.onUpdateTrigger(v, path)}
       ></FloatPicker>
     </div>;
   }

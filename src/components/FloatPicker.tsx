@@ -1,6 +1,17 @@
 import { COLOR, THEME } from "../styles";
 const { React } = window;
 
+interface Props {
+  customStyle: React.CSSProperties,
+  id: string,
+  value: string,
+  min?: number,
+  max?: number,
+  onChange: (v: number) => void
+};
+
+interface State { value: string }
+
 /**
  * Validates the number for a custom float picker
  * @param prevValue Value that this field previously took on
@@ -15,12 +26,12 @@ function clampFloat(prevValue: string, newValue: string, bounded: boolean, min: 
     const parsedValue = Number(newValue);
 
     if (isNaN(parsedValue)) {
-      return "0";
+      return min.toString();
     }
 
     return Math.min(max, Math.max(min, parsedValue)).toString();
   } else {
-    const floatRegex = new RegExp("[+-]?([0-9]*[.])?[0-9]*");
+    const floatRegex = new RegExp("^[+-]?([0-9]*[.])?[0-9]*$");
 
     if (!floatRegex.test(newValue)) {
       return prevValue;
@@ -53,24 +64,40 @@ const style: React.CSSProperties = {
  * @param root0.onChange Function ran whenever this value changes
  * @returns Custom float input
  */
-export default function FloatPicker(
-    { customStyle, id, value, min, max, onChange }:
-  { customStyle: React.CSSProperties, id: string, value: string, min: number, max: number,
-    onChange: (v: string) => void },
-) {
-  return (
-    <input
-      style={{ ...style, ...customStyle }}
-      id={id}
-      value={value}
-      min={min}
-      max={max}
-      onChange={(e: React.ChangeEvent) => onChange(
-          clampFloat(value, (e.target as HTMLInputElement).value, false, min, max),
-      )}
-      onBlur={(e: React.ChangeEvent) => onChange(
-          clampFloat(value, (e.target as HTMLInputElement).value, true, min, max),
-      )}
-    />
-  );
+export default class FloatPicker extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      value: props.value,
+    };
+  }
+
+  onSet(e: React.ChangeEvent, confirm: boolean) {
+    const min = this.props.min === undefined ? -Number.MAX_SAFE_INTEGER : this.props.min;
+    const max = this.props.max === undefined ? Number.MAX_SAFE_INTEGER : this.props.max;
+
+    const value = clampFloat(this.state.value, (e.target as HTMLInputElement).value, confirm, min, max);
+    this.setState({ value });
+
+    if (confirm) {
+      this.props.onChange(parseFloat(value));
+    }
+  }
+
+  render() {
+    const { customStyle, id } = this.props;
+
+    return (
+      <input
+        style={{ ...style, ...customStyle }}
+        id={id}
+        value={this.state.value}
+        min={this.props.min}
+        max={this.props.max}
+        onChange={(e: React.ChangeEvent) => this.onSet(e, false)}
+        onBlur={(e: React.ChangeEvent) => this.onSet(e, true)}
+      />
+    );
+  }
 }
