@@ -17,7 +17,6 @@ import writeJsonScript from "./lib/io/write-json-script";
 import { getSetting, TEXT_SIZES } from "./lib/settings-storage";
 import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from "./lib/settings-storage.types";
 import { validateTimes, formatSkins, generateScript, extractTriggerArray } from "./lib/util";
-import { CONSTRAINT } from "./lib/constraints";
 import { GLOBAL_STYLES } from "./styles";
 
 import * as Actions from "./lib/redux-actions";
@@ -30,7 +29,6 @@ import IconButton from "./components/IconButton";
 import SkinEditor from "./pages/SkinEditor";
 import Settings from "./pages/Settings";
 import Checkbox from "./components/Checkbox";
-import { Constraint, CONSTRAINT_TYPE } from "./lib/constraints.types";
 import Dropdown from "./components/Dropdown";
 import FloatingButton from "./components/FloatingButton";
 
@@ -584,17 +582,17 @@ export class App extends React.Component {
     return <div style={GLOBAL_STYLES.windowHead}>
       {activeTab === TRIGGER_ID.ZOOM &&
         <>
-          {this.renderTriggerProp("Smoothing", data[activeTab].smoothing, ["smoothing"], CONSTRAINT.SMOOTH)}
+          {this.renderFloatPicker("Smoothing", data[activeTab].smoothing.toString(), ["smoothing"], 0)}
         </>
       }
       {activeTab === TRIGGER_ID.PAN &&
         <>
-          {this.renderTriggerProp("Smoothing", data[activeTab].smoothing, ["smoothing"], CONSTRAINT.SMOOTH)}
+          {this.renderFloatPicker("Smoothing", data[activeTab].smoothing.toString(), ["smoothing"], 0)}
         </>
       }
       {activeTab === TRIGGER_ID.FOCUS &&
         <>
-          {this.renderTriggerProp("Smoothing", data[activeTab].smoothing, ["smoothing"], CONSTRAINT.SMOOTH)}
+          {this.renderFloatPicker("Smoothing", data[activeTab].smoothing.toString(), ["smoothing"], 0)}
           <Dropdown
             customStyle={{ margin: "0em .25em" }}
             value={this.state.focusDropdown}
@@ -606,7 +604,7 @@ export class App extends React.Component {
       }
       {activeTab === TRIGGER_ID.TIME &&
         <>
-          {this.renderTriggerProp("Smoothing", data[activeTab].interpolate, ["interpolate"], CONSTRAINT.INTERPOLATE)}
+          {this.renderBoolPicker("Smoothing", data[activeTab].interpolate, ["interpolate"])}
         </>
       }
       {activeTab === TRIGGER_ID.GRAVITY &&
@@ -629,7 +627,7 @@ export class App extends React.Component {
             label={(e) => `Layer ${e}`}
             onChange={(e: number) => this.onChangeLayerDD(e)}
           ></Dropdown>
-          {this.renderTriggerProp("60 FPS", data[activeTab].interpolate, ["interpolate"], CONSTRAINT.INTERPOLATE)}
+          {this.renderBoolPicker("60 FPS", data[activeTab].interpolate, ["interpolate"])}
         </>
       }
     </div>;
@@ -677,7 +675,7 @@ export class App extends React.Component {
   }
 
   renderTimeInput(data: TriggerTime, index: number) {
-    const cProps = [CONSTRAINT.MINUTE, CONSTRAINT.SECOND, CONSTRAINT.FRAME];
+    const constraintProps = [[0, 999], [0, 59], [0, 39]];
     const labels = ["Time", ":", ":"];
 
     const path = this.state.activeTab === TRIGGER_ID.GRAVITY ?
@@ -689,11 +687,12 @@ export class App extends React.Component {
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
       {...data.map((timeValue, timeIndex) => {
         return <div>
-          {this.renderTriggerProp(
+          {this.renderIntPicker(
               labels[timeIndex],
-              timeValue,
+              timeValue.toString(),
               path.concat([timeIndex.toString()]),
-              cProps[timeIndex],
+              constraintProps[index][0],
+              constraintProps[index][1],
               this.state.invalidTimes[index] ? "red" : GLOBAL_STYLES.root.color,
           )}
         </div>;
@@ -703,17 +702,15 @@ export class App extends React.Component {
 
   renderZoomTrigger(data: ZoomTrigger, index: number) {
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {this.renderTriggerProp(
+      {this.renderFloatPicker(
           "Zoom To",
-          data[1],
+          data[1].toString(),
           ["triggers", index.toString(), "1"],
-          CONSTRAINT.ZOOM,
       )}
     </div>;
   }
 
   renderPanTrigger(data: CameraPanTrigger, index: number) {
-    const cProps = [CONSTRAINT.PAN_WIDTH, CONSTRAINT.PAN_HEIGHT, CONSTRAINT.PAN_X, CONSTRAINT.PAN_Y];
     const labels = ["Width", "Height", "Offset X", "Y"];
 
     return <div>
@@ -721,11 +718,11 @@ export class App extends React.Component {
         return <div style={{ display: "flex", flexDirection: "row" }}>
           {...pair.map((prop, propIndex) => {
             return <div style={GLOBAL_STYLES.triggerPropContainer}>
-              {this.renderTriggerProp(
+              {this.renderFloatPicker(
                   labels[propIndex + 2 * pairIndex],
-                  data[1][prop],
+                  data[1][prop].toString(),
                   ["triggers", index.toString(), "1", prop],
-                  cProps[propIndex + 2 * pairIndex],
+                  pairIndex === 0 ? 0 : -Number.MAX_VALUE,
               )}
             </div>;
           })}
@@ -738,39 +735,37 @@ export class App extends React.Component {
     const dropdownIndex = this.state.focusDropdown;
 
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {this.renderTriggerProp(
+      {this.renderFloatPicker(
           "Weight",
-          data[1][dropdownIndex],
+          data[1][dropdownIndex].toString(),
           ["triggers", index.toString(), "1", dropdownIndex.toString()],
-          CONSTRAINT.FOCUS_WEIGHT,
+          0,
       )}
     </div>;
   }
 
   renderRemapTrigger(data: TimeRemapTrigger, index: number) {
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {this.renderTriggerProp(
+      {this.renderFloatPicker(
           "Speed",
-          data[1],
+          data[1].toString(),
           ["triggers", index.toString(), "1"],
-          CONSTRAINT.TIME_SPEED,
+          0.001,
       )}
     </div>;
   }
 
   renderGravityTrigger(data: GravityTrigger, index: number) {
-    const cProps = [CONSTRAINT.GRAVITY_X, CONSTRAINT.GRAVITY_Y];
     const labels = ["X", "Y"];
     const { gravityDropdown } = this.state;
 
     return <div style={{ display: "flex", flexDirection: "row" }}>
       {...(["x", "y"] as const).map((prop, propIndex) => {
         return <div style={GLOBAL_STYLES.triggerPropContainer}>
-          {this.renderTriggerProp(
+          {this.renderFloatPicker(
               labels[propIndex],
-              data[1][prop],
+              data[1][prop].toString(),
               ["triggers", gravityDropdown.toString(), index.toString(), "1", prop],
-              cProps[propIndex],
           )}
         </div>;
       })}
@@ -778,51 +773,66 @@ export class App extends React.Component {
   }
 
   renderLayerTrigger(data: LayerTrigger, index: number) {
-    const cProps = [CONSTRAINT.LAYER_ON, CONSTRAINT.LAYER_OFF, CONSTRAINT.LAYER_OFFSET];
     const labels = ["ON", "OFF", "OFFSET"];
     const { layerDropdown } = this.state;
 
     return <div style={{ display: "flex", flexDirection: "row" }}>
       {...(["on", "off", "offset"] as const).map((prop, propIndex) => {
         return <div style={GLOBAL_STYLES.triggerPropContainer}>
-          {this.renderTriggerProp(
+          {this.renderIntPicker(
               labels[propIndex],
-              data[1][prop],
+              data[1][prop].toString(),
               ["triggers", layerDropdown.toString(), index.toString(), "1", prop],
-              cProps[propIndex],
+              0,
           )}
         </div>;
       })}
     </div>;
   }
 
-  renderTriggerProp(
-      labelText: string,
-      value: string | number | boolean,
-      propPath: string[],
-      constraint: Constraint,
-      color?: string,
-  ) {
-    const NumberPicker = constraint.TYPE === CONSTRAINT_TYPE.FLOAT ? FloatPicker : IntPicker;
-
+  renderBoolPicker(labelText: string, value: boolean, propPath: string[]) {
     return <div style={GLOBAL_STYLES.triggerRowContainer}>
-      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={propPath.join("_")}>
+      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={propPath.join("-")}>
         {labelText}
       </label>
-      {constraint.TYPE === CONSTRAINT_TYPE.BOOL ?
       <Checkbox
         customStyle={GLOBAL_STYLES.spacedProperty}
-        id={propPath.join("_")}
-        value={value as boolean}
+        id={propPath.join("-")}
+        value={value}
         onCheck={() => this.onUpdateTrigger(!value, propPath)}
-      ></Checkbox> : <NumberPicker
+      ></Checkbox>
+    </div>;
+  }
+
+  renderIntPicker(labelText: string, value: string, propPath: string[], min?: number, max?: number, color?: string) {
+    return <div style={GLOBAL_STYLES.triggerRowContainer}>
+      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={propPath.join("-")}>
+        {labelText}
+      </label>
+      <IntPicker
         customStyle={{ ...GLOBAL_STYLES.spacedProperty, color: color || GLOBAL_STYLES.root.color }}
-        id={propPath.join("_")}
-        value={value as number | string}
-        min={constraint.MIN}
-        max={constraint.MAX}
-        onChange={(v: number | string) => this.onUpdateTrigger(v, propPath)}
-      ></NumberPicker>}
+        id={propPath.join("-")}
+        value={value}
+        min={min || -Number.MAX_SAFE_INTEGER}
+        max={max || Number.MAX_SAFE_INTEGER}
+        onChange={(v: string) => this.onUpdateTrigger(v, propPath)}
+      ></IntPicker>
+    </div>;
+  }
+
+  renderFloatPicker(labelText: string, value: string, propPath: string[], min?: number, max?: number, color?: string) {
+    return <div style={GLOBAL_STYLES.triggerRowContainer}>
+      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={propPath.join("-")}>
+        {labelText}
+      </label>
+      <FloatPicker
+        customStyle={{ ...GLOBAL_STYLES.spacedProperty, color: color || GLOBAL_STYLES.root.color }}
+        id={propPath.join("-")}
+        value={value}
+        min={min || -Number.MAX_VALUE}
+        max={max || Number.MAX_VALUE}
+        onChange={(v: string) => this.onUpdateTrigger(v, propPath)}
+      ></FloatPicker>
     </div>;
   }
 }

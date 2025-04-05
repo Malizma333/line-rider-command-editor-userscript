@@ -1,4 +1,3 @@
-import { CONSTRAINT } from "../constraints";
 import { TRIGGER_METADATA } from "../TriggerDataManager";
 import {
   CameraFocusTrigger,
@@ -168,21 +167,13 @@ function parseTimeTriggers(triggerArray: unknown[]): TimeRemapTrigger[] {
  * @returns A valid smoothing value
  */
 function parseNumberSmoothing(smoothingValue: unknown): number {
-  const constraints = CONSTRAINT.SMOOTH;
-
   if (smoothingValue === null || smoothingValue === undefined) {
-    return constraints.DEFAULT;
+    return 20;
   }
 
   assert(smoothingValue, ASSERT_TYPE.NUM);
 
-  if (smoothingValue > constraints.MAX) {
-    return constraints.MAX;
-  } else if (smoothingValue < constraints.MIN) {
-    return constraints.MIN;
-  } else {
-    return smoothingValue;
-  }
+  return Math.max(0, smoothingValue);
 }
 
 /**
@@ -191,10 +182,8 @@ function parseNumberSmoothing(smoothingValue: unknown): number {
  * @returns A valid smoothing value
  */
 function parseBooleanSmoothing(smoothingValue: unknown): boolean {
-  const constraints = CONSTRAINT.INTERPOLATE;
-
   if (smoothingValue === null || smoothingValue === undefined) {
-    return constraints.DEFAULT;
+    return false;
   }
 
   if (!(smoothingValue === true || smoothingValue === false)) {

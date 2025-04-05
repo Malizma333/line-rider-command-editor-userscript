@@ -10,24 +10,24 @@ const { React } = window;
  * @param max Maximum amount this value can take on
  * @returns The validated value
  */
-function clampInt(
-    prevValue: string | number, newValue: string, bounded: boolean, min: number, max: number,
-): number | string {
-  const parsedValue = Number(newValue);
-
-  if (Number.isNaN(parsedValue) || !Number.isInteger(parsedValue)) {
-    return prevValue;
-  }
-
+function clampInt(prevValue: string, newValue: string, bounded: boolean, min: number, max: number): string {
   if (bounded) {
-    return Math.max(min, Math.min(max, parsedValue));
-  }
+    const parsedValue = Number(newValue);
 
-  if (newValue === "-" || newValue === "") {
+    if (isNaN(parsedValue) || parsedValue !== Math.floor(parsedValue)) {
+      return "0";
+    }
+
+    return Math.min(max, Math.max(min, parsedValue)).toString();
+  } else {
+    const floatRegex = new RegExp("[+-]?[0-9]*");
+
+    if (!floatRegex.test(newValue)) {
+      return prevValue;
+    }
+
     return newValue;
   }
-
-  return parsedValue;
 }
 
 const style: React.CSSProperties = {
@@ -54,8 +54,8 @@ const style: React.CSSProperties = {
  */
 export default function IntPicker(
     { customStyle, id, value, min, max, onChange }:
-  { customStyle: React.CSSProperties, id: string, value: (number | string), min: number, max: number,
-    onChange: (v: number | string) => void },
+  { customStyle: React.CSSProperties, id: string, value: string, min: number, max: number,
+    onChange: (v: string) => void },
 ) {
   return (
     <input

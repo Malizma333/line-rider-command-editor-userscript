@@ -1,6 +1,9 @@
-import { CONSTRAINT } from "./constraints";
 import {
-  TRIGGER_ID, TriggerDataLookup, TriggerMetadataLookup, HistoryItem, PathValue,
+  TRIGGER_ID,
+  TriggerDataLookup,
+  TriggerMetadataLookup,
+  HistoryItem,
+  PathValue,
   LayerTrigger,
   ZoomTrigger,
   TimeRemapTrigger,
@@ -74,22 +77,22 @@ const INIT_TRIGGER_DATA: TriggerDataLookup = {
   [TRIGGER_ID.ZOOM]: {
     id: TRIGGER_ID.ZOOM,
     triggers: [TRIGGER_METADATA[TRIGGER_ID.ZOOM].TEMPLATE],
-    smoothing: CONSTRAINT.SMOOTH.DEFAULT,
+    smoothing: 20,
   },
   [TRIGGER_ID.PAN]: {
     id: TRIGGER_ID.PAN,
     triggers: [TRIGGER_METADATA[TRIGGER_ID.PAN].TEMPLATE],
-    smoothing: CONSTRAINT.SMOOTH.DEFAULT,
+    smoothing: 20,
   },
   [TRIGGER_ID.FOCUS]: {
     id: TRIGGER_ID.FOCUS,
     triggers: [TRIGGER_METADATA[TRIGGER_ID.FOCUS].TEMPLATE],
-    smoothing: CONSTRAINT.SMOOTH.DEFAULT,
+    smoothing: 20,
   },
   [TRIGGER_ID.TIME]: {
     id: TRIGGER_ID.TIME,
     triggers: [TRIGGER_METADATA[TRIGGER_ID.TIME].TEMPLATE],
-    interpolate: CONSTRAINT.INTERPOLATE.DEFAULT,
+    interpolate: false,
   },
   [TRIGGER_ID.SKIN]: {
     id: TRIGGER_ID.SKIN,
@@ -102,7 +105,7 @@ const INIT_TRIGGER_DATA: TriggerDataLookup = {
   [TRIGGER_ID.LAYER]: {
     id: TRIGGER_ID.LAYER,
     triggers: { 0: [TRIGGER_METADATA[TRIGGER_ID.LAYER].TEMPLATE] },
-    interpolate: CONSTRAINT.INTERPOLATE.DEFAULT,
+    interpolate: false,
   },
 };
 
