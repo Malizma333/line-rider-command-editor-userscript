@@ -9,7 +9,6 @@ import {
   TriggerTime,
   ZoomTrigger,
 } from "../TriggerDataManager.types";
-import { CONSTRAINT } from "../constraints";
 import { retrieveTimestamp } from "../util";
 import { assert, ASSERT_TYPE, check } from "./type-guards";
 
@@ -197,21 +196,13 @@ function parseTimeTriggers(triggerArray: unknown[]): TimeRemapTrigger[] {
  * @returns A valid smoothing value
  */
 function parseNumberSmoothing(smoothingValue: unknown): number {
-  const constraints = CONSTRAINT.SMOOTH;
-
   if (smoothingValue === null || smoothingValue === undefined) {
-    return constraints.DEFAULT;
+    return 20;
   }
 
   assert(smoothingValue, ASSERT_TYPE.NUM);
 
-  if (smoothingValue > constraints.MAX) {
-    return constraints.MAX;
-  } else if (smoothingValue < constraints.MIN) {
-    return constraints.MIN;
-  } else {
-    return smoothingValue;
-  }
+  return Math.max(0, smoothingValue);
 }
 
 /**
