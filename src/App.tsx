@@ -1,32 +1,36 @@
-import { TriggerDataManager, TRIGGER_METADATA, isLayerTrigger } from './lib/TriggerDataManager';
+import { TriggerDataManager, TRIGGER_METADATA, TRIGGER_DATA_KEYS } from "./lib/TriggerDataManager";
 import {
-  TRIGGER_ID, TriggerDataLookup, TriggerTime, TimedTrigger, ZoomTrigger, CameraFocusTrigger, GravityTrigger,
-  SkinCssTrigger, CameraPanTrigger, TimeRemapTrigger,
+  TRIGGER_ID,
+  TriggerDataLookup,
+  TriggerTime,
+  ZoomTrigger,
+  CameraFocusTrigger,
+  GravityTrigger,
+  CameraPanTrigger,
+  TimeRemapTrigger,
   LayerTrigger,
-  Trigger,
-} from './lib/TriggerDataManager.types';
-import { readJsScript } from './lib/io/read-js-script';
-import { readJsonScript } from './lib/io/read-json-script';
-import { writeJsScript } from './lib/io/write-js-script';
-import { getSetting, TEXT_SIZES } from './lib/settings-storage';
-import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from './lib/settings-storage.types';
-import { validateTimes, formatSkins } from './lib/util';
-import { CONSTRAINT } from './lib/constraints';
-import { GLOBAL_STYLES } from './styles';
+  TimedTrigger,
+} from "./lib/TriggerDataManager.types";
+import readJsScript from "./lib/io/read-js-script";
+import readJsonScript from "./lib/io/read-json-script";
+import writeJsonScript from "./lib/io/write-json-script";
+import { getSetting, TEXT_SIZES } from "./lib/settings-storage";
+import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from "./lib/settings-storage.types";
+import { validateTimes, formatSkins, generateScript, extractTriggerArray } from "./lib/util";
+import { GLOBAL_STYLES } from "./styles";
 
-import * as Actions from './lib/redux-actions';
-import * as Selectors from './lib/redux-selectors';
-import * as FICONS from './components/Icons';
+import * as Actions from "./lib/redux-actions";
+import * as Selectors from "./lib/redux-selectors";
+import * as F_ICONS from "./components/Icons";
 
-import FloatPicker from './components/FloatPicker';
-import IntPicker from './components/IntPicker';
-import IconButton from './components/IconButton';
-import SkinEditor from './pages/SkinEditor';
-import Settings from './pages/Settings';
-import Checkbox from './components/Checkbox';
-import { Constraint, CONSTRAINT_TYPE } from './lib/constraints.types';
-import Dropdown from './components/Dropdown';
-import FloatingButton from './components/FloatingButton';
+import FloatPicker from "./components/FloatPicker";
+import IntPicker from "./components/IntPicker";
+import IconButton from "./components/IconButton";
+import SkinEditor from "./pages/SkinEditor";
+import Settings from "./pages/Settings";
+import Checkbox from "./components/Checkbox";
+import Dropdown from "./components/Dropdown";
+import FloatingButton from "./components/FloatingButton";
 
 const { store, React } = window;
 
@@ -74,46 +78,49 @@ export class App extends React.Component {
     window.saveCommands = () => this.onDownload();
   }
 
-  updateStore(): void {
+  updateStore(force = false): void {
     const riderCount = Selectors.getNumRiders(store.getState());
+    const stateDelta: Partial<RootState> = {};
 
-    if (this.state.numRiders !== riderCount) {
+    if (force || this.state.numRiders !== riderCount) {
       const { focusDropdown, gravityDropdown } = this.state;
 
       if (riderCount > 0) {
         this.triggerManager.updateRiderCount(riderCount);
-        this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
-        this.setState({ focusDropdown: Math.min(riderCount - 1, focusDropdown) });
-        this.setState({ gravityDropdown: Math.min(riderCount - 1, gravityDropdown) });
-      } else if ([TRIGGER_ID.FOCUS, TRIGGER_ID.GRAVITY, TRIGGER_ID.SKIN].includes(this.state.activeTab as TRIGGER_ID)) {
-        this.setState({ activeTab: TRIGGER_ID.ZOOM });
+        stateDelta.triggerUpdateFlag = !this.state.triggerUpdateFlag;
+        stateDelta.focusDropdown = Math.min(riderCount - 1, focusDropdown);
+        stateDelta.gravityDropdown = Math.min(riderCount - 1, gravityDropdown);
+      } else if ([TRIGGER_ID.FOCUS, TRIGGER_ID.GRAVITY, TRIGGER_ID.SKIN].includes(this.state.activeTab)) {
+        stateDelta.activeTab = TRIGGER_ID.ZOOM;
       }
 
-      this.setState({ numRiders: riderCount });
+      stateDelta.numRiders = riderCount;
     }
 
-    const layerIds = Selectors.getLayers(store.getState());
+    const layerIds = Selectors.getLayerIds(store.getState());
 
-    if (this.state.layerMap.length !== layerIds.length) {
+    if (force || this.state.layerMap.length !== layerIds.length) {
       const { layerDropdown } = this.state;
 
       this.triggerManager.updateLayerMap(layerIds);
-      this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
+      stateDelta.triggerUpdateFlag = !this.state.triggerUpdateFlag;
       if (!layerIds.includes(layerDropdown)) {
-        this.setState({ layerDropdown: layerIds[0] });
+        stateDelta.layerDropdown = layerIds[0];
       }
-      this.setState({ layerMap: layerIds });
+      stateDelta.layerMap = layerIds;
     }
 
     const sidebarOpen = Selectors.getSidebarOpen(store.getState());
 
     if (sidebarOpen) {
-      this.setState({ active: false });
+      stateDelta.active = false;
     }
+
+    this.setState(stateDelta);
   }
 
   onCreateTrigger(index: number): void {
-    const { activeTab, layerDropdown } = this.state;
+    const { activeTab, gravityDropdown, layerDropdown } = this.state;
 
     if (activeTab === TRIGGER_ID.SKIN) return;
 
@@ -124,65 +131,70 @@ export class App extends React.Component {
       Math.floor(currentPlayerIndex % 40),
     ];
 
-    const currentTriggers = this.triggerManager.data[activeTab].triggers;
-    const newTriggerData = structuredClone((currentTriggers[index] as TimedTrigger)[1]);
+    const currentTriggers = extractTriggerArray(this.triggerManager.data, activeTab, gravityDropdown, layerDropdown);
+    const newTrigger = structuredClone(currentTriggers[index]);
+    newTrigger[0] = triggerTime;
 
-    if (isLayerTrigger(newTriggerData)) {
-      newTriggerData[1].id = layerDropdown;
-    }
-
-    const newTrigger = [triggerTime, newTriggerData] as TimedTrigger;
     const newTriggers = currentTriggers
         .slice(0, index + 1)
         .concat([newTrigger])
         .concat(currentTriggers.slice(index + 1));
-    this.triggerManager.updateFromPath([activeTab, 'triggers'], newTriggers, activeTab);
+
+    const updatePath =
+      activeTab === TRIGGER_ID.GRAVITY ? [activeTab, "triggers", gravityDropdown.toString()] :
+      activeTab === TRIGGER_ID.LAYER ? [activeTab, "triggers", layerDropdown.toString()] :
+      [activeTab, "triggers"];
+
+    this.triggerManager.updateFromPath(updatePath, newTriggers, activeTab);
+
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
-
-    const newTriggerArray = this.triggerManager.data[activeTab].triggers;
-
-    this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[], layerDropdown) });
+    this.setState({ invalidTimes: validateTimes(newTriggers) });
   }
 
   onUpdateTrigger(newValue: number | string | boolean, path: string[]): void {
-    const { activeTab, layerDropdown } = this.state;
+    const { activeTab, gravityDropdown, layerDropdown } = this.state;
 
     this.triggerManager.updateFromPath([activeTab, ...path], newValue, activeTab);
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
 
-    const newTriggerArray = this.triggerManager.data[activeTab].triggers;
-
-    this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[], layerDropdown) });
+    if (activeTab !== TRIGGER_ID.SKIN) {
+      const newTriggers = extractTriggerArray(this.triggerManager.data, activeTab, gravityDropdown, layerDropdown);
+      this.setState({ invalidTimes: validateTimes(newTriggers) });
+    }
   }
 
   onDeleteTrigger(index: number): void {
-    const { activeTab, layerDropdown } = this.state;
+    const { activeTab, gravityDropdown, layerDropdown } = this.state;
 
     if (activeTab === TRIGGER_ID.SKIN) return;
 
-    const currentTriggers = this.triggerManager.data[activeTab].triggers;
+    const currentTriggers = extractTriggerArray(this.triggerManager.data, activeTab, gravityDropdown, layerDropdown);
     const newTriggers = currentTriggers.slice(0, index).concat(currentTriggers.slice(index + 1));
-    this.triggerManager.updateFromPath([activeTab, 'triggers'], newTriggers, activeTab);
+
+    const updatePath =
+      activeTab === TRIGGER_ID.GRAVITY ? [activeTab, "triggers", gravityDropdown.toString()] :
+      activeTab === TRIGGER_ID.LAYER ? [activeTab, "triggers", layerDropdown.toString()] :
+      [activeTab, "triggers"];
+
+    this.triggerManager.updateFromPath(updatePath, newTriggers, activeTab);
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
 
-    const newTriggerArray = this.triggerManager.data[activeTab].triggers;
-
-    this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[], layerDropdown) });
+    this.setState({ invalidTimes: validateTimes(newTriggers) });
   }
 
   onDownload(): void {
-    const jsonString = JSON.stringify(this.triggerManager.data);
-    const a = document.createElement('a');
-    const data = 'data:text/json;charset=utf-8,' + encodeURIComponent(jsonString);
-    a.setAttribute('href', data);
-    a.setAttribute('download', Selectors.getTrackTitle(store.getState()) + '.script.json');
+    const jsonString = JSON.stringify(writeJsonScript(this.triggerManager.data));
+    const a = document.createElement("a");
+    const data = "data:text/json;charset=utf-8," + encodeURIComponent(jsonString);
+    a.setAttribute("href", data);
+    a.setAttribute("download", Selectors.getTrackTitle(store.getState()) + ".script.json");
     a.click();
     a.remove();
   }
 
   onUpload(): void {
-    const triggerUploadInput = (document.getElementById('trigger-file-upload') as HTMLInputElement);
-    triggerUploadInput.value = '';
+    const triggerUploadInput = (document.getElementById("trigger-file-upload") as HTMLInputElement);
+    triggerUploadInput.value = "";
     triggerUploadInput.click();
   }
 
@@ -193,7 +205,7 @@ export class App extends React.Component {
         this.onLoad(
             readJsonScript(
                 JSON.parse(reader.result as string),
-                this.triggerManager.data as TriggerDataLookup,
+                this.triggerManager.data,
             ),
         );
       } catch (error) {
@@ -209,25 +221,24 @@ export class App extends React.Component {
     this.onLoad(
         readJsScript(
             Selectors.getCurrentScript(store.getState()),
-        this.triggerManager.data as TriggerDataLookup,
+            this.triggerManager.data,
         ),
     );
   }
 
   onLoad(nextTriggerData: TriggerDataLookup): void {
-    const { activeTab, layerDropdown } = this.state;
+    const { activeTab, gravityDropdown, layerDropdown } = this.state;
     try {
-      Object.keys(TRIGGER_METADATA).forEach((commandId: string) => {
-        this.triggerManager.updateFromPath([commandId], nextTriggerData[commandId as TRIGGER_ID], activeTab);
+      TRIGGER_DATA_KEYS.forEach((commandId) => {
+        this.triggerManager.updateFromPath([commandId], nextTriggerData[commandId], activeTab);
       });
 
-      if (activeTab !== TRIGGER_ID.SKIN) {
-        const newTriggerArray = nextTriggerData[activeTab].triggers;
-        this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[], layerDropdown) });
-      }
+      this.updateStore(true);
 
-      const layerIds = Selectors.getLayers(store.getState());
-      this.triggerManager.updateLayerMap(layerIds);
+      if (activeTab !== TRIGGER_ID.SKIN) {
+        const newTriggers = extractTriggerArray(nextTriggerData, activeTab, gravityDropdown, layerDropdown);
+        this.setState({ invalidTimes: validateTimes(newTriggers) });
+      }
 
       this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
     } catch (error) {
@@ -241,49 +252,49 @@ export class App extends React.Component {
     const { activeTab, invalidTimes } = this.state;
     try {
       if (!invalidTimes.every((invalid) => !invalid)) {
-        throw new Error('Triggers contain invalid times!');
+        throw new Error("Triggers contain invalid times!");
       }
 
-      const currentData = this.triggerManager.data[activeTab];
-
       switch (activeTab) {
-        case TRIGGER_ID.ZOOM:
-          window.getAutoZoom = window.createZoomer(
-            currentData.triggers as ZoomTrigger[],
-            currentData.smoothing,
-          );
+        case TRIGGER_ID.ZOOM: {
+          const currentData = this.triggerManager.data[TRIGGER_ID.ZOOM];
+          window.getAutoZoom = window.createZoomer(currentData.triggers, currentData.smoothing);
           break;
-        case TRIGGER_ID.PAN:
-          window.getCamBounds = window.createBoundsPanner(
-            currentData.triggers as CameraPanTrigger[],
-            currentData.smoothing,
-          );
+        }
+        case TRIGGER_ID.PAN: {
+          const currentData = this.triggerManager.data[TRIGGER_ID.PAN];
+          window.getCamBounds = window.createBoundsPanner(currentData.triggers, currentData.smoothing);
           break;
-        case TRIGGER_ID.FOCUS:
-          window.getCamFocus = window.createFocuser(
-            currentData.triggers as CameraFocusTrigger[],
-            currentData.smoothing,
-          );
+        }
+        case TRIGGER_ID.FOCUS: {
+          const currentData = this.triggerManager.data[TRIGGER_ID.FOCUS];
+          window.getCamFocus = window.createFocuser(currentData.triggers, currentData.smoothing);
           break;
-        case TRIGGER_ID.TIME:
-          window.timeRemapper = window.createTimeRemapper(
-            currentData.triggers as TimeRemapTrigger[],
-            currentData.interpolate,
-          );
+        }
+        case TRIGGER_ID.TIME: {
+          const currentData = this.triggerManager.data[TRIGGER_ID.TIME];
+          window.timeRemapper = window.createTimeRemapper(currentData.triggers, currentData.interpolate);
           break;
-        case TRIGGER_ID.SKIN:
-          window.setCustomRiders(formatSkins(currentData.triggers as SkinCssTrigger[]));
+        }
+        case TRIGGER_ID.SKIN: {
+          const currentData = this.triggerManager.data[TRIGGER_ID.SKIN];
+          window.setCustomRiders(formatSkins(currentData.triggers));
           break;
-        case TRIGGER_ID.GRAVITY:
+        }
+        case TRIGGER_ID.GRAVITY: {
+          const currentData = this.triggerManager.data[TRIGGER_ID.GRAVITY];
           if (window.setCustomGravity !== undefined) {
-            window.setCustomGravity(currentData.triggers as GravityTrigger[]);
+            window.setCustomGravity(currentData.triggers);
           }
           break;
-        case TRIGGER_ID.LAYER:
+        }
+        case TRIGGER_ID.LAYER: {
+          const currentData = this.triggerManager.data[TRIGGER_ID.LAYER];
           if (window.createLayerAutomator !== undefined) {
-            window.createLayerAutomator(currentData.triggers as LayerTrigger[], currentData.interpolate || false);
+            window.createLayerAutomator(currentData.triggers, currentData.interpolate);
           }
           break;
+        }
         default:
           break;
       }
@@ -298,10 +309,10 @@ export class App extends React.Component {
     const { activeTab, invalidTimes } = this.state;
     try {
       if (!invalidTimes.every((invalid) => !invalid)) {
-        throw new Error('Triggers contain invalid times!');
+        throw new Error("Triggers contain invalid times!");
       }
 
-      const script = writeJsScript(activeTab, this.triggerManager.data as TriggerDataLookup);
+      const script = generateScript(activeTab, this.triggerManager.data);
       return await navigator.clipboard.writeText(script);
     } catch (error) {
       if (error instanceof Error) {
@@ -311,7 +322,7 @@ export class App extends React.Component {
   }
 
   onUndo(): void {
-    const { activeTab, layerDropdown } = this.state;
+    const { activeTab, gravityDropdown, layerDropdown } = this.state;
 
     const tabChange = this.triggerManager.undo();
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
@@ -321,13 +332,13 @@ export class App extends React.Component {
     }
 
     if (activeTab !== TRIGGER_ID.SKIN) {
-      const newTriggerArray = this.triggerManager.data[activeTab].triggers;
-      this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[], layerDropdown) });
+      const newTriggerArray = extractTriggerArray(this.triggerManager.data, activeTab, gravityDropdown, layerDropdown);
+      this.setState({ invalidTimes: validateTimes(newTriggerArray) });
     }
   }
 
   onRedo(): void {
-    const { activeTab, layerDropdown } = this.state;
+    const { activeTab, gravityDropdown, layerDropdown } = this.state;
 
     const tabChange = this.triggerManager.redo();
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
@@ -337,14 +348,14 @@ export class App extends React.Component {
     }
 
     if (activeTab !== TRIGGER_ID.SKIN) {
-      const newTriggerArray = this.triggerManager.data[activeTab].triggers;
-      this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[], layerDropdown) });
+      const newTriggerArray = extractTriggerArray(this.triggerManager.data, activeTab, gravityDropdown, layerDropdown);
+      this.setState({ invalidTimes: validateTimes(newTriggerArray) });
     }
   }
 
   onResetSkin(index: number): void {
     this.triggerManager.updateFromPath(
-        [TRIGGER_ID.SKIN, 'triggers', index.toString()],
+        [TRIGGER_ID.SKIN, "triggers", index.toString()],
         structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE),
         TRIGGER_ID.SKIN,
     );
@@ -364,13 +375,13 @@ export class App extends React.Component {
   }
 
   onChangeTab(tabName: TRIGGER_ID): void {
-    const { layerDropdown } = this.state;
+    const { gravityDropdown, layerDropdown } = this.state;
 
     this.setState({ activeTab: tabName });
 
     if (tabName !== TRIGGER_ID.SKIN) {
-      const newTriggerArray = this.triggerManager.data[tabName].triggers;
-      this.setState({ invalidTimes: validateTimes(newTriggerArray as TimedTrigger[], layerDropdown) });
+      const newTriggerArray = extractTriggerArray(this.triggerManager.data, tabName, gravityDropdown, layerDropdown);
+      this.setState({ invalidTimes: validateTimes(newTriggerArray) });
     }
   }
 
@@ -380,7 +391,7 @@ export class App extends React.Component {
   }
 
   onHelp(): void {
-    window.open('https://github.com/Malizma333/line-rider-command-editor-userscript#readme');
+    window.open("https://github.com/Malizma333/line-rider-command-editor-userscript#readme");
   }
 
   onApplyViewport(newResolution: VIEWPORT_SETTING) {
@@ -394,11 +405,11 @@ export class App extends React.Component {
     const factor = Math.log2(resolutionPixels[newResolution].width / resolutionPixels[this.state.resolution].width);
     store.dispatch(Actions.setPlaybackDimensions(resolutionPixels[newResolution]));
 
-    const zoomTriggers = this.triggerManager.data[TRIGGER_ID.ZOOM].triggers as ZoomTrigger[];
+    const zoomTriggers = this.triggerManager.data[TRIGGER_ID.ZOOM].triggers;
     const newZoomTriggers = zoomTriggers.map(
         (trigger) => [trigger[0], Math.round((trigger[1] + factor + Number.EPSILON) * 1e7) / 1e7],
     );
-    this.triggerManager.updateFromPath([TRIGGER_ID.ZOOM, 'triggers'], newZoomTriggers, TRIGGER_ID.ZOOM);
+    this.triggerManager.updateFromPath([TRIGGER_ID.ZOOM, "triggers"], newZoomTriggers, TRIGGER_ID.ZOOM);
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
   }
 
@@ -408,16 +419,18 @@ export class App extends React.Component {
 
   onChangeGravityDD(value: number): void {
     this.setState({ gravityDropdown: value });
+    this.setState({ invalidTimes: validateTimes(this.triggerManager.data[TRIGGER_ID.GRAVITY].triggers[value]) });
   }
 
   onChangeLayerDD(value: number): void {
     this.setState({ layerDropdown: value });
+    this.setState({ invalidTimes: validateTimes(this.triggerManager.data[TRIGGER_ID.LAYER].triggers[value]) });
   }
 
   onCaptureCamera(index: number, triggerType: TRIGGER_ID) {
     switch (triggerType) {
       case TRIGGER_ID.ZOOM: {
-        this.onUpdateTrigger(Math.log2(Selectors.getEditorZoom(store.getState())), ['triggers', index.toString(), '1']);
+        this.onUpdateTrigger(Math.log2(Selectors.getEditorZoom(store.getState())), ["triggers", index.toString(), "1"]);
         break;
       }
       case TRIGGER_ID.PAN: {
@@ -427,8 +440,8 @@ export class App extends React.Component {
         const zoom = Selectors.getPlaybackZoom(store.getState());
         const playerIndex = Math.floor(Selectors.getPlayerIndex(store.getState()));
         const camera = store.getState().camera.playbackFollower.getCamera(track, { zoom, width, height }, playerIndex);
-        this.onUpdateTrigger((x - camera.x) * zoom / width, ['triggers', index.toString(), '1', 'x']);
-        this.onUpdateTrigger((y - camera.y) * zoom / height, ['triggers', index.toString(), '1', 'y']);
+        this.onUpdateTrigger((x - camera.x) * zoom / width, ["triggers", index.toString(), "1", "x"]);
+        this.onUpdateTrigger((y - camera.y) * zoom / height, ["triggers", index.toString(), "1", "y"]);
         break;
       }
       default: {
@@ -438,31 +451,22 @@ export class App extends React.Component {
   }
 
   render() {
-    const data = this.triggerManager.data[this.state.activeTab];
+    const { activeTab, gravityDropdown, layerDropdown } = this.state;
 
-    // TODO this is kind of awful, refactor
-    let computeIndex = 0;
-    const computedTriggers = [] as [Trigger, number, number][];
-    for (let i = 0; i < data.triggers.length; i++) {
-      if (!isLayerTrigger(data.triggers[i]) || (data.triggers[i] as LayerTrigger)[1].id === this.state.layerDropdown) {
-        computedTriggers.push([data.triggers[i], i, computeIndex++]);
-      }
-    }
-
-    return <div style={{ fontSize: TEXT_SIZES[this.state.fontSize], transition: 'font-size 0.125s ease-in-out' }}>
+    return <div style={{ fontSize: TEXT_SIZES[this.state.fontSize], transition: "font-size 0.125s ease-in-out" }}>
       {this.renderActions()}
       {this.state.active && <div style={GLOBAL_STYLES.mainContent}>
         {this.state.settingsActive ?
           <Settings root={this}></Settings> :
           <div style={GLOBAL_STYLES.windowContainer}>
             {this.renderTabContainer()}
-            {data.id === TRIGGER_ID.SKIN ?
-              <SkinEditor root={this} skinTriggers={data.triggers as SkinCssTrigger[]}></SkinEditor> :
+            {activeTab === TRIGGER_ID.SKIN ?
+              <SkinEditor root={this} skinTriggers={this.triggerManager.data[TRIGGER_ID.SKIN].triggers}></SkinEditor> :
               <>
                 {this.renderWindowHead()}
-                {<div style={{ ...GLOBAL_STYLES.windowBody, paddingBottom: '10px' }}>
-                  {computedTriggers.map(
-                      (computeData) => this.renderTrigger(computeData[0], computeData[1], computeData[2]),
+                {<div style={{ ...GLOBAL_STYLES.windowBody, paddingBottom: "10px" }}>
+                  {extractTriggerArray(this.triggerManager.data, activeTab, gravityDropdown, layerDropdown).map(
+                      (trigger, index) => this.renderTrigger(trigger, index),
                   )}
                 </div>}
               </>
@@ -477,71 +481,71 @@ export class App extends React.Component {
       <IconButton
         title="Maximize"
         onClick={() => this.onToggleActive()}
-        icon={FICONS.MAXIMIZE}
+        icon={F_ICONS.MAXIMIZE}
       ></IconButton>
     </div> : <div style={GLOBAL_STYLES.actionContainer}>
-      <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: 'start' }}>
+      <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: "start" }}>
         <IconButton
           title="Minimize"
           onClick={() => this.onToggleActive()}
-          icon={FICONS.MINIMIZE}
+          icon={F_ICONS.MINIMIZE}
         ></IconButton>
         <IconButton
           title="Download"
           onClick={() => this.onDownload()}
-          icon={FICONS.DOWNLOAD}
+          icon={F_ICONS.DOWNLOAD}
         ></IconButton>
         <IconButton
           title="Upload"
           onClick={() => this.onUpload()}
-          icon={FICONS.UPLOAD}
+          icon={F_ICONS.UPLOAD}
         ></IconButton>
         <IconButton
           title="Load From Script"
           onClick={() => this.onLoadScript()}
-          icon={FICONS.CORNER_UP_RIGHT}
+          icon={F_ICONS.CORNER_UP_RIGHT}
           disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
         ></IconButton>
         <IconButton
           title="Run"
           onClick={() => this.onTest()}
-          icon={FICONS.PLAY}
+          icon={F_ICONS.PLAY}
           disabled={this.state.invalidTimes.some((i) => i)}
         ></IconButton>
         <IconButton
           title="Copy Script"
           onClick={async () => await this.onCopy()}
-          icon={FICONS.COPY}
+          icon={F_ICONS.COPY}
           disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
         ></IconButton>
       </div>
-      <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: 'end' }}>
+      <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: "end" }}>
         <IconButton
           title="Undo"
           onClick={() => this.onUndo()}
-          icon={FICONS.ARROW_LEFT}
+          icon={F_ICONS.ARROW_LEFT}
           disabled={this.triggerManager.undoLen === 0}
         ></IconButton>
         <IconButton
           title="Redo"
           onClick={() => this.onRedo()}
-          icon={FICONS.ARROW_RIGHT}
+          icon={F_ICONS.ARROW_RIGHT}
           disabled={this.triggerManager.redoLen === 0}
         ></IconButton>
         <IconButton
           title="Settings"
           onClick={() => this.onToggleSettings()}
-          icon={FICONS.SETTINGS}
+          icon={F_ICONS.SETTINGS}
         ></IconButton>
         <IconButton
           title="Help"
           onClick={() => this.onHelp()}
-          icon={FICONS.HELP_CIRCLE}
+          icon={F_ICONS.HELP_CIRCLE}
         ></IconButton>
       </div>
       <input
         id="trigger-file-upload"
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
         type="file"
         accept=".json"
         onChange={(e: React.ChangeEvent) => this.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])}
@@ -551,18 +555,18 @@ export class App extends React.Component {
 
   renderTabContainer() {
     return <div style={GLOBAL_STYLES.tabContainer}>
-      {...Object.keys(TRIGGER_METADATA).map((command: string) => {
+      {...TRIGGER_DATA_KEYS.map((command) => {
         if (this.state.numRiders === 0 &&
-            [TRIGGER_ID.FOCUS, TRIGGER_ID.GRAVITY, TRIGGER_ID.SKIN].includes(command as TRIGGER_ID)) {
+            [TRIGGER_ID.FOCUS, TRIGGER_ID.GRAVITY, TRIGGER_ID.SKIN].includes(command)) {
           return null;
         }
 
         return <div>
           <FloatingButton
             customStyle={GLOBAL_STYLES.tabButton}
-            onClick={() => this.onChangeTab(command as TRIGGER_ID)}
+            onClick={() => this.onChangeTab(command)}
             active={this.state.activeTab === command}
-            label={TRIGGER_METADATA[command as TRIGGER_ID].DISPLAY_NAME}
+            label={TRIGGER_METADATA[command].DISPLAY_NAME}
             disabledShadow
             tabButton
           ></FloatingButton>
@@ -572,24 +576,40 @@ export class App extends React.Component {
   }
 
   renderWindowHead() {
-    const data = this.triggerManager.data[this.state.activeTab];
+    const { data } = this.triggerManager;
+    const { activeTab } = this.state;
 
     return <div style={GLOBAL_STYLES.windowHead}>
-      {data.id === TRIGGER_ID.ZOOM &&
+      {activeTab === TRIGGER_ID.ZOOM &&
         <>
-          {this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)}
+          {this.renderFloatPicker({
+            label: "Smoothing",
+            value: data[activeTab].smoothing.toString(),
+            path: ["smoothing"],
+            min: 0,
+          })}
         </>
       }
-      {data.id === TRIGGER_ID.PAN &&
+      {activeTab === TRIGGER_ID.PAN &&
         <>
-          {this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)}
+          {this.renderFloatPicker({
+            label: "Smoothing",
+            value: data[activeTab].smoothing.toString(),
+            path: ["smoothing"],
+            min: 0,
+          })}
         </>
       }
-      {data.id === TRIGGER_ID.FOCUS &&
+      {activeTab === TRIGGER_ID.FOCUS &&
         <>
-          {this.renderTriggerProp('Smoothing', data.smoothing || 0, ['smoothing'], CONSTRAINT.SMOOTH)}
+          {this.renderFloatPicker({
+            label: "Smoothing",
+            value: data[activeTab].smoothing.toString(),
+            path: ["smoothing"],
+            min: 0,
+          })}
           <Dropdown
-            customStyle={{ margin: '0em .25em' }}
+            customStyle={{ margin: "0em .25em" }}
             value={this.state.focusDropdown}
             mapping={[...Array(this.state.numRiders).keys()]}
             label={(_, i) => `Rider ${i + 1}`}
@@ -597,15 +617,15 @@ export class App extends React.Component {
           ></Dropdown>
         </>
       }
-      {data.id === TRIGGER_ID.TIME &&
+      {activeTab === TRIGGER_ID.TIME &&
         <>
-          {this.renderTriggerProp('Smoothing', data.interpolate || false, ['interpolate'], CONSTRAINT.INTERPOLATE)}
+          {this.renderBoolPicker("Smoothing", data[activeTab].interpolate, ["interpolate"])}
         </>
       }
-      {data.id === TRIGGER_ID.GRAVITY &&
+      {activeTab === TRIGGER_ID.GRAVITY &&
         <>
           <Dropdown
-            customStyle={{ margin: '0em .25em' }}
+            customStyle={{ margin: "0em .25em" }}
             value={this.state.gravityDropdown}
             mapping={[...Array(this.state.numRiders).keys()]}
             label={(_, i) => `Rider ${i + 1}`}
@@ -613,55 +633,55 @@ export class App extends React.Component {
           ></Dropdown>
         </>
       }
-      {data.id === TRIGGER_ID.LAYER &&
+      {activeTab === TRIGGER_ID.LAYER &&
         <>
           <Dropdown
-            customStyle={{ margin: '0em .25em' }}
+            customStyle={{ margin: "0em .25em" }}
             value={this.state.layerDropdown}
             mapping={this.state.layerMap}
             label={(e) => `Layer ${e}`}
             onChange={(e: number) => this.onChangeLayerDD(e)}
           ></Dropdown>
-          {this.renderTriggerProp('60 FPS', data.interpolate || false, ['interpolate'], CONSTRAINT.INTERPOLATE)}
+          {this.renderBoolPicker("60 FPS", data[activeTab].interpolate, ["interpolate"])}
         </>
       }
     </div>;
   }
 
-  renderTrigger(currentTrigger: Trigger, realIndex: number, index: number) {
-    const data = this.triggerManager.data[this.state.activeTab];
+  renderTrigger(currentTrigger: TimedTrigger, index: number) {
+    const { activeTab } = this.state;
 
     return <div style={{
       ...GLOBAL_STYLES.triggerContainer,
-      fontSize: '1.5em',
+      fontSize: "1.5em",
     }}>
       <div style={GLOBAL_STYLES.triggerActionContainer}>
-        {(data.id === TRIGGER_ID.ZOOM || data.id === TRIGGER_ID.PAN) && (
+        {(activeTab === TRIGGER_ID.ZOOM || activeTab === TRIGGER_ID.PAN) && (
           <IconButton
-            onClick={() => this.onCaptureCamera(realIndex, data.id as TRIGGER_ID)}
-            icon={FICONS.CAMERA}
+            onClick={() => this.onCaptureCamera(index, activeTab)}
+            icon={F_ICONS.CAMERA}
             title="Capture Editor Camera"
           ></IconButton>
         )}
         <IconButton
-          onClick={() => this.onDeleteTrigger(realIndex)}
-          icon={FICONS.X}
+          onClick={() => this.onDeleteTrigger(index)}
+          icon={F_ICONS.X}
           disabled={index === 0}
           title="Delete"
         ></IconButton>
       </div>
 
-      {this.renderTimeInput((currentTrigger as TimedTrigger)[0], realIndex, index)}
-      {data.id === TRIGGER_ID.ZOOM && this.renderZoomTrigger((currentTrigger as ZoomTrigger), realIndex)}
-      {data.id === TRIGGER_ID.PAN && this.renderPanTrigger((currentTrigger as CameraPanTrigger), realIndex)}
-      {data.id === TRIGGER_ID.FOCUS && this.renderFocusTrigger((currentTrigger as CameraFocusTrigger), realIndex)}
-      {data.id === TRIGGER_ID.TIME && this.renderRemapTrigger((currentTrigger as TimeRemapTrigger), realIndex)}
-      {data.id === TRIGGER_ID.GRAVITY && this.renderGravityTrigger((currentTrigger as GravityTrigger), realIndex)}
-      {data.id === TRIGGER_ID.LAYER && this.renderLayerTrigger((currentTrigger as LayerTrigger), realIndex)}
+      {this.renderTimeInput(currentTrigger[0], index)}
+      {activeTab === TRIGGER_ID.ZOOM && this.renderZoomTrigger(currentTrigger as ZoomTrigger, index)}
+      {activeTab === TRIGGER_ID.PAN && this.renderPanTrigger(currentTrigger as CameraPanTrigger, index)}
+      {activeTab === TRIGGER_ID.FOCUS && this.renderFocusTrigger(currentTrigger as CameraFocusTrigger, index)}
+      {activeTab === TRIGGER_ID.TIME && this.renderRemapTrigger(currentTrigger as TimeRemapTrigger, index)}
+      {activeTab === TRIGGER_ID.GRAVITY && this.renderGravityTrigger(currentTrigger as GravityTrigger, index)}
+      {activeTab === TRIGGER_ID.LAYER && this.renderLayerTrigger(currentTrigger as LayerTrigger, index)}
       <div style={GLOBAL_STYLES.createTriggerContainer}>
         <FloatingButton
-          onClick={() => this.onCreateTrigger(realIndex)}
-          customStyle={{ fontSize: '0.75em' }}
+          onClick={() => this.onCreateTrigger(index)}
+          customStyle={{ fontSize: "0.75em" }}
           label="+"
           active
         ></FloatingButton>
@@ -669,51 +689,68 @@ export class App extends React.Component {
     </div>;
   }
 
-  renderTimeInput(data: TriggerTime, realIndex: number, index: number) {
-    const cProps = [CONSTRAINT.MINUTE, CONSTRAINT.SECOND, CONSTRAINT.FRAME];
-    const labels = ['Time', ':', ':'];
+  renderTimeInput(data: TriggerTime, index: number) {
+    const props = [
+      { id: "0", label: "Time", min: 0, max: 999 },
+      { id: "1", label: ":", min: 0, max: 59 },
+      { id: "2", label: ":", min: 0, max: 39 },
+    ] as const;
+
+    const pathHead = this.state.activeTab === TRIGGER_ID.GRAVITY ?
+      ["triggers", this.state.gravityDropdown.toString()] :
+      this.state.activeTab === TRIGGER_ID.LAYER ?
+      ["triggers", this.state.layerDropdown.toString()] :
+      ["triggers"];
 
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {...data.map((timeValue, timeIndex) => {
+      {...props.map((prop) => {
+        const path = pathHead.concat([index.toString(), "0", prop.id]);
+
         return <div>
-          {this.renderTriggerProp(
-              labels[timeIndex],
-              timeValue,
-              ['triggers', realIndex.toString(), '0', timeIndex.toString()],
-              cProps[timeIndex],
-              this.state.invalidTimes[index] ? 'red' : GLOBAL_STYLES.root.color,
-          )}
+          {this.renderIntPicker({
+            label: prop.label,
+            value: data[parseInt(prop.id)].toString(),
+            path,
+            min: prop.min,
+            max: prop.max,
+            customStyle: { color: this.state.invalidTimes[index] ? "red" : GLOBAL_STYLES.root.color },
+          })}
         </div>;
       })}
     </div>;
   }
 
   renderZoomTrigger(data: ZoomTrigger, index: number) {
+    const path = ["triggers", index.toString(), "1"];
+
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {this.renderTriggerProp(
-          'Zoom To',
-          data[1],
-          ['triggers', index.toString(), '1'],
-          CONSTRAINT.ZOOM,
-      )}
+      {this.renderFloatPicker({
+        label: "Zoom To",
+        value: data[1].toString(),
+        path,
+      })}
     </div>;
   }
 
   renderPanTrigger(data: CameraPanTrigger, index: number) {
-    const cProps = [CONSTRAINT.PAN_WIDTH, CONSTRAINT.PAN_HEIGHT, CONSTRAINT.PAN_X, CONSTRAINT.PAN_Y];
-    const labels = ['Width', 'Height', 'Offset X', 'Y'];
+    const props = [
+      [{ id: "w", label: "Width", min: 0 }, { id: "h", label: "Height", min: 0 }],
+      [{ id: "x", label: "Offset X", min: -Number.MAX_VALUE }, { id: "y", label: "Offset Y", min: -Number.MAX_VALUE }],
+    ] as const;
 
     return <div>
-      {...[['w', 'h'], ['x', 'y']].map((pair, pairIndex) => {
-        return <div style={{ display: 'flex', flexDirection: 'row' }}>
-          {...pair.map((prop, propIndex) => {
+      {...props.map((pair) => {
+        return <div style={{ display: "flex", flexDirection: "row" }}>
+          {...pair.map((prop) => {
+            const path = ["triggers", index.toString(), "1", prop.id];
+
             return <div style={GLOBAL_STYLES.triggerPropContainer}>
-              {this.renderTriggerProp(
-                  labels[propIndex + 2 * pairIndex],
-                  data[1][prop as 'w' | 'h' | 'x' | 'y'],
-                  ['triggers', index.toString(), '1', prop],
-                  cProps[propIndex + 2 * pairIndex],
-              )}
+              {this.renderFloatPicker({
+                label: prop.label,
+                value: data[1][prop.id].toString(),
+                path,
+                min: prop.min,
+              })}
             </div>;
           })}
         </div>;
@@ -722,93 +759,124 @@ export class App extends React.Component {
   }
 
   renderFocusTrigger(data: CameraFocusTrigger, index: number) {
-    const dropdownIndex = this.state.focusDropdown;
+    const path = ["triggers", index.toString(), "1", this.state.focusDropdown.toString()];
 
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {this.renderTriggerProp(
-          'Weight',
-          data[1][dropdownIndex],
-          ['triggers', index.toString(), '1', dropdownIndex.toString()],
-          CONSTRAINT.FOCUS_WEIGHT,
-      )}
+      {this.renderFloatPicker({
+        label: "Weight",
+        value: data[1][this.state.focusDropdown].toString(),
+        path,
+        min: 0,
+      })}
     </div>;
   }
 
   renderRemapTrigger(data: TimeRemapTrigger, index: number) {
+    const path = ["triggers", index.toString(), "1"];
+
     return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {this.renderTriggerProp(
-          'Speed',
-          data[1],
-          ['triggers', index.toString(), '1'],
-          CONSTRAINT.TIME_SPEED,
-      )}
+      {this.renderFloatPicker({
+        label: "Speed",
+        value: data[1].toString(),
+        path,
+        min: 0.001,
+      })}
     </div>;
   }
 
   renderGravityTrigger(data: GravityTrigger, index: number) {
-    const dropdownIndex = this.state.gravityDropdown;
-    const cProps = [CONSTRAINT.GRAVITY_X, CONSTRAINT.GRAVITY_Y];
-    const labels = ['X', 'Y'];
+    const props = [
+      { id: "x", label: "X" },
+      { id: "y", label: "Y" },
+    ] as const;
 
-    return <div style={{ display: 'flex', flexDirection: 'row' }}>
-      {...['x', 'y'].map((prop, propIndex) => {
+    return <div style={{ display: "flex", flexDirection: "row" }}>
+      {...props.map((prop) => {
+        const path = ["triggers", this.state.gravityDropdown.toString(), index.toString(), "1", prop.id];
+
         return <div style={GLOBAL_STYLES.triggerPropContainer}>
-          {this.renderTriggerProp(
-              labels[propIndex],
-              data[1][dropdownIndex][prop as 'x' | 'y'],
-              ['triggers', index.toString(), '1', dropdownIndex.toString(), prop],
-              cProps[propIndex],
-          )}
+          {this.renderFloatPicker({
+            label: prop.label,
+            value: data[1][prop.id].toString(),
+            path,
+          })}
         </div>;
       })}
     </div>;
   }
 
   renderLayerTrigger(data: LayerTrigger, index: number) {
-    const cProps = [CONSTRAINT.LAYER_ON, CONSTRAINT.LAYER_OFF, CONSTRAINT.LAYER_OFFSET];
-    const labels = ['ON', 'OFF', 'OFFSET'];
+    const props = [
+      { id: "on", label: "ON" },
+      { id: "off", label: "OFF" },
+      { id: "offset", label: "OFFSET" },
+    ] as const;
 
-    return <div style={{ display: 'flex', flexDirection: 'row' }}>
-      {...['on', 'off', 'offset'].map((prop, propIndex) => {
+    return <div style={{ display: "flex", flexDirection: "row" }}>
+      {...props.map((prop) => {
+        const path = ["triggers", this.state.layerDropdown.toString(), index.toString(), "1", prop.id];
+
         return <div style={GLOBAL_STYLES.triggerPropContainer}>
-          {this.renderTriggerProp(
-              labels[propIndex],
-              data[1][prop as 'on' | 'off' | 'offset'],
-              ['triggers', index.toString(), '1', prop],
-              cProps[propIndex],
-          )}
+          {this.renderIntPicker({
+            label: prop.label,
+            value: data[1][prop.id].toString(),
+            path,
+            min: 0,
+          })}
         </div>;
       })}
     </div>;
   }
 
-  renderTriggerProp(
-      labelText: string,
-      value: string | number | boolean,
-      propPath: string[],
-      constraint: Constraint,
-      color?: string,
-  ) {
-    const NumberPicker = constraint.TYPE === CONSTRAINT_TYPE.FLOAT ? FloatPicker : IntPicker;
-
+  renderBoolPicker(labelText: string, value: boolean, propPath: string[]) {
     return <div style={GLOBAL_STYLES.triggerRowContainer}>
-      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={propPath.join('_')}>
+      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={propPath.join("-")}>
         {labelText}
       </label>
-      {constraint.TYPE === CONSTRAINT_TYPE.BOOL ?
       <Checkbox
         customStyle={GLOBAL_STYLES.spacedProperty}
-        id={propPath.join('_')}
-        value={value as boolean}
+        id={propPath.join("-")}
+        value={value}
         onCheck={() => this.onUpdateTrigger(!value, propPath)}
-      ></Checkbox> : <NumberPicker
-        customStyle={{ ...GLOBAL_STYLES.spacedProperty, color: color || GLOBAL_STYLES.root.color }}
-        id={propPath.join('_')}
-        value={value as number | string}
-        min={constraint.MIN}
-        max={constraint.MAX}
-        onChange={(v: number | string) => this.onUpdateTrigger(v, propPath)}
-      ></NumberPicker>}
+      ></Checkbox>
+    </div>;
+  }
+
+  renderIntPicker(
+      { label, value, path, min, max, customStyle } :
+      { label: string, value: string, path: string[], min?: number, max?: number, customStyle?: React.CSSProperties },
+  ) {
+    return <div style={GLOBAL_STYLES.triggerRowContainer}>
+      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={path.join("-")}>
+        {label}
+      </label>
+      <IntPicker
+        customStyle={{ ...GLOBAL_STYLES.spacedProperty, ...customStyle }}
+        id={path.join("-")}
+        value={value}
+        min={min}
+        max={max}
+        onChange={(v: number) => this.onUpdateTrigger(v, path)}
+      ></IntPicker>
+    </div>;
+  }
+
+  renderFloatPicker(
+      { label, value, path, min, max, customStyle } :
+      { label: string, value: string, path: string[], min?: number, max?: number, customStyle?: React.CSSProperties },
+  ) {
+    return <div style={GLOBAL_STYLES.triggerRowContainer}>
+      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={path.join("-")}>
+        {label}
+      </label>
+      <FloatPicker
+        customStyle={{ ...GLOBAL_STYLES.spacedProperty, ...customStyle }}
+        id={path.join("-")}
+        value={value}
+        min={min}
+        max={max}
+        onChange={(v: number) => this.onUpdateTrigger(v, path)}
+      ></FloatPicker>
     </div>;
   }
 }

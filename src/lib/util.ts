@@ -1,27 +1,51 @@
-import { TimedTrigger, TriggerTime, SkinCssTrigger } from '../lib/TriggerDataManager.types';
-import { isLayerTrigger } from './TriggerDataManager';
+import {
+  TRIGGER_ID,
+  TriggerDataLookup,
+  TimedTrigger,
+  TriggerTime,
+  SkinCssTrigger,
+} from "../lib/TriggerDataManager.types";
+import { TRIGGER_METADATA } from "./TriggerDataManager";
+
+/**
+ * Extracts the trigger array from some trigger data lookup for a specific trigger
+ * @param triggerData The trigger data lookup to extract from
+ * @param activeTab The target trigger to extract the trigger array of (excluding skin triggers)
+ * @param gravityDropdown The target gravity trigger array to get
+ * @param layerDropdown The target layer trigger array to get
+ * @returns The extracted array of triggers
+ */
+export function extractTriggerArray(
+    triggerData: TriggerDataLookup,
+    activeTab: Exclude<TRIGGER_ID, TRIGGER_ID.SKIN>,
+    gravityDropdown: number,
+    layerDropdown: number,
+): TimedTrigger[] {
+  return (
+      activeTab === TRIGGER_ID.GRAVITY ? triggerData[activeTab].triggers[gravityDropdown] :
+      activeTab === TRIGGER_ID.LAYER ? triggerData[activeTab].triggers[layerDropdown] :
+      triggerData[activeTab].triggers
+  );
+}
 
 /**
  * Validates the times in a list of triggers
  * - First trigger must be at time 0
  * - Each trigger after should have a later time than the trigger before it
  * @param triggers List of triggers to check timestamps of
- * @param targetLayerId Special case for filtering list of triggers by layer id
  * @returns Which times in the trigger array are invalid
  */
-export function validateTimes(triggers: TimedTrigger[], targetLayerId?: number): boolean[] {
-  // HACK: This line may not be very type safe
-  const filteredTriggers = triggers.filter((t) => !isLayerTrigger(t) || t[1].id === targetLayerId);
-  const invalidIndices = Array(filteredTriggers.length).fill(false);
+export function validateTimes(triggers: TimedTrigger[]): boolean[] {
+  const invalidIndices = Array(triggers.length).fill(false);
 
-  const firstTime = filteredTriggers[0][0];
+  const firstTime = triggers[0][0];
   if (firstTime[0] !== 0 || firstTime[1] !== 0 || firstTime[2] !== 0) {
     invalidIndices[0] = true;
   }
 
-  for (let i = 0; i < filteredTriggers.length - 1; i += 1) {
-    const time1 = filteredTriggers[i][0] as number[];
-    const time2 = filteredTriggers[i + 1][0] as number[];
+  for (let i = 0; i < triggers.length - 1; i += 1) {
+    const time1 = triggers[i][0];
+    const time2 = triggers[i + 1][0];
     const index1 = (
       time1[0] * 60 + time1[1]
     ) * 40 + time1[2];
@@ -43,7 +67,7 @@ export function validateTimes(triggers: TimedTrigger[], targetLayerId?: number):
  * @returns The array of css properties
  */
 export function formatSkins(customSkinData: SkinCssTrigger[]): string[] {
-  const nullColor = '#ffffffff';
+  const nullColor = "#ffffffff";
   const customSkinStrings = customSkinData.map((customSkin: SkinCssTrigger) => [
     ` .outline {stroke: ${customSkin.outline.stroke ?? nullColor}}`,
     ` .skin {fill: ${customSkin.skin.fill ?? nullColor}}`,
@@ -72,10 +96,10 @@ export function formatSkins(customSkinData: SkinCssTrigger[]): string[] {
     ` .hat .bottom {stroke: ${customSkin.hatBottom.stroke ?? nullColor}}`,
     ` .hat .ball {fill: ${customSkin.hatBall.fill ?? nullColor}}`,
     ` .flag {fill: ${customSkin.flag.fill ?? nullColor}}`,
-  ].join('').replace(/\n/g, ''));
+  ].join("").replace(/\n/g, ""));
 
   // For some reason, the skin css array input is indexed +1 mod n
-  customSkinStrings.unshift(customSkinStrings.pop() ?? '');
+  customSkinStrings.unshift(customSkinStrings.pop() ?? "");
 
   return customSkinStrings;
 }
@@ -90,4 +114,54 @@ export function retrieveTimestamp(index: number): TriggerTime {
   const seconds = Math.floor(index / 40) % 60;
   const minutes = Math.floor(index / 2400);
   return [minutes, seconds, frames];
+}
+
+/**
+ * Converts trigger timestamp to player index
+ * @param timestamp Timestamp to convert to frame index
+ * @returns Frame corresponding to the trigger time timestamp
+ */
+export function retrieveIndex(timestamp: TriggerTime): number {
+  return timestamp[0] * 2400 + timestamp[1] * 40 + timestamp[2];
+}
+
+/**
+ * Generates a Line Rider Web script from trigger data and a specific command id
+ * @param command Command to generate a script for
+ * @param triggerData Template information to use for the command
+ * @returns The script as a string
+ */
+export function generateScript(command: TRIGGER_ID, triggerData: TriggerDataLookup): string {
+  const currentHeader = (TRIGGER_METADATA[command]).FUNC;
+
+  if (currentHeader === undefined) {
+    return "";
+  }
+
+  switch (command) {
+    case TRIGGER_ID.FOCUS:
+    case TRIGGER_ID.PAN:
+    case TRIGGER_ID.ZOOM: {
+      const currentData = triggerData[command];
+      return currentHeader
+          .replace("{0}", JSON.stringify(currentData.triggers))
+          .replace("{1}", String(currentData.smoothing))
+          .replace(" ", "");
+    }
+    case TRIGGER_ID.TIME: {
+      const currentData = triggerData[command];
+      return currentHeader
+          .replace("{0}", JSON.stringify(currentData.triggers))
+          .replace("{1}", String(currentData.interpolate))
+          .replace(" ", "");
+    }
+    case TRIGGER_ID.SKIN: {
+      const currentData = triggerData[command];
+      return currentHeader
+          .replace("{0}", JSON.stringify(formatSkins(currentData.triggers)))
+          .replace(" ", "");
+    }
+    default:
+      return "";
+  }
 }
