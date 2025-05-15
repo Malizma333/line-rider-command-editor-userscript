@@ -98,7 +98,6 @@ const rules = {
   'rest-spread-spacing': 2,
   'yield-star-spacing': [2, 'after'],
   '@typescript-eslint/no-empty-object-type': [2, {allowInterfaces: 'with-single-extends'}],
-  'linebreak-style': [2, 'unix'],
 };
 
 export default tseslint.config(
