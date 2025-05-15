@@ -264,11 +264,11 @@ export class TriggerDataManager {
    * Undoes an action that was performed by {@link TriggerDataManager.updateFromPath}
    * @returns The location where the action was performed, or null if the undo stack is empty
    */
-  undo(): TRIGGER_ID | null {
+  undo(): TRIGGER_ID {
     const previous = this.undoStack.pop();
 
     if (previous === undefined) {
-      return null;
+      return TRIGGER_ID.ZOOM;
     }
 
     const { modificationPath, oldValue, activeTab } = previous;
@@ -279,14 +279,14 @@ export class TriggerDataManager {
   }
 
   /**
-   * Redoes an action that was performed by {@link TriggerDataManager.undo}
+   * Redoes an action that was performed by {@link TriggerDataManager.undo()}
    * @returns The location where the action was undone, or null if the redo stack is empty
    */
-  redo(): TRIGGER_ID | null {
+  redo(): TRIGGER_ID {
     const next = this.redoStack.pop();
 
     if (next === undefined) {
-      return null;
+      return TRIGGER_ID.ZOOM;
     }
 
     const { modificationPath, oldValue, activeTab } = next;

@@ -331,8 +331,8 @@ export class App extends React.Component {
       this.setState({ activeTab: tabChange });
     }
 
-    if (activeTab !== TRIGGER_ID.SKIN) {
-      const newTriggerArray = extractTriggerArray(this.triggerManager.data, activeTab, gravityDropdown, layerDropdown);
+    if (tabChange !== TRIGGER_ID.SKIN) {
+      const newTriggerArray = extractTriggerArray(this.triggerManager.data, tabChange, gravityDropdown, layerDropdown);
       this.setState({ invalidTimes: validateTimes(newTriggerArray) });
     }
   }
@@ -347,8 +347,8 @@ export class App extends React.Component {
       this.setState({ activeTab: tabChange });
     }
 
-    if (activeTab !== TRIGGER_ID.SKIN) {
-      const newTriggerArray = extractTriggerArray(this.triggerManager.data, activeTab, gravityDropdown, layerDropdown);
+    if (tabChange !== TRIGGER_ID.SKIN) {
+      const newTriggerArray = extractTriggerArray(this.triggerManager.data, tabChange, gravityDropdown, layerDropdown);
       this.setState({ invalidTimes: validateTimes(newTriggerArray) });
     }
   }
