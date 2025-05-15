@@ -279,7 +279,7 @@ export class TriggerDataManager {
   }
 
   /**
-   * Redoes an action that was performed by {@link TriggerDataManager.undo}
+   * Redoes an action that was performed by {@link TriggerDataManager.undo()}
    * @returns The location where the action was undone, or null if the redo stack is empty
    */
   redo(): TRIGGER_ID | null {

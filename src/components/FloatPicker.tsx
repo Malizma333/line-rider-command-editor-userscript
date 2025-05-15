@@ -85,6 +85,11 @@ export default class FloatPicker extends React.Component<Props, State> {
     }
   }
 
+  componentWillReceiveProps(nextProps: Readonly<Props>): void {
+    this.setState({ value: nextProps.value });
+  }
+
+
   render() {
     const { customStyle, id } = this.props;
 
