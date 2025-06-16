@@ -283,16 +283,12 @@ export class App extends React.Component {
         }
         case TRIGGER_ID.GRAVITY: {
           const currentData = this.triggerManager.data[TRIGGER_ID.GRAVITY];
-          if (window.setCustomGravity !== undefined) {
-            window.setCustomGravity(currentData.triggers);
-          }
+          window.setCustomGravity(currentData.triggers);
           break;
         }
         case TRIGGER_ID.LAYER: {
           const currentData = this.triggerManager.data[TRIGGER_ID.LAYER];
-          if (window.createLayerAutomator !== undefined) {
-            window.createLayerAutomator(currentData.triggers, currentData.interpolate);
-          }
+          window.getLayerVisibleAtTime = window.createLayerAutomator(currentData.triggers, currentData.interpolate);
           break;
         }
         default:
