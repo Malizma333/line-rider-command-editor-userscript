@@ -22,8 +22,10 @@ declare global {
     timeRemapper?: object
     createTimeRemapper: (timeRemap: TimeRemapTrigger[], smoothing?: boolean) => typeof window.timeRemapper
     setCustomRiders: (cssList: string[]) => void
-    setCustomGravity?: (gravity: GravityTrigger[][]) => void
-    createLayerAutomator?: (layerTriggers: Record<number, LayerTrigger[]>, sixtyFps: boolean) => void
+    setCustomGravity: (gravity: GravityTrigger[][]) => void
+    getLayerVisibleAtTime?: (id: number, ind: number) => boolean
+    createLayerAutomator: (layerTriggers: Record<number, LayerTrigger[]>, sixtyFps: boolean) =>
+      typeof window.getLayerVisibleAtTime
   }
 
   type RootState = ReturnType<typeof window.store.getState>

@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 module.exports = {
   mode: "production",
-  entry: ['./src/index.ts', './src/globalHacks/gravity.js', './src/globalHacks/layer.js'],
+  entry: ['./src/index.ts'],
   module: {
     rules: [
       {
