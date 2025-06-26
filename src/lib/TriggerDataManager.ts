@@ -1,12 +1,12 @@
 import {
+  HistoryItem,
+  LayerTrigger,
+  PathValue,
+  TimeRemapTrigger,
   TRIGGER_ID,
   TriggerDataLookup,
   TriggerMetadataLookup,
-  HistoryItem,
-  PathValue,
-  LayerTrigger,
   ZoomTrigger,
-  TimeRemapTrigger,
 } from "./TriggerDataManager.types";
 
 export const TRIGGER_METADATA: TriggerMetadataLookup = {
@@ -18,7 +18,7 @@ export const TRIGGER_METADATA: TriggerMetadataLookup = {
   [TRIGGER_ID.PAN]: {
     DISPLAY_NAME: "Pan",
     FUNC: "getCamBounds=createBoundsPanner({0},{1});",
-    TEMPLATE: [[0, 0, 0], { w: 0.4, h: 0.4, x: 0, y: 0 }],
+    TEMPLATE: [[0, 0, 0], { w: 0.4, h: 0.4, x: 0, y: 0, px: 0, py: 0 }],
   },
   [TRIGGER_ID.FOCUS]: {
     DISPLAY_NAME: "Focus",
@@ -193,8 +193,10 @@ export class TriggerDataManager {
     const oldGravityLength = gravityTriggers.length;
 
     if (oldGravityLength < riderCount) {
-      gravityTriggers.push(...Array(riderCount - oldGravityLength).fill(null)
-          .map(() => [structuredClone(TRIGGER_METADATA[TRIGGER_ID.GRAVITY].TEMPLATE)]));
+      gravityTriggers.push(
+        ...Array(riderCount - oldGravityLength).fill(null)
+          .map(() => [structuredClone(TRIGGER_METADATA[TRIGGER_ID.GRAVITY].TEMPLATE)]),
+      );
     }
 
     if (oldGravityLength > riderCount) {
@@ -207,8 +209,10 @@ export class TriggerDataManager {
     const oldSkinLength = skinTriggers.length;
 
     if (oldSkinLength < riderCount) {
-      skinTriggers.push(...Array(riderCount - oldSkinLength).fill(null)
-          .map(() => structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE)));
+      skinTriggers.push(
+        ...Array(riderCount - oldSkinLength).fill(null)
+          .map(() => structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE)),
+      );
     }
 
     if (oldSkinLength > riderCount) {

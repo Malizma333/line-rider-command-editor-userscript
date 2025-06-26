@@ -1,18 +1,24 @@
 import { COLOR } from "../styles";
 const { React } = window;
 
-enum BUTTON_MODE { BLURRED, HOVER, PRESSED }
-
-interface Props {
-  title: string
-  disabled?: boolean
-  customStyle?: React.CSSProperties
-  size?: string
-  onClick: () => void
-  icon: React.JSX.Element
+enum BUTTON_MODE {
+  BLURRED,
+  HOVER,
+  PRESSED,
 }
 
-interface State { mode: BUTTON_MODE }
+interface Props {
+  title: string;
+  disabled?: boolean;
+  customStyle?: React.CSSProperties;
+  size?: string;
+  onClick: () => void;
+  icon: React.JSX.Element;
+}
+
+interface State {
+  mode: BUTTON_MODE;
+}
 
 const style: React.CSSProperties = {
   alignItems: "center",
@@ -48,23 +54,25 @@ export default class IconButton extends React.Component<Props, State> {
       this.setState({ mode: BUTTON_MODE.BLURRED });
     }
 
-    return <button
-      title={title}
-      style={{
-        ...style,
-        ...customStyle,
-        backgroundColor: modeBackgroundColors[this.state.mode],
-        fontSize: size || "25px",
-        color: disabled ? COLOR.gray500 : COLOR.gray950,
-      }}
-      onMouseOver={() => !disabled && this.setState({ mode: BUTTON_MODE.HOVER })}
-      onMouseOut={() => !disabled && this.setState({ mode: BUTTON_MODE.BLURRED })}
-      onMouseDown={() => !disabled && this.setState({ mode: BUTTON_MODE.PRESSED })}
-      onMouseUp={() => !disabled && this.setState({ mode: BUTTON_MODE.HOVER })}
-      onClick={() => onClick()}
-      disabled={disabled}
-    >
-      {icon}
-    </button>;
+    return (
+      <button
+        title={title}
+        style={{
+          ...style,
+          ...customStyle,
+          backgroundColor: modeBackgroundColors[this.state.mode],
+          fontSize: size || "25px",
+          color: disabled ? COLOR.gray500 : COLOR.gray950,
+        }}
+        onMouseOver={() => !disabled && this.setState({ mode: BUTTON_MODE.HOVER })}
+        onMouseOut={() => !disabled && this.setState({ mode: BUTTON_MODE.BLURRED })}
+        onMouseDown={() => !disabled && this.setState({ mode: BUTTON_MODE.PRESSED })}
+        onMouseUp={() => !disabled && this.setState({ mode: BUTTON_MODE.HOVER })}
+        onClick={() => onClick()}
+        disabled={disabled}
+      >
+        {icon}
+      </button>
+    );
   }
 }

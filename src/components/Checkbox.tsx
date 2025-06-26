@@ -43,16 +43,22 @@ const styles = {
  * @returns Custom checkbox field
  */
 export default function Checkbox(
-    { customStyle, id, value, onCheck }:
-  {customStyle: React.CSSProperties, id: string, value: boolean, onCheck: () => void},
+  { customStyle, id, value, onCheck }: {
+    customStyle: React.CSSProperties;
+    id: string;
+    value: boolean;
+    onCheck: () => void;
+  },
 ) {
-  return <div style={{ ...styles.container, ...customStyle }}>
-    <input
-      id={id}
-      style={styles.primary}
-      type="checkbox"
-      onChange={() => onCheck()}
-    />
-    <div style={{ ...styles.fill, opacity: value ? "100" : "0" }}></div>
-  </div>;
+  return (
+    <div style={{ ...styles.container, ...customStyle }}>
+      <input
+        id={id}
+        style={styles.primary}
+        type="checkbox"
+        onChange={() => onCheck()}
+      />
+      <div style={{ ...styles.fill, opacity: value ? "100" : "0" }}></div>
+    </div>
+  );
 }

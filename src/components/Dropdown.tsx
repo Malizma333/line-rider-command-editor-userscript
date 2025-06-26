@@ -30,24 +30,25 @@ const styles = {
  * @returns Custom select input dropdown populated with options
  */
 export default function Dropdown(
-    { customStyle, value, mapping, label, onChange }:
-    {
-      customStyle?: React.CSSProperties,
-      value: number,
-      mapping: number[],
-      label: (e: number, i: number) => string,
-      onChange: (e: number) => void
-    },
+  { customStyle, value, mapping, label, onChange }: {
+    customStyle?: React.CSSProperties;
+    value: number;
+    mapping: number[];
+    label: (e: number, i: number) => string;
+    onChange: (e: number) => void;
+  },
 ) {
-  return <select
-    style={{ ...styles.head, ...customStyle }}
-    value={value}
-    onChange={(e: React.ChangeEvent) => onChange(parseInt((e.target as HTMLInputElement).value))}
-  >
-    {...mapping.map((value, index) =>
-      <option style={styles.option} value={value}>
-        {label(value, index)}
-      </option>,
-    )}
-  </select>;
+  return (
+    <select
+      style={{ ...styles.head, ...customStyle }}
+      value={value}
+      onChange={(e: React.ChangeEvent) => onChange(parseInt((e.target as HTMLInputElement).value))}
+    >
+      {...mapping.map((value, index) => (
+        <option style={styles.option} value={value}>
+          {label(value, index)}
+        </option>
+      ))}
+    </select>
+  );
 }

@@ -21,9 +21,9 @@ import { assert, ASSERT_TYPE, check } from "./type-guards";
  * @param triggerData The trigger data object to write script data to
  */
 export default function parseV0Command(
-    commandId: TRIGGER_ID,
-    fileObject: Record<string, unknown>,
-    triggerData: TriggerDataLookup,
+  commandId: TRIGGER_ID,
+  fileObject: Record<string, unknown>,
+  triggerData: TriggerDataLookup,
 ) {
   const command = fileObject[commandId];
 
@@ -107,7 +107,7 @@ function parsePanTriggers(triggerArray: unknown[]): CameraPanTrigger[] {
     assert(w, ASSERT_TYPE.NUM);
     assert(h, ASSERT_TYPE.NUM);
 
-    const newTrigger: CameraPanTrigger = [parseTime(trigger[0]), { x, y, w, h }];
+    const newTrigger: CameraPanTrigger = [parseTime(trigger[0]), { x, y, w, h, px: 0, py: 0 }];
 
     triggers.push(newTrigger);
   }

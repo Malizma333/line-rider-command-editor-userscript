@@ -1,52 +1,52 @@
-import { TriggerDataManager, TRIGGER_METADATA, TRIGGER_DATA_KEYS } from "./lib/TriggerDataManager";
-import {
-  TRIGGER_ID,
-  TriggerDataLookup,
-  TriggerTime,
-  ZoomTrigger,
-  CameraFocusTrigger,
-  GravityTrigger,
-  CameraPanTrigger,
-  TimeRemapTrigger,
-  LayerTrigger,
-  TimedTrigger,
-} from "./lib/TriggerDataManager.types";
 import readJsScript from "./lib/io/read-js-script";
 import readJsonScript from "./lib/io/read-json-script";
 import writeJsonScript from "./lib/io/write-json-script";
 import { getSetting, TEXT_SIZES } from "./lib/settings-storage";
 import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from "./lib/settings-storage.types";
-import { validateTimes, formatSkins, generateScript, extractTriggerArray } from "./lib/util";
+import { TRIGGER_DATA_KEYS, TRIGGER_METADATA, TriggerDataManager } from "./lib/TriggerDataManager";
+import {
+  CameraFocusTrigger,
+  CameraPanTrigger,
+  GravityTrigger,
+  LayerTrigger,
+  TimedTrigger,
+  TimeRemapTrigger,
+  TRIGGER_ID,
+  TriggerDataLookup,
+  TriggerTime,
+  ZoomTrigger,
+} from "./lib/TriggerDataManager.types";
+import { extractTriggerArray, formatSkins, generateScript, validateTimes } from "./lib/util";
 import { GLOBAL_STYLES } from "./styles";
 
+import * as F_ICONS from "./components/Icons";
 import * as Actions from "./lib/redux-actions";
 import * as Selectors from "./lib/redux-selectors";
-import * as F_ICONS from "./components/Icons";
 
-import FloatPicker from "./components/FloatPicker";
-import IntPicker from "./components/IntPicker";
-import IconButton from "./components/IconButton";
-import SkinEditor from "./pages/SkinEditor";
-import Settings from "./pages/Settings";
 import Checkbox from "./components/Checkbox";
 import Dropdown from "./components/Dropdown";
 import FloatingButton from "./components/FloatingButton";
+import FloatPicker from "./components/FloatPicker";
+import IconButton from "./components/IconButton";
+import IntPicker from "./components/IntPicker";
+import Settings from "./pages/Settings";
+import SkinEditor from "./pages/SkinEditor";
 
 const { store, React } = window;
 
 export interface AppState {
-  active: boolean
-  activeTab: TRIGGER_ID
-  triggerUpdateFlag: boolean
-  numRiders: number
-  layerMap: number[]
-  focusDropdown: number
-  gravityDropdown: number
-  layerDropdown: number
-  settingsActive: boolean
-  fontSize: FONT_SIZE_SETTING
-  resolution: VIEWPORT_SETTING
-  invalidTimes: boolean[]
+  active: boolean;
+  activeTab: TRIGGER_ID;
+  triggerUpdateFlag: boolean;
+  numRiders: number;
+  layerMap: number[];
+  focusDropdown: number;
+  gravityDropdown: number;
+  layerDropdown: number;
+  settingsActive: boolean;
+  fontSize: FONT_SIZE_SETTING;
+  resolution: VIEWPORT_SETTING;
+  invalidTimes: boolean[];
 }
 
 export class App extends React.Component {
@@ -136,14 +136,15 @@ export class App extends React.Component {
     newTrigger[0] = triggerTime;
 
     const newTriggers = currentTriggers
-        .slice(0, index + 1)
-        .concat([newTrigger])
-        .concat(currentTriggers.slice(index + 1));
+      .slice(0, index + 1)
+      .concat([newTrigger])
+      .concat(currentTriggers.slice(index + 1));
 
-    const updatePath =
-      activeTab === TRIGGER_ID.GRAVITY ? [activeTab, "triggers", gravityDropdown.toString()] :
-      activeTab === TRIGGER_ID.LAYER ? [activeTab, "triggers", layerDropdown.toString()] :
-      [activeTab, "triggers"];
+    const updatePath = activeTab === TRIGGER_ID.GRAVITY
+      ? [activeTab, "triggers", gravityDropdown.toString()]
+      : activeTab === TRIGGER_ID.LAYER
+      ? [activeTab, "triggers", layerDropdown.toString()]
+      : [activeTab, "triggers"];
 
     this.triggerManager.updateFromPath(updatePath, newTriggers, activeTab);
 
@@ -171,10 +172,11 @@ export class App extends React.Component {
     const currentTriggers = extractTriggerArray(this.triggerManager.data, activeTab, gravityDropdown, layerDropdown);
     const newTriggers = currentTriggers.slice(0, index).concat(currentTriggers.slice(index + 1));
 
-    const updatePath =
-      activeTab === TRIGGER_ID.GRAVITY ? [activeTab, "triggers", gravityDropdown.toString()] :
-      activeTab === TRIGGER_ID.LAYER ? [activeTab, "triggers", layerDropdown.toString()] :
-      [activeTab, "triggers"];
+    const updatePath = activeTab === TRIGGER_ID.GRAVITY
+      ? [activeTab, "triggers", gravityDropdown.toString()]
+      : activeTab === TRIGGER_ID.LAYER
+      ? [activeTab, "triggers", layerDropdown.toString()]
+      : [activeTab, "triggers"];
 
     this.triggerManager.updateFromPath(updatePath, newTriggers, activeTab);
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
@@ -193,7 +195,7 @@ export class App extends React.Component {
   }
 
   onUpload(): void {
-    const triggerUploadInput = (document.getElementById("trigger-file-upload") as HTMLInputElement);
+    const triggerUploadInput = document.getElementById("trigger-file-upload") as HTMLInputElement;
     triggerUploadInput.value = "";
     triggerUploadInput.click();
   }
@@ -203,10 +205,10 @@ export class App extends React.Component {
     reader.onload = () => {
       try {
         this.onLoad(
-            readJsonScript(
-                JSON.parse(reader.result as string),
-                this.triggerManager.data,
-            ),
+          readJsonScript(
+            JSON.parse(reader.result as string),
+            this.triggerManager.data,
+          ),
         );
       } catch (error) {
         if (error instanceof Error) {
@@ -219,10 +221,10 @@ export class App extends React.Component {
 
   onLoadScript(): void {
     this.onLoad(
-        readJsScript(
-            Selectors.getCurrentScript(store.getState()),
-            this.triggerManager.data,
-        ),
+      readJsScript(
+        Selectors.getCurrentScript(store.getState()),
+        this.triggerManager.data,
+      ),
     );
   }
 
@@ -248,7 +250,7 @@ export class App extends React.Component {
     }
   }
 
-  onTest(): void {
+  onRun(): void {
     const { activeTab, invalidTimes } = this.state;
     try {
       if (!invalidTimes.every((invalid) => !invalid)) {
@@ -351,9 +353,9 @@ export class App extends React.Component {
 
   onResetSkin(index: number): void {
     this.triggerManager.updateFromPath(
-        [TRIGGER_ID.SKIN, "triggers", index.toString()],
-        structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE),
-        TRIGGER_ID.SKIN,
+      [TRIGGER_ID.SKIN, "triggers", index.toString()],
+      structuredClone(TRIGGER_METADATA[TRIGGER_ID.SKIN].TEMPLATE),
+      TRIGGER_ID.SKIN,
     );
 
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
@@ -403,7 +405,7 @@ export class App extends React.Component {
 
     const zoomTriggers = this.triggerManager.data[TRIGGER_ID.ZOOM].triggers;
     const newZoomTriggers = zoomTriggers.map(
-        (trigger) => [trigger[0], Math.round((trigger[1] + factor + Number.EPSILON) * 1e7) / 1e7],
+      (trigger) => [trigger[0], Math.round((trigger[1] + factor + Number.EPSILON) * 1e7) / 1e7],
     );
     this.triggerManager.updateFromPath([TRIGGER_ID.ZOOM, "triggers"], newZoomTriggers, TRIGGER_ID.ZOOM);
     this.setState({ triggerUpdateFlag: !this.state.triggerUpdateFlag });
@@ -449,240 +451,295 @@ export class App extends React.Component {
   render() {
     const { activeTab, gravityDropdown, layerDropdown } = this.state;
 
-    return <div style={{ fontSize: TEXT_SIZES[this.state.fontSize], transition: "font-size 0.125s ease-in-out" }}>
-      {this.renderActions()}
-      {this.state.active && <div style={GLOBAL_STYLES.mainContent}>
-        {this.state.settingsActive ?
-          <Settings root={this}></Settings> :
-          <div style={GLOBAL_STYLES.windowContainer}>
-            {this.renderTabContainer()}
-            {activeTab === TRIGGER_ID.SKIN ?
-              <SkinEditor root={this} skinTriggers={this.triggerManager.data[TRIGGER_ID.SKIN].triggers}></SkinEditor> :
-              <>
-                {this.renderWindowHead()}
-                {<div style={{ ...GLOBAL_STYLES.windowBody, paddingBottom: "10px" }}>
-                  {extractTriggerArray(this.triggerManager.data, activeTab, gravityDropdown, layerDropdown).map(
-                      (trigger, index) => this.renderTrigger(trigger, index),
-                  )}
-                </div>}
-              </>
-            }
-          </div>}
-      </div>}
-    </div>;
+    return (
+      <div style={{ fontSize: TEXT_SIZES[this.state.fontSize], transition: "font-size 0.125s ease-in-out" }}>
+        {this.renderActions()}
+        {this.state.active && (
+          <div style={GLOBAL_STYLES.mainContent}>
+            {this.state.settingsActive
+              ? <Settings root={this}></Settings>
+              : (
+                <div style={GLOBAL_STYLES.windowContainer}>
+                  {this.renderTabContainer()}
+                  {activeTab === TRIGGER_ID.SKIN
+                    ? (
+                      <SkinEditor root={this} skinTriggers={this.triggerManager.data[TRIGGER_ID.SKIN].triggers}>
+                      </SkinEditor>
+                    )
+                    : (
+                      <>
+                        {this.renderWindowHead()}
+                        {
+                          <div style={{ ...GLOBAL_STYLES.windowBody, paddingBottom: "10px" }}>
+                            {extractTriggerArray(this.triggerManager.data, activeTab, gravityDropdown, layerDropdown)
+                              .map(
+                                (trigger, index) => this.renderTrigger(trigger, index),
+                              )}
+                          </div>
+                        }
+                      </>
+                    )}
+                </div>
+              )}
+          </div>
+        )}
+      </div>
+    );
   }
 
   renderActions() {
-    return !this.state.active ? <div style={GLOBAL_STYLES.actionContainer}>
-      <IconButton
-        title="Maximize"
-        onClick={() => this.onToggleActive()}
-        icon={F_ICONS.MAXIMIZE}
-      ></IconButton>
-    </div> : <div style={GLOBAL_STYLES.actionContainer}>
-      <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: "start" }}>
-        <IconButton
-          title="Minimize"
-          onClick={() => this.onToggleActive()}
-          icon={F_ICONS.MINIMIZE}
-        ></IconButton>
-        <IconButton
-          title="Download"
-          onClick={() => this.onDownload()}
-          icon={F_ICONS.DOWNLOAD}
-        ></IconButton>
-        <IconButton
-          title="Upload"
-          onClick={() => this.onUpload()}
-          icon={F_ICONS.UPLOAD}
-        ></IconButton>
-        <IconButton
-          title="Load From Script"
-          onClick={() => this.onLoadScript()}
-          icon={F_ICONS.CORNER_UP_RIGHT}
-          disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
-        ></IconButton>
-        <IconButton
-          title="Run"
-          onClick={() => this.onTest()}
-          icon={F_ICONS.PLAY}
-          disabled={this.state.invalidTimes.some((i) => i)}
-        ></IconButton>
-        <IconButton
-          title="Copy Script"
-          onClick={async () => await this.onCopy()}
-          icon={F_ICONS.COPY}
-          disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
-        ></IconButton>
-      </div>
-      <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: "end" }}>
-        <IconButton
-          title="Undo"
-          onClick={() => this.onUndo()}
-          icon={F_ICONS.ARROW_LEFT}
-          disabled={this.triggerManager.undoLen === 0}
-        ></IconButton>
-        <IconButton
-          title="Redo"
-          onClick={() => this.onRedo()}
-          icon={F_ICONS.ARROW_RIGHT}
-          disabled={this.triggerManager.redoLen === 0}
-        ></IconButton>
-        <IconButton
-          title="Settings"
-          onClick={() => this.onToggleSettings()}
-          icon={F_ICONS.SETTINGS}
-        ></IconButton>
-        <IconButton
-          title="Help"
-          onClick={() => this.onHelp()}
-          icon={F_ICONS.HELP_CIRCLE}
-        ></IconButton>
-      </div>
-      <input
-        id="trigger-file-upload"
-        style={{ display: "none" }}
-        type="file"
-        accept=".json"
-        onChange={(e: React.ChangeEvent) => this.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])}
-      />
-    </div>;
+    return !this.state.active
+      ? (
+        <div style={GLOBAL_STYLES.actionContainer}>
+          <IconButton
+            title="Maximize"
+            onClick={() => this.onToggleActive()}
+            icon={F_ICONS.MAXIMIZE}
+          >
+          </IconButton>
+        </div>
+      )
+      : (
+        <div style={GLOBAL_STYLES.actionContainer}>
+          <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: "start" }}>
+            <IconButton
+              title="Minimize"
+              onClick={() => this.onToggleActive()}
+              icon={F_ICONS.MINIMIZE}
+            >
+            </IconButton>
+            <IconButton
+              title="Download"
+              onClick={() => this.onDownload()}
+              icon={F_ICONS.DOWNLOAD}
+            >
+            </IconButton>
+            <IconButton
+              title="Upload"
+              onClick={() => this.onUpload()}
+              icon={F_ICONS.UPLOAD}
+            >
+            </IconButton>
+            <IconButton
+              title="Load From Script"
+              onClick={() => this.onLoadScript()}
+              icon={F_ICONS.CORNER_UP_RIGHT}
+              disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
+            >
+            </IconButton>
+            <IconButton
+              title="Run"
+              onClick={() => this.onRun()}
+              icon={F_ICONS.PLAY}
+              disabled={this.state.invalidTimes.some((i) => i)}
+            >
+            </IconButton>
+            <IconButton
+              title="Copy Script"
+              onClick={async () => await this.onCopy()}
+              icon={F_ICONS.COPY}
+              disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
+            >
+            </IconButton>
+          </div>
+          <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: "end" }}>
+            <IconButton
+              title="Undo"
+              onClick={() => this.onUndo()}
+              icon={F_ICONS.ARROW_LEFT}
+              disabled={this.triggerManager.undoLen === 0}
+            >
+            </IconButton>
+            <IconButton
+              title="Redo"
+              onClick={() => this.onRedo()}
+              icon={F_ICONS.ARROW_RIGHT}
+              disabled={this.triggerManager.redoLen === 0}
+            >
+            </IconButton>
+            <IconButton
+              title="Settings"
+              onClick={() => this.onToggleSettings()}
+              icon={F_ICONS.SETTINGS}
+            >
+            </IconButton>
+            <IconButton
+              title="Help"
+              onClick={() => this.onHelp()}
+              icon={F_ICONS.HELP_CIRCLE}
+            >
+            </IconButton>
+          </div>
+          <input
+            id="trigger-file-upload"
+            style={{ display: "none" }}
+            type="file"
+            accept=".json"
+            onChange={(e: React.ChangeEvent) => this.onLoadFile(((e.target as HTMLInputElement).files as FileList)[0])}
+          />
+        </div>
+      );
   }
 
   renderTabContainer() {
-    return <div style={GLOBAL_STYLES.tabContainer}>
-      {...TRIGGER_DATA_KEYS.map((command) => {
-        if (this.state.numRiders === 0 &&
-            [TRIGGER_ID.FOCUS, TRIGGER_ID.GRAVITY, TRIGGER_ID.SKIN].includes(command)) {
-          return null;
-        }
+    return (
+      <div style={GLOBAL_STYLES.tabContainer}>
+        {...TRIGGER_DATA_KEYS.map((command) => {
+          if (
+            this.state.numRiders === 0
+            && [TRIGGER_ID.FOCUS, TRIGGER_ID.GRAVITY, TRIGGER_ID.SKIN].includes(command)
+          ) {
+            return null;
+          }
 
-        return <div>
-          <FloatingButton
-            customStyle={GLOBAL_STYLES.tabButton}
-            onClick={() => this.onChangeTab(command)}
-            active={this.state.activeTab === command}
-            label={TRIGGER_METADATA[command].DISPLAY_NAME}
-            disabledShadow
-            tabButton
-          ></FloatingButton>
-        </div>;
-      })}
-    </div>;
+          return (
+            <div>
+              <FloatingButton
+                customStyle={GLOBAL_STYLES.tabButton}
+                onClick={() => this.onChangeTab(command)}
+                active={this.state.activeTab === command}
+                label={TRIGGER_METADATA[command].DISPLAY_NAME}
+                disabledShadow
+                tabButton
+              >
+              </FloatingButton>
+            </div>
+          );
+        })}
+      </div>
+    );
   }
 
   renderWindowHead() {
     const { data } = this.triggerManager;
     const { activeTab } = this.state;
 
-    return <div style={GLOBAL_STYLES.windowHead}>
-      {activeTab === TRIGGER_ID.ZOOM &&
-        <>
-          {this.renderFloatPicker({
-            label: "Smoothing",
-            value: data[activeTab].smoothing.toString(),
-            path: ["smoothing"],
-            min: 0,
-          })}
-        </>
-      }
-      {activeTab === TRIGGER_ID.PAN &&
-        <>
-          {this.renderFloatPicker({
-            label: "Smoothing",
-            value: data[activeTab].smoothing.toString(),
-            path: ["smoothing"],
-            min: 0,
-          })}
-        </>
-      }
-      {activeTab === TRIGGER_ID.FOCUS &&
-        <>
-          {this.renderFloatPicker({
-            label: "Smoothing",
-            value: data[activeTab].smoothing.toString(),
-            path: ["smoothing"],
-            min: 0,
-          })}
-          <Dropdown
-            customStyle={{ margin: "0em .25em" }}
-            value={this.state.focusDropdown}
-            mapping={[...Array(this.state.numRiders).keys()]}
-            label={(_, i) => `Rider ${i + 1}`}
-            onChange={(e: number) => this.onChangeFocusDD(e)}
-          ></Dropdown>
-        </>
-      }
-      {activeTab === TRIGGER_ID.TIME &&
-        <>
-          {this.renderBoolPicker("Smoothing", data[activeTab].interpolate, ["interpolate"])}
-        </>
-      }
-      {activeTab === TRIGGER_ID.GRAVITY &&
-        <>
-          <Dropdown
-            customStyle={{ margin: "0em .25em" }}
-            value={this.state.gravityDropdown}
-            mapping={[...Array(this.state.numRiders).keys()]}
-            label={(_, i) => `Rider ${i + 1}`}
-            onChange={(e: number) => this.onChangeGravityDD(e)}
-          ></Dropdown>
-        </>
-      }
-      {activeTab === TRIGGER_ID.LAYER &&
-        <>
-          <Dropdown
-            customStyle={{ margin: "0em .25em" }}
-            value={this.state.layerDropdown}
-            mapping={this.state.layerMap}
-            label={(e) => `Layer ${e}`}
-            onChange={(e: number) => this.onChangeLayerDD(e)}
-          ></Dropdown>
-          {this.renderBoolPicker("60 FPS", data[activeTab].interpolate, ["interpolate"])}
-        </>
-      }
-    </div>;
+    return (
+      <div style={GLOBAL_STYLES.windowHead}>
+        {activeTab === TRIGGER_ID.ZOOM
+          && (
+            <>
+              {this.renderFloatPicker({
+                label: "Smoothing",
+                value: data[activeTab].smoothing.toString(),
+                path: ["smoothing"],
+                min: 0,
+              })}
+            </>
+          )}
+        {activeTab === TRIGGER_ID.PAN
+          && (
+            <>
+              {this.renderFloatPicker({
+                label: "Smoothing",
+                value: data[activeTab].smoothing.toString(),
+                path: ["smoothing"],
+                min: 0,
+              })}
+            </>
+          )}
+        {activeTab === TRIGGER_ID.FOCUS
+          && (
+            <>
+              {this.renderFloatPicker({
+                label: "Smoothing",
+                value: data[activeTab].smoothing.toString(),
+                path: ["smoothing"],
+                min: 0,
+              })}
+              <Dropdown
+                customStyle={{ margin: "0em .25em" }}
+                value={this.state.focusDropdown}
+                mapping={[...Array(this.state.numRiders).keys()]}
+                label={(_, i) => `Rider ${i + 1}`}
+                onChange={(e: number) => this.onChangeFocusDD(e)}
+              >
+              </Dropdown>
+            </>
+          )}
+        {activeTab === TRIGGER_ID.TIME
+          && (
+            <>
+              {this.renderBoolPicker("Smoothing", data[activeTab].interpolate, ["interpolate"])}
+            </>
+          )}
+        {activeTab === TRIGGER_ID.GRAVITY
+          && (
+            <>
+              <Dropdown
+                customStyle={{ margin: "0em .25em" }}
+                value={this.state.gravityDropdown}
+                mapping={[...Array(this.state.numRiders).keys()]}
+                label={(_, i) => `Rider ${i + 1}`}
+                onChange={(e: number) => this.onChangeGravityDD(e)}
+              >
+              </Dropdown>
+            </>
+          )}
+        {activeTab === TRIGGER_ID.LAYER
+          && (
+            <>
+              <Dropdown
+                customStyle={{ margin: "0em .25em" }}
+                value={this.state.layerDropdown}
+                mapping={this.state.layerMap}
+                label={(e) => `Layer ${e}`}
+                onChange={(e: number) => this.onChangeLayerDD(e)}
+              >
+              </Dropdown>
+              {this.renderBoolPicker("60 FPS", data[activeTab].interpolate, ["interpolate"])}
+            </>
+          )}
+      </div>
+    );
   }
 
   renderTrigger(currentTrigger: TimedTrigger, index: number) {
     const { activeTab } = this.state;
 
-    return <div style={{
-      ...GLOBAL_STYLES.triggerContainer,
-      fontSize: "1.5em",
-    }}>
-      <div style={GLOBAL_STYLES.triggerActionContainer}>
-        {(activeTab === TRIGGER_ID.ZOOM || activeTab === TRIGGER_ID.PAN) && (
+    return (
+      <div
+        style={{
+          ...GLOBAL_STYLES.triggerContainer,
+          fontSize: "1.5em",
+        }}
+      >
+        <div style={GLOBAL_STYLES.triggerActionContainer}>
+          {(activeTab === TRIGGER_ID.ZOOM || activeTab === TRIGGER_ID.PAN) && (
+            <IconButton
+              onClick={() => this.onCaptureCamera(index, activeTab)}
+              icon={F_ICONS.CAMERA}
+              title="Capture Editor Camera"
+            >
+            </IconButton>
+          )}
           <IconButton
-            onClick={() => this.onCaptureCamera(index, activeTab)}
-            icon={F_ICONS.CAMERA}
-            title="Capture Editor Camera"
-          ></IconButton>
-        )}
-        <IconButton
-          onClick={() => this.onDeleteTrigger(index)}
-          icon={F_ICONS.X}
-          disabled={index === 0}
-          title="Delete"
-        ></IconButton>
-      </div>
+            onClick={() => this.onDeleteTrigger(index)}
+            icon={F_ICONS.X}
+            disabled={index === 0}
+            title="Delete"
+          >
+          </IconButton>
+        </div>
 
-      {this.renderTimeInput(currentTrigger[0], index)}
-      {activeTab === TRIGGER_ID.ZOOM && this.renderZoomTrigger(currentTrigger as ZoomTrigger, index)}
-      {activeTab === TRIGGER_ID.PAN && this.renderPanTrigger(currentTrigger as CameraPanTrigger, index)}
-      {activeTab === TRIGGER_ID.FOCUS && this.renderFocusTrigger(currentTrigger as CameraFocusTrigger, index)}
-      {activeTab === TRIGGER_ID.TIME && this.renderRemapTrigger(currentTrigger as TimeRemapTrigger, index)}
-      {activeTab === TRIGGER_ID.GRAVITY && this.renderGravityTrigger(currentTrigger as GravityTrigger, index)}
-      {activeTab === TRIGGER_ID.LAYER && this.renderLayerTrigger(currentTrigger as LayerTrigger, index)}
-      <div style={GLOBAL_STYLES.createTriggerContainer}>
-        <FloatingButton
-          onClick={() => this.onCreateTrigger(index)}
-          customStyle={{ fontSize: "0.75em" }}
-          label="+"
-          active
-        ></FloatingButton>
+        {this.renderTimeInput(currentTrigger[0], index)}
+        {activeTab === TRIGGER_ID.ZOOM && this.renderZoomTrigger(currentTrigger as ZoomTrigger, index)}
+        {activeTab === TRIGGER_ID.PAN && this.renderPanTrigger(currentTrigger as CameraPanTrigger, index)}
+        {activeTab === TRIGGER_ID.FOCUS && this.renderFocusTrigger(currentTrigger as CameraFocusTrigger, index)}
+        {activeTab === TRIGGER_ID.TIME && this.renderRemapTrigger(currentTrigger as TimeRemapTrigger, index)}
+        {activeTab === TRIGGER_ID.GRAVITY && this.renderGravityTrigger(currentTrigger as GravityTrigger, index)}
+        {activeTab === TRIGGER_ID.LAYER && this.renderLayerTrigger(currentTrigger as LayerTrigger, index)}
+        <div style={GLOBAL_STYLES.createTriggerContainer}>
+          <FloatingButton
+            onClick={() => this.onCreateTrigger(index)}
+            customStyle={{ fontSize: "0.75em" }}
+            label="+"
+            active
+          >
+          </FloatingButton>
+        </div>
       </div>
-    </div>;
+    );
   }
 
   renderTimeInput(data: TriggerTime, index: number) {
@@ -692,92 +749,125 @@ export class App extends React.Component {
       { id: "2", label: ":", min: 0, max: 39 },
     ] as const;
 
-    const pathHead = this.state.activeTab === TRIGGER_ID.GRAVITY ?
-      ["triggers", this.state.gravityDropdown.toString()] :
-      this.state.activeTab === TRIGGER_ID.LAYER ?
-      ["triggers", this.state.layerDropdown.toString()] :
-      ["triggers"];
+    const pathHead = this.state.activeTab === TRIGGER_ID.GRAVITY
+      ? ["triggers", this.state.gravityDropdown.toString()]
+      : this.state.activeTab === TRIGGER_ID.LAYER
+      ? ["triggers", this.state.layerDropdown.toString()]
+      : ["triggers"];
 
-    return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {...props.map((prop) => {
-        const path = pathHead.concat([index.toString(), "0", prop.id]);
+    return (
+      <div style={GLOBAL_STYLES.triggerPropContainer}>
+        {...props.map((prop) => {
+          const path = pathHead.concat([index.toString(), "0", prop.id]);
 
-        return <div>
-          {this.renderIntPicker({
-            label: prop.label,
-            value: data[parseInt(prop.id)].toString(),
-            path,
-            min: prop.min,
-            max: prop.max,
-            customStyle: { color: this.state.invalidTimes[index] ? "red" : GLOBAL_STYLES.root.color },
-          })}
-        </div>;
-      })}
-    </div>;
+          return (
+            <div>
+              {this.renderIntPicker({
+                label: prop.label,
+                value: data[parseInt(prop.id)].toString(),
+                path,
+                min: prop.min,
+                max: prop.max,
+                customStyle: { color: this.state.invalidTimes[index] ? "red" : GLOBAL_STYLES.root.color },
+              })}
+            </div>
+          );
+        })}
+      </div>
+    );
   }
 
   renderZoomTrigger(data: ZoomTrigger, index: number) {
     const path = ["triggers", index.toString(), "1"];
 
-    return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {this.renderFloatPicker({
-        label: "Zoom To",
-        value: data[1].toString(),
-        path,
-      })}
-    </div>;
+    return (
+      <div style={GLOBAL_STYLES.triggerPropContainer}>
+        {this.renderFloatPicker({
+          label: "Zoom To",
+          value: data[1].toString(),
+          path,
+        })}
+      </div>
+    );
   }
 
   renderPanTrigger(data: CameraPanTrigger, index: number) {
     const props = [
-      [{ id: "w", label: "Width", min: 0 }, { id: "h", label: "Height", min: 0 }],
-      [{ id: "x", label: "Offset X", min: -Number.MAX_VALUE }, { id: "y", label: "Offset Y", min: -Number.MAX_VALUE }],
+      ["Size", { id: "w", label: "Width", min: 0 }, { id: "h", label: "Height", min: 0 }],
+      ["Camera Offset", { id: "x", label: "X", min: -Number.MAX_VALUE }, {
+        id: "y",
+        label: "Y",
+        min: -Number.MAX_VALUE,
+      }],
+      ["Pixel Offset", { id: "px", label: "X", min: -Number.MAX_VALUE }, {
+        id: "y",
+        label: "Y",
+        min: -Number.MAX_VALUE,
+      }],
     ] as const;
 
-    return <div>
-      {...props.map((pair) => {
-        return <div style={{ display: "flex", flexDirection: "row" }}>
-          {...pair.map((prop) => {
-            const path = ["triggers", index.toString(), "1", prop.id];
+    return (
+      <div>
+        {...props.map((pair) => {
+          return (
+            <div style={{ display: "flex", flexDirection: "row" }}>
+              {...pair.map((prop) => {
+                if (typeof prop === "string") {
+                  return (
+                    <div style={GLOBAL_STYLES.triggerPropContainer}>
+                      {prop}
+                    </div>
+                  );
+                }
 
-            return <div style={GLOBAL_STYLES.triggerPropContainer}>
-              {this.renderFloatPicker({
-                label: prop.label,
-                value: data[1][prop.id].toString(),
-                path,
-                min: prop.min,
+                const path = ["triggers", index.toString(), "1", prop.id];
+
+                return (
+                  <div style={GLOBAL_STYLES.triggerPropContainer}>
+                    {this.renderFloatPicker({
+                      label: prop.label,
+                      value: data[1][prop.id].toString(),
+                      path,
+                      min: prop.min,
+                    })}
+                  </div>
+                );
               })}
-            </div>;
-          })}
-        </div>;
-      })}
-    </div>;
+            </div>
+          );
+        })}
+      </div>
+    );
   }
 
   renderFocusTrigger(data: CameraFocusTrigger, index: number) {
     const path = ["triggers", index.toString(), "1", this.state.focusDropdown.toString()];
 
-    return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {this.renderFloatPicker({
-        label: "Weight",
-        value: data[1][this.state.focusDropdown].toString(),
-        path,
-        min: 0,
-      })}
-    </div>;
+    return (
+      <div style={GLOBAL_STYLES.triggerPropContainer}>
+        {this.renderFloatPicker({
+          label: "Weight",
+          value: data[1][this.state.focusDropdown].toString(),
+          path,
+          min: 0,
+        })}
+      </div>
+    );
   }
 
   renderRemapTrigger(data: TimeRemapTrigger, index: number) {
     const path = ["triggers", index.toString(), "1"];
 
-    return <div style={GLOBAL_STYLES.triggerPropContainer}>
-      {this.renderFloatPicker({
-        label: "Speed",
-        value: data[1].toString(),
-        path,
-        min: 0.001,
-      })}
-    </div>;
+    return (
+      <div style={GLOBAL_STYLES.triggerPropContainer}>
+        {this.renderFloatPicker({
+          label: "Speed",
+          value: data[1].toString(),
+          path,
+          min: 0.001,
+        })}
+      </div>
+    );
   }
 
   renderGravityTrigger(data: GravityTrigger, index: number) {
@@ -786,19 +876,23 @@ export class App extends React.Component {
       { id: "y", label: "Y" },
     ] as const;
 
-    return <div style={{ display: "flex", flexDirection: "row" }}>
-      {...props.map((prop) => {
-        const path = ["triggers", this.state.gravityDropdown.toString(), index.toString(), "1", prop.id];
+    return (
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        {...props.map((prop) => {
+          const path = ["triggers", this.state.gravityDropdown.toString(), index.toString(), "1", prop.id];
 
-        return <div style={GLOBAL_STYLES.triggerPropContainer}>
-          {this.renderFloatPicker({
-            label: prop.label,
-            value: data[1][prop.id].toString(),
-            path,
-          })}
-        </div>;
-      })}
-    </div>;
+          return (
+            <div style={GLOBAL_STYLES.triggerPropContainer}>
+              {this.renderFloatPicker({
+                label: prop.label,
+                value: data[1][prop.id].toString(),
+                path,
+              })}
+            </div>
+          );
+        })}
+      </div>
+    );
   }
 
   renderLayerTrigger(data: LayerTrigger, index: number) {
@@ -808,71 +902,96 @@ export class App extends React.Component {
       { id: "offset", label: "OFFSET" },
     ] as const;
 
-    return <div style={{ display: "flex", flexDirection: "row" }}>
-      {...props.map((prop) => {
-        const path = ["triggers", this.state.layerDropdown.toString(), index.toString(), "1", prop.id];
+    return (
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        {...props.map((prop) => {
+          const path = ["triggers", this.state.layerDropdown.toString(), index.toString(), "1", prop.id];
 
-        return <div style={GLOBAL_STYLES.triggerPropContainer}>
-          {this.renderIntPicker({
-            label: prop.label,
-            value: data[1][prop.id].toString(),
-            path,
-            min: 0,
-          })}
-        </div>;
-      })}
-    </div>;
+          return (
+            <div style={GLOBAL_STYLES.triggerPropContainer}>
+              {this.renderIntPicker({
+                label: prop.label,
+                value: data[1][prop.id].toString(),
+                path,
+                min: 0,
+              })}
+            </div>
+          );
+        })}
+      </div>
+    );
   }
 
   renderBoolPicker(labelText: string, value: boolean, propPath: string[]) {
-    return <div style={GLOBAL_STYLES.triggerRowContainer}>
-      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={propPath.join("-")}>
-        {labelText}
-      </label>
-      <Checkbox
-        customStyle={GLOBAL_STYLES.spacedProperty}
-        id={propPath.join("-")}
-        value={value}
-        onCheck={() => this.onUpdateTrigger(!value, propPath)}
-      ></Checkbox>
-    </div>;
+    return (
+      <div style={GLOBAL_STYLES.triggerRowContainer}>
+        <label style={GLOBAL_STYLES.spacedProperty} htmlFor={propPath.join("-")}>
+          {labelText}
+        </label>
+        <Checkbox
+          customStyle={GLOBAL_STYLES.spacedProperty}
+          id={propPath.join("-")}
+          value={value}
+          onCheck={() => this.onUpdateTrigger(!value, propPath)}
+        >
+        </Checkbox>
+      </div>
+    );
   }
 
   renderIntPicker(
-      { label, value, path, min, max, customStyle } :
-      { label: string, value: string, path: string[], min?: number, max?: number, customStyle?: React.CSSProperties },
+    { label, value, path, min, max, customStyle }: {
+      label: string;
+      value: string;
+      path: string[];
+      min?: number;
+      max?: number;
+      customStyle?: React.CSSProperties;
+    },
   ) {
-    return <div style={GLOBAL_STYLES.triggerRowContainer}>
-      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={path.join("-")}>
-        {label}
-      </label>
-      <IntPicker
-        customStyle={{ ...GLOBAL_STYLES.spacedProperty, ...customStyle }}
-        id={path.join("-")}
-        value={value}
-        min={min}
-        max={max}
-        onChange={(v: number) => this.onUpdateTrigger(v, path)}
-      ></IntPicker>
-    </div>;
+    return (
+      <div style={GLOBAL_STYLES.triggerRowContainer}>
+        <label style={GLOBAL_STYLES.spacedProperty} htmlFor={path.join("-")}>
+          {label}
+        </label>
+        <IntPicker
+          customStyle={{ ...GLOBAL_STYLES.spacedProperty, ...customStyle }}
+          id={path.join("-")}
+          value={value}
+          min={min}
+          max={max}
+          onChange={(v: number) => this.onUpdateTrigger(v, path)}
+        >
+        </IntPicker>
+      </div>
+    );
   }
 
   renderFloatPicker(
-      { label, value, path, min, max, customStyle } :
-      { label: string, value: string, path: string[], min?: number, max?: number, customStyle?: React.CSSProperties },
+    { label, value, path, min, max, customStyle }: {
+      label: string;
+      value: string;
+      path: string[];
+      min?: number;
+      max?: number;
+      customStyle?: React.CSSProperties;
+    },
   ) {
-    return <div style={GLOBAL_STYLES.triggerRowContainer}>
-      <label style={GLOBAL_STYLES.spacedProperty} htmlFor={path.join("-")}>
-        {label}
-      </label>
-      <FloatPicker
-        customStyle={{ ...GLOBAL_STYLES.spacedProperty, ...customStyle }}
-        id={path.join("-")}
-        value={value}
-        min={min}
-        max={max}
-        onChange={(v: number) => this.onUpdateTrigger(v, path)}
-      ></FloatPicker>
-    </div>;
+    return (
+      <div style={GLOBAL_STYLES.triggerRowContainer}>
+        <label style={GLOBAL_STYLES.spacedProperty} htmlFor={path.join("-")}>
+          {label}
+        </label>
+        <FloatPicker
+          customStyle={{ ...GLOBAL_STYLES.spacedProperty, ...customStyle }}
+          id={path.join("-")}
+          value={value}
+          min={min}
+          max={max}
+          onChange={(v: number) => this.onUpdateTrigger(v, path)}
+        >
+        </FloatPicker>
+      </div>
+    );
   }
 }

@@ -1,4 +1,4 @@
-import { TriggerDataManager, TRIGGER_METADATA, TRIGGER_DATA_KEYS } from "../TriggerDataManager";
+import { TRIGGER_DATA_KEYS, TRIGGER_METADATA, TriggerDataManager } from "../TriggerDataManager";
 import {
   CameraFocusTrigger,
   CameraPanTrigger,
@@ -48,8 +48,8 @@ function parseCommand(commandId: TRIGGER_ID, scriptSection: string, triggerData:
 
   const parameterText = `[${
     removeLeadingZeroes(
-        scriptSection.substring(startIndex, endIndex),
-        commandId,
+      scriptSection.substring(startIndex, endIndex),
+      commandId,
     )
   }]`;
 
@@ -129,14 +129,20 @@ function parsePanTriggers(triggerArray: unknown[]): CameraPanTrigger[] {
 
     assert(panProp, ASSERT_TYPE.RECORD);
 
-    const { x, y, w, h } = panProp;
+    const { x, y, w, h, px, py } = panProp;
 
     assert(x, ASSERT_TYPE.NUM);
     assert(y, ASSERT_TYPE.NUM);
     assert(w, ASSERT_TYPE.NUM);
     assert(h, ASSERT_TYPE.NUM);
+    if (px !== undefined) {
+      assert(px, ASSERT_TYPE.NUM);
+    }
+    if (py !== undefined) {
+      assert(py, ASSERT_TYPE.NUM);
+    }
 
-    const newTrigger: CameraPanTrigger = [parseTime(trigger[0]), { x, y, w, h }];
+    const newTrigger: CameraPanTrigger = [parseTime(trigger[0]), { x, y, w, h, px: px || 0, py: py || 0 }];
 
     triggers.push(newTrigger);
   }
@@ -280,10 +286,12 @@ function parseSkinProp(cssString: string): Record<string, Record<string, string>
 
   Object.entries(cssPropKeywords).forEach(([propName, cssSelector]) => {
     if (!cssString.startsWith(cssSelector)) return;
-    const styleData = JSON.parse(cssString
+    const styleData = JSON.parse(
+      cssString
         .substring(cssSelector.length)
         .replace(wordRegex, "\"$2\"")
-        .replace(";", ","));
+        .replace(";", ","),
+    );
 
     if (!(propName in props)) {
       props[propName] = {};

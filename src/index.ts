@@ -1,34 +1,41 @@
-import { GLOBAL_STYLES } from "./styles";
+import type { Store } from "redux";
 import { App } from "./App";
 import { getPlayerRunning, getWindowFocused } from "./lib/redux-selectors";
 import {
-  CameraFocusTrigger, CameraPanTrigger, GravityTrigger, LayerTrigger, TimeRemapTrigger, ZoomTrigger,
+  CameraFocusTrigger,
+  CameraPanTrigger,
+  GravityTrigger,
+  LayerTrigger,
+  TimeRemapTrigger,
+  ZoomTrigger,
 } from "./lib/TriggerDataManager.types";
-import type { Store } from "redux";
+import { GLOBAL_STYLES } from "./styles";
 
 declare global {
   interface Window {
-    ReactDOM: { render: (child: React.ComponentElement<object, App>, parent: HTMLElement) => void }
-    store: Store
-    CMD_EDITOR_DEBUG: boolean
-    onAppReady: () => void
-    saveCommands: () => void
-    getAutoZoom?: (index: number) => number
-    createZoomer: (zoom: ZoomTrigger[], smoothing?: number) => typeof window.getAutoZoom
-    getCamBounds?: (index: number) => { w: number, h: number, x: number, y: number }
-    createBoundsPanner: (pan: CameraPanTrigger[], smoothing?: number) => typeof window.getCamBounds
-    getCamFocus?: (index: number) => boolean[]
-    createFocuser: (focus: CameraFocusTrigger[], smoothing?: number) => typeof window.getCamFocus
-    timeRemapper?: object
-    createTimeRemapper: (timeRemap: TimeRemapTrigger[], smoothing?: boolean) => typeof window.timeRemapper
-    setCustomRiders: (cssList: string[]) => void
-    setCustomGravity: (gravity: GravityTrigger[][]) => void
-    getLayerVisibleAtTime?: (id: number, ind: number) => boolean
-    createLayerAutomator: (layerTriggers: Record<number, LayerTrigger[]>, sixtyFps: boolean) =>
-      typeof window.getLayerVisibleAtTime
+    ReactDOM: { render: (child: React.ComponentElement<object, App>, parent: HTMLElement) => void };
+    store: Store;
+    CMD_EDITOR_DEBUG: boolean;
+    onAppReady: () => void;
+    saveCommands: () => void;
+    getAutoZoom?: (index: number) => number;
+    createZoomer: (zoom: ZoomTrigger[], smoothing?: number) => typeof window.getAutoZoom;
+    getCamBounds?: (index: number) => { w: number; h: number; x: number; y: number; px?: number; py?: number };
+    createBoundsPanner: (pan: CameraPanTrigger[], smoothing?: number) => typeof window.getCamBounds;
+    getCamFocus?: (index: number) => boolean[];
+    createFocuser: (focus: CameraFocusTrigger[], smoothing?: number) => typeof window.getCamFocus;
+    timeRemapper?: object;
+    createTimeRemapper: (timeRemap: TimeRemapTrigger[], smoothing?: boolean) => typeof window.timeRemapper;
+    setCustomRiders: (cssList: string[]) => void;
+    setCustomGravity: (gravity: GravityTrigger[][]) => void;
+    getLayerVisibleAtTime?: (id: number, ind: number) => boolean;
+    createLayerAutomator: (
+      layerTriggers: Record<number, LayerTrigger[]>,
+      sixtyFps: boolean,
+    ) => typeof window.getLayerVisibleAtTime;
   }
 
-  type RootState = ReturnType<typeof window.store.getState>
+  type RootState = ReturnType<typeof window.store.getState>;
 }
 
 /**
