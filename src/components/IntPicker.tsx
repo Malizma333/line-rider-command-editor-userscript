@@ -2,15 +2,17 @@ import { COLOR, THEME } from "../styles";
 const { React } = window;
 
 interface Props {
-  customStyle: React.CSSProperties,
-  id: string,
-  value: string,
-  min?: number,
-  max?: number,
-  onChange: (v: number) => void
-};
+  customStyle: React.CSSProperties;
+  id: string;
+  value: string;
+  min?: number;
+  max?: number;
+  onChange: (v: number) => void;
+}
 
-interface State { value: string }
+interface State {
+  value: string;
+}
 
 /**
  * Validates the number for a custom integer picker

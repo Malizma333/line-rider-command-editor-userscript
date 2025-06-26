@@ -12,69 +12,71 @@ export default function writeJsonScript(currentTriggerData: TriggerDataLookup): 
     [TRIGGER_ID.ZOOM]: {
       smoothing: currentTriggerData[TRIGGER_ID.ZOOM].smoothing,
       triggers: currentTriggerData[TRIGGER_ID.ZOOM].triggers
-          .map((trigger) => [
-            retrieveIndex(trigger[0]),
-            trigger[1],
-          ]),
+        .map((trigger) => [
+          retrieveIndex(trigger[0]),
+          trigger[1],
+        ]),
     },
     [TRIGGER_ID.PAN]: {
       smoothing: currentTriggerData[TRIGGER_ID.PAN].smoothing,
       triggers: currentTriggerData[TRIGGER_ID.PAN].triggers
-          .map((trigger) => [
-            retrieveIndex(trigger[0]),
-            trigger[1].w,
-            trigger[1].h,
-            trigger[1].x,
-            trigger[1].y,
-          ]),
+        .map((trigger) => [
+          retrieveIndex(trigger[0]),
+          trigger[1].w,
+          trigger[1].h,
+          trigger[1].x,
+          trigger[1].y,
+          trigger[1].px,
+          trigger[1].py,
+        ]),
     },
     [TRIGGER_ID.FOCUS]: {
       smoothing: currentTriggerData[TRIGGER_ID.FOCUS].smoothing,
       triggers: currentTriggerData[TRIGGER_ID.FOCUS].triggers
-          .map((trigger) => [
-            retrieveIndex(trigger[0]),
-            trigger[1].map((weight) => weight),
-          ]),
+        .map((trigger) => [
+          retrieveIndex(trigger[0]),
+          trigger[1].map((weight) => weight),
+        ]),
     },
     [TRIGGER_ID.TIME]: {
       interpolate: currentTriggerData[TRIGGER_ID.TIME].interpolate,
       triggers: currentTriggerData[TRIGGER_ID.TIME].triggers
-          .map((trigger) => [
-            retrieveIndex(trigger[0]),
-            trigger[1],
-          ]),
+        .map((trigger) => [
+          retrieveIndex(trigger[0]),
+          trigger[1],
+        ]),
     },
     [TRIGGER_ID.SKIN]: {
       triggers: currentTriggerData[TRIGGER_ID.SKIN].triggers
-          .map((trigger) => Object.fromEntries(
-              Object.entries(trigger).map(([key, value]) => (
-                [key, { fill: value.fill, stroke: value.stroke }]
-              )),
-          )),
+        .map((trigger) =>
+          Object.fromEntries(
+            Object.entries(trigger).map(([key, value]) => [key, { fill: value.fill, stroke: value.stroke }]),
+          )
+        ),
     },
     [TRIGGER_ID.GRAVITY]: {
       triggers: currentTriggerData[TRIGGER_ID.GRAVITY].triggers
-          .map((riderTriggers) => (
-            riderTriggers.map((trigger) => [
-              retrieveIndex(trigger[0]),
-              trigger[1].x,
-              trigger[1].y,
-            ])
-          )),
+        .map((riderTriggers) => (
+          riderTriggers.map((trigger) => [
+            retrieveIndex(trigger[0]),
+            trigger[1].x,
+            trigger[1].y,
+          ])
+        )),
     },
     [TRIGGER_ID.LAYER]: {
       interpolate: currentTriggerData[TRIGGER_ID.LAYER].interpolate,
       triggers: Object.fromEntries(
-          Object.entries(currentTriggerData[TRIGGER_ID.LAYER].triggers)
-              .map(([layerId, triggers]) => [
-                layerId,
-                triggers.map((trigger) => [
-                  retrieveIndex(trigger[0]),
-                  trigger[1].on,
-                  trigger[1].off,
-                  trigger[1].offset,
-                ]),
-              ]),
+        Object.entries(currentTriggerData[TRIGGER_ID.LAYER].triggers)
+          .map(([layerId, triggers]) => [
+            layerId,
+            triggers.map((trigger) => [
+              retrieveIndex(trigger[0]),
+              trigger[1].on,
+              trigger[1].off,
+              trigger[1].offset,
+            ]),
+          ]),
       ),
     },
   };

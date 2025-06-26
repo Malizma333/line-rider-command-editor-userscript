@@ -2,15 +2,17 @@ import { COLOR, THEME } from "../styles";
 const { React } = window;
 
 interface Props {
-  customStyle: React.CSSProperties,
-  id: string,
-  value: string,
-  min?: number,
-  max?: number,
-  onChange: (v: number) => void
-};
+  customStyle: React.CSSProperties;
+  id: string;
+  value: string;
+  min?: number;
+  max?: number;
+  onChange: (v: number) => void;
+}
 
-interface State { value: string }
+interface State {
+  value: string;
+}
 
 /**
  * Validates the number for a custom float picker
@@ -52,7 +54,6 @@ const style: React.CSSProperties = {
   width: "3em",
 };
 
-
 /**
  * Creates a custom float picker
  * @param root0 Custom properties for this input
@@ -88,7 +89,6 @@ export default class FloatPicker extends React.Component<Props, State> {
   componentWillReceiveProps(nextProps: Readonly<Props>): void {
     this.setState({ value: nextProps.value });
   }
-
 
   render() {
     const { customStyle, id } = this.props;

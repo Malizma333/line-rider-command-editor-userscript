@@ -7,7 +7,7 @@ import type { AnyAction } from "redux";
  * @param dimension.height Height of the viewport in pixels
  * @returns Action object to dispatch to the redux store
  */
-export function setPlaybackDimensions(dimension: {width: number, height: number}): AnyAction {
+export function setPlaybackDimensions(dimension: { width: number; height: number }): AnyAction {
   return {
     type: "SET_PLAYBACK_DIMENSIONS",
     payload: dimension,

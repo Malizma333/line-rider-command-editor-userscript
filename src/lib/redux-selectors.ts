@@ -84,7 +84,7 @@ export function getEditorZoom(state: RootState): number {
  * @param state Redux store state
  * @returns Camera position
  */
-export function getEditorPosition(state: RootState): {x: number, y: number} {
+export function getEditorPosition(state: RootState): { x: number; y: number } {
   return state.camera.editorPosition;
 }
 /**
@@ -93,9 +93,9 @@ export function getEditorPosition(state: RootState): {x: number, y: number} {
  * @returns Camera zoom level
  */
 export function getPlaybackZoom(state: RootState): number {
-  return window.getAutoZoom ?
-    window.getAutoZoom(getPlayerIndex(state)) :
-    state.camera.playbackZoom;
+  return window.getAutoZoom
+    ? window.getAutoZoom(getPlayerIndex(state))
+    : state.camera.playbackZoom;
 }
 
 /**
@@ -103,7 +103,7 @@ export function getPlaybackZoom(state: RootState): number {
  * @param state Redux store state
  * @returns Camera dimensions
  */
-export function getPlaybackDimensions(state: RootState): {width: number, height: number} {
+export function getPlaybackDimensions(state: RootState): { width: number; height: number } {
   return state.camera.playbackDimensions || state.camera.editorDimensions;
 }
 
@@ -113,5 +113,5 @@ export function getPlaybackDimensions(state: RootState): {width: number, height:
  * @returns List of layer ids by index
  */
 export function getLayerIds(state: RootState): number[] {
-  return state.simulator.committedEngine.engine.state.layers.toArray().map((l: {id: number}) => l.id);
+  return state.simulator.committedEngine.engine.state.layers.toArray().map((l: { id: number }) => l.id);
 }

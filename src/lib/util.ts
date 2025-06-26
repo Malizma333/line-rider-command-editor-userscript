@@ -1,9 +1,9 @@
 import {
+  SkinCssTrigger,
+  TimedTrigger,
   TRIGGER_ID,
   TriggerDataLookup,
-  TimedTrigger,
   TriggerTime,
-  SkinCssTrigger,
 } from "../lib/TriggerDataManager.types";
 import { TRIGGER_METADATA } from "./TriggerDataManager";
 
@@ -16,15 +16,17 @@ import { TRIGGER_METADATA } from "./TriggerDataManager";
  * @returns The extracted array of triggers
  */
 export function extractTriggerArray(
-    triggerData: TriggerDataLookup,
-    activeTab: Exclude<TRIGGER_ID, TRIGGER_ID.SKIN>,
-    gravityDropdown: number,
-    layerDropdown: number,
+  triggerData: TriggerDataLookup,
+  activeTab: Exclude<TRIGGER_ID, TRIGGER_ID.SKIN>,
+  gravityDropdown: number,
+  layerDropdown: number,
 ): TimedTrigger[] {
   return (
-      activeTab === TRIGGER_ID.GRAVITY ? triggerData[activeTab].triggers[gravityDropdown] :
-      activeTab === TRIGGER_ID.LAYER ? triggerData[activeTab].triggers[layerDropdown] :
-      triggerData[activeTab].triggers
+    activeTab === TRIGGER_ID.GRAVITY
+      ? triggerData[activeTab].triggers[gravityDropdown]
+      : activeTab === TRIGGER_ID.LAYER
+      ? triggerData[activeTab].triggers[layerDropdown]
+      : triggerData[activeTab].triggers
   );
 }
 
@@ -47,11 +49,11 @@ export function validateTimes(triggers: TimedTrigger[]): boolean[] {
     const time1 = triggers[i][0];
     const time2 = triggers[i + 1][0];
     const index1 = (
-      time1[0] * 60 + time1[1]
-    ) * 40 + time1[2];
+          time1[0] * 60 + time1[1]
+        ) * 40 + time1[2];
     const index2 = (
-      time2[0] * 60 + time2[1]
-    ) * 40 + time2[2];
+          time2[0] * 60 + time2[1]
+        ) * 40 + time2[2];
 
     if (index1 >= index2) {
       invalidIndices[i + 1] = true;
@@ -68,35 +70,37 @@ export function validateTimes(triggers: TimedTrigger[]): boolean[] {
  */
 export function formatSkins(customSkinData: SkinCssTrigger[]): string[] {
   const nullColor = "#ffffffff";
-  const customSkinStrings = customSkinData.map((customSkin: SkinCssTrigger) => [
-    ` .outline {stroke: ${customSkin.outline.stroke ?? nullColor}}`,
-    ` .skin {fill: ${customSkin.skin.fill ?? nullColor}}`,
-    ` .hair {fill: ${customSkin.hair.fill ?? nullColor}}`,
-    ` .fill {fill: ${customSkin.fill.fill ?? nullColor}}`,
-    ` #eye {fill: ${customSkin.eye.fill ?? nullColor}}`,
-    ` .sled {fill: ${customSkin.sled.fill ?? nullColor}}`,
-    ` #string {stroke: ${customSkin.string.stroke ?? nullColor}}`,
-    ` .arm .sleeve {fill: ${customSkin.armSleeve.fill ?? nullColor}}`,
-    ` .arm .hand {fill: ${customSkin.armHand.fill ?? nullColor}}`,
-    ` .leg .pants {fill: ${customSkin.legPants.fill ?? nullColor}}`,
-    ` .leg .foot {fill: ${customSkin.legFoot.fill ?? nullColor}}`,
-    ` .torso {fill: ${customSkin.torso.fill ?? nullColor}}`,
-    ` .scarf1 {fill: ${customSkin.scarf1.fill ?? nullColor}}`,
-    ` .scarf2 {fill: ${customSkin.scarf2.fill ?? nullColor}}`,
-    ` .scarf3 {fill: ${customSkin.scarf3.fill ?? nullColor}}`,
-    ` .scarf4 {fill: ${customSkin.scarf4.fill ?? nullColor}}`,
-    ` .scarf5 {fill: ${customSkin.scarf5.fill ?? nullColor}}`,
-    ` #scarf0 {fill: ${customSkin.id_scarf0.fill ?? nullColor}}`,
-    ` #scarf1 {fill: ${customSkin.id_scarf1.fill ?? nullColor}}`,
-    ` #scarf2 {fill: ${customSkin.id_scarf2.fill ?? nullColor}}`,
-    ` #scarf3 {fill: ${customSkin.id_scarf3.fill ?? nullColor}}`,
-    ` #scarf4 {fill: ${customSkin.id_scarf4.fill ?? nullColor}}`,
-    ` #scarf5 {fill: ${customSkin.id_scarf5.fill ?? nullColor}}`,
-    ` .hat .top {fill: ${customSkin.hatTop.fill ?? nullColor}}`,
-    ` .hat .bottom {stroke: ${customSkin.hatBottom.stroke ?? nullColor}}`,
-    ` .hat .ball {fill: ${customSkin.hatBall.fill ?? nullColor}}`,
-    ` .flag {fill: ${customSkin.flag.fill ?? nullColor}}`,
-  ].join("").replace(/\n/g, ""));
+  const customSkinStrings = customSkinData.map((customSkin: SkinCssTrigger) =>
+    [
+      ` .outline {stroke: ${customSkin.outline.stroke ?? nullColor}}`,
+      ` .skin {fill: ${customSkin.skin.fill ?? nullColor}}`,
+      ` .hair {fill: ${customSkin.hair.fill ?? nullColor}}`,
+      ` .fill {fill: ${customSkin.fill.fill ?? nullColor}}`,
+      ` #eye {fill: ${customSkin.eye.fill ?? nullColor}}`,
+      ` .sled {fill: ${customSkin.sled.fill ?? nullColor}}`,
+      ` #string {stroke: ${customSkin.string.stroke ?? nullColor}}`,
+      ` .arm .sleeve {fill: ${customSkin.armSleeve.fill ?? nullColor}}`,
+      ` .arm .hand {fill: ${customSkin.armHand.fill ?? nullColor}}`,
+      ` .leg .pants {fill: ${customSkin.legPants.fill ?? nullColor}}`,
+      ` .leg .foot {fill: ${customSkin.legFoot.fill ?? nullColor}}`,
+      ` .torso {fill: ${customSkin.torso.fill ?? nullColor}}`,
+      ` .scarf1 {fill: ${customSkin.scarf1.fill ?? nullColor}}`,
+      ` .scarf2 {fill: ${customSkin.scarf2.fill ?? nullColor}}`,
+      ` .scarf3 {fill: ${customSkin.scarf3.fill ?? nullColor}}`,
+      ` .scarf4 {fill: ${customSkin.scarf4.fill ?? nullColor}}`,
+      ` .scarf5 {fill: ${customSkin.scarf5.fill ?? nullColor}}`,
+      ` #scarf0 {fill: ${customSkin.id_scarf0.fill ?? nullColor}}`,
+      ` #scarf1 {fill: ${customSkin.id_scarf1.fill ?? nullColor}}`,
+      ` #scarf2 {fill: ${customSkin.id_scarf2.fill ?? nullColor}}`,
+      ` #scarf3 {fill: ${customSkin.id_scarf3.fill ?? nullColor}}`,
+      ` #scarf4 {fill: ${customSkin.id_scarf4.fill ?? nullColor}}`,
+      ` #scarf5 {fill: ${customSkin.id_scarf5.fill ?? nullColor}}`,
+      ` .hat .top {fill: ${customSkin.hatTop.fill ?? nullColor}}`,
+      ` .hat .bottom {stroke: ${customSkin.hatBottom.stroke ?? nullColor}}`,
+      ` .hat .ball {fill: ${customSkin.hatBall.fill ?? nullColor}}`,
+      ` .flag {fill: ${customSkin.flag.fill ?? nullColor}}`,
+    ].join("").replace(/\n/g, "")
+  );
 
   // For some reason, the skin css array input is indexed +1 mod n
   customSkinStrings.unshift(customSkinStrings.pop() ?? "");
@@ -132,7 +136,7 @@ export function retrieveIndex(timestamp: TriggerTime): number {
  * @returns The script as a string
  */
 export function generateScript(command: TRIGGER_ID, triggerData: TriggerDataLookup): string {
-  const currentHeader = (TRIGGER_METADATA[command]).FUNC;
+  const currentHeader = TRIGGER_METADATA[command].FUNC;
 
   if (currentHeader === undefined) {
     return "";
@@ -144,22 +148,22 @@ export function generateScript(command: TRIGGER_ID, triggerData: TriggerDataLook
     case TRIGGER_ID.ZOOM: {
       const currentData = triggerData[command];
       return currentHeader
-          .replace("{0}", JSON.stringify(currentData.triggers))
-          .replace("{1}", String(currentData.smoothing))
-          .replace(" ", "");
+        .replace("{0}", JSON.stringify(currentData.triggers))
+        .replace("{1}", String(currentData.smoothing))
+        .replace(" ", "");
     }
     case TRIGGER_ID.TIME: {
       const currentData = triggerData[command];
       return currentHeader
-          .replace("{0}", JSON.stringify(currentData.triggers))
-          .replace("{1}", String(currentData.interpolate))
-          .replace(" ", "");
+        .replace("{0}", JSON.stringify(currentData.triggers))
+        .replace("{1}", String(currentData.interpolate))
+        .replace(" ", "");
     }
     case TRIGGER_ID.SKIN: {
       const currentData = triggerData[command];
       return currentHeader
-          .replace("{0}", JSON.stringify(formatSkins(currentData.triggers)))
-          .replace(" ", "");
+        .replace("{0}", JSON.stringify(formatSkins(currentData.triggers)))
+        .replace(" ", "");
     }
     default:
       return "";

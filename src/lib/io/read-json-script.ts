@@ -1,4 +1,4 @@
-import { TriggerDataManager, TRIGGER_DATA_KEYS } from "../TriggerDataManager";
+import { TRIGGER_DATA_KEYS, TriggerDataManager } from "../TriggerDataManager";
 import { TRIGGER_ID, TriggerDataLookup } from "../TriggerDataManager.types";
 import parseV0Command from "./read-json-v0-script";
 import parseV1Command from "./read-json-v1-script";
@@ -12,8 +12,8 @@ import { assert, ASSERT_TYPE } from "./type-guards";
  * @returns The validated trigger data
  */
 export default function readJsonScript(
-    fileObject: unknown,
-    currentTriggerData: TriggerDataLookup,
+  fileObject: unknown,
+  currentTriggerData: TriggerDataLookup,
 ): TriggerDataLookup {
   const triggerData = TriggerDataManager.initialTriggerData;
 

@@ -1,10 +1,10 @@
-import { COLOR, THEME } from "../styles";
+import { App } from "../App";
 import FloatingButton from "../components/FloatingButton";
 import IconButton from "../components/IconButton";
 import * as FICONS from "../components/Icons";
-import { App } from "../App";
-import { FONT_SIZE_SETTING, VIEWPORT_SETTING, SETTINGS_KEY } from "../lib/settings-storage.types";
 import { getSetting, saveSetting } from "../lib/settings-storage";
+import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from "../lib/settings-storage.types";
+import { COLOR, THEME } from "../styles";
 const { React } = window;
 
 const styles = {
@@ -55,23 +55,27 @@ const styles = {
  * @param root0.settings Root settings component
  * @returns Settings header component at top of settings page
  */
-function SettingsHeader({ root, settings }: {root: App, settings: Settings}) {
-  return <div style={{ ...styles.header, fontSize: "1.5em" }}>
-    <IconButton
-      onClick={() => root.onToggleSettings()}
-      icon={FICONS.X}
-      customStyle={{ position: "absolute", right: "0px" }}
-      title='Close'
-    ></IconButton>
-    Settings
-    <FloatingButton
-      customStyle={styles.applyButton}
-      active={settings.state.dirty}
-      disabled={!settings.state.dirty}
-      onClick={() => settings.onApply()}
-      label='Apply'
-    ></FloatingButton>
-  </div>;
+function SettingsHeader({ root, settings }: { root: App; settings: Settings }) {
+  return (
+    <div style={{ ...styles.header, fontSize: "1.5em" }}>
+      <IconButton
+        onClick={() => root.onToggleSettings()}
+        icon={FICONS.X}
+        customStyle={{ position: "absolute", right: "0px" }}
+        title="Close"
+      >
+      </IconButton>
+      Settings
+      <FloatingButton
+        customStyle={styles.applyButton}
+        active={settings.state.dirty}
+        disabled={!settings.state.dirty}
+        onClick={() => settings.onApply()}
+        label="Apply"
+      >
+      </FloatingButton>
+    </div>
+  );
 }
 
 const LABEL_MAP = {
@@ -98,32 +102,42 @@ const LABEL_MAP = {
  * @returns Row of settings page populated with properties
  */
 function SettingsSection(
-    { current, onClick, title, lkey }:
-  {current: FONT_SIZE_SETTING | VIEWPORT_SETTING, onClick: (e: number) => void, title: string,
-    lkey: SETTINGS_KEY},
+  { current, onClick, title, lkey }: {
+    current: FONT_SIZE_SETTING | VIEWPORT_SETTING;
+    onClick: (e: number) => void;
+    title: string;
+    lkey: SETTINGS_KEY;
+  },
 ) {
-  return <div style={styles.row}>
-    <text style={styles.label}>
-      {title}
-    </text>
-    <div style={styles.parameter}>
-      {...LABEL_MAP[lkey].map(([target, label]) => {
-        return <FloatingButton
-          customStyle={{ margin: "5px" }}
-          active={current === target}
-          label={label}
-          onClick={() => onClick(target)}
-        ></FloatingButton>;
-      })}
+  return (
+    <div style={styles.row}>
+      <text style={styles.label}>
+        {title}
+      </text>
+      <div style={styles.parameter}>
+        {...LABEL_MAP[lkey].map(([target, label]) => {
+          return (
+            <FloatingButton
+              customStyle={{ margin: "5px" }}
+              active={current === target}
+              label={label}
+              onClick={() => onClick(target)}
+            >
+            </FloatingButton>
+          );
+        })}
+      </div>
     </div>
-  </div>;
+  );
 }
 
-interface Props { root: App }
+interface Props {
+  root: App;
+}
 interface State {
-  dirty: boolean
-  fontSize: FONT_SIZE_SETTING
-  resolution: VIEWPORT_SETTING
+  dirty: boolean;
+  fontSize: FONT_SIZE_SETTING;
+  resolution: VIEWPORT_SETTING;
 }
 
 export default class Settings extends React.Component<Props, State> {
@@ -175,22 +189,26 @@ export default class Settings extends React.Component<Props, State> {
       root,
     } = this.props;
 
-    return <div style={styles.window}>
-      <SettingsHeader root={root} settings={this}></SettingsHeader>
-      <div>
-        <SettingsSection
-          current={this.state.fontSize}
-          onClick={(e: number) => this.onChangeFontSize(e)}
-          title={"Font Sizes"}
-          lkey={SETTINGS_KEY.FONT_SIZE}
-        ></SettingsSection>
-        <SettingsSection
-          current={this.state.resolution}
-          onClick={(e: number) => this.onChangeViewport(e)}
-          title={"Viewport"}
-          lkey={SETTINGS_KEY.VIEWPORT}
-        ></SettingsSection>
+    return (
+      <div style={styles.window}>
+        <SettingsHeader root={root} settings={this}></SettingsHeader>
+        <div>
+          <SettingsSection
+            current={this.state.fontSize}
+            onClick={(e: number) => this.onChangeFontSize(e)}
+            title={"Font Sizes"}
+            lkey={SETTINGS_KEY.FONT_SIZE}
+          >
+          </SettingsSection>
+          <SettingsSection
+            current={this.state.resolution}
+            onClick={(e: number) => this.onChangeViewport(e)}
+            title={"Viewport"}
+            lkey={SETTINGS_KEY.VIEWPORT}
+          >
+          </SettingsSection>
+        </div>
       </div>
-    </div>;
+    );
   }
 }
