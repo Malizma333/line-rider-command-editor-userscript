@@ -113,7 +113,7 @@ function parsePanTriggers(triggerArray: unknown[]): CameraPanTrigger[] {
 
     const [time, w, h, x, y, px, py] = trigger;
 
-    const newTrigger: CameraPanTrigger = [retrieveTimestamp(time), { x, y, w, h, px, py }];
+    const newTrigger: CameraPanTrigger = [retrieveTimestamp(time), { x, y, w, h, px: px || 0, py: py || 0 }];
 
     triggers.push(newTrigger);
   }
