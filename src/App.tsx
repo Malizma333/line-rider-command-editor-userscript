@@ -800,7 +800,7 @@ export class App extends React.Component {
         min: -Number.MAX_VALUE,
       }],
       ["Pixel Offset", { id: "px", label: "X", min: -Number.MAX_VALUE }, {
-        id: "y",
+        id: "py",
         label: "Y",
         min: -Number.MAX_VALUE,
       }],
