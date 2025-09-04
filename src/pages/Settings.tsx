@@ -20,31 +20,24 @@ import IconButton from "../components/IconButton";
 import * as FICONS from "../components/Icons";
 import { getSetting, saveSetting } from "../lib/settings-storage";
 import { FONT_SIZE_SETTING, SETTINGS_KEY, VIEWPORT_SETTING } from "../lib/settings-storage.types";
-import { COLOR, THEME } from "../styles";
 const { React } = window;
 
 const styles = {
   window: {
-    backgroundColor: COLOR.gray100,
-    border: THEME.primaryBorder,
-    boxShadow: "0px 4px 8px -4px #000",
+    backgroundColor: "transparent",
     display: "flex",
     flexDirection: "column",
     flex: 9,
     position: "relative",
     width: "100%",
+    margin: "5px",
   },
   header: {
     alignItems: "center",
     display: "flex",
     justifyContent: "center",
     minHeight: "3em",
-    margin: "10px",
     position: "relative",
-  },
-  applyButton: {
-    left: "0px",
-    position: "absolute",
   },
   row: {
     alignItems: "center",
@@ -60,7 +53,9 @@ const styles = {
   },
   parameter: {
     position: "absolute",
+    display: "flex",
     right: "5px",
+    gap: "5px",
   },
 } satisfies Record<string, React.CSSProperties>;
 
@@ -68,28 +63,19 @@ const styles = {
  * Creates settings header
  * @param root0 Settings head properties
  * @param root0.root Root app component
- * @param root0.settings Root settings component
  * @returns Settings header component at top of settings page
  */
-function SettingsHeader({ root, settings }: { root: App; settings: Settings }) {
+function SettingsHeader({ root }: { root: App }) {
   return (
     <div style={{ ...styles.header, fontSize: "1.5em" }}>
       <IconButton
+        colorType="neutral"
         onClick={() => root.onToggleSettings()}
         icon={FICONS.X}
         customStyle={{ position: "absolute", right: "0px" }}
         title="Close"
       >
       </IconButton>
-      Settings
-      <FloatingButton
-        customStyle={styles.applyButton}
-        active={settings.state.dirty}
-        disabled={!settings.state.dirty}
-        onClick={() => settings.onApply()}
-        label="Apply"
-      >
-      </FloatingButton>
     </div>
   );
 }
@@ -134,7 +120,6 @@ function SettingsSection(
         {...LABEL_MAP[lkey].map(([target, label]) => {
           return (
             <FloatingButton
-              customStyle={{ margin: "5px" }}
               active={current === target}
               label={label}
               onClick={() => onClick(target)}
@@ -207,23 +192,29 @@ export default class Settings extends React.Component<Props, State> {
 
     return (
       <div style={styles.window}>
-        <SettingsHeader root={root} settings={this}></SettingsHeader>
-        <div>
-          <SettingsSection
-            current={this.state.fontSize}
-            onClick={(e: number) => this.onChangeFontSize(e)}
-            title={"Font Sizes"}
-            lkey={SETTINGS_KEY.FONT_SIZE}
-          >
-          </SettingsSection>
-          <SettingsSection
-            current={this.state.resolution}
-            onClick={(e: number) => this.onChangeViewport(e)}
-            title={"Viewport"}
-            lkey={SETTINGS_KEY.VIEWPORT}
-          >
-          </SettingsSection>
-        </div>
+        <SettingsHeader root={root}></SettingsHeader>
+        <SettingsSection
+          current={this.state.fontSize}
+          onClick={(e: number) => this.onChangeFontSize(e)}
+          title={"Font Sizes"}
+          lkey={SETTINGS_KEY.FONT_SIZE}
+        >
+        </SettingsSection>
+        <SettingsSection
+          current={this.state.resolution}
+          onClick={(e: number) => this.onChangeViewport(e)}
+          title={"Viewport"}
+          lkey={SETTINGS_KEY.VIEWPORT}
+        >
+        </SettingsSection>
+        <FloatingButton
+          customStyle={{ margin: "10px auto" }}
+          active={this.state.dirty}
+          disabled={!this.state.dirty}
+          onClick={() => this.onApply()}
+          label="Apply"
+        >
+        </FloatingButton>
       </div>
     );
   }

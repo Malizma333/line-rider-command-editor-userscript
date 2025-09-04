@@ -19,7 +19,6 @@ const { React } = window;
 
 enum BUTTON_MODE {
   BLURRED,
-  HOVER,
   PRESSED,
 }
 
@@ -30,6 +29,7 @@ interface Props {
   size?: string;
   onClick: () => void;
   icon: React.JSX.Element;
+  colorType: "error" | "neutral";
 }
 
 interface State {
@@ -38,20 +38,18 @@ interface State {
 
 const style: React.CSSProperties = {
   alignItems: "center",
-  borderRadius: "0.5em",
   border: "none",
   display: "flex",
   height: "1.5em",
   justifyContent: "center",
   userSelect: "none",
   width: "1.5em",
-  transition: "background-color 0.125s ease-in-out",
+  transition: "transform 0.125s ease-in-out",
 };
 
-const modeBackgroundColors = {
-  [BUTTON_MODE.BLURRED]: "#00000000",
-  [BUTTON_MODE.HOVER]: "#00000066",
-  [BUTTON_MODE.PRESSED]: "#00000033",
+const modeScales = {
+  [BUTTON_MODE.BLURRED]: "scale(1)",
+  [BUTTON_MODE.PRESSED]: "scale(0.9)",
 } as const;
 
 export default class IconButton extends React.Component<Props, State> {
@@ -64,7 +62,7 @@ export default class IconButton extends React.Component<Props, State> {
   }
 
   render() {
-    const { customStyle, disabled, icon, onClick, size, title } = this.props;
+    const { customStyle, disabled, icon, onClick, size, title, colorType } = this.props;
 
     if (disabled && this.state.mode !== BUTTON_MODE.BLURRED) {
       this.setState({ mode: BUTTON_MODE.BLURRED });
@@ -72,18 +70,20 @@ export default class IconButton extends React.Component<Props, State> {
 
     return (
       <button
-        title={title}
+        title={disabled ? undefined : title}
         style={{
           ...style,
           ...customStyle,
-          backgroundColor: modeBackgroundColors[this.state.mode],
+          backgroundColor: "transparent",
+          transform: modeScales[this.state.mode],
           fontSize: size || "25px",
-          color: disabled ? COLOR.gray500 : COLOR.gray950,
+          color: disabled ? COLOR.gray400 : colorType === "neutral"
+            ? (COLOR.gray950)
+            : (COLOR.rose950),
         }}
-        onMouseOver={() => !disabled && this.setState({ mode: BUTTON_MODE.HOVER })}
-        onMouseOut={() => !disabled && this.setState({ mode: BUTTON_MODE.BLURRED })}
         onMouseDown={() => !disabled && this.setState({ mode: BUTTON_MODE.PRESSED })}
-        onMouseUp={() => !disabled && this.setState({ mode: BUTTON_MODE.HOVER })}
+        onMouseUp={() => !disabled && this.setState({ mode: BUTTON_MODE.BLURRED })}
+        onMouseLeave={() => !disabled && this.setState({ mode: BUTTON_MODE.BLURRED })}
         onClick={() => onClick()}
         disabled={disabled}
       >

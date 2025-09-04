@@ -26,23 +26,24 @@ export const COLOR = {
   gray800: "oklch(0.278 0.033 256.848)",
   gray900: "oklch(0.21 0.034 264.665)",
   gray950: "oklch(0.13 0.028 261.692)",
+  rose300: "oklch(81% 0.117 11.638)",
+  rose950: "oklch(27.1% 0.105 12.094)",
 } as const;
 
 export const THEME = {
-  primaryBorder: `2px solid ${COLOR.gray950}`,
+  primaryBorder: `1px solid ${COLOR.gray950}`,
 } as const;
 
 export const GLOBAL_STYLES = {
   root: {
-    backgroundColor: COLOR.gray200,
+    backgroundColor: COLOR.gray300,
     border: THEME.primaryBorder,
     color: COLOR.gray900,
     fontFamily: "Helvetica",
-    fontWeight: "bold",
     left: "64px",
     opacity: 0,
     overflow: "hidden",
-    padding: "3px",
+    borderRadius: "0.25em",
     pointerEvents: "none",
     position: "fixed",
     top: "8px",
@@ -59,6 +60,7 @@ export const GLOBAL_STYLES = {
     height: "50vh",
     flexDirection: "column",
     justifyContent: "center",
+    marginTop: "10px",
     width: "max(37.5vw, 600px)",
   },
   windowContainer: {
@@ -68,34 +70,34 @@ export const GLOBAL_STYLES = {
     width: "100%",
   },
   windowHead: {
+    padding: "20px 10px",
     alignItems: "center",
-    backgroundColor: COLOR.gray100,
-    border: THEME.primaryBorder,
+    backgroundColor: COLOR.gray200,
+    borderTop: THEME.primaryBorder,
     borderBottom: "none",
     display: "flex",
-    fontSize: "1.5em",
     height: "2.5em",
     justifyContent: "start",
+    gap: "10px",
   },
   windowBody: {
     backgroundColor: COLOR.gray300,
-    border: THEME.primaryBorder,
-    boxShadow: "inset 0px 0px 8px 0px #000",
+    borderTop: THEME.primaryBorder,
     display: "flex",
     flex: 1,
     flexDirection: "column",
     overflowY: "scroll",
-    scrollbarColor: `${COLOR.gray500} ${COLOR.gray200}`,
+    scrollbarColor: `${COLOR.gray500} ${COLOR.gray100}`,
     scrollbarWidth: "thin",
   },
   triggerContainer: {
     alignItems: "start",
-    backgroundColor: COLOR.gray100,
+    backgroundColor: COLOR.gray200,
     borderBottom: THEME.primaryBorder,
-    boxShadow: "0px 4px 8px -4px #000",
     display: "flex",
     flexDirection: "column",
-    padding: "0.75em",
+    padding: "0.9em 0.4em",
+    gap: "0.6em",
     position: "relative",
   },
   triggerActionContainer: {
@@ -106,24 +108,23 @@ export const GLOBAL_STYLES = {
     justifyContent: "space-between",
     position: "absolute",
     right: "0px",
+    gap: "5px",
   },
   triggerRowContainer: {
     alignItems: "center",
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
+    gap: "0.25em",
   },
   triggerPropContainer: {
     alignItems: "center",
     display: "flex",
     flexDirection: "row",
     justifyContent: "start",
-    marginBottom: "5px",
     width: "100%",
     whiteSpace: "nowrap",
-  },
-  spacedProperty: {
-    margin: "0 5px",
+    gap: "0.25em",
   },
   createTriggerContainer: {
     bottom: "0px",
@@ -138,6 +139,7 @@ export const GLOBAL_STYLES = {
     zIndex: 1,
   },
   tabContainer: {
+    marginLeft: "6px",
     alignItems: "end",
     display: "flex",
     justifyContent: "start",
@@ -146,8 +148,7 @@ export const GLOBAL_STYLES = {
   },
   tabButton: {
     borderRadius: "5px 5px 0px 0px",
-    marginRight: "-2px",
-    transform: "translateY(2px)",
+    transform: "translateY(1px)",
     zIndex: 1,
   },
 } satisfies Record<string, React.CSSProperties>;

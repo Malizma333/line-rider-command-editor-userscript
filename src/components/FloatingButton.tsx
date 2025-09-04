@@ -69,10 +69,11 @@ export default class FloatingButton extends React.Component<Props, State> {
           ...style,
           ...customStyle,
           boxShadow: disabledShadow ? "none" : modeShadows[this.state.mode],
-          backgroundColor: !disabled && active ? COLOR.gray100 : COLOR.gray400,
+          backgroundColor: !disabled && active ? (tabButton ? COLOR.gray200 : COLOR.gray100) : COLOR.gray400,
         }}
         onMouseDown={() => !disabled && this.setState({ mode: BUTTON_MODE.PRESSED })}
         onMouseUp={() => !disabled && this.setState({ mode: BUTTON_MODE.BLURRED })}
+        onMouseLeave={() => !disabled && this.setState({ mode: BUTTON_MODE.BLURRED })}
         onClick={() => onClick()}
         disabled={disabled}
       >
@@ -80,10 +81,10 @@ export default class FloatingButton extends React.Component<Props, State> {
         {tabButton && !disabled && active && (
           <div
             style={{
-              backgroundColor: COLOR.gray100,
-              bottom: "-3px",
-              height: "4px",
-              left: "0",
+              backgroundColor: COLOR.gray200,
+              bottom: "-1px",
+              height: "2px",
+              left: "0px",
               position: "absolute",
               right: "0",
               zIndex: 1,

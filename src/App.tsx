@@ -33,7 +33,7 @@ import {
   ZoomTrigger,
 } from "./lib/TriggerDataManager.types";
 import { extractTriggerArray, formatSkins, generateScript, validateTimes } from "./lib/util";
-import { GLOBAL_STYLES } from "./styles";
+import { COLOR, GLOBAL_STYLES } from "./styles";
 
 import * as F_ICONS from "./components/Icons";
 import * as Actions from "./lib/redux-actions";
@@ -486,7 +486,7 @@ export class App extends React.Component {
                       <>
                         {this.renderWindowHead()}
                         {
-                          <div style={{ ...GLOBAL_STYLES.windowBody, paddingBottom: "10px" }}>
+                          <div style={{ ...GLOBAL_STYLES.windowBody, paddingBottom: "20px" }}>
                             {extractTriggerArray(this.triggerManager.data, activeTab, gravityDropdown, layerDropdown)
                               .map(
                                 (trigger, index) => this.renderTrigger(trigger, index),
@@ -508,6 +508,7 @@ export class App extends React.Component {
       ? (
         <div style={GLOBAL_STYLES.actionContainer}>
           <IconButton
+            colorType="neutral"
             title="Maximize"
             onClick={() => this.onToggleActive()}
             icon={F_ICONS.MAXIMIZE}
@@ -519,31 +520,36 @@ export class App extends React.Component {
         <div style={GLOBAL_STYLES.actionContainer}>
           <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: "start" }}>
             <IconButton
+              colorType="neutral"
               title="Minimize"
               onClick={() => this.onToggleActive()}
               icon={F_ICONS.MINIMIZE}
             >
             </IconButton>
             <IconButton
+              colorType="neutral"
               title="Download"
               onClick={() => this.onDownload()}
               icon={F_ICONS.DOWNLOAD}
             >
             </IconButton>
             <IconButton
+              colorType="neutral"
               title="Upload"
               onClick={() => this.onUpload()}
               icon={F_ICONS.UPLOAD}
             >
             </IconButton>
             <IconButton
+              colorType="neutral"
               title="Load From Script"
               onClick={() => this.onLoadScript()}
-              icon={F_ICONS.CORNER_UP_RIGHT}
+              icon={F_ICONS.FILE_TEXT}
               disabled={this.state.activeTab === TRIGGER_ID.GRAVITY || this.state.activeTab === TRIGGER_ID.LAYER}
             >
             </IconButton>
             <IconButton
+              colorType="neutral"
               title="Run"
               onClick={() => this.onRun()}
               icon={F_ICONS.PLAY}
@@ -551,6 +557,7 @@ export class App extends React.Component {
             >
             </IconButton>
             <IconButton
+              colorType="neutral"
               title="Copy Script"
               onClick={async () => await this.onCopy()}
               icon={F_ICONS.COPY}
@@ -560,26 +567,30 @@ export class App extends React.Component {
           </div>
           <div style={{ ...GLOBAL_STYLES.actionContainer, justifyContent: "end" }}>
             <IconButton
+              colorType="neutral"
               title="Undo"
               onClick={() => this.onUndo()}
-              icon={F_ICONS.ARROW_LEFT}
+              icon={F_ICONS.UNDO}
               disabled={this.triggerManager.undoLen === 0}
             >
             </IconButton>
             <IconButton
+              colorType="neutral"
               title="Redo"
               onClick={() => this.onRedo()}
-              icon={F_ICONS.ARROW_RIGHT}
+              icon={F_ICONS.REDO}
               disabled={this.triggerManager.redoLen === 0}
             >
             </IconButton>
             <IconButton
+              colorType="neutral"
               title="Settings"
               onClick={() => this.onToggleSettings()}
               icon={F_ICONS.SETTINGS}
             >
             </IconButton>
             <IconButton
+              colorType="neutral"
               title="Help"
               onClick={() => this.onHelp()}
               icon={F_ICONS.HELP_CIRCLE}
@@ -715,14 +726,13 @@ export class App extends React.Component {
 
     return (
       <div
-        style={{
-          ...GLOBAL_STYLES.triggerContainer,
-          fontSize: "1.5em",
-        }}
+        style={GLOBAL_STYLES.triggerContainer}
       >
         <div style={GLOBAL_STYLES.triggerActionContainer}>
           {(activeTab === TRIGGER_ID.ZOOM || activeTab === TRIGGER_ID.PAN) && (
             <IconButton
+              colorType="neutral"
+              size="1.5em"
               onClick={() => this.onCaptureCamera(index, activeTab)}
               icon={F_ICONS.CAMERA}
               title="Capture Editor Camera"
@@ -730,6 +740,8 @@ export class App extends React.Component {
             </IconButton>
           )}
           <IconButton
+            colorType="error"
+            size="1.5em"
             onClick={() => this.onDeleteTrigger(index)}
             icon={F_ICONS.X}
             disabled={index === 0}
@@ -748,7 +760,7 @@ export class App extends React.Component {
         <div style={GLOBAL_STYLES.createTriggerContainer}>
           <FloatingButton
             onClick={() => this.onCreateTrigger(index)}
-            customStyle={{ fontSize: "0.75em" }}
+            customStyle={{ fontSize: "0.75em", aspectRatio: "1/1" }}
             label="+"
             active
           >
@@ -784,7 +796,7 @@ export class App extends React.Component {
                 path,
                 min: prop.min,
                 max: prop.max,
-                customStyle: { color: this.state.invalidTimes[index] ? "red" : GLOBAL_STYLES.root.color },
+                customStyle: { color: this.state.invalidTimes[index] ? COLOR.rose950 : GLOBAL_STYLES.root.color },
               })}
             </div>
           );
@@ -823,10 +835,10 @@ export class App extends React.Component {
     ] as const;
 
     return (
-      <div>
+      <>
         {...props.map((pair) => {
           return (
-            <div style={{ display: "flex", flexDirection: "row" }}>
+            <div style={GLOBAL_STYLES.triggerRowContainer}>
               {...pair.map((prop) => {
                 if (typeof prop === "string") {
                   return (
@@ -852,7 +864,7 @@ export class App extends React.Component {
             </div>
           );
         })}
-      </div>
+      </>
     );
   }
 
@@ -893,7 +905,7 @@ export class App extends React.Component {
     ] as const;
 
     return (
-      <div style={{ display: "flex", flexDirection: "row" }}>
+      <div style={GLOBAL_STYLES.triggerRowContainer}>
         {...props.map((prop) => {
           const path = ["triggers", this.state.gravityDropdown.toString(), index.toString(), "1", prop.id];
 
@@ -913,13 +925,13 @@ export class App extends React.Component {
 
   renderLayerTrigger(data: LayerTrigger, index: number) {
     const props = [
-      { id: "on", label: "ON" },
-      { id: "off", label: "OFF" },
-      { id: "offset", label: "OFFSET" },
+      { id: "on", label: "On" },
+      { id: "off", label: "Off" },
+      { id: "offset", label: "Offset" },
     ] as const;
 
     return (
-      <div style={{ display: "flex", flexDirection: "row" }}>
+      <div style={GLOBAL_STYLES.triggerRowContainer}>
         {...props.map((prop) => {
           const path = ["triggers", this.state.layerDropdown.toString(), index.toString(), "1", prop.id];
 
@@ -941,11 +953,11 @@ export class App extends React.Component {
   renderBoolPicker(labelText: string, value: boolean, propPath: string[]) {
     return (
       <div style={GLOBAL_STYLES.triggerRowContainer}>
-        <label style={GLOBAL_STYLES.spacedProperty} htmlFor={propPath.join("-")}>
+        <label htmlFor={propPath.join("-")}>
           {labelText}
         </label>
         <Checkbox
-          customStyle={GLOBAL_STYLES.spacedProperty}
+          customStyle={{}}
           id={propPath.join("-")}
           value={value}
           onCheck={() => this.onUpdateTrigger(!value, propPath)}
@@ -967,11 +979,11 @@ export class App extends React.Component {
   ) {
     return (
       <div style={GLOBAL_STYLES.triggerRowContainer}>
-        <label style={GLOBAL_STYLES.spacedProperty} htmlFor={path.join("-")}>
+        <label htmlFor={path.join("-")}>
           {label}
         </label>
         <IntPicker
-          customStyle={{ ...GLOBAL_STYLES.spacedProperty, ...customStyle }}
+          customStyle={{ ...customStyle }}
           id={path.join("-")}
           value={value}
           min={min}
@@ -995,11 +1007,11 @@ export class App extends React.Component {
   ) {
     return (
       <div style={GLOBAL_STYLES.triggerRowContainer}>
-        <label style={GLOBAL_STYLES.spacedProperty} htmlFor={path.join("-")}>
+        <label htmlFor={path.join("-")}>
           {label}
         </label>
         <FloatPicker
-          customStyle={{ ...GLOBAL_STYLES.spacedProperty, ...customStyle }}
+          customStyle={{ ...customStyle }}
           id={path.join("-")}
           value={value}
           min={min}

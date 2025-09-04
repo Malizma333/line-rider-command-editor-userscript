@@ -93,8 +93,8 @@ const styles = {
     border: THEME.primaryBorder,
     borderRadius: "5px",
     cursor: "pointer",
-    height: "1.5em",
-    width: "1.5em",
+    width: "auto",
+    aspectRatio: "1/1",
   },
 } satisfies Record<string, React.CSSProperties>;
 
@@ -112,13 +112,14 @@ function SkinEditorToolbar({ skinEditor, root }: { skinEditor: SkinEditor; root:
   return (
     <div style={GLOBAL_STYLES.windowHead}>
       <IconButton
+        colorType="error"
         onClick={() => root.onResetSkin(skinEditor.state.selectedRider)}
         icon={FICONS.TRASH2}
         customStyle={{ position: "absolute", right: "10px" }}
         title="Reset Skin"
       >
       </IconButton>
-      <div style={{ ...GLOBAL_STYLES.spacedProperty, ...styles.alphaContainer }}>
+      <div style={styles.alphaContainer}>
         <label htmlFor="alphaSlider">Transparency</label>
         <div style={styles.alphaSliderContainer}>
           <input
@@ -136,14 +137,13 @@ function SkinEditorToolbar({ skinEditor, root }: { skinEditor: SkinEditor; root:
         </div>
       </div>
       <input
-        style={{ ...GLOBAL_STYLES.spacedProperty, ...styles.colorPicker }}
+        style={styles.colorPicker}
         type="color"
         value={colorValue}
         onChange={(e: React.ChangeEvent) => skinEditor.onChangeColor((e.target as HTMLInputElement).value, undefined)}
       >
       </input>
       <Dropdown
-        customStyle={GLOBAL_STYLES.spacedProperty}
         value={skinEditor.state.selectedRider}
         mapping={[...Array(root.state.numRiders).keys()]}
         label={(_, i) => `Rider ${i + 1}`}

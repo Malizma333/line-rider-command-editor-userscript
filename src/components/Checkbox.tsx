@@ -32,7 +32,6 @@ const styles = {
     border: THEME.primaryBorder,
     borderRadius: "50%",
     boxSizing: "border-box",
-    boxShadow: "inset 0px 1px 4px -1px #000",
     cursor: "pointer",
     height: "100%",
     position: "absolute",
@@ -44,7 +43,6 @@ const styles = {
     height: "60%",
     pointerEvents: "none",
     position: "absolute",
-    transition: "opacity 0.125s ease-in-out",
     width: "60%",
   },
 } satisfies Record<string, React.CSSProperties>;
