@@ -925,7 +925,7 @@ export class App extends React.Component {
 
           return (
             <div style={GLOBAL_STYLES.triggerPropContainer}>
-              {this.renderIntPicker({
+              {this.renderFloatPicker({
                 label: prop.label,
                 value: data[1][prop.id].toString(),
                 path,
